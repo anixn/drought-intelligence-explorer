@@ -1,0 +1,37 @@
+state_id,state_name,indicator,mean,drought_months,affected_area_pct_mean,severe_area_pct_mean,completeness_pct
+andaman-and-nicobar-islands,Andaman and Nicobar Islands,spi_6,0.008,39,26.84,7.22,87.92
+andhra-pradesh,Andhra Pradesh,spi_6,-0.006,32,27.61,5.73,86.28
+arunachal-pradesh,Arunachal Pradesh,spi_6,-0.006,25,26.99,5.72,86.53
+assam,Assam,spi_6,0.002,35,24.44,6.31,86.06
+bihar,Bihar,spi_6,-0.002,30,25.88,5.52,86.1
+chandigarh,Chandigarh,spi_6,0.02,28,23.75,6.67,84.58
+chhattisgarh,Chhattisgarh,spi_6,-0.001,28,28.25,4.08,87.07
+dadra-and-nagar-haveli-and-daman-and-diu,Dadra and Nagar Haveli and Daman and Diu,spi_6,-0.006,28,26.47,4.66,85.28
+delhi,Delhi,spi_6,-0.018,36,29.58,4.17,87.5
+goa,Goa,spi_6,0.007,28,27.83,5.01,86.04
+gujarat,Gujarat,spi_6,0.004,25,25.26,5.33,85.74
+haryana,Haryana,spi_6,-0.005,31,28.27,6.0,86.89
+himachal-pradesh,Himachal Pradesh,spi_6,-0.01,33,26.5,5.7,85.94
+jammu-and-kashmir,Jammu and Kashmir,spi_6,-0.013,28,26.73,6.48,86.72
+jharkhand,Jharkhand,spi_6,0.002,28,27.0,4.7,86.63
+karnataka,Karnataka,spi_6,0.003,31,25.27,6.28,85.6
+kerala,Kerala,spi_6,0.008,25,25.56,5.33,87.83
+ladakh,Ladakh,spi_6,0.118,9,9.69,2.05,44.58
+lakshadweep,Lakshadweep,spi_6,-0.026,29,31.25,4.17,85.83
+madhya-pradesh,Madhya Pradesh,spi_6,0.002,28,26.59,5.29,86.27
+maharashtra,Maharashtra,spi_6,0.003,36,24.76,5.51,86.36
+manipur,Manipur,spi_6,0.0,23,25.51,5.7,85.65
+meghalaya,Meghalaya,spi_6,0.001,27,26.51,5.11,86.48
+mizoram,Mizoram,spi_6,0.001,32,26.56,5.75,87.58
+nagaland,Nagaland,spi_6,0.0,36,26.09,6.06,86.93
+odisha,Odisha,spi_6,-0.002,24,26.32,5.13,86.64
+puducherry,Puducherry,spi_6,-0.029,36,29.88,5.85,86.88
+punjab,Punjab,spi_6,-0.009,37,28.04,5.88,86.61
+rajasthan,Rajasthan,spi_6,-0.004,26,24.3,6.32,86.54
+sikkim,Sikkim,spi_6,-0.003,28,26.04,5.26,87.08
+tamil-nadu,Tamil Nadu,spi_6,0.001,27,26.98,4.68,86.16
+telangana,Telangana,spi_6,-0.003,29,26.24,5.45,86.35
+tripura,Tripura,spi_6,0.01,38,24.86,6.38,86.04
+uttar-pradesh,Uttar Pradesh,spi_6,-0.002,28,24.79,5.87,86.81
+uttarakhand,Uttarakhand,spi_6,0.003,24,24.74,6.1,86.25
+west-bengal,West Bengal,spi_6,0.002,28,27.74,5.04,85.62

@@ -1,0 +1,37 @@
+state_id,state_name,area_km2,area_from_districts_km2,n_districts,centroid_lon,centroid_lat
+andaman-and-nicobar-islands,Andaman and Nicobar Islands,6214.4,6227.9,3,92.4881,10.7302
+andhra-pradesh,Andhra Pradesh,163026.6,163058.2,13,79.649,15.9227
+arunachal-pradesh,Arunachal Pradesh,82161.4,82185.8,25,95.0988,28.0789
+assam,Assam,78484.3,78375.6,33,91.9066,26.248
+bihar,Bihar,94024.7,93983.5,38,86.1844,25.8502
+chandigarh,Chandigarh,80.7,79.7,1,76.7817,30.7199
+chhattisgarh,Chhattisgarh,134897.2,134906.9,27,81.491,20.9459
+dadra-and-nagar-haveli-and-daman-and-diu,Dadra and Nagar Haveli and Daman and Diu,540.2,537.4,3,73.0469,20.2051
+delhi,Delhi,1397.3,1394.7,1,77.107,28.6352
+goa,Goa,3572.8,3550.2,2,74.1096,15.3153
+gujarat,Gujarat,184730.3,184627.7,34,71.6539,22.3654
+haryana,Haryana,44362.5,44320.4,22,76.2788,29.2693
+himachal-pradesh,Himachal Pradesh,55823.3,55833.7,12,77.3488,31.8448
+jammu-and-kashmir,Jammu and Kashmir,53298.3,53291.4,22,74.9077,33.7299
+jharkhand,Jharkhand,79767.4,79767.2,24,85.1622,23.7269
+karnataka,Karnataka,191807.3,191737.5,30,75.496,14.9901
+kerala,Kerala,38686.3,38754.3,14,76.4388,10.5035
+ladakh,Ladakh,168817.1,168802.2,2,77.3669,34.764
+lakshadweep,Lakshadweep,2.4,2.4,1,73.0302,8.2748
+madhya-pradesh,Madhya Pradesh,308113.3,308033.0,52,79.3712,23.9822
+maharashtra,Maharashtra,307637.7,307692.8,35,75.3714,18.8427
+manipur,Manipur,22067.8,22100.7,16,93.8605,24.7584
+meghalaya,Meghalaya,22364.3,22379.6,11,91.2663,25.6033
+mizoram,Mizoram,21092.4,21054.0,10,92.8866,23.2465
+nagaland,Nagaland,16764.1,16767.0,11,94.5735,26.0802
+odisha,Odisha,155606.6,155652.3,30,84.451,20.2037
+puducherry,Puducherry,282.8,275.0,4,79.785,11.9199
+punjab,Punjab,50230.5,50231.9,22,75.5771,31.0224
+rajasthan,Rajasthan,342415.5,342450.4,33,74.1342,26.6353
+sikkim,Sikkim,7036.5,7032.9,4,88.4363,27.5953
+tamil-nadu,Tamil Nadu,130490.1,130521.3,37,78.3736,10.8112
+telangana,Telangana,112347.8,112327.7,33,79.2876,17.8642
+tripura,Tripura,10141.7,10160.7,8,91.7438,23.7645
+uttar-pradesh,Uttar Pradesh,240997.2,241045.0,75,80.7954,27.1561
+uttarakhand,Uttarakhand,53263.4,53278.0,13,79.2937,30.0819
+west-bengal,West Bengal,83940.5,83946.9,23,88.118,24.3888
