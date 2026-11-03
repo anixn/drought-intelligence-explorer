@@ -73,9 +73,11 @@
       setBoot('Loading indicator ' + DIE.indicatorById.get(DIE.state.indicator).label + '…', 62);
       await DIE.loader.indicator(DIE.state.indicator);
 
-      DIE.state.dateIdx = currentDataset().dates.length - 1;
-      DIE.state.period.from = +DIE.meta.period.start.slice(0, 4);
-      DIE.state.period.to = +DIE.meta.period.end.slice(0, 4);
+      const ds0 = currentDataset();
+      DIE.state.dateIdx = ds0.availableEndIndex >= 0
+        ? ds0.availableEndIndex : ds0.dates.length - 1;
+      DIE.state.period.from = +(ds0.availableFrom || DIE.meta.period.start).slice(0, 4);
+      DIE.state.period.to = +(ds0.availableTo || DIE.meta.period.end).slice(0, 4);
 
       if (!window.turf) {
         $('tgLabels').disabled = true;
@@ -134,8 +136,10 @@
       }
     });
 
-    // mobile drawer
+    // mobile drawer (the sidebar is always visible above the drawer breakpoint)
+    const drawerMq = window.matchMedia('(max-width: 1024px)');
     $('navToggle').addEventListener('click', () => {
+      if (!drawerMq.matches) return;
       const open = $('sidebar').classList.toggle('is-open');
       $('navToggle').setAttribute('aria-expanded', String(open));
       $('scrim').hidden = !open;
@@ -216,6 +220,7 @@
     function run0(fn) { try { fn(); } catch (e) { console.error(e); } }
 
     window.addEventListener('resize', debounce(() => {
+      if (!drawerMq.matches) closeDrawer();
       if (DIE.MapView.main) DIE.MapView.main.invalidateSize();
       if (Analysis.mapA) Analysis.mapA.invalidateSize();
       if (Analysis.mapB) Analysis.mapB.invalidateSize();
@@ -263,15 +268,39 @@
   /* ===================================================== STATIC TEXTS === */
   function renderStaticText() {
     $('chipUpdated').textContent = 'Updated · ' + DIE.meta.last_updated;
+    const bpEl = $('bannerPeriod');
+    if (bpEl) {
+      const shortRecords = DIE.meta.indicators
+        .filter((i) => i.available_from &&
+          +i.available_from.slice(0, 4) > +DIE.meta.period.start.slice(0, 4) + 1)
+        .map((i) => i.label + ' from ' + i.available_from.slice(0, 4));
+      bpEl.textContent = 'research build · ' + DIE.meta.period.start.slice(0, 4) +
+        '–' + DIE.meta.period.end.slice(0, 4) +
+        (shortRecords.length ? ' · ' + shortRecords.join(' · ') : '');
+    }
     $('aboutCitation').textContent = DIE.meta.citation;
     $('methCitation').textContent = DIE.meta.citation;
     $('methReferencePeriod').textContent = DIE.meta.reference_period;
-    $('methVersion').textContent = 'Methodology version ' + DIE.meta.methodology_version +
-      ' · data mode: ' + DIE.meta.data_mode + ' · generated ' + DIE.meta.last_updated +
-      ' (numpy default_rng, seed ' + DIE.meta.random_seed + ')';
+    const synthetic = /synthetic|demonstration/i.test(String(DIE.meta.data_mode || ''));
+    if ($('chipDataMode')) {
+      $('chipDataMode').textContent = 'Data mode · ' +
+        (DIE.meta.data_mode === 'static-research' ? 'Static research data' : DIE.meta.data_mode);
+    }
+    if ($('chipDemo')) {
+      $('chipDemo').textContent = synthetic ? 'Demonstration · synthetic' : 'Historical · GEE-derived';
+      $('chipDemo').title = synthetic
+        ? 'All values in this build are synthetic (see Methodology)'
+        : 'Indicator values are derived from historical Earth-observation and reanalysis data (see Methodology)';
+    }
+    let versionText = 'Methodology version ' + DIE.meta.methodology_version +
+      ' · data mode: ' + DIE.meta.data_mode + ' · generated ' + DIE.meta.last_updated;
+    if (DIE.meta.random_seed !== null && DIE.meta.random_seed !== undefined) {
+      versionText += ' (numpy default_rng, seed ' + DIE.meta.random_seed + ')';
+    }
+    $('methVersion').textContent = versionText;
     $('footerProvenance').textContent = DIE.meta.data_provenance;
     $('footerVersion').textContent = 'v' + DIE.meta.version + ' · methodology ' + DIE.meta.methodology_version +
-      ' · demonstration build (synthetic data)';
+      ' · ' + (synthetic ? 'demonstration build (synthetic data)' : 'historical research build (GEE-derived data)');
 
     // methodology classification tables
     const spi = DIE.indicatorById.get('spi_3');
@@ -286,14 +315,18 @@
           '): ' + ind.classes.map((c) => c.label + ' ' + fmtRangeLoose(c, ind)).join(' · ') + '</td></tr>';
       }).join('') + '</tbody>';
 
-    // sources modal
-    const cur = DIE.meta.sources.filter((s) => s.role.startsWith('current'));
-    const rec = DIE.meta.sources.filter((s) => s.role.startsWith('recommended'));
+    // sources modal: metadata may use "current"/"recommended" role prefixes, or
+    // plain descriptive roles. When no prefix is present every source is current.
+    const cur = DIE.meta.sources.filter((s) => /^current\b/i.test(s.role || ''));
+    const rec = DIE.meta.sources.filter((s) => /^recommended\b/i.test(s.role || ''));
+    const currentSources = cur.length ? cur : DIE.meta.sources;
     const srcRow = (s) => '<tr><td>' + s.name + '</td><td>' + s.description +
       '<br><a href="' + s.url + '" target="_blank" rel="noopener">' + s.url + '</a>' +
       '<br><span class="small">Role: ' + s.role + ' · accessed ' + s.access_date + '</span></td></tr>';
-    $('sourcesCurrent').innerHTML = '<table class="src-table">' + cur.map(srcRow).join('') + '</table>';
-    $('sourcesRecommended').innerHTML = '<table class="src-table">' + rec.map(srcRow).join('') + '</table>';
+    $('sourcesCurrent').innerHTML = '<table class="src-table">' + currentSources.map(srcRow).join('') + '</table>';
+    $('sourcesRecommended').innerHTML = rec.length
+      ? '<table class="src-table">' + rec.map(srcRow).join('') + '</table>'
+      : '<p class="small">No additional sources are listed for this build.</p>';
 
     renderDownloads($('downloadsTab'));
     renderDownloads($('downloadsModal'));
@@ -316,6 +349,21 @@
     $('chipDate').textContent = 'View · ' + (ym ? DIE.dates.label(ym) : '—');
     $('chipAvail').textContent = 'Availability · ' + (ds
       ? (ds.report.completeness * 100).toFixed(1) + '% valid' : '—');
+
+    // Per-indicator availability: every source except MODIS NDVI starts in
+    // 1981, so surface the exact window instead of implying full coverage.
+    const note = $('indicatorAvailability');
+    if (ds && note) {
+      const from = ds.availableFrom || DIE.meta.period.start;
+      const to = ds.availableTo || DIE.meta.period.end;
+      const fullRecord = from.slice(0, 4) <= DIE.meta.period.start.slice(0, 4);
+      note.textContent = fullRecord
+        ? 'Available ' + DIE.dates.label(from) + ' – ' + DIE.dates.label(to) + ' (full record)'
+        : 'Available ' + DIE.dates.label(from) + ' – ' + DIE.dates.label(to) +
+          ' · source record begins ' + from.slice(0, 4);
+      $('chipAvail').title = ds.indicator.label + ' has valid values from ' +
+        DIE.dates.label(from) + ' to ' + DIE.dates.label(to) + '.';
+    }
   }
 
   /* =============================================================== KPIs == */
@@ -522,14 +570,19 @@
     }
 
     DIE.Charts.timeSeries($('tsChart'), { series, indicator: ds.indicator, regionLabel: label, trend });
-    $('tsMeta').textContent = ds.indicator.label + ' · ' + label + ' · ' + DIE.meta.period.start + '–' + DIE.meta.period.end;
+    $('tsMeta').textContent = ds.indicator.label + ' · ' + label + ' · ' +
+      (ds.availableFrom || DIE.meta.period.start) + '–' +
+      (ds.availableTo || DIE.meta.period.end);
     $('tsFoot').textContent =
       'Solid grey: zero reference. Dotted red: drought-class thresholds (' +
       DIE.Charts.DIST_BINS.filter((b) => /drought/.test(b.key)).map((b) => b.label).join(', ') +
       '). Gaps are missing observations (never interpolated). ' +
       (trend ? 'Dashed red: OLS trend, slope ' + trend.slope.toFixed(4) + ' units/month over ' + trend.n +
         ' valid months (see methodology). ' : '') +
-      'Spatial unit: district' + (isDistrict ? '' : 's, area-weighted') + '. Source: demonstration dataset (synthetic).';
+      'Spatial unit: district' + (isDistrict ? '' : 's, area-weighted') + '. Source: ' +
+      (/synthetic|demonstration/i.test(String(DIE.meta.data_mode || ''))
+        ? 'demonstration dataset (synthetic)'
+        : 'GEE-derived historical dataset') + '.';
   }
 
   function renderDistChart() {
@@ -541,7 +594,10 @@
     $('distMeta').textContent = DIE.Filters.regionLabel() + ' · ' + DIE.dates.label(DIE.Filters.dateYm() || '');
     $('distFoot').textContent =
       'Share of region area per severity class (' + DIE.fmt.area(dist.regionArea) +
-      ' total). Wet conditions aggregate all wet classes. Exports: use the camera icon on the chart toolbar. Demonstration data.';
+      ' total). Wet conditions aggregate all wet classes. Exports: use the camera icon on the chart toolbar. ' +
+      (/synthetic|demonstration/i.test(String(DIE.meta.data_mode || ''))
+        ? 'Demonstration data.'
+        : 'GEE-derived historical data.');
   }
 
   /* ================================================== HISTORICAL ROW 4 == */
@@ -684,6 +740,15 @@
   }
 
   /* ======================================================= DOWNLOADS UI == */
+  function datasetCitation() {
+    if (DIE.meta.random_seed !== null && DIE.meta.random_seed !== undefined) {
+      return 'Dataset: synthetic demonstration build (seed ' + DIE.meta.random_seed +
+        '), methodology version ' + DIE.meta.methodology_version + '. Not observed measurements.';
+    }
+    return 'Dataset: ' + (DIE.meta.data_provenance || 'GEE-derived historical research dataset') +
+      ' Methodology version ' + DIE.meta.methodology_version + '.';
+  }
+
   function renderDownloads(container) {
     if (!container || container.dataset.ready) return;
     container.dataset.ready = '1';
@@ -731,8 +796,7 @@
       '<button class="btn" data-dl="datasources">Download docs/data-sources.md</button></div></div>' +
 
       '<div class="dl-group-title">Citation</div>' +
-      '<div class="cite-box">' + DIE.meta.citation + '\nDataset: synthetic demonstration build (seed ' + DIE.meta.random_seed +
-      '), methodology version ' + DIE.meta.methodology_version + '. Not observed measurements.</div>' +
+      '<div class="cite-box">' + DIE.meta.citation + '\n' + datasetCitation() + '</div>' +
       '<div class="dl-actions"><button class="btn" data-dl="cite">Copy citation</button></div>';
 
     container.addEventListener('click', async (e) => {
@@ -760,8 +824,7 @@
           A().toText(file.split('/').pop(), text, 'text/markdown;charset=utf-8');
           toast('Documentation saved', file);
         } else if (kind === 'cite') {
-          const text = DIE.meta.citation + '\nDataset: synthetic demonstration build (seed ' +
-            DIE.meta.random_seed + '), methodology version ' + DIE.meta.methodology_version + '.';
+          const text = DIE.meta.citation + '\n' + datasetCitation();
           try {
             await navigator.clipboard.writeText(text);
             toast('Citation copied', 'Pasted-ready citation is on your clipboard.');
@@ -892,7 +955,9 @@
           $('cmpFoot').textContent = 'Matched date: ' + DIE.dates.label(dsA.dates[idx]) +
             ' · matched spatial units: ' + st.n + ' districts (pairwise deletion; ' + st.missing +
             ' excluded) · units: ' + dsA.indicator.units + ' (A) vs ' + dsB.indicator.units +
-            ' (B). Demonstration data.';
+            ' (B). ' + (/synthetic|demonstration/i.test(String(DIE.meta.data_mode || ''))
+              ? 'Demonstration data.'
+              : 'GEE-derived historical data.');
         } catch (err) {
           toast('Comparison failed', String(err.message || err), 'error');
         }
@@ -921,6 +986,12 @@
 
       const renderFrame = () => {
         const d = currentDataset();
+        const a = d.availableStartIndex || 0;
+        const b = d.availableEndIndex >= 0 ? d.availableEndIndex : d.dates.length - 1;
+        if (this.evoIdx < a) this.evoIdx = a;
+        if (this.evoIdx > b) this.evoIdx = b;
+        slider.min = String(a);
+        slider.max = String(b);
         const ym = d.dates[this.evoIdx];
         $('evoDateLabel').textContent = DIE.dates.label(ym);
         slider.value = String(this.evoIdx);
@@ -931,13 +1002,17 @@
         const series = A().droughtAreaPctSeries(d, ids());
         DIE.Charts.areaTimeline($('evoTimeline'), { dates: series.dates, pct: series.pct, frameIdx: this.evoIdx });
         $('evoFoot').textContent = d.indicator.label + ' · ' + DIE.Filters.regionLabel() +
-          ' · % of region area in mild-or-worse drought · frame ' + (this.evoIdx + 1) + '/' + d.dates.length +
-          ' · demonstration data (synthetic).';
+          ' · % of region area in mild-or-worse drought · frame ' + (this.evoIdx - a + 1) + '/' + (b - a + 1) +
+          ' · ' + (/synthetic|demonstration/i.test(String(DIE.meta.data_mode || ''))
+            ? 'demonstration data (synthetic)'
+            : 'GEE-derived research data') + '.';
       };
 
       const step = (delta) => {
         const d = currentDataset();
-        this.evoIdx = Math.max(0, Math.min(d.dates.length - 1, this.evoIdx + delta));
+        const a = d.availableStartIndex || 0;
+        const b = d.availableEndIndex >= 0 ? d.availableEndIndex : d.dates.length - 1;
+        this.evoIdx = Math.max(a, Math.min(b, this.evoIdx + delta));
         renderFrame();
       };
       $('evoPrev').addEventListener('click', () => step(-1));
@@ -953,7 +1028,9 @@
           $('evoPlay').textContent = 'Pause';
           this.playing = setInterval(() => {
             const d = currentDataset();
-            this.evoIdx = (this.evoIdx + 1) % d.dates.length;
+            const a = d.availableStartIndex || 0;
+            const b = d.availableEndIndex >= 0 ? d.availableEndIndex : d.dates.length - 1;
+            this.evoIdx = this.evoIdx >= b ? a : this.evoIdx + 1;
             renderFrame();
           }, 900);
         }
@@ -1000,6 +1077,7 @@
 
   /* ============================================================== RENDER == */
   function renderAll() {
+    DIE.Filters.resync();
     renderTopbar();
     renderKPIs();
     DIE.MapView.refresh();

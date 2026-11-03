@@ -264,7 +264,11 @@
       } else {
         districtIndex.set(id, districtIds.length);
         districtIds.push(id);
-        values.push(new Float64Array(dates.length));
+        // Empty CSV cells mean "missing", not zero. Float64Array is
+        // zero-initialised, so fill with NaN before writing parsed values.
+        const rowValues = new Float64Array(dates.length);
+        rowValues.fill(NaN);
+        values.push(rowValues);
       }
       const i = districtIndex.get(id);
       for (let j = 0; j < dates.length; j++) {
@@ -284,14 +288,56 @@
     for (const id of DIE.registry.districts.keys()) {
       if (!represented.has(id)) report.unrepresentedDistricts++;
     }
-    report.completeness = report.rowsParsed
+
+    // ---- availability window -------------------------------------------
+    // Some inputs start later than others (MODIS NDVI is only available from
+    // 2000-02, so VCI cannot cover the full 1981+ record).  Compute the first
+    // and last month that contain at least one finite value and measure
+    // completeness inside that window, not across the whole declared period.
+    let firstValid = dates.length;
+    let lastValid = -1;
+    for (let j = 0; j < dates.length; j++) {
+      for (let i = 0; i < values.length; i++) {
+        if (Number.isFinite(values[i][j])) {
+          if (j < firstValid) firstValid = j;
+          if (j > lastValid) lastValid = j;
+          break;
+        }
+      }
+    }
+    const hasData = lastValid >= firstValid;
+    const availableStart = hasData ? firstValid : 0;
+    const availableEnd = hasData ? lastValid : -1;
+    const availableMonths = hasData ? lastValid - firstValid + 1 : 0;
+
+    let missingAvailable = 0;
+    if (hasData) {
+      for (let i = 0; i < values.length; i++) {
+        for (let j = firstValid; j <= lastValid; j++) {
+          if (!Number.isFinite(values[i][j])) missingAvailable++;
+        }
+      }
+    }
+
+    report.spanMonths = dates.length;
+    report.availableFrom = hasData ? dates[firstValid] : null;
+    report.availableTo = hasData ? dates[lastValid] : null;
+    report.availableMonths = availableMonths;
+    report.completeness = hasData && availableMonths
+      ? 1 - missingAvailable / Math.max(1, districtIds.length * availableMonths)
+      : 0;
+    report.periodCompleteness = districtIds.length && dates.length
       ? 1 - report.missingCells / Math.max(1, districtIds.length * dates.length)
       : 0;
-    report.validObservations = districtIds.length * dates.length - report.missingCells;
+    report.validObservations = districtIds.length * availableMonths - missingAvailable;
 
     const dataset = {
       id: indicatorId, indicator, dates, values, districtIds, districtIndex,
       dateIndex: new Map(dates.map((d, j) => [d, j])),
+      availableStartIndex: availableStart,
+      availableEndIndex: availableEnd,
+      availableFrom: report.availableFrom,
+      availableTo: report.availableTo,
       report
     };
     DIE.datasets.set(indicatorId, dataset);

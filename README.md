@@ -3,7 +3,7 @@
 **An interactive geospatial platform for drought monitoring and analysis in India.**
 A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScript (ES6+), Leaflet, Plotly, Turf.js and PapaParse. No frameworks, no backend, no database, no API keys, no mandatory external services.
 
-> **Current build: demonstration mode.** The bundled dataset is synthetic (seeded generator, reproducible). Every value is labelled as illustrative in the interface. Swap in real, cited data by replacing files under `data/` — no code changes required.
+> **Current build: research data.** The bundled dataset is extracted with Google Earth Engine from CHIRPS, ERA5-Land and MODIS and covers 1981-01 to 2025-12 (VCI from 2000-02, when MODIS NDVI begins). Values are model/reanalysis-based research estimates, not official drought declarations. Replacing files under `data/` changes the dataset with no code changes.
 
 ---
 
@@ -23,7 +23,7 @@ A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScr
 
 ## Features
 
-- **10 drought indicators** at district resolution, monthly, 2005–2024: SPI-1/3/6/12, SPEI-1/3/6/12, Soil-Moisture Anomaly, Vegetation Condition Index.
+- **10 drought indicators** at district resolution, monthly, 1981–2025 (SPI-1/3/6/12, SPEI-1/3/6/12, Soil-Moisture Anomaly) and 2000–2025 for the Vegetation Condition Index, which is limited by the MODIS NDVI record.
 - **Interactive Leaflet choropleth** with discrete severity classes *and* a continuous colour scale, hover tooltips, click-to-inspect popups, state/outline layers, optional place labels, offline default basemap.
 - **KPI cards computed live from the data**: drought-affected area (equal-area km² and %), severe/extreme area, area-weighted mean intensity with classification, district counts — with explicit N/A for missing data.
 - **Scientific charts** (Plotly): time series with drought threshold lines, range selector/slider, optional OLS trend (≥ 120 valid months); severity distribution (area and %); frequency-by-year bars.
@@ -60,9 +60,15 @@ A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScr
 ├── docs/
 │   ├── methodology.md          full scientific methodology
 │   └── data-sources.md         provenance, production sources, citation guidance
-├── scripts/
-│   ├── prepare_boundaries.py   boundary cleaning, simplification, equal-area stats
-│   └── generate_demonstration_data.py   seeded synthetic dataset generator
+├── data-pipeline/               offline pipeline that turns public gridded
+│   (Python + R)                 datasets into data/ — see its README,
+│                                docs/data-update-guide.md for the local
+│                                runbook, and docs/gee-update-guide.md for
+│                                the Google Earth Engine route (CHIRPS,
+│                                ERA5-Land, MODIS). Boundary and demo-data
+│                                utilities live here too:
+│                                prepare_boundaries.py,
+│                                generate_demonstration_data.py.
 ├── .nojekyll                   bypasses GitHub Pages Jekyll processing
 └── README.md
 ```
@@ -77,7 +83,7 @@ python3 -m http.server 8000
 # open http://localhost:8000/
 ```
 
-Any static server works (`npx serve`, `php -S`, nginx…). Requirements for regenerating data: Python 3.10+ with `numpy`, `shapely`, `pyproj` (plus `npx mapshaper` for boundaries).
+Any static server works (`npx serve`, `php -S`, nginx…). Requirements for regenerating data: Python 3.10+ with `numpy`, `shapely`, `pyproj` (plus `npx mapshaper` for boundaries); the full data pipeline (`data-pipeline/`) additionally uses `pandas`, `scipy`, `rasterio`, `netCDF4`, `cdsapi` — see `data-pipeline/requirements.txt`.
 
 ## Deploy on GitHub Pages
 
@@ -126,15 +132,50 @@ The app auto-detects the `/drought-explorer/` base path, so no configuration is 
 
 ## Adding and updating datasets
 
-### Replace the demonstration data with real data
+### Update real data every few months (recommended)
+
+The repository ships an offline pipeline for exactly this:
+
+```bash
+cd data-pipeline
+python run.py update     # downloads missing months -> computes indicators
+                         # -> writes data/ -> validates
+```
+
+It pulls CHIRPS v3.0 rainfall, ERA5-Land PET/soil moisture and MODIS NDVI
+(no credentials needed for CHIRPS; free CDS and Earthdata accounts for the
+other two), computes SPI/SPEI/SMA/VCI exactly as documented in
+`docs/methodology.md`, and writes the full data contract below. The
+step-by-step guide — including the first-time 1981-present backfill, the
+quarterly runbook, and the one-time switch of the interface wording from
+demonstration to research mode — is
+**`data-pipeline/docs/data-update-guide.md`**. An R alternative lives in
+`data-pipeline/r_alternative/`.
+
+**Google Earth Engine route.** If you have an Earth Engine project, the
+download/prepare/zonal steps can be replaced by GEE (CHIRPS, ERA5-Land and
+MOD13A3 are all in the Earth Engine catalog), while the SPI/SPEI/SMA/VCI
+computation and app export stay in the same reference Python code:
+
+```bash
+cd data-pipeline
+python run.py gee --project ee-yourname --end 2025-12
+```
+
+This writes the historical dataset through **2025-12** into `data/`. Setup,
+dataset mapping, checkpointing and caveats are in
+**`data-pipeline/docs/gee-update-guide.md`**.
+
+### Replace the demonstration data with real data (manual contract)
 
 1. Compute district-month indicator values with any tool you like (Python/R/CDO/QGIS). Output **wide CSV**: first three columns `district_id,district_name,state_name`, then one `YYYY-MM` column per month; empty cell = missing.
-2. Keep `district_id` identical to the `id` property in `data/boundaries/india_districts.geojson` (or regenerate boundaries with `scripts/prepare_boundaries.py` and new ids — then also regenerate `data/districts.csv`/`states.csv`).
+2. Keep `district_id` identical to the `id` property in `data/boundaries/india_districts.geojson` (or regenerate boundaries with `data-pipeline/prepare_boundaries.py` and new ids — then also regenerate `data/districts.csv`/`states.csv`).
 3. Drop the files into `data/drought/`.
 4. Update `data/metadata.json`:
    - `data_mode`: `"static-research"`,
    - `data_provenance`, `last_updated`, `methodology_version`, `period`,
    - for each indicator: `file`, `reference_period`, `classes` (thresholds are yours to define — the whole UI follows them),
+   - optional but recommended: `available_from` / `available_to` (e.g. `2000-02` for VCI) so the UI can label and clamp a shorter data record,
    - `sources`: real citations with access dates.
 5. Reload the app. The banner, chips, methodology dialog and footer all read from metadata, so the interface updates automatically — edit `index.html` (banner) and `docs/` if you want to change the wording.
 
@@ -142,18 +183,21 @@ The app auto-detects the `/drought-explorer/` base path, so no configuration is 
 
 Add one entry to `metadata.indicators` (with `classes`, `scale`, `file`, tooltips) and its CSV. It appears in the sidebar, map legend, charts, comparison and downloads with no code changes.
 
-### Regenerate the demonstration dataset
+### Regenerate the demonstration dataset (offline UI testing only)
+
+The shipped app uses the observed dataset in `data/`. The seeded synthetic
+generator is kept in the pipeline folder for offline UI testing:
 
 ```bash
-python3 scripts/generate_demonstration_data.py .
+python3 data-pipeline/generate_demonstration_data.py .
 ```
 
-(seed and model parameters are constants at the top of the script; outputs are byte-identical for identical inputs and boundaries.)
+(seed and model parameters are constants at the top of the script; outputs are byte-identical for identical inputs and boundaries. Running it overwrites `data/`, so use a throwaway checkout.)
 
 ### Regenerate boundaries from a new source GeoJSON
 
 ```bash
-python3 scripts/prepare_boundaries.py <raw_districts.geojson> .
+python3 data-pipeline/prepare_boundaries.py <raw_districts.geojson> .
 ```
 
 This cleans the raw file, rounds coordinates (districts at ~100 m precision, states at ~1 km), dissolves states/outline, repairs invalid geometries and recomputes equal-area statistics and centroids.
@@ -174,7 +218,7 @@ At load time the application checks every dataset for: duplicate district rows (
 }
 ```
 
-Dataset citations depend on what you deploy: cite the demonstration generator (synthetic, seed 42) for this build, or each real source you load (IMD, ERA5, MODIS, ESA CCI — templates in `docs/data-sources.md`).
+Dataset citations depend on what you deploy: this build uses CHIRPS v2.0 Final, ERA5-Land and MODIS MOD13A3 (templates in `docs/data-sources.md`); the synthetic generator in `data-pipeline/` is only for offline UI testing.
 
 ## Technology and design decisions
 

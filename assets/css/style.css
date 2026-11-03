@@ -69,7 +69,10 @@ button { font-family: inherit; font-size: inherit; color: inherit; }
   min-height: var(--topbar-h); padding: 0 18px;
   background: var(--panel); border-bottom: 1px solid var(--border);
 }
-.nav-toggle { display: none; }
+/* The hamburger is a mobile-drawer control only.  Keep this selector more
+   specific than `.icon-btn` (defined later), otherwise the button stays
+   visible on desktop where the sidebar is always in the layout. */
+.icon-btn.nav-toggle { display: none; }
 .brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
 .brand-logo { flex: 0 0 auto; border-radius: 50%; }
 .brand-title {
@@ -674,9 +677,11 @@ td .sparse-tag {
 }
 .map-label.district { font-size: 8.5px; color: #687588; text-transform: none; letter-spacing: 0.02em; font-weight: 500; }
 
-/* scrim for mobile drawer */
+/* scrim for mobile drawer (starts below the topbar so the hamburger stays
+   clickable and can close the drawer again) */
 .scrim {
-  position: fixed; inset: 0; z-index: 1400; background: rgba(14, 27, 44, 0.45);
+  position: fixed; left: 0; right: 0; bottom: 0; top: var(--topbar-h);
+  z-index: 1400; background: rgba(14, 27, 44, 0.45);
 }
 
 /* ------------------------------------------------------------- responsive */
@@ -694,10 +699,13 @@ td .sparse-tag {
   .status-clone { display: flex !important; }
 }
 @media (max-width: 1024px) {
-  .nav-toggle { display: inline-flex; }
+  .icon-btn.nav-toggle { display: inline-flex; }
   .sidebar {
-    position: fixed; left: 0; top: 0; bottom: 0; z-index: 1500;
-    height: 100%; width: min(320px, 86vw);
+    position: fixed; left: 0; top: var(--topbar-h); bottom: 0; z-index: 1500;
+    /* Explicit height keeps the drawer below the topbar; `height:auto`
+       with top/bottom is unreliable in some embedded Chromium views. */
+    height: calc(100vh - var(--topbar-h));
+    width: min(320px, 86vw);
     transform: translateX(-102%); transition: transform 0.2s ease;
     box-shadow: 0 0 40px rgba(14, 27, 44, 0.4);
   }

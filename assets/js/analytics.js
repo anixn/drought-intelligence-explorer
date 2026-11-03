@@ -425,7 +425,7 @@
           id, d.name, d.state, ym, ind.id,
           Number.isFinite(v) ? v : '',
           c ? c.label : '',
-          d.area, 'synthetic-demonstration'
+          d.area, (DIE.meta && DIE.meta.data_mode) || ''
         ]);
       }
     });

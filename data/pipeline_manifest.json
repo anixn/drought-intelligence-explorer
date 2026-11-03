@@ -1,0 +1,225 @@
+{
+  "generated_at": "2026-11-03",
+  "pipeline_version": "1.0.0",
+  "methodology_version": "research-gee-1.0.1",
+  "period": {
+    "start": "1981-01",
+    "end": "2025-12",
+    "n_months": 540
+  },
+  "base_periods": {
+    "spi_spei": [
+      1981,
+      2020
+    ],
+    "sma": [
+      1981,
+      2020
+    ],
+    "vci": [
+      2000,
+      null
+    ]
+  },
+  "indicator_availability": {
+    "spi_1": {
+      "from": "1981-01",
+      "to": "2025-12",
+      "months": 540
+    },
+    "spi_3": {
+      "from": "1981-03",
+      "to": "2025-12",
+      "months": 538
+    },
+    "spi_6": {
+      "from": "1981-06",
+      "to": "2025-12",
+      "months": 535
+    },
+    "spi_12": {
+      "from": "1981-12",
+      "to": "2025-12",
+      "months": 529
+    },
+    "spei_1": {
+      "from": "1981-01",
+      "to": "2025-12",
+      "months": 540
+    },
+    "spei_3": {
+      "from": "1981-03",
+      "to": "2025-12",
+      "months": 538
+    },
+    "spei_6": {
+      "from": "1981-06",
+      "to": "2025-12",
+      "months": 535
+    },
+    "spei_12": {
+      "from": "1981-12",
+      "to": "2025-12",
+      "months": 529
+    },
+    "sma": {
+      "from": "1981-01",
+      "to": "2025-12",
+      "months": 540
+    },
+    "vci": {
+      "from": "2000-02",
+      "to": "2025-12",
+      "months": 311
+    }
+  },
+  "min_base_years": 20,
+  "sources": [
+    {
+      "id": "chirps-gee",
+      "name": "CHIRPS daily precipitation v2.0 Final (Funk et al., 2015) via Google Earth Engine",
+      "role": "rainfall input for SPI and SPEI",
+      "description": "Climate Hazards Center Infrared Precipitation with Stations, daily 0.05 degree, 1981-present, accessed through the Earth Engine catalog asset UCSB-CHG/CHIRPS/DAILY. GEE currently distributes the v2.0 Final product; the local download route uses v3.0. Public domain.",
+      "url": "https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY",
+      "access_date": "2026-11-03"
+    },
+    {
+      "id": "era5-land-gee",
+      "name": "ERA5-Land monthly aggregates (Munoz-Sabater et al., 2021) via Google Earth Engine",
+      "role": "potential evapotranspiration (SPEI) and soil moisture (SMA)",
+      "description": "ECMWF ERA5-Land monthly aggregated reanalysis, 0.1 degree, 1950-present, Earth Engine asset ECMWF/ERA5_LAND/MONTHLY_AGGR. Potential evaporation is the monthly accumulated depth; soil moisture is the mean of volumetric layers 1-3 (0-100 cm). Copernicus licence (attribution).",
+      "url": "https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY_AGGR",
+      "access_date": "2026-11-03"
+    },
+    {
+      "id": "modis-ndvi-gee",
+      "name": "MODIS/Terra MOD13A3 v061 monthly NDVI (Didan, 2015) via Google Earth Engine",
+      "role": "NDVI input for the Vegetation Condition Index",
+      "description": "MODIS Terra monthly vegetation indices at 1 km, 2000-present, Earth Engine asset MODIS/061/MOD13A3, NDVI scaled by 0.0001. NASA LP DAAC open data.",
+      "url": "https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MOD13A3",
+      "access_date": "2026-11-03"
+    },
+    {
+      "id": "boundaries",
+      "name": "India administrative boundaries (districts, 2011-census demarcation)",
+      "role": "zonal aggregation units",
+      "description": "Community-maintained district GeoJSON, generalised for web use; 724 districts, 36 states/UTs. Not authoritative for legal boundary determination.",
+      "url": "https://github.com/udit-001/india-maps-data",
+      "access_date": "2026-11-03"
+    }
+  ],
+  "files": {
+    "data/drought/spi_01.csv": {
+      "sha256": "d797f913e18bc127b1eab6afa952ae413ba4a46deecfad19da6e6a647d76ea9d",
+      "bytes": 2190588,
+      "districts": 724,
+      "months": 540,
+      "available_from": "1981-01",
+      "available_to": "2025-12",
+      "available_months": 540,
+      "completeness_pct": 100.0
+    },
+    "data/drought/spi_03.csv": {
+      "sha256": "5298212e8525e669276f88d864ed78c6c72378de03acaae5334010b9213f285a",
+      "bytes": 2176732,
+      "districts": 724,
+      "months": 540,
+      "available_from": "1981-03",
+      "available_to": "2025-12",
+      "available_months": 538,
+      "completeness_pct": 100.0
+    },
+    "data/drought/spi_06.csv": {
+      "sha256": "7b4cc3005b53d5015237376bab0ac146fd2aa63b41b25bec504229599feda828",
+      "bytes": 2161212,
+      "districts": 724,
+      "months": 540,
+      "available_from": "1981-06",
+      "available_to": "2025-12",
+      "available_months": 535,
+      "completeness_pct": 100.0
+    },
+    "data/drought/spi_12.csv": {
+      "sha256": "0ad2e20297410deb5a01f4a9e897355f678107ff70affeaadefa26a089ff68be",
+      "bytes": 2137342,
+      "districts": 724,
+      "months": 540,
+      "available_from": "1981-12",
+      "available_to": "2025-12",
+      "available_months": 529,
+      "completeness_pct": 100.0
+    },
+    "data/drought/spei_01.csv": {
+      "sha256": "31ce81335fd464a5f43c0c9b8ac8421a658c937815f41f06cc417f930c5f79ad",
+      "bytes": 2177065,
+      "districts": 724,
+      "months": 540,
+      "available_from": "1981-01",
+      "available_to": "2025-12",
+      "available_months": 540,
+      "completeness_pct": 99.86
+    },
+    "data/drought/spei_03.csv": {
+      "sha256": "fd8c950c1b846f5c2e776740caec27324dc9af308c3135dde31d32909e1b05e0",
+      "bytes": 2168478,
+      "districts": 724,
+      "months": 540,
+      "available_from": "1981-03",
+      "available_to": "2025-12",
+      "available_months": 538,
+      "completeness_pct": 99.86
+    },
+    "data/drought/spei_06.csv": {
+      "sha256": "be160570a81265f01dc6ff54c1852d9c72467f6c898bf65095d314f96d701486",
+      "bytes": 2157772,
+      "districts": 724,
+      "months": 540,
+      "available_from": "1981-06",
+      "available_to": "2025-12",
+      "available_months": 535,
+      "completeness_pct": 99.86
+    },
+    "data/drought/spei_12.csv": {
+      "sha256": "744f6e80217295465c003b054d6bdfa87b27c56a6569d6d73fd41c4458968788",
+      "bytes": 2135754,
+      "districts": 724,
+      "months": 540,
+      "available_from": "1981-12",
+      "available_to": "2025-12",
+      "available_months": 529,
+      "completeness_pct": 99.86
+    },
+    "data/drought/soil_moisture.csv": {
+      "sha256": "c988b24659551ff03a74d50784e5ed5911557ef005556fd32182e0fb477ff93d",
+      "bytes": 1138913,
+      "districts": 724,
+      "months": 540,
+      "available_from": "1981-01",
+      "available_to": "2025-12",
+      "available_months": 540,
+      "completeness_pct": 99.86
+    },
+    "data/drought/vci.csv": {
+      "sha256": "53b0ac80999affc2d6153e51db56e6cbebbea54a1d730c471c2262263a644b9f",
+      "bytes": 866571,
+      "districts": 724,
+      "months": 540,
+      "available_from": "2000-02",
+      "available_to": "2025-12",
+      "available_months": 311,
+      "completeness_pct": 100.0
+    },
+    "data/metadata.json": {
+      "sha256": "54c91d2854803204892ce11354b3d9c186f915333533f6fcf192976092b2ee37",
+      "bytes": 34918
+    },
+    "data/summaries/drought_events_spi_06.csv": {
+      "sha256": "1bc4359a26bf3658170b331234eb998cc85dcc7f185db74e281d0bcb0a893d70",
+      "bytes": 578265
+    },
+    "data/summaries/state_statistics_spi_06.csv": {
+      "sha256": "923a1c1e7351c93e665b6f289aeb377ce5c9f8084ad7c51e213343443c441a10",
+      "bytes": 2125
+    }
+  }
+}

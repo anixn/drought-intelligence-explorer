@@ -91,9 +91,11 @@
       DIE.state = DEFAULTS();
       DIE.state.indicator = indicator;
       const ds = DIE.datasets.get(indicator);
-      if (ds) DIE.state.dateIdx = ds.dates.length - 1;
-      DIE.state.period.from = +DIE.meta.period.start.slice(0, 4);
-      DIE.state.period.to = +DIE.meta.period.end.slice(0, 4);
+      if (ds) DIE.state.dateIdx = ds.availableEndIndex >= 0 ? ds.availableEndIndex : ds.dates.length - 1;
+      DIE.state.period.from = ds && ds.availableFrom
+        ? +ds.availableFrom.slice(0, 4) : +DIE.meta.period.start.slice(0, 4);
+      DIE.state.period.to = ds && ds.availableTo
+        ? +ds.availableTo.slice(0, 4) : +DIE.meta.period.end.slice(0, 4);
       renderControls();
       DIE.bus.emit('state', { state: DIE.state, changed: ['extent', 'stateId', 'districtId', 'dateIdx', 'period', 'mode', 'map'] });
     }
@@ -104,9 +106,22 @@
     const st = DIE.state;
     const ds = DIE.datasets.get(st.indicator);
     const y0 = +DIE.meta.period.start.slice(0, 4), y1 = +DIE.meta.period.end.slice(0, 4);
+    // Indicators that depend on a shorter input record (VCI/MODIS starts in
+    // 2000) cannot be analysed before their first valid month.  Clamp the
+    // lower year so charts and statistics do not show empty decades.
+    const yAvailStart = ds && ds.availableFrom
+      ? +ds.availableFrom.slice(0, 4) : y0;
+    const yMin = Math.max(y0, yAvailStart);
 
     if (ds) {
       if (st.dateIdx < 0 || st.dateIdx >= ds.dates.length) st.dateIdx = ds.dates.length - 1;
+      if (ds.availableEndIndex >= 0 && st.dateIdx > ds.availableEndIndex) {
+        st.dateIdx = ds.availableEndIndex;
+      }
+      if (ds.availableStartIndex <= ds.availableEndIndex &&
+          st.dateIdx < ds.availableStartIndex) {
+        st.dateIdx = ds.availableStartIndex;
+      }
     }
     if (st.extent === 'india') { st.stateId = null; st.districtId = null; }
     // A district selection is valid in both 'state' and 'district' extents:
@@ -122,9 +137,9 @@
       const d = DIE.registry.districts.get(st.districtId);
       if (!d || (st.stateId && d.sid !== st.stateId)) st.districtId = null;
     }
-    if (st.period.from == null) st.period.from = y0;
+    if (st.period.from == null) st.period.from = yMin;
     if (st.period.to == null) st.period.to = y1;
-    st.period.from = Math.min(Math.max(st.period.from, y0), y1);
+    st.period.from = Math.min(Math.max(st.period.from, yMin), y1);
     st.period.to = Math.min(Math.max(st.period.to, st.period.from), y1);
   }
 
@@ -165,8 +180,13 @@
   function renderTemporal() {
     const ds = DIE.datasets.get(DIE.state.indicator);
     const y0 = +DIE.meta.period.start.slice(0, 4), y1 = +DIE.meta.period.end.slice(0, 4);
+    // Offer only years that this indicator can actually cover.
+    const ya = ds && ds.availableFrom ? +ds.availableFrom.slice(0, 4) : y0;
+    const yb = ds && ds.availableTo ? +ds.availableTo.slice(0, 4) : y1;
     const years = [];
-    for (let y = y0; y <= y1; y++) years.push([String(y), String(y)]);
+    for (let y = Math.max(y0, ya); y <= Math.min(y1, yb); y++) {
+      years.push([String(y), String(y)]);
+    }
 
     const ym = ds ? ds.dates[DIE.state.dateIdx] : DIE.meta.period.end;
     const [yy, mm] = ym.split('-');
@@ -178,10 +198,14 @@
 
     const slider = $('dateSlider');
     if (ds) {
-      slider.max = String(ds.dates.length - 1);
+      const a = ds.availableStartIndex || 0;
+      const b = ds.availableEndIndex >= 0 ? ds.availableEndIndex : ds.dates.length - 1;
+      slider.min = String(a);
+      slider.max = String(b);
       slider.value = String(DIE.state.dateIdx);
       slider.disabled = false;
-      $('dateSliderLabel').textContent = DIE.dates.label(ym) + ' · obs ' + (DIE.state.dateIdx + 1) + '/' + ds.dates.length;
+      $('dateSliderLabel').textContent = DIE.dates.label(ym) + ' · obs ' +
+        (DIE.state.dateIdx - a + 1) + '/' + (b - a + 1);
     } else {
       slider.disabled = true;
       $('dateSliderLabel').textContent = '—';
@@ -260,7 +284,13 @@
     });
 
     $('indicatorList').addEventListener('change', (e) => {
-      if (e.target.name === 'indicator') Filters.set({ indicator: e.target.value, dateIdx: -1 });
+      if (e.target.name === 'indicator') {
+        Filters.set({
+          indicator: e.target.value,
+          dateIdx: -1,
+          period: { from: null, to: null }
+        });
+      }
     });
 
     const applyYm = () => {
@@ -311,5 +341,9 @@
   /* ------------------------------------------------------------- public -- */
   Filters.renderIndicators = renderIndicators;
   Filters.render = renderControls;
+  // Re-run availability clamping + control rendering after an indicator's
+  // dataset has loaded. Filters.set() runs before the CSV is available, so
+  // its first render cannot know a shorter record (e.g. VCI starts 2000-02).
+  Filters.resync = function () { normalise(); renderControls(); };
   Filters.wire = wire;
 })();

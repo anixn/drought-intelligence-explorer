@@ -53,9 +53,13 @@
     const i = dataset.districtIndex.get(districtId);
     if (i === undefined) return 0;
     const row = dataset.values[i];
+    const start = dataset.availableStartIndex || 0;
+    const end = dataset.availableEndIndex === undefined
+      ? row.length - 1 : dataset.availableEndIndex;
+    if (end < start) return 0;
     let n = 0;
-    for (let j = 0; j < row.length; j++) if (Number.isFinite(row[j])) n++;
-    return n / row.length;
+    for (let j = start; j <= end; j++) if (Number.isFinite(row[j])) n++;
+    return n / (end - start + 1);
   }
 
   function classChip(c) {
@@ -288,7 +292,9 @@
       '<tr><td class="p-k">District area</td><td>' + DIE.fmt.area(d.area) + '</td></tr>' +
       '<tr><td class="p-k">Data availability</td><td>' + (comp * 100).toFixed(0) + '% of months</td></tr>' +
       '</table>' +
-      '<p class="p-note">Demonstration dataset (synthetic). Area: equal-area projection.</p>' +
+      '<p class="p-note">' + (/synthetic|demonstration/i.test(String((DIE.meta && DIE.meta.data_mode) || ''))
+        ? 'Demonstration dataset (synthetic).'
+        : 'GEE-derived historical research dataset.') + ' Area: equal-area projection.</p>' +
       '</div>';
   }
 
