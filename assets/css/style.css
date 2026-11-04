@@ -167,6 +167,9 @@ button {
   background: #eef2f6;
   color: var(--navy);
 }
+.topnav button {
+  white-space: nowrap;
+}
 .topbar-status {
   display: flex;
   align-items: center;
@@ -197,39 +200,6 @@ button {
   background: var(--amber-bg);
 }
 
-/* demo banner */
-.demo-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 5px 18px;
-  background: var(--amber-bg);
-  border-bottom: 1px solid var(--amber-line);
-  color: var(--amber-ink);
-  font-size: 11.5px;
-}
-.demo-banner-text strong {
-  font-weight: 600;
-}
-.demo-banner-meta {
-  font-family: var(--mono);
-  font-size: 10px;
-  opacity: 0.85;
-  overflow-wrap: anywhere;
-}
-.link-btn {
-  border: 0;
-  background: none;
-  padding: 0;
-  margin-left: 6px;
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  cursor: pointer;
-  font-size: 11.5px;
-}
-
 /* ------------------------------------------------------------------ layout */
 .layout {
   display: flex;
@@ -241,9 +211,9 @@ button {
 .sidebar {
   flex: 0 0 var(--sidebar-w);
   position: sticky;
-  top: calc(var(--topbar-h) + 29px);
+  top: var(--topbar-h);
   align-self: flex-start;
-  height: calc(100vh - var(--topbar-h) - 29px);
+  height: calc(100vh - var(--topbar-h));
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--navy);
@@ -275,7 +245,6 @@ button {
   display: none;
   color: #8fa3ba;
 }
-
 /* sidebar footer — muted dataset summary lines */
 .sidebar-foot {
   padding: 12px 16px 2px;
@@ -1619,6 +1588,13 @@ td .sparse-tag {
 .search-input {
   width: 180px;
 }
+/* input[type="search"] carries width:100% from the base form rule — the
+   panel-actions context (higher specificity) keeps filtering controls
+   compact and logically grouped. */
+.panel-actions .search-input {
+  width: 190px;
+  flex: 0 1 auto;
+}
 .panel-actions .search-input {
   background-color: #fff;
   color: var(--ink);
@@ -1719,15 +1695,15 @@ td .sparse-tag {
 /* module B */
 .evo-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 330px;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
   padding: 12px 14px 0;
 }
 .evo-map-wrap {
   position: relative;
 }
 .evo-map {
-  height: 470px;
+  height: 430px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: #edf1f5;
@@ -1736,15 +1712,32 @@ td .sparse-tag {
 }
 .evo-side {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 24px;
   min-width: 0;
 }
-.evo-legend {
+/* The evolution panel's own legend was removed: it duplicated the severity
+   classes legend already shown beside the main map. Frame statistics sit as a
+   slim strip above the full-width map instead of a side rail. */
+.evo-frame-stats {
   border: 1px solid var(--border);
   border-radius: 4px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: #fafbfc;
+  font-size: 11.5px;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+.evo-frame-stats .fs-seg::before {
+  content: "\00b7";
+  margin-right: 10px;
+  color: #9aa9b8;
+}
+.evo-frame-stats b {
+  color: var(--ink);
+  font-weight: 600;
 }
 .evo-controls {
   gap: 6px;
@@ -2738,12 +2731,6 @@ kbd {
     padding: 7px 7px;
     font-size: 11.5px;
   }
-  .demo-banner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    padding: 5px 12px;
-  }
   .kpi-row {
     grid-template-columns: 1fr;
   }
@@ -2791,7 +2778,6 @@ kbd {
 @media print {
   .topbar,
   .sidebar,
-  .demo-banner,
   .tabs,
   .toast-stack,
   .panel-actions {
@@ -2806,5 +2792,299 @@ kbd {
   * {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* ===========================================================================
+   UI/UX refinements (2026-11-05) — appended overrides; earlier rules above
+   remain valid except where a selector with equal/higher specificity
+   re-states a property.
+   =========================================================================== */
+
+/* ------------------------------------------------------------------ topbar */
+.brand-author {
+  flex: 0 0 auto;
+  align-self: center;
+  margin-left: 6px;
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+  font-size: 10.5px;
+  color: var(--ink-2);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.brand-author:hover {
+  color: var(--navy);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* -------------------------------------------- minimisable workspace titles */
+.vi-title .icon-btn.vi-toggle {
+  width: 22px;
+  height: 22px;
+  border: 0;
+  color: var(--ink-2);
+  align-self: center;
+}
+.vi-title .icon-btn.vi-toggle:hover {
+  background: #eef2f6;
+  color: var(--navy);
+}
+.vi-title .icon-btn.vi-toggle svg {
+  transition: transform 0.18s ease;
+}
+.view-intro.is-compact .vi-title .icon-btn.vi-toggle svg {
+  transform: rotate(180deg);
+}
+/* Collapse without a vertical jump: the detail block animates max-height
+   while its absolute start position is anchored to the title. */
+.view-intro .vi-detail {
+  overflow: hidden;
+  max-height: 260px;
+  opacity: 1;
+  transition:
+    max-height 0.2s ease,
+    opacity 0.16s ease;
+}
+.view-intro.is-compact .vi-detail {
+  max-height: 0;
+  opacity: 0;
+}
+
+/* --------------------------------------------------------- filter sidebar */
+.sidebar {
+  overflow-x: hidden;
+}
+.sidebar-body {
+  min-width: 0;
+}
+.sidebar-foot .foot-line {
+  overflow-wrap: anywhere;
+}
+/* The "?" tooltips inside the dark sidebar were wider than the panel and
+   produced a horizontal scrollbar; anchor them to their right edge so they
+   always fit inside the sidebar. */
+.sidebar .tip::after {
+  left: auto;
+  right: -4px;
+  transform: none;
+  width: 214px;
+}
+
+/* desktop collapse / expand */
+.sidebar-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.icon-btn.sidebar-collapse,
+.icon-btn.sidebar-expand {
+  border: 0;
+  color: #8fa3ba;
+}
+.icon-btn.sidebar-collapse:hover,
+.icon-btn.sidebar-expand:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+.icon-btn.sidebar-expand {
+  display: none;
+}
+.sidebar .icon-btn.sidebar-close {
+  display: none;
+}
+.sidebar.is-collapsed {
+  flex-basis: 42px;
+}
+.sidebar.is-collapsed .sidebar-title,
+.sidebar.is-collapsed .sidebar-body,
+.sidebar.is-collapsed .icon-btn.sidebar-collapse {
+  display: none;
+}
+.sidebar.is-collapsed .icon-btn.sidebar-expand {
+  display: inline-flex;
+}
+
+/* --------------------------------------------------- Data & Methods accordions */
+details.acc-panel > summary.panel-head {
+  list-style: none;
+  cursor: pointer;
+}
+details.acc-panel > summary.panel-head::-webkit-details-marker {
+  display: none;
+}
+details.acc-panel > summary.panel-head::after {
+  content: "";
+  flex: 0 0 auto;
+  align-self: center;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--ink-2);
+  border-bottom: 2px solid var(--ink-2);
+  transform: rotate(135deg); /* points right when closed */
+  margin-left: 4px;
+  transition: transform 0.15s ease;
+}
+details.acc-panel[open] > summary.panel-head::after {
+  transform: rotate(45deg); /* points down when open */
+}
+details.acc-panel > summary.panel-head:hover {
+  background: #f7f9fc;
+}
+details.acc-panel > summary.panel-head:hover .panel-title {
+  color: var(--navy);
+}
+details.acc-panel > summary.panel-head:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+.acc-panel .guide-body,
+.acc-panel .about-body,
+.acc-panel .meth-body {
+  border-top: 1px solid var(--border);
+}
+
+.dl-citation {
+  padding: 10px 14px 14px;
+  border-top: 1px dashed var(--border);
+}
+.dl-cite-h {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin: 0 0 6px;
+}
+
+/* ---------------------------------------------------------------- footer */
+.footer-more {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 0 0 12px;
+}
+.footer-more-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 16px;
+}
+.footer-more-links a {
+  color: #9fc2d6;
+  font-size: 12px;
+  text-decoration: none;
+  border-bottom: 1px solid #3d5570;
+}
+.footer-more-links a:hover {
+  color: #fff;
+  border-bottom-color: #9fc2d6;
+}
+
+/* ----------------------------------------------------------------- modals */
+/* The dialog heading scrolls away with the content (it was pinned, which made
+   long reads awkward); only the floating × stays visible. */
+.modal-head {
+  position: static;
+}
+.modal-close-float {
+  display: flex; /* block-level so margin-left:auto right-aligns it */
+  position: sticky;
+  top: 8px;
+  margin: 6px 12px -46px auto;
+  background: rgba(255, 255, 255, 0.92);
+  z-index: 3;
+}
+
+/* ------------------------------------------------- Data & Methods ribbon */
+/* "How to use this dashboard" rests as a heading-only ribbon; its actions and
+   quick-start cards live inside the expandable body. */
+.guide-body .guide-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px dashed var(--border);
+}
+
+/* ------------------------------------------------- Overview layout balance */
+/* Time series spans the full width; the severity distribution moved under the
+   district ranking so the left column matches the tall evolution panel and
+   no longer leaves an empty area below "Most affected districts". */
+.chart-grid--single {
+  grid-template-columns: 1fr;
+}
+.ov-stack {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  align-content: start;
+}
+#distChart {
+  height: 340px;
+}
+
+/* -------------------------------------------- global visual consistency -- */
+/* Solid surfaces instead of gradients; shadows kept to a single subtle token
+   already defined on .panel / .kpi-card. */
+.panel-head {
+  background: var(--panel);
+}
+.view-intro {
+  background: var(--panel);
+}
+
+/* KPI tooltips reuse the dark .tip bubble */
+.kpi-tip::after {
+  text-transform: none;
+  letter-spacing: 0;
+  z-index: 46;
+}
+
+/* ------------------------------------------------- responsive overrides -- */
+/* Topbar width management: the data-mode chip is redundant with the footer,
+   so it steps aside first on narrower screens. */
+@media (max-width: 1440px) {
+  #chipDataMode {
+    display: none;
+  }
+}
+@media (max-width: 1150px) {
+  .brand-author {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+@media (max-width: 1024px) {
+  /* drawer mode: the X in the sidebar head is the close control; the
+     desktop collapse/expand pair is irrelevant there (JS also clears the
+     collapsed state when the viewport switches to drawer mode) */
+  .sidebar .icon-btn.sidebar-close {
+    display: inline-flex;
+  }
+  .sidebar-head .icon-btn.sidebar-collapse,
+  .sidebar-head .icon-btn.sidebar-expand {
+    display: none !important;
+  }
+}
+@media (max-width: 640px) {
+  .brand-author {
+    display: none;
+  }
+  /* compact icon-only header buttons: the brand title keeps priority */
+  #guideBtn,
+  button[data-modal="modalAbout"] {
+    font-size: 0;
+    padding: 7px 9px;
+  }
+  #guideBtn::before {
+    content: "?";
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  button[data-modal="modalAbout"]::before {
+    content: "i";
+    font-size: 12.5px;
+    font-weight: 700;
   }
 }

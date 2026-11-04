@@ -260,7 +260,6 @@
     });
 
     // mobile drawer
-    const drawerMq = window.matchMedia('(max-width: 1024px)');
     $('navToggle').addEventListener('click', () => {
       if (!drawerMq.matches) return;
       const open = $('sidebar').classList.toggle('is-open');
@@ -269,6 +268,51 @@
     });
     $('sidebarClose').addEventListener('click', closeDrawer);
     $('scrim').addEventListener('click', closeDrawer);
+
+    /* -------------------------- minimisable per-workspace introductions */
+    document.querySelectorAll('.vi-toggle').forEach((btn) => {
+      const intro = btn.closest('.view-intro');
+      if (!intro) return;
+      const key = 'die.introCompact.' + (btn.dataset.intro || currentTab);
+      let compact = false;
+      try { compact = sessionStorage.getItem(key) === '1'; } catch (e) {}
+      const syncBtn = () => {
+        const isCompact = intro.classList.contains('is-compact');
+        btn.setAttribute('aria-expanded', String(!isCompact));
+        btn.setAttribute('aria-label', isCompact
+          ? 'Expand workspace introduction'
+          : 'Minimise workspace introduction');
+      };
+      if (compact) intro.classList.add('is-compact');
+      syncBtn();
+      btn.addEventListener('click', () => {
+        const now = intro.classList.toggle('is-compact');
+        try { sessionStorage.setItem(key, now ? '1' : '0'); } catch (e) {}
+        syncBtn();
+      });
+    });
+
+    /* --------------------------------------- collapsible filter sidebar --- */
+    $('sidebarCollapse').addEventListener('click', () =>
+      setFiltersCollapsed(true, true));
+    $('sidebarExpand').addEventListener('click', () =>
+      setFiltersCollapsed(false, true));
+    const storedCollapsed = (() => {
+      try { return localStorage.getItem(FILTERS_KEY) === '1'; } catch (e) { return false; }
+    })();
+    if (storedCollapsed && !drawerMq.matches) setFiltersCollapsed(true, false);
+    // Entering drawer mode always clears the desktop collapsed rail.
+    if (drawerMq.matches) setFiltersCollapsed(false, false);
+
+    // Data & Methods accordions: clicking a button/link inside the summary
+    // must not toggle the panel.
+    document.querySelectorAll('details.acc-panel > summary').forEach((sum) => {
+      sum.addEventListener('click', (e) => {
+        if (e.target.closest('button, a, input, select, label')) {
+          e.preventDefault();
+        }
+      });
+    });
 
     // clear district selection
     $('clearSelectionBtn').addEventListener('click', () => {
@@ -455,7 +499,12 @@
     });
 
     window.addEventListener('resize', debounce(() => {
-      if (!drawerMq.matches) closeDrawer();
+      if (drawerMq.matches) {
+        // entering drawer mode clears the desktop collapsed rail
+        if ($('sidebar').classList.contains('is-collapsed')) setFiltersCollapsed(false, false);
+      } else {
+        closeDrawer();
+      }
       if (DIE.MapView.main) DIE.MapView.main.invalidateSize();
       ['durMap', 'sevMap', 'propMap', 'evtDetailMap', 'evoMap'].forEach((id) => {
         if (DIE.MapView[id]) DIE.MapView[id].invalidateSize();
@@ -469,6 +518,24 @@
     $('sidebar').classList.remove('is-open');
     $('navToggle').setAttribute('aria-expanded', 'false');
     $('scrim').hidden = true;
+  }
+
+  /* Drawer mode (= mobile/tablet) owns the sidebar entirely; on desktop the
+     sidebar can be collapsed to a narrow toggle. State is in localStorage. */
+  const drawerMq = window.matchMedia('(max-width: 1024px)');
+  const FILTERS_KEY = 'die.filtersCollapsed';
+
+  function setFiltersCollapsed(collapsed, persist) {
+    if (drawerMq.matches) collapsed = false; // drawer mode owns the sidebar
+    $('sidebar').classList.toggle('is-collapsed', collapsed);
+    document.body.classList.toggle('filters-collapsed', collapsed);
+    $('sidebarCollapse').setAttribute('aria-expanded', String(!collapsed));
+    $('sidebarExpand').setAttribute('aria-expanded', String(collapsed));
+    if (persist) {
+      try { localStorage.setItem(FILTERS_KEY, collapsed ? '1' : '0'); } catch (e) {}
+    }
+    // Nudge Leaflet + Plotly (responsive) after the layout has changed.
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 260);
   }
 
   function openModal(scrim) {
@@ -487,33 +554,16 @@
   function renderStaticText() {
     $('chipUpdated').textContent = 'Updated · ' + DIE.meta.last_updated;
 
-    // provenance banner — driven entirely by data_mode in metadata.json
     const demo = isDemo();
-    const bpEl = $('bannerPeriod');
-    if (bpEl) {
-      const shortRecords = DIE.meta.indicators
-        .filter((i) => i.available_from &&
-          +i.available_from.slice(0, 4) > +DIE.meta.period.start.slice(0, 4) + 1)
-        .map((i) => i.label + ' from ' + i.available_from.slice(0, 4));
-      bpEl.textContent = (demo ? 'demonstration build' : 'research build') + ' · ' +
-        DIE.meta.period.start.slice(0, 4) + '–' + DIE.meta.period.end.slice(0, 4) +
-        (shortRecords.length ? ' · ' + shortRecords.join(' · ') : '');
-    }
-    $('bannerTitle').textContent = demo
-      ? 'Demonstration dataset (synthetic).'
-      : 'Historical research dataset.';
-    $('bannerBody').textContent = demo
-      ? 'All indicator values are generated by a seeded stochastic model to exercise the interface and methodology — they are not observed measurements and must not be cited as hydroclimatic evidence.'
-      : 'District-month indicators are derived from CHIRPS precipitation, ERA5-Land evapotranspiration and soil moisture, and MODIS NDVI, aggregated with Google Earth Engine — they are model- and observation-based estimates, not operational monitoring products.';
-    $('bannerLink').addEventListener('click', () => switchTab('data'));
     $('mapTag').textContent = demo ? 'synthetic demonstration data' : 'GEE-derived research data';
-    ['kpiTag1', 'kpiTag2', 'kpiTag3', 'kpiTag4'].forEach((id) => {
-      const el = $(id);
-      el.textContent = demo ? 'SYN' : 'GEE';
-      el.title = demo
-        ? 'Value derived from the synthetic demonstration dataset'
-        : 'Value derived from the GEE-based historical dataset';
-    });
+    // Single data-source label (previously repeated on every KPI card).
+    const dpm = $('datePanelMeta');
+    dpm.textContent = demo
+      ? 'Source · synthetic demonstration dataset'
+      : 'Source · GEE-derived research dataset';
+    dpm.title = demo
+      ? 'All values are generated by a seeded stochastic model and must not be cited as hydroclimatic evidence.'
+      : 'Indicators derived from CHIRPS, ERA5-Land and MODIS with Google Earth Engine — research estimates, not operational products.';
 
     $('aboutDataMode').innerHTML = demo
       ? '<strong>This build ships a synthetic demonstration dataset</strong> (seeded stochastic generator, seed ' +
@@ -895,13 +945,13 @@
       const slider = $('evoSlider');
       if (+slider.value !== idx) slider.value = idx;
 
-      // frame snapshot: affected share + weighted mean
+      // frame snapshot: affected share + weighted mean (inline strip)
       const s = A().regionStats(ds, idx, ids());
       $('evoFrameStats').innerHTML =
-        '<b>' + DIE.dates.label(ds.dates[idx]) + '</b><br>' +
-        'Area in drought: <b>' + DIE.fmt.pct(s.affectedPct) + '</b><br>' +
-        'Severe + extreme: <b>' + DIE.fmt.pct(s.severePct) + '</b><br>' +
-        'Area-weighted mean: <b>' + DIE.fmt.val(s.mean, ds.indicator) + '</b> ' + ds.indicator.units;
+        '<b>' + DIE.dates.label(ds.dates[idx]) + '</b>' +
+        '<span class="fs-seg">Area in drought: <b>' + DIE.fmt.pct(s.affectedPct) + '</b></span>' +
+        '<span class="fs-seg">Severe + extreme: <b>' + DIE.fmt.pct(s.severePct) + '</b></span>' +
+        '<span class="fs-seg">Area-weighted mean: <b>' + DIE.fmt.val(s.mean, ds.indicator) + '</b> ' + ds.indicator.units + '</span>';
     },
 
     /** Full refresh (indicator / geography / period change). */
@@ -924,12 +974,8 @@
         dates: series.dates, pct: series.pct, frameIdx: this.frame
       });
 
-      // legend mirrors the main-map legend for the current colour mode
-      DIE.MapView.renderLegend($('evoLegend'), ds.indicator, DIE.state.colourMode, {
-        note: ds.indicator.family === 'land'
-          ? 'Indicator-specific thresholds (' + ds.indicator.label + '); see methodology.'
-          : 'Thresholds: McKee et al. (1993) / Vicente-Serrano et al. (2010) convention.'
-      });
+      // (legend dropped: it duplicated the main-map severity legend; the
+      // regional summary and frame stats above already carry the context)
 
       $('evoPanelMeta').textContent = ds.indicator.label + ' · ' + DIE.Filters.regionLabel() +
         ' · share of region area in mild-or-worse drought · missing months are never interpolated';
