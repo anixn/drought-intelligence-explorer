@@ -20,7 +20,6 @@
     indicator: 'spi_3',
     dateIdx: -1,                 // resolved against the loaded dataset
     period: { from: null, to: null, season: 'all' },
-    mode: 'current',
     map: { districts: true, states: true, outline: true, labels: false },
     colourMode: 'classes',
     basemap: 'plain'
@@ -62,9 +61,16 @@
     },
 
     /* --------------------------------------------------------------- set --- */
+    /**
+     * Apply a patch to the shared state.
+     * opts.silentUI  — skip sidebar re-render (used while dragging a slider).
+     * opts.transient — hint to views that this is an in-progress update; they
+     *                  may update cheap layers only and defer heavy charts.
+     * opts.force     — emit even when the normalised state did not change
+     *                  (the slider's final `change` after a transient drag).
+     */
     set(patch, opts) {
-      const changed = [];
-      const before = JSON.stringify({ ...DIE.state, period: { ...DIE.state.period }, map: { ...DIE.state.map } });
+      const before = snapshotState(DIE.state);
 
       Object.keys(patch).forEach((k) => {
         if (k === 'period' || k === 'map') {
@@ -75,13 +81,15 @@
       });
       normalise();
 
-      const after = JSON.stringify({ ...DIE.state, period: { ...DIE.state.period }, map: { ...DIE.state.map } });
-      if (after !== before) {
-        // derive changed keys
-        const a = JSON.parse(before), b = JSON.parse(after);
-        Object.keys(b).forEach((k) => { if (JSON.stringify(a[k]) !== JSON.stringify(b[k])) changed.push(k); });
-        DIE.bus.emit('state', { state: DIE.state, changed });
-        if (!(opts && opts.silentUI)) renderControls();
+      const changed = diffState(before, DIE.state);
+      if (changed.length || (opts && opts.force)) {
+        const payloadChanged = changed.length ? changed : Object.keys(patch);
+        DIE.bus.emit('state', {
+          state: DIE.state,
+          changed: payloadChanged,
+          transient: !!(opts && opts.transient)
+        });
+        if (!(opts && opts.silentUI)) renderControls(payloadChanged);
       }
       return changed;
     },
@@ -97,11 +105,35 @@
       DIE.state.period.to = ds && ds.availableTo
         ? +ds.availableTo.slice(0, 4) : +DIE.meta.period.end.slice(0, 4);
       renderControls();
-      DIE.bus.emit('state', { state: DIE.state, changed: ['extent', 'stateId', 'districtId', 'dateIdx', 'period', 'mode', 'map'] });
+      DIE.bus.emit('state', { state: DIE.state, changed: ['extent', 'stateId', 'districtId', 'dateIdx', 'period', 'map'] });
     }
   });
 
   /* ------------------------------------------------------------- helpers -- */
+  /** Shallow snapshot of the state fields that participate in change events. */
+  function snapshotState(st) {
+    return {
+      extent: st.extent, stateId: st.stateId, districtId: st.districtId,
+      indicator: st.indicator, dateIdx: st.dateIdx,
+      period: { from: st.period.from, to: st.period.to, season: st.period.season },
+      map: { districts: st.map.districts, states: st.map.states, outline: st.map.outline, labels: st.map.labels },
+      colourMode: st.colourMode, basemap: st.basemap
+    };
+  }
+  /** Compare two snapshots and return the changed top-level keys. */
+  function diffState(a, b) {
+    const changed = [];
+    Object.keys(b).forEach((k) => {
+      const av = a[k], bv = b[k];
+      if (av && bv && typeof av === 'object') {
+        if (Object.keys(bv).some((kk) => av[kk] !== bv[kk])) changed.push(k);
+      } else if (av !== bv) {
+        changed.push(k);
+      }
+    });
+    return changed;
+  }
+
   function normalise() {
     const st = DIE.state;
     const ds = DIE.datasets.get(st.indicator);
@@ -254,18 +286,48 @@
     });
   }
 
-  function renderControls() {
-    renderStates();
-    renderDistricts();
-    renderTemporal();
-    document.querySelectorAll('input[name="analysisMode"]').forEach((r) => {
-      r.checked = r.value === DIE.state.mode;
+  /**
+   * Rebuild only the controls affected by a state change. During slider
+   * dragging renderControls is skipped entirely and syncTemporalValue()
+   * updates the label/selects in place, which keeps interaction at 60 fps.
+   */
+  function syncIndicatorChecks() {
+    document.querySelectorAll('input[name="indicator"]').forEach((input) => {
+      input.checked = input.value === DIE.state.indicator;
     });
-    $('extentSelect').value = DIE.state.extent;
-    $('tgDistricts').checked = DIE.state.map.districts;
-    $('tgStates').checked = DIE.state.map.states;
-    $('tgOutline').checked = DIE.state.map.outline;
-    $('tgLabels').checked = DIE.state.map.labels;
+  }
+
+  function renderControls(changed) {
+    const has = (k) => !changed || changed.indexOf(k) !== -1;
+    if (has('extent') || has('stateId')) renderStates();
+    if (has('extent') || has('stateId') || has('districtId')) renderDistricts();
+    if (has('indicator')) syncIndicatorChecks();
+    if (has('indicator') || has('dateIdx') || has('period')) renderTemporal();
+    if (has('extent')) $('extentSelect').value = DIE.state.extent;
+    if (has('map')) {
+      $('tgDistricts').checked = DIE.state.map.districts;
+      $('tgStates').checked = DIE.state.map.states;
+      $('tgOutline').checked = DIE.state.map.outline;
+      $('tgLabels').checked = DIE.state.map.labels;
+    }
+  }
+
+  /** Cheap in-place sync used on slider `input` (no option rebuilds). */
+  function syncTemporalValue() {
+    const ds = DIE.datasets.get(DIE.state.indicator);
+    if (!ds) return;
+    const ym = ds.dates[DIE.state.dateIdx];
+    if (ym) {
+      const [yy, mm] = ym.split('-');
+      if ($('yearSelect').value !== yy) $('yearSelect').value = yy;
+      if ($('monthSelect').value !== mm) $('monthSelect').value = mm;
+      const a = ds.availableStartIndex || 0;
+      const b = ds.availableEndIndex >= 0 ? ds.availableEndIndex : ds.dates.length - 1;
+      $('dateSliderLabel').textContent = DIE.dates.label(ym) + ' · obs ' +
+        (DIE.state.dateIdx - a + 1) + '/' + (b - a + 1);
+    }
+    const slider = $('dateSlider');
+    if (slider.value !== String(DIE.state.dateIdx)) slider.value = String(DIE.state.dateIdx);
   }
 
   /* ------------------------------------------------------------ wiring --- */
@@ -293,6 +355,19 @@
       }
     });
 
+    // Warm the CSV cache when the user shows intent (hover/focus), so the
+    // swap after clicking an indicator is nearly instant.
+    const prefetchIndicator = (id) => {
+      if (DIE.loader && DIE.loader.prefetchIndicator) DIE.loader.prefetchIndicator(id);
+    };
+    $('indicatorList').addEventListener('pointerover', (e) => {
+      const input = e.target.closest && e.target.closest('input[name="indicator"]');
+      if (input) prefetchIndicator(input.value);
+    });
+    $('indicatorList').addEventListener('focusin', (e) => {
+      if (e.target.name === 'indicator') prefetchIndicator(e.target.value);
+    });
+
     const applyYm = () => {
       const ds = DIE.datasets.get(DIE.state.indicator);
       if (!ds) return;
@@ -303,8 +378,14 @@
     };
     $('yearSelect').addEventListener('change', applyYm);
     $('monthSelect').addEventListener('change', applyYm);
+    // Dragging: update state + cheap controls only (transient views react to
+    // the `transient` flag; charts wait for the final `change` event).
     $('dateSlider').addEventListener('input', (e) => {
-      Filters.set({ dateIdx: +e.target.value });
+      Filters.set({ dateIdx: +e.target.value }, { silentUI: true, transient: true });
+      syncTemporalValue();
+    });
+    $('dateSlider').addEventListener('change', (e) => {
+      Filters.set({ dateIdx: +e.target.value }, { force: true });
     });
 
     $('fromYearSelect').addEventListener('change', (e) => {
@@ -323,8 +404,13 @@
       Filters.set({ period: { season: e.target.value } });
     });
 
-    document.querySelectorAll('input[name="analysisMode"]').forEach((r) => {
-      r.addEventListener('change', () => Filters.set({ mode: r.value }));
+    // "Latest" button jumps to the newest available observation of the
+    // current indicator (Overview tab contextual control).
+    $('latestBtn').addEventListener('click', () => {
+      const ds = DIE.datasets.get(DIE.state.indicator);
+      if (!ds) return;
+      const idx = ds.availableEndIndex >= 0 ? ds.availableEndIndex : ds.dates.length - 1;
+      Filters.set({ dateIdx: idx });
     });
 
     $('tgDistricts').addEventListener('change', (e) => Filters.set({ map: { districts: e.target.checked } }));

@@ -27,6 +27,40 @@
     const m = s.length >> 1;
     return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
   }
+
+  /* ------------------------------------------------------------ memo cache --
+   * Heavy aggregates (724 districts × 540 months) are recomputed several
+   * times by different panels with identical inputs. Memoise per dataset
+   * object; keys describe the region, period and options. The cache clears
+   * when it grows, so switching indicators cannot leak memory. */
+  function memoize(fn, keyFn) {
+    const cache = new WeakMap();
+    return function () {
+      const first = arguments[0];
+      let map = cache.get(first);
+      if (!map) { map = new Map(); cache.set(first, map); }
+      const key = keyFn.apply(null, arguments);
+      if (map.has(key)) return map.get(key);
+      const value = fn.apply(null, arguments);
+      if (map.size >= 64) map.clear();
+      map.set(key, value);
+      return value;
+    };
+  }
+  function idsKey(ids) {
+    if (!ids || !ids.length) return '0';
+    return ids.length + ':' + ids[0] + ':' + ids[ids.length - 1];
+  }
+  function periodKey(period, season) {
+    return (period ? period.from : '') + '-' + (period ? period.to : '') + '-' + (season || 'all');
+  }
+  /** Stable key for districtStats-style options (threshold/duration/season). */
+  function optsKey(opts) {
+    opts = opts || {};
+    return (opts.threshold !== undefined ? opts.threshold : 'd') + '|' +
+      (opts.minDuration !== undefined ? opts.minDuration : 'd') + '|' +
+      (opts.season || 'all') + '|' + (opts.granularity || 'd');
+  }
   function pearson(x, y) {
     const n = x.length;
     if (n < 3) return NaN;
@@ -89,11 +123,13 @@
     out.severePct = out.totalArea > 0 ? out.severeArea / out.totalArea * 100 : NaN;
 
     if (dateIdx > 0) {
-      out.prev = regionStats(ds, dateIdx - 1, ids);
+      out.prev = regionStatsCached(ds, dateIdx - 1, ids);
       out.prevDateIdx = dateIdx - 1;
     }
     return out;
   }
+  const regionStatsCached = memoize(regionStats, (ds, dateIdx, ids) =>
+    ds.id + '|' + dateIdx + '|' + idsKey(ids));
 
   /* --------------------------------------------- severity distribution -- */
   function severityDistribution(ds, dateIdx, ids) {
@@ -116,6 +152,8 @@
     Object.values(bins).forEach((b) => { b.pct = regionArea > 0 ? b.area / regionArea * 100 : 0; });
     return { bins, regionArea, anyData, noDataArea };
   }
+  const severityDistributionCached = memoize(severityDistribution, (ds, dateIdx, ids) =>
+    dateIdx + '|' + idsKey(ids));
 
   /* -------------------------------------------------------- time series -- */
   function districtSeries(ds, id) {
@@ -129,6 +167,7 @@
     }
     return { pts, totalMonths: ds.dates.length };
   }
+  const districtSeriesCached = memoize(districtSeries, (ds, id) => id);
 
   /** Area-weighted regional mean per month (valid districts only). */
   function regionSeries(ds, ids) {
@@ -149,6 +188,7 @@
     }
     return { pts, totalMonths: ds.dates.length, anyValid: any };
   }
+  const regionSeriesCached = memoize(regionSeries, (ds, ids) => idsKey(ids));
 
   /* ------------------------------------------------------ event analysis -- */
   /**
@@ -193,7 +233,7 @@
     const months = DIE.meta.seasons[season] || DIE.meta.seasons.all;
     const from = period.from, to = period.to;
 
-    const series = regionSeries(ds, ids);
+    const series = regionSeriesCached(ds, ids);
     const scopeIdx = [];
     const continuousIdx = [];
     for (let j = 0; j < ds.dates.length; j++) {
@@ -240,6 +280,211 @@
       nEvents: events.length
     };
   }
+  const historicalSummaryCached = memoize(historicalSummary, (ds, ids, period, season) =>
+    idsKey(ids) + '|' + periodKey(period, season));
+
+  /* ------------------------------------------ per-district statistics -- */
+  /**
+   * District-level drought statistics over the analysis period, on the
+   * continuous monthly series (runs analysis; season filter applies to the
+   * frequency column only, consistent with historicalSummary).
+   * Events that touch the record or period edges are flagged censored
+   * (left/right) and excluded from duration/severity ranking but reported.
+   * `recoveryMonths` = months from event end to the first value >= 0
+   * (null when the record ends first or no recovery within the window).
+   */
+  function districtStats(ds, ids, period, opts) {
+    opts = opts || {};
+    const ind = ds.indicator;
+    const threshold = opts.threshold !== undefined ? opts.threshold : droughtThreshold(ind);
+    const minDuration = opts.minDuration !== undefined ? opts.minDuration : 3;
+    const seasons = DIE.meta.seasons;
+    const scopeMonths = seasons[opts.season] || seasons.all;
+
+    const periodIdx = [];
+    for (let j = 0; j < ds.dates.length; j++) {
+      const y = +ds.dates[j].slice(0, 4);
+      if (y >= period.from && y <= period.to) periodIdx.push(j);
+    }
+    // Hoist per-slice work out of the district loop: dates and the
+    // season-scope mask are identical for every district.
+    const periodDates = periodIdx.map((j) => ds.dates[j]);
+    const scopeMask = periodIdx.map((j) => scopeMonths.includes(+ds.dates[j].slice(5, 7)));
+    const nPeriod = periodIdx.length;
+
+    const rows = [];
+    ids.forEach((id) => {
+      const d = DIE.registry.districts.get(id);
+      const i = ds.districtIndex.get(id);
+      if (!d || i === undefined) return;
+      const row = ds.values[i];
+
+      let valid = 0, scopeValid = 0, scopeDrought = 0, sum = 0;
+      const vals = new Array(nPeriod);
+      for (let k = 0; k < nPeriod; k++) {
+        const v = row[periodIdx[k]];
+        vals[k] = v;
+        if (Number.isFinite(v)) {
+          valid++; sum += v;
+          if (scopeMask[k]) {
+            scopeValid++;
+            if (v <= threshold) scopeDrought++;
+          }
+        }
+      }
+
+      const events = findEvents(vals, periodDates, threshold, minDuration)
+        .map((e) => {
+          const eFirst = e.startIdx, eLast = e.endIdx; // indices within period slice
+          const censored = (eFirst === 0) ? 'left' : (eLast === vals.length - 1) ? 'right' : null;
+          // recovery: first month after event end with value >= 0
+          let recovery = null;
+          for (let k = eLast + 1; k < vals.length; k++) {
+            const v = vals[k];
+            if (Number.isFinite(v)) { if (v >= 0) recovery = k - eLast - 1; break; }
+          }
+          return { ...e, censoring: censored, recoveryMonths: recovery };
+        });
+
+      const complete = events.filter((e) => !e.censoring);
+      const durations = complete.map((e) => e.duration);
+      const severities = complete.map((e) => e.severity);
+      const maxIdx = vals.reduce((b, v, k) => (Number.isFinite(v) && (b === -1 || v < vals[b]) ? k : b), -1);
+
+      rows.push({
+        id, name: d.name, state: d.state, area: d.area,
+        validMonths: valid, expectedMonths: nPeriod,
+        completeness: nPeriod ? valid / nPeriod : 0,
+        mean: valid ? sum / valid : NaN,
+        minValue: maxIdx >= 0 ? vals[maxIdx] : NaN,
+        minDate: maxIdx >= 0 ? ds.dates[periodIdx[maxIdx]] : null,
+        droughtMonths: scopeDrought,
+        droughtPct: scopeValid ? scopeDrought / scopeValid * 100 : NaN,
+        nEvents: complete.length,
+        nEventsCensored: events.length - complete.length,
+        meanDuration: durations.length ? mean(durations) : NaN,
+        maxDuration: durations.length ? Math.max(...durations) : 0,
+        meanSeverity: severities.length ? mean(severities) : NaN,
+        maxSeverity: severities.length ? Math.max(...severities) : NaN,
+        cumulativeSeverity: severities.reduce((s, v) => s + v, 0),
+        worstEvent: complete.length ? complete.reduce((a, b) => a.severity > b.severity ? a : b) : null,
+        events
+      });
+    });
+    return rows;
+  }
+  const districtStatsCached = memoize(districtStats, (ds, ids, period, opts) =>
+    idsKey(ids) + '|' + periodKey(period, opts && opts.season) + '|' + optsKey(opts));
+
+  /**
+   * Event catalogue rows (one per event) for the region and period.
+   * Columns follow §3.A of the five-tab specification.
+   */
+  function eventCatalogue(ds, ids, period, opts) {
+    const stats = districtStatsCached(ds, ids, period, opts);
+    const out = [];
+    stats.forEach((s) => {
+      s.events.forEach((e) => {
+        out.push({
+          districtId: s.id, district: s.name, state: s.state, area: s.area,
+          start: e.startDate, end: e.endDate,
+          duration: e.duration,
+          maxIntensity: e.minValue,
+          severity: e.severity,
+          meanIntensity: e.meanIntensity,
+          censoring: e.censoring,
+          recoveryMonths: e.recoveryMonths,
+          startIdx: e.startIdx, endIdx: e.endIdx
+        });
+      });
+    });
+    out.sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : b.severity - a.severity));
+    return { rows: out, nDistricts: stats.length };
+  }
+  const eventCatalogueCached = memoize(eventCatalogue, (ds, ids, period, opts) =>
+    idsKey(ids) + '|' + periodKey(period, opts && opts.season) + '|' + optsKey(opts));
+
+  /**
+   * Sensitivity scenario: re-run the catalogue with a custom threshold /
+   * min duration. The default (metadata) configuration is always what the
+   * main catalogue shows; scenarios are labelled separately in the UI.
+   */
+  function eventSensitivity(ds, ids, period, threshold, minDuration) {
+    return eventCatalogueCached(ds, ids, period, { threshold, minDuration });
+  }
+
+  /* ----------------------------------------------- trend input series -- */
+  /**
+   * Regional annual series (area-weighted means of valid months per year)
+   * and the monthly region series restricted to the analysis period.
+   * Used by the Mann-Kendall / Sen analysis in the Historical tab.
+   */
+  function trendSeries(ds, ids, period, opts) {
+    opts = opts || {};
+    const granularity = opts.granularity || 'annual';
+    const months = DIE.meta.seasons[opts.season] || DIE.meta.seasons.all;
+    const series = regionSeriesCached(ds, ids);
+
+    const buckets = new Map(); // key -> {sum, w, nMonths}
+    for (let j = 0; j < ds.dates.length; j++) {
+      const [y, m] = ds.dates[j].split('-').map(Number);
+      if (y < period.from || y > period.to || !months.includes(m)) continue;
+      const v = series.pts[j].v;
+      if (v === null) continue;
+      const key = granularity === 'annual' ? String(y) : y + '-' + String(m).padStart(2, '0');
+      if (!buckets.has(key)) buckets.set(key, { sum: 0, w: 0, n: 0 });
+      const b = buckets.get(key);
+      b.sum += v * 12; b.w += 12; b.n += 1; // monthly region means are equally weighted within a year
+    }
+    const keys = Array.from(buckets.keys()).sort();
+    const values = keys.map((k) => {
+      const b = buckets.get(k);
+      return b.w ? b.sum / b.w : NaN;
+    });
+    return {
+      keys, values,
+      valid: keys.filter((_, i) => Number.isFinite(values[i])).length,
+      granularity
+    };
+  }
+  const trendSeriesCached = memoize(trendSeries, (ds, ids, period, opts) =>
+    idsKey(ids) + '|' + periodKey(period, opts && opts.season) + '|' + optsKey(opts));
+
+  /* ---------------------------------------------- inter-event recurrence -- */
+  /**
+   * Empirical recurrence statistics from event start dates on the regional
+   * series: mean/median inter-arrival time and empirical return periods of
+   * severity exceedance (non-parametric; no fitted distribution — the
+   * assumption-free estimate is n_years / n_events_exceeding).
+   */
+  function recurrenceStats(events, period) {
+    if (!events.length) {
+      return { nEvents: 0, meanInterArrival: NaN, medianInterArrival: NaN, returnPeriods: [] };
+    }
+    const starts = events.map((e) => e.startIdx).sort((a, b) => a - b);
+    const gaps = [];
+    for (let i = 1; i < starts.length; i++) gaps.push(starts[i] - starts[i - 1]);
+    const nYears = period.to - period.from + 1;
+    const severities = events.map((e) => e.severity).sort((a, b) => a - b);
+    const qs = [0.5, 0.75, 0.9];
+    const returnPeriods = qs.map((q) => {
+      // empirical quantile of severities (type-7)
+      const pos = (severities.length - 1) * q;
+      const lo = Math.floor(pos), hi = Math.ceil(pos);
+      const thr = severities[lo] + (severities[hi] - severities[lo]) * (pos - lo);
+      const nExc = severities.filter((s) => s >= thr).length;
+      return {
+        quantile: q, threshold: thr, nExceeding: nExc,
+        returnPeriod: nExc ? nYears / nExc : Infinity
+      };
+    });
+    return {
+      nEvents: events.length,
+      meanInterArrival: gaps.length ? mean(gaps) : NaN,
+      medianInterArrival: gaps.length ? median(gaps) : NaN,
+      returnPeriods
+    };
+  }
 
   /* ------------------------------------------------ regional comparison -- */
   function comparisonRows(ds, level, period, season, scopeIds) {
@@ -273,32 +518,41 @@
 
     const rows = [];
     groups.forEach((g) => {
+      // Resolve the group's districts and total area once instead of on every
+      // month iteration (this was the hottest loop in the comparison table).
+      const members = [];
+      let area = 0;
+      g.ids.forEach((id) => {
+        const d = DIE.registry.districts.get(id);
+        if (!d) return;
+        area += d.area;
+        const i = ds.districtIndex.get(id);
+        if (i !== undefined) members.push({ area: d.area, row: ds.values[i] });
+      });
+
       let wval = 0, wsum = 0, valid = 0, expected = 0;
       let affectedAreaSum = 0, severeAreaSum = 0, monthsConsidered = 0;
       let droughtMonths = 0;
       scopeIdx.forEach((j) => {
         let monthWVal = 0, monthWSum = 0;
         let monthAffected = 0, monthSevere = 0;
-        g.ids.forEach((id) => {
-          const d = DIE.registry.districts.get(id);
-          const i = ds.districtIndex.get(id);
-          if (!d || i === undefined) return;
+        for (let m = 0; m < members.length; m++) {
+          const mem = members[m];
           expected++;
-          const v = ds.values[i][j];
-          if (!Number.isFinite(v)) return;
+          const v = mem.row[j];
+          if (!Number.isFinite(v)) continue;
           valid++;
-          monthWVal += v * d.area; monthWSum += d.area;
+          monthWVal += v * mem.area; monthWSum += mem.area;
           const c = DIE.classify(v, ind);
-          if (DIE.isDroughtClass(c)) monthAffected += d.area;
-          if (DIE.isSevereClass(c)) monthSevere += d.area;
-        });
+          if (DIE.isDroughtClass(c)) monthAffected += mem.area;
+          if (DIE.isSevereClass(c)) monthSevere += mem.area;
+        }
         wval += monthWVal; wsum += monthWSum;
         if (monthWSum > 0) {
           monthsConsidered++;
           if (g.type === 'state') {
-            const stateArea = g.ids.reduce((s, id) => s + (DIE.registry.districts.get(id)?.area || 0), 0);
-            affectedAreaSum += monthAffected / stateArea;
-            severeAreaSum += monthSevere / stateArea;
+            affectedAreaSum += monthAffected / area;
+            severeAreaSum += monthSevere / area;
           } else {
             // single district: temporal incidence
             const v = monthWVal / monthWSum;
@@ -310,7 +564,6 @@
           if (monthMean <= threshold) droughtMonths++;
         }
       });
-      const area = g.ids.reduce((s, id) => s + (DIE.registry.districts.get(id)?.area || 0), 0);
       const meanV = wsum > 0 ? wval / wsum : NaN;
       const completeness = expected ? valid / expected * 100 : 0;
       rows.push({
@@ -326,6 +579,8 @@
     });
     return rows;
   }
+  const comparisonRowsCached = memoize(comparisonRows, (ds, level, period, season, scopeIds) =>
+    level + '|' + periodKey(period, season) + '|' + idsKey(scopeIds || []));
 
   /* -------------------------------------------- multi-indicator stats --- */
   function comparisonStats(dsA, dsB, dateIdx) {
@@ -357,6 +612,8 @@
     return { pairs, n: pairs.length, r, r2: r * r, fit, line, rmse, bias, missing,
       nA: dsA.districtIds.length, date: dsA.dates[dateIdx] };
   }
+  const comparisonStatsCached = memoize(comparisonStats, (dsA, dsB, dateIdx) =>
+    dsB.id + '|' + dateIdx);
 
   /* ---------------------------------------------- evolution series ------ */
   /** % of region area in drought (mild or worse) per date. */
@@ -380,6 +637,7 @@
     }
     return { dates: ds.dates, pct };
   }
+  const droughtAreaPctSeriesCached = memoize(droughtAreaPctSeries, (ds, ids) => idsKey(ids));
 
   /* ---------------------------------------------------------- CSV export -- */
   function csvEscape(v) {
@@ -400,6 +658,37 @@
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+  }
+
+  /* ------------------------------------------ reproducibility metadata -- */
+  /**
+   * Build the `#`-comment metadata block prepended to every exported CSV
+   * (§5.E of the specification). Tabular schema rows are appended by the
+   * caller; this returns the header lines only.
+   */
+  function exportMetaLines(extra) {
+    const st = DIE.state;
+    const m = DIE.meta;
+    const ds = DIE.datasets.get(st.indicator);
+    const lines = [
+      '# Drought Intelligence Explorer — research export',
+      '# exported (UTC): ' + new Date().toISOString(),
+      '# indicator: ' + (ds ? ds.indicator.label + ' (' + ds.indicator.id + ', ' + ds.indicator.units + ')' : st.indicator),
+      '# geography: ' + DIE.Filters.regionLabel() + ' (extent: ' + st.extent + ')',
+      '# observation period (dataset): ' + (ds ? (ds.availableFrom || m.period.start) + ' to ' + (ds.availableTo || m.period.end) : m.period.start + ' to ' + m.period.end),
+      '# analysis period: ' + st.period.from + ' to ' + st.period.to +
+        (st.period.season === 'all' ? '' : ' · season: ' + st.period.season),
+      '# reference period: ' + m.reference_period,
+      '# methodology version: ' + m.methodology_version +
+        ' · data mode: ' + m.data_mode +
+        (m.random_seed !== null && m.random_seed !== undefined ? ' (random seed ' + m.random_seed + ')' : ''),
+      '# data source: ' + (m.sources && m.sources[0] ? m.sources[0].name : m.data_provenance),
+      '# threshold / event settings: truncation ' + droughtThreshold(ds ? ds.indicator : { classes: [] }) +
+        ' · minimum duration 3 months (runs analysis, Yevjevich 1967)'
+    ];
+    (extra || []).forEach((l) => lines.push('# ' + l));
+    lines.push('');
+    return lines;
   }
 
   /** Long-format extract (the documented interchange schema). */
@@ -431,6 +720,139 @@
     });
     toCSV('die-' + ind.id + '-' + (DIE.Filters.regionLabel() || 'region').toLowerCase().replace(/\W+/g, '-') + '-long.csv', rows);
     return rows.length - 1;
+  }
+
+  /** Long-format extract with reproducibility metadata header. */
+  function longExportCSVMeta(ds, ids) {
+    const ind = ds.indicator;
+    const rows = [[
+      'district_id', 'district_name', 'state_name', 'date', 'indicator',
+      'indicator_value', 'severity_class', 'area_km2', 'data_provenance'
+    ]];
+    ids.forEach((id) => {
+      const d = DIE.registry.districts.get(id);
+      const i = ds.districtIndex.get(id);
+      if (!d || i === undefined) return;
+      for (let j = 0; j < ds.dates.length; j++) {
+        const ym = ds.dates[j];
+        const v = ds.values[i][j];
+        const c = DIE.classify(v, ind);
+        rows.push([
+          id, d.name, d.state, ym, ind.id,
+          Number.isFinite(v) ? v : '',
+          c ? c.label : '',
+          d.area, (DIE.meta && DIE.meta.data_mode) || ''
+        ]);
+      }
+    });
+    const text = exportMetaLines(['records: ' + (rows.length - 1)])
+      .concat(rows.map((r) => r.map(csvEscape).join(','))).join('\n');
+    downloadBlob('die-' + ind.id + '-region-long.csv', new Blob([text], { type: 'text/csv;charset=utf-8' }));
+    return rows.length - 1;
+  }
+
+  /** District statistics export with metadata header. */
+  function districtStatsCSVMeta(ds, ids, period, season) {
+    const stats = districtStatsCached(ds, ids, period, { season });
+    const rows = [[
+      'district_id', 'district_name', 'state_name', 'indicator',
+      'valid_months', 'expected_months', 'completeness_pct',
+      'mean', 'min', 'min_date', 'drought_months', 'drought_months_pct',
+      'events', 'events_censored', 'mean_duration_months', 'max_duration_months',
+      'mean_event_severity', 'max_event_severity', 'cumulative_severity',
+      'worst_event_start', 'worst_event_end'
+    ]];
+    stats.forEach((s) => {
+      rows.push([
+        s.id, s.name, s.state, ds.indicator.id,
+        s.validMonths, s.expectedMonths, (s.completeness * 100).toFixed(1),
+        Number.isFinite(s.mean) ? s.mean.toFixed(3) : '',
+        Number.isFinite(s.minValue) ? s.minValue.toFixed(2) : '',
+        s.minDate || '',
+        s.droughtMonths, Number.isFinite(s.droughtPct) ? s.droughtPct.toFixed(2) : '',
+        s.nEvents, s.nEventsCensored,
+        Number.isFinite(s.meanDuration) ? s.meanDuration.toFixed(2) : '',
+        s.maxDuration || 0,
+        Number.isFinite(s.meanSeverity) ? s.meanSeverity.toFixed(2) : '',
+        Number.isFinite(s.maxSeverity) ? s.maxSeverity.toFixed(2) : '',
+        s.cumulativeSeverity.toFixed(2),
+        s.worstEvent ? s.worstEvent.startDate : '',
+        s.worstEvent ? s.worstEvent.endDate : ''
+      ]);
+    });
+    const text = exportMetaLines(['records: ' + (rows.length - 1), 'note: censored events touch the record/period edge and are excluded from duration/severity columns'])
+      .concat(rows.map((r) => r.map(csvEscape).join(','))).join('\n');
+    downloadBlob('die-' + ds.indicator.id + '-district-statistics-' + period.from + '-' + period.to + '.csv',
+      new Blob([text], { type: 'text/csv;charset=utf-8' }));
+    return rows.length - 1;
+  }
+
+  /** Event catalogue export with metadata header. */
+  function eventCatalogueCSVMeta(ds, ids, period, season) {
+    const cat = eventCatalogueCached(ds, ids, period, { season });
+    const rows = [[
+      'district_id', 'district_name', 'state_name', 'indicator',
+      'event_start', 'event_end', 'duration_months', 'max_intensity',
+      'cumulative_severity', 'mean_intensity', 'censoring',
+      'recovery_months'
+    ]];
+    cat.rows.forEach((e) => {
+      rows.push([
+        e.districtId, e.district, e.state, ds.indicator.id,
+        e.start, e.end, e.duration,
+        Number.isFinite(e.maxIntensity) ? e.maxIntensity.toFixed(2) : '',
+        e.severity.toFixed(2), e.meanIntensity.toFixed(2),
+        e.censoring || '',
+        e.recoveryMonths === null ? '' : e.recoveryMonths
+      ]);
+    });
+    const text = exportMetaLines([
+      'records: ' + (rows.length - 1),
+      'note: events are runs of >= 3 consecutive months <= truncation; censored events touch the record/period edge',
+      'recovery_months: months from event end to first value >= 0 (blank = record ends first)'
+    ]).concat(rows.map((r) => r.map(csvEscape).join(','))).join('\n');
+    downloadBlob('die-' + ds.indicator.id + '-event-catalogue-' + period.from + '-' + period.to + '.csv',
+      new Blob([text], { type: 'text/csv;charset=utf-8' }));
+    return rows.length - 1;
+  }
+
+  /** Reproducibility metadata export (JSON). */
+  function analysisMetadataJSON() {
+    const st = DIE.state;
+    const m = DIE.meta;
+    const ds = DIE.datasets.get(st.indicator);
+    return JSON.stringify({
+      application: m.application,
+      exported_at_utc: new Date().toISOString(),
+      state: {
+        indicator: st.indicator,
+        extent: st.extent,
+        stateId: st.stateId,
+        districtId: st.districtId,
+        region: DIE.Filters.regionLabel(),
+        dateIdx: st.dateIdx,
+        period: st.period
+      },
+      dataset: {
+        data_mode: m.data_mode,
+        methodology_version: m.methodology_version,
+        random_seed: m.random_seed ?? null,
+        period: m.period,
+        reference_period: m.reference_period,
+        indicator_available_from: ds ? ds.availableFrom : null,
+        indicator_available_to: ds ? ds.availableTo : null,
+        provenance: m.data_provenance,
+        citation: m.citation
+      },
+      methods: {
+        classification: 'SPI/SPEI McKee (1993) / Vicente-Serrano (2010) convention; indicator-specific thresholds in metadata.json',
+        events: m.events,
+        aggregation: m.aggregation,
+        area_method: m.area_method,
+        trend: 'Mann-Kendall with Hamed-Rao variance correction when significant autocorrelation; Sen slope with 90% rank CI',
+        correlation: 'Pearson on matched months; moving-block bootstrap 95% CI (block = n^(1/3), 1000 resamples, fixed seed)'
+      }
+    }, null, 2);
   }
 
   function districtSummaryCSV(ds, ids, period) {
@@ -479,9 +901,22 @@
   /* -------------------------------------------------------------- public -- */
   DIE.Analytics = {
     mean, median, pearson, ols, droughtThreshold,
-    regionStats, severityDistribution, districtSeries, regionSeries,
-    findEvents, compact, historicalSummary, comparisonRows, comparisonStats,
-    droughtAreaPctSeries,
-    toCSV, toText, downloadBlob, csvEscape, longExportCSV, districtSummaryCSV
+    regionStats: regionStatsCached,
+    severityDistribution: severityDistributionCached,
+    districtSeries: districtSeriesCached,
+    regionSeries: regionSeriesCached,
+    findEvents, compact,
+    historicalSummary: historicalSummaryCached,
+    comparisonRows: comparisonRowsCached,
+    comparisonStats: comparisonStatsCached,
+    droughtAreaPctSeries: droughtAreaPctSeriesCached,
+    districtStats: districtStatsCached,
+    eventCatalogue: eventCatalogueCached,
+    eventSensitivity, trendSeries: trendSeriesCached,
+    recurrenceStats, exportMetaLines,
+    toCSV, toText, downloadBlob, csvEscape,
+    longExportCSV, districtSummaryCSV,
+    longExportCSVMeta, districtStatsCSVMeta, eventCatalogueCSVMeta,
+    analysisMetadataJSON
   };
 })();

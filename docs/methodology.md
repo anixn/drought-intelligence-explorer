@@ -85,6 +85,11 @@ Events are identified by **runs analysis** (Yevjevich, 1967) on the continuous m
 
 The historical panels (frequency, duration, severity) and the regional-comparison "drought months" column use these definitions. Season filters (SW monsoon etc.) restrict frequency statistics; event runs are always identified on the continuous monthly series, because season subsetting would manufacture artificial run breaks.
 
+
+**Event catalogue, censoring and recovery (Drought Events tab).** The per-district catalogue lists onset, termination, duration, maximum intensity (most negative value), cumulative severity, and the mean intensity of every run. Events that touch the start or end of the available record (or the analysis-period edge) are flagged **censored** — their true onset/termination may lie outside the observed window — and are excluded from duration/severity ranking while remaining listed. **Recovery** is the number of months from an event's end to the first value ≥ 0; it is undefined (—) when the record ends first. **Sensitivity scenarios** re-run the catalogue with alternative minimum durations or truncation levels; the default (metadata) definition is always annotated and non-default results are visually separated.
+
+**Recurrence (Historical tab, section E).** Empirical, non-parametric statistics on the regional event sequence: mean and median inter-arrival times, and severity-exceedance return periods computed as observation years ÷ number of events reaching an empirical severity quantile (Q50/Q75/Q90). No fitted distribution is assumed, uncertainty is not quantified by these point estimates, and they are labelled indicative only.
+
 ## 6. Missing observations
 
 Missing district-months are **never imputed, interpolated, or silently treated as normal**:
@@ -96,13 +101,28 @@ Missing district-months are **never imputed, interpolated, or silently treated a
 - the comparison table carries a completeness column and flags rows below 50 %; such rows are excluded from "most affected" ranking;
 - KPI cards display **N/A** rather than invented values when no valid observations exist.
 
-## 7. Trend lines
+## 7. Trend analysis
 
-Optional ordinary-least-squares trends are offered on the time-series chart **only when ≥ 120 valid monthly observations exist** for the current selection. The fitted line, its slope and its sample size are printed with the chart. OLS on monthly indicator values is a simple descriptive diagnostic; it does not substitute for formal trend testing (e.g. Mann–Kendall with serial-correlation correction), and is labelled accordingly.
+Two tiers of trend information are provided, clearly separated:
 
-## 8. Multi-indicator comparison (Module A)
+**Descriptive (Overview tab).** Optional ordinary-least-squares trends are offered on the time-series chart **only when ≥ 120 valid monthly observations exist** for the current selection. The fitted line, its slope and its sample size are printed with the chart. OLS on monthly indicator values is a simple descriptive diagnostic and is labelled accordingly.
 
-Agreement statistics between two indicators are computed over **matched dates and matched spatial units only** (pairwise deletion): Pearson correlation *r*, *r²*, RMSE, and bias (mean of B−A), with *n* and the count of excluded districts displayed next to the scatter. The difference view maps B−A in native units and uses a diverging ramp; when the two indicators have different families (z-score vs %) the difference is a contrast in mixed units and is labelled as such.
+**Inferential (Historical tab, section D).** Non-parametric trend testing on the regional series over the analysis period:
+
+- **Mann–Kendall test** (Mann 1945; Kendall 1975) with tie-corrected variance, reported as S, Z and the two-sided p-value.
+- **Sen's slope** (Sen 1968) — the median of pairwise slopes — with the rank-based 90 % confidence interval (Gilbert 1987, §17.3).
+- **Serial autocorrelation handling.** Monthly drought indices are strongly autocorrelated, which inflates naive significance. When the detrended series (Sen slope removed) shows significant autocorrelation (|r_k| above the 1.96/√n white-noise bound, lags 1–12), the **Hamed–Rao (1998) variance correction** is applied: the effective sample size n* is computed from the significant autocorrelations and the MK variance is scaled by n/n*. Both the corrected and the uncorrected Z are reported, and the panel states which is in force. The default input is annual area-weighted means (12 valid months per year), which largely removes month-to-month dependence; a monthly granularity option is provided with this caveat attached.
+- The sample size (valid years or months) is always displayed; with < 4 observations the tests are not computed.
+
+## 8. Correlation and propagation analysis (Propagation tab)
+
+**Single-date spatial comparison.** Agreement statistics between two indicators are computed over **matched dates and matched spatial units only** (pairwise deletion): Pearson correlation *r*, *r²*, RMSE, and bias (mean of B−A), with *n* and the count of excluded districts displayed next to the scatter. The difference view maps B−A in native units and uses a diverging ramp; when the two indicators have different families (z-score vs %) the difference is a contrast in mixed units and is labelled as such.
+
+**Temporal cross-correlation.** For any indicator pair, Pearson correlations are computed at lags −12…+12 months on **matched months only** (pairwise deletion; VCI contributes from 2000-02 onward). The lag convention: lag h pairs A[t] with B[t+h], so a positive optimal lag means B responds h months after A. The optimal lag maximises |r| subject to ≥ 30 matched pairs.
+
+**Uncertainty.** The 95 % confidence interval at the optimal lag uses a **moving-block bootstrap** (1 000 resamples; block length n^1/3 capped at 4–24 months; fixed seed 20261103 for reproducibility), which preserves serial dependence in both series by resampling blocks jointly. Nominal t-based p-values are shown for reference but treat months as independent.
+
+**Scope restrictions.** Correlation is never interpreted as causation. SPI/SPEI at different accumulation scales correlate by construction; cross-family comparisons (e.g. SPI vs VCI, SMA vs SPEI) carry the propagation interpretation. The soil-moisture anomaly is a land-surface reanalysis proxy, not observed hydrological drought. Streamflow/groundwater propagation is explicitly marked unavailable — the dataset contains no such observations and none are simulated.
 
 ## 9. Data lineage tiers
 
@@ -141,3 +161,9 @@ The interface distinguishes four tiers of information, all labelled:
 - Srivastava, A. K., Rajeevan, M., & Kshirsagar, S. R. (2009). Development of a high resolution daily gridded temperature data set (1969–2005) for the Indian region. *MAUSAM*, 60(4), 495–504.
 - Hersbach, H., et al. (2020). The ERA5 global reanalysis. *Quarterly Journal of the Royal Meteorological Society*, 146(730), 1999–2049.
 - Didan, K. (2015). MOD13A1 MODIS/Terra Vegetation Indices 16-Day L3 Global 500 m SIN Grid V006. NASA LP DAAC.
+- Mann, H. B. (1945). Nonparametric tests against trend. *Econometrica*, 13(3), 245–259.
+- Kendall, M. G. (1975). *Rank Correlation Methods* (4th ed.). Charles Griffin, London.
+- Sen, P. K. (1968). Estimates of the regression coefficient based on Kendall's tau. *Journal of the American Statistical Association*, 63(324), 1379–1389.
+- Hamed, K. H., & Rao, A. R. (1998). A modified Mann–Kendall trend test for autocorrelated data. *Journal of Hydrology*, 204(1–4), 182–196.
+- Gilbert, R. O. (1987). *Statistical Methods for Environmental Pollution Monitoring*. Van Nostrand Reinhold, New York.
+- Kunsch, H. R. (1989). The jackknife and the bootstrap for general stationary observations. *The Annals of Statistics*, 17(3), 1217–1241. (moving-block bootstrap)

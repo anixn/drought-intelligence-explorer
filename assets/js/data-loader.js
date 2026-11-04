@@ -43,20 +43,52 @@
   DIE.isLocalFile = location.protocol === 'file:';
 
   /* ------------------------------------------------------------- caches -- */
+  // Small in-memory text cache (CSV matrices are ~2 MB each). This avoids
+  // re-reading sessionStorage *and* lets the app prefetch the next likely
+  // indicator without paying for it twice. LRU-ish: oldest entry drops first.
+  const TEXT_CACHE = new Map();
+  const TEXT_CACHE_MAX = 4;
+  const INFLIGHT_TEXT = new Map();
+  const INFLIGHT_DATASET = new Map();
+
   function cacheKey(path) {
-    return 'die:v' + (DIE.meta ? DIE.meta.methodology_version : '0') + ':' + path;
+    // methodology_version '0' before metadata loads is fine for the metadata
+    // file itself; include data_mode so a provenance relabel (research ->
+    // demonstration or back) invalidates every cached artifact.
+    const v = DIE.meta ? DIE.meta.methodology_version : '0';
+    const mode = DIE.meta ? String(DIE.meta.data_mode || '') : '';
+    return 'die:v' + v + ':' + mode + ':' + path;
+  }
+  function rememberText(path, text) {
+    if (TEXT_CACHE.size >= TEXT_CACHE_MAX && !TEXT_CACHE.has(path)) {
+      TEXT_CACHE.delete(TEXT_CACHE.keys().next().value);
+    }
+    TEXT_CACHE.set(path, text);
   }
   async function fetchText(path) {
-    let hit = null;
-    try { hit = sessionStorage.getItem(cacheKey(path)); } catch (e) { /* storage unavailable */ }
-    if (hit !== null) return hit;
-    const res = await fetch(DIE.base + path);
-    if (!res.ok) throw new Error('HTTP ' + res.status + ' — ' + path);
-    const text = await res.text();
-    try { if (text.length < 3_000_000) sessionStorage.setItem(cacheKey(path), text); } catch (e) { /* quota */ }
-    return text;
+    if (TEXT_CACHE.has(path)) return TEXT_CACHE.get(path);
+    if (INFLIGHT_TEXT.has(path)) return INFLIGHT_TEXT.get(path);
+
+    const job = (async () => {
+      let hit = null;
+      try { hit = sessionStorage.getItem(cacheKey(path)); } catch (e) { /* storage unavailable */ }
+      if (hit !== null) { rememberText(path, hit); return hit; }
+      const res = await fetch(DIE.base + path);
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' — ' + path);
+      const text = await res.text();
+      try { if (text.length < 3_000_000) sessionStorage.setItem(cacheKey(path), text); } catch (e) { /* quota */ }
+      rememberText(path, text);
+      return text;
+    })();
+
+    INFLIGHT_TEXT.set(path, job);
+    try { return await job; } finally { INFLIGHT_TEXT.delete(path); }
   }
   async function fetchJSON(path) { return JSON.parse(await fetchText(path)); }
+  /** Warm the text cache without throwing (used for idle/hover prefetching). */
+  function prefetchText(path) {
+    return fetchText(path).catch(() => null);
+  }
 
   /* ------------------------------------------------------- date helpers -- */
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -154,7 +186,16 @@
 
   /* ------------------------------------------------------------ loaders -- */
   async function loadMetadata() {
-    DIE.meta = await fetchJSON('data/metadata.json');
+    // metadata.json is the provenance single source of truth; bypass the HTTP
+    // cache (like a hard reload) so a data-mode/provenance change on the
+    // server is picked up on the next visit. Indicator CSVs keep normal
+    // caching + sessionStorage keyed by methodology version and data mode.
+    let meta = null;
+    try {
+      meta = JSON.parse(await (await fetch(DIE.base + 'data/metadata.json', { cache: 'reload' })).text());
+    } catch (e) { /* fall back to default fetch (older browsers/proxies) */ }
+    if (!meta || !meta.indicators) meta = await fetchJSON('data/metadata.json');
+    DIE.meta = meta;
     DIE.indicatorById = new Map(DIE.meta.indicators.map((i) => [i.id, i]));
     return DIE.meta;
   }
@@ -209,8 +250,15 @@
    * Returns a dataset with values[i][j] (NaN = missing) plus a validation
    * report. Duplicate district rows are merged (last wins) and counted.
    */
-  async function loadIndicator(indicatorId) {
-    if (DIE.datasets.has(indicatorId)) return DIE.datasets.get(indicatorId);
+  function loadIndicator(indicatorId) {
+    if (DIE.datasets.has(indicatorId)) return Promise.resolve(DIE.datasets.get(indicatorId));
+    if (INFLIGHT_DATASET.has(indicatorId)) return INFLIGHT_DATASET.get(indicatorId);
+    const job = loadIndicatorNow(indicatorId).finally(() => INFLIGHT_DATASET.delete(indicatorId));
+    INFLIGHT_DATASET.set(indicatorId, job);
+    return job;
+  }
+
+  async function loadIndicatorNow(indicatorId) {
     const indicator = DIE.indicatorById.get(indicatorId);
     if (!indicator) throw new Error('Unknown indicator: ' + indicatorId);
 
@@ -353,6 +401,12 @@
     registry: loadRegistry,
     indicator: loadIndicator,
     fetchText,
-    fetchJSON
+    fetchJSON,
+    prefetchText,
+    /** Prefetch the CSV text for an indicator without parsing it yet. */
+    prefetchIndicator(indicatorId) {
+      const ind = DIE.indicatorById && DIE.indicatorById.get(indicatorId);
+      return ind ? prefetchText(ind.file) : Promise.resolve(null);
+    }
   };
 })();

@@ -1,14 +1,17 @@
 # Drought Intelligence Explorer — India
 
-**An interactive geospatial platform for drought monitoring and analysis in India.**
-A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScript (ES6+), Leaflet, Plotly, Turf.js and PapaParse. No frameworks, no backend, no database, no API keys, no mandatory external services.
+**An interactive geospatial platform for historical drought analysis in India.**
+A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScript (ES6+), Leaflet, Plotly and PapaParse. No frameworks, no backend, no database, no API keys, no mandatory external services. Leaflet and PapaParse are the only blocking libraries; Plotly loads in the background and html2canvas is fetched only when a map PNG is exported.
 
-> **Current build: research data.** The bundled dataset is extracted with Google Earth Engine from CHIRPS, ERA5-Land and MODIS and covers 1981-01 to 2025-12 (VCI from 2000-02, when MODIS NDVI begins). Values are model/reanalysis-based research estimates, not official drought declarations. Replacing files under `data/` changes the dataset with no code changes.
+> **Current build: historical research data.** The bundled dataset is a Google Earth Engine extract (CHIRPS v2.0, ERA5-Land and MODIS MOD13A3) processed by the reference pipeline (methodology `research-gee-1.0.1`). Indicator values are model- and observation-based estimates, not official drought declarations. The provenance banner, chips, methodology tab and footer all update automatically from `data/metadata.json`; swapping in a new extract requires no code changes.
+
+> **New to the dashboard?** Start with the [user guide](docs/user-guide.md) or press <kbd>?</kbd> in the app. It explains every workspace, table and chart in plain language.
 
 ---
 
 ## Contents
 
+- [Workspaces (five tabs)](#workspaces-five-tabs)
 - [Features](#features)
 - [Repository structure](#repository-structure)
 - [Run locally](#run-locally)
@@ -18,37 +21,52 @@ A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScr
 - [Adding and updating datasets](#adding-and-updating-datasets)
 - [Data validation and quality](#data-validation-and-quality)
 - [Citing the application and datasets](#citing-the-application-and-datasets)
-- [Technology and design decisions](#technology-and-design-decisions)
+- [Technology, performance and design decisions](#technology-performance-and-design-decisions)
 - [License](#license)
+
+## Workspaces (five tabs)
+
+The interface is organised into five analytical workspaces, reachable by URL hash (`#overview`, `#historical`, `#events`, `#propagation`, `#data`) so refresh and deep links preserve the view. Geography, indicator and analysis period are **global filters** (left panel) shared by every tab; only the observation date is a contextual control of the Overview tab.
+
+1. **Overview** — where is drought, how severe, how has it changed: date slider, snapshot KPIs (affected/severe area in equal-area km², area-weighted mean, districts in drought with change vs the previous month), the interactive district map with legend, the full time series with drought-class thresholds, the severity distribution, a top-10 most-affected-district ranking (by severity or affected area) and a historical-context timeline (% of region area in drought) with playback.
+2. **Historical Analysis** — frequency (months and % in drought, per-year bars, district frequency histogram), duration and severity (summary statistics plus per-district choropleth maps), non-parametric trend analysis (Mann-Kendall with tie correction and Hamed-Rao variance correction when significant autocorrelation exists; Sen's slope with 90% confidence interval; annual or monthly granularity), empirical recurrence (inter-arrival times, severity-exceedance return periods — no fitted distribution), and the district-wise ranking table (sortable/searchable/paginated, CSV export).
+3. **Drought Events** — the event catalogue (runs analysis per district: onset, termination, duration, maximum intensity, cumulative severity, censoring flag, recovery months; filterable by year/district, sortable, CSV export), the onset timeline, the duration distribution, an event detail view (event-specific series with the shaded event window and a map extent) and a definition-sensitivity panel (minimum duration / truncation scenarios, clearly separated from the default methodology).
+4. **Propagation & Relationships** — lagged cross-correlation (−12…+12 months, matched months only) between any two indicators with the optimal lag, Pearson r and moving-block bootstrap 95% CI (serial dependence preserved, fixed seed), a dual-series comparison chart, a full 10×10 correlation heatmap, a district-wise optimal-lag map, the migrated single-date spatial comparison (synchronized maps, difference map, agreement statistics, scatter), and an explicitly **unavailable** section for streamflow/groundwater propagation (no such data in the dataset — nothing is simulated).
+5. **Data & Methods** — dataset information (source, modes, units, windows, latest observation, reference period), per-indicator data quality (valid %, missing %) with the live validation report, the full methodology (indicators, thresholds, aggregation, events, trends, correlation, missing-data policy) and the download centre: long-format CSV, wide matrix, district statistics, event catalogue, analysis-metadata JSON, boundary GeoJSON, map PNG, documentation, citation — every CSV export carries a `#`-comment reproducibility header (indicator, geography, periods, reference period, export timestamp, methodology version, data mode and seed, source).
 
 ## Features
 
 - **10 drought indicators** at district resolution, monthly, 1981–2025 (SPI-1/3/6/12, SPEI-1/3/6/12, Soil-Moisture Anomaly) and 2000–2025 for the Vegetation Condition Index, which is limited by the MODIS NDVI record.
-- **Interactive Leaflet choropleth** with discrete severity classes *and* a continuous colour scale, hover tooltips, click-to-inspect popups, state/outline layers, optional place labels, offline default basemap.
-- **KPI cards computed live from the data**: drought-affected area (equal-area km² and %), severe/extreme area, area-weighted mean intensity with classification, district counts — with explicit N/A for missing data.
-- **Scientific charts** (Plotly): time series with drought threshold lines, range selector/slider, optional OLS trend (≥ 120 valid months); severity distribution (area and %); frequency-by-year bars.
-- **Drought event analytics** by runs analysis (Yevjevich, 1967): frequency, duration (mean/median/max), cumulative severity and intensity, with the event definition printed next to the statistics.
-- **Regional comparison table**: states or districts, sortable, searchable, paginated, CSV export, top-5 most affected highlighted, sparse-data rows flagged.
-- **Analysis modules**: (A) multi-indicator comparison with synchronized maps, scatter, Pearson r / RMSE / bias and a difference map; (B) animated drought evolution with timeline of % area in drought; (C) download centre (long-format CSV extracts, district summaries, precomputed summaries, map PNG, documentation).
-- **Methodology, provenance and validation** surfaces: full methodology dialog, data-source citations with access dates, and a live data-validation report (duplicates, invalid dates/values, identifier mismatches, completeness).
-- **Responsive**: fixed sidebar on desktop, filter drawer on tablet/mobile, stacked charts, scrollable tables, touch-friendly controls.
-- **Accessibility**: keyboard-operable controls, visible focus states, ARIA roles on tabs/dialogs/status, skip link, descriptive legends and tooltips.
+- **Interactive Leaflet choropleth** with discrete severity classes *and* a continuous colour scale, hover tooltips, click-to-inspect popups, state/outline layers, optional place labels, offline default basemap. Clicking a district focuses every tab on it.
+- **KPI cards computed live from the data**: drought-affected area (equal-area km² and %), severe/extreme area, area-weighted mean intensity with classification, district counts — with explicit N/A for missing data and the change versus the previous observation.
+- **Scientific charts** (Plotly): time series with drought threshold lines, range selector/slider, optional OLS trend (≥ 120 valid months); severity distribution; frequency-by-year; district ranking; event timeline and distributions; lag-correlation with bootstrap CI; correlation heatmap; trend chart with Sen slope.
+- **Drought event analytics** by runs analysis (Yevjevich, 1967): catalogue, frequency, duration (mean/median/max), cumulative severity and intensity, censoring flags for events touching the record edge, recovery time, and definition-sensitivity scenarios.
+- **Inferential statistics**: Mann-Kendall + Sen slope with autocorrelation handling; lagged cross-correlation with moving-block bootstrap confidence intervals; sample sizes and uncertainty always reported.
+- **Regional comparison table**: states or districts, sortable, searchable, paginated, CSV export with metadata header, top-5 most affected highlighted, sparse-data rows flagged.
+- **Reproducible downloads**: every export embeds the full analysis metadata; a dedicated JSON metadata export records the complete state.
+- **Methodology, provenance and validation** surfaces: methodology tab, data-source citations with access dates, and a live data-validation report (duplicates, invalid dates/values, identifier mismatches, completeness).
+- **Responsive**: fixed filter panel on desktop, filter drawer on tablet/mobile, stacked charts, scrollable tables, touch-friendly controls.
+- **Accessibility**: keyboard-operable tabs (arrow keys) and controls, visible focus states, ARIA roles on tabs/dialogs/status, skip link, descriptive legends and tooltips, plus a `?` shortcut for the in-app guide.
+- **Fast by design**: parallel boot with cached indicator text, memoised analytics aggregates, hidden-tab dirty tracking, targeted filter-control rebuilds, transient slider updates, progressive chart rendering while Plotly loads, and on-demand html2canvas.
+- **Built-in guidance**: a workspace introduction on every tab, a full “How to use” dialog, a Data & Methods guide/glossary, purpose notes above every table, and a downloadable [user guide](docs/user-guide.md).
 
 ## Repository structure
 
 ```
 .
-├── index.html                  application shell (nav, sidebar, workspace, modals)
+├── index.html                  application shell (five-tab nav, global filter
+│                               panel, workspaces, About modal, boot loader)
 ├── assets/
 │   ├── css/style.css           design system
 │   ├── css/leaflet.css         bundled Leaflet stylesheet
 │   ├── js/                     application modules (load order matters)
 │   │   ├── data-loader.js      base path, fetching/caching, validation, classification
-│   │   ├── filters.js          application state + sidebar controls
-│   │   ├── map.js              Leaflet views (main + module maps), legends, PNG export
+│   │   ├── stats.js            Mann-Kendall, Sen slope, block bootstrap, lagged correlation
+│   │   ├── filters.js          global state + filter panel controls
+│   │   ├── map.js              Leaflet views (main + statistical maps), legends, PNG export
 │   │   ├── charts.js           Plotly chart builders
 │   │   ├── analytics.js        statistics, event analysis, CSV builders
-│   │   ├── app.js              orchestration, KPIs, table, downloads, modules
+│   │   ├── app.js              orchestration, hash router, five view controllers
 │   │   └── vendor/             bundled libraries (CDN fallback configured)
 │   └── images/                 logo, favicon, Leaflet icons
 ├── data/
@@ -58,8 +76,12 @@ A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScr
 │   ├── drought/                indicator matrices (wide CSV: districts × months)
 │   └── summaries/              precomputed event & state statistics (cross-checks)
 ├── docs/
+│   ├── user-guide.md           plain-language guide: workspaces, tables, charts, exports
 │   ├── methodology.md          full scientific methodology
-│   └── data-sources.md         provenance, production sources, citation guidance
+│   ├── data-sources.md         provenance, production sources, citation guidance
+│   └── refactor-plan.md        five-tab refactor audit and migration plan
+├── scripts/
+│   └── relabel_demo.py         data-mode relabel utility (idempotent)
 ├── data-pipeline/               offline pipeline that turns public gridded
 │   (Python + R)                 datasets into data/ — see its README,
 │                                docs/data-update-guide.md for the local
@@ -177,7 +199,7 @@ dataset mapping, checkpointing and caveats are in
    - for each indicator: `file`, `reference_period`, `classes` (thresholds are yours to define — the whole UI follows them),
    - optional but recommended: `available_from` / `available_to` (e.g. `2000-02` for VCI) so the UI can label and clamp a shorter data record,
    - `sources`: real citations with access dates.
-5. Reload the app. The banner, chips, methodology dialog and footer all read from metadata, so the interface updates automatically — edit `index.html` (banner) and `docs/` if you want to change the wording.
+5. Reload the app. The banner, chips, KPI provenance tags, methodology tab and footer all read from metadata, so the interface updates automatically — the data-mode relabel utility `scripts/relabel_demo.py` shows the exact field set.
 
 ### Add a new indicator
 
@@ -204,7 +226,7 @@ This cleans the raw file, rounds coordinates (districts at ~100 m precision, sta
 
 ## Data validation and quality
 
-At load time the application checks every dataset for: duplicate district rows (merged, last kept), invalid date columns (skipped), non-numeric values (treated as missing), district ids missing from the boundaries (dropped), boundary districts absent from the dataset (rendered as no-data), and overall completeness. The report appears in the **Data Sources** dialog and the browser console. Missing observations are never imputed or treated as normal conditions — see `docs/methodology.md` §6.
+At load time the application checks every dataset for: duplicate district rows (merged, last kept), invalid date columns (skipped), non-numeric values (treated as missing), district ids missing from the boundaries (dropped), boundary districts absent from the dataset (rendered as no-data), and overall completeness. The report appears in the **Data & Methods** tab (data-quality section) and the browser console. Only indicators already loaded in the session are reported by default; **Validate all indicators** downloads the remaining matrices in small parallel batches and updates the report as each one finishes. Missing observations are never imputed or treated as normal conditions — see `docs/methodology.md` §6.
 
 ## Citing the application and datasets
 
@@ -220,20 +242,25 @@ At load time the application checks every dataset for: duplicate district rows (
 
 Dataset citations depend on what you deploy: this build uses CHIRPS v2.0 Final, ERA5-Land and MODIS MOD13A3 (templates in `docs/data-sources.md`); the synthetic generator in `data-pipeline/` is only for offline UI testing.
 
-## Technology and design decisions
+## Technology, performance and design decisions
 
 - **Vanilla ES6+ modules (classic scripts, dependency-ordered).** No build step: the repository *is* the deployment.
-- **Vendor libraries bundled locally** (`assets/js/vendor/`) with automatic CDN fallback, so the app runs offline/intranet and degrades gracefully (Plotly/Turf/html2canvas optional with explicit UI states; Leaflet/PapaParse required).
+- **Vendor libraries bundled locally** (`assets/js/vendor/`) with automatic CDN fallback, so the app runs offline/intranet and degrades gracefully. Leaflet and PapaParse are required; Plotly is optional and loads in the background; html2canvas is optional and fetched only on first PNG export.
+- **Parallel boot.** After metadata, boundaries, registries and the current indicator CSV load concurrently; app modules load in parallel around `data-loader.js`. The map and summary render before the chart engine is needed.
+- **Memoised analytics.** Area-weighted region statistics, series, district/event statistics, trends and comparison rows are cached per dataset/selection, so panels that share inputs do not recompute 724 × 540 matrices repeatedly.
+- **Interaction-friendly state flow.** Filter controls rebuild only the parts that changed; dragging the date slider updates the map/KPIs at animation speed and defers charts to the final change event; hidden tabs are marked dirty and rendered on entry.
+- **Progressive charts.** A chart requested before Plotly is ready shows a “loading chart engine” state and redraws automatically; chart zoom/pan survives data updates.
 - **Default basemap is a plain offline canvas** — the core choropleth works with zero external tile services; reference tiles are opt-in.
 - **Canvas renderer** (`preferCanvas`) keeps 724 polygons smooth and makes map PNG export reliable.
-- **Wide CSV matrices** (~0.9 MB per indicator, gzip ≈ 0.3 MB over the wire) instead of a 200 MB long-format table; the download centre generates the documented long-format schema on demand. Indicators load lazily; sessionStorage caching is keyed by methodology version.
+- **Wide CSV matrices** (~0.9 MB per indicator, gzip ≈ 0.3 MB over the wire) instead of a 200 MB long-format table; the download centre generates the documented long-format schema on demand. Indicators load lazily; sessionStorage + in-memory caches are keyed by methodology version, with hover prefetching of the next likely indicator.
 - **Plotly "cartesian" bundle only** — D3 was deliberately omitted (Plotly covers the required scientific charts; lighter payload).
 - **Areas precomputed in an equal-area projection**; regional means are area-weighted; no degree-coordinate arithmetic anywhere.
 - **Single source of truth:** classification thresholds, palettes, units, tooltips and provenance all live in `data/metadata.json`.
+- **Self-documenting interface:** workspace intros, table-purpose notes, a full guide dialog, a Data & Methods glossary and a downloadable user guide.
 
 ## License
 
-Add a `LICENSE` file before public distribution (the intended setup is MIT for code; data licensing follows whichever real datasets you load). Until then, all rights reserved by the author.
+The application code is released under the MIT License (see `LICENSE`). Data licensing follows the source datasets: CHIRPS, ERA5-Land and MODIS have their own terms and citation requirements — see `docs/data-sources.md` before redistributing derived data.
 
 ---
 
