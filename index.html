@@ -30,7 +30,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-05a" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-05c" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -103,10 +103,9 @@
       </div>
 
       <nav class="topnav" aria-label="Application navigation">
-        <button type="button" id="guideBtn" data-modal="modalGuide">
+        <button type="button" id="guideBtn" data-doc="doc-b-guide">
           How to use
         </button>
-        <button type="button" data-modal="modalAbout">About</button>
         <button
           type="button"
           class="icon-btn"
@@ -382,18 +381,22 @@
 
         <!-- ============ VIEW 1: OVERVIEW ============ -->
         <div id="viewOverview" role="tabpanel" aria-labelledby="tabOverview">
-          <div class="view-intro" id="introOverview" aria-label="Workspace introduction">
+          <div class="view-intro is-compact" id="introOverview" aria-label="Workspace introduction">
             <span class="vi-step">1</span>
             <div class="vi-body">
               <div class="vi-title">
                 Overview <span class="vi-tag">Start here</span>
+                <span class="vi-hint"
+                  >What the latest observations show &amp; how drought has
+                  changed.</span
+                >
                 <button
                   type="button"
                   class="icon-btn vi-toggle"
                   data-intro="overview"
-                  aria-expanded="true"
+                  aria-expanded="false"
                   aria-controls="introDetailOverview"
-                  aria-label="Minimise workspace introduction"
+                  aria-label="Expand workspace introduction"
                   title="Minimise / expand"
                 >
                   <svg
@@ -428,12 +431,8 @@
               </div>
             </div>
             <div class="vi-actions">
-              <button
-                type="button"
-                class="btn btn-ghost"
-                data-modal="modalGuide"
-              >
-                How to use this dashboard
+              <button type="button" class="vi-link" data-doc="doc-a-about">
+                About &amp; methods
               </button>
             </div>
           </div>
@@ -815,18 +814,21 @@
           aria-labelledby="tabHistorical"
           hidden
         >
-          <div class="view-intro" aria-label="Workspace introduction">
+          <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step">2</span>
             <div class="vi-body">
               <div class="vi-title">
                 Historical Analysis
+                <span class="vi-hint"
+                  >Frequency, duration, severity &amp; long-term trend.</span
+                >
                 <button
                   type="button"
                   class="icon-btn vi-toggle"
                   data-intro="historical"
-                  aria-expanded="true"
+                  aria-expanded="false"
                   aria-controls="introDetailHistorical"
-                  aria-label="Minimise workspace introduction"
+                  aria-label="Expand workspace introduction"
                   title="Minimise / expand"
                 >
                   <svg
@@ -851,11 +853,7 @@
               </div>
             </div>
             <div class="vi-actions">
-              <button
-                type="button"
-                class="btn btn-ghost"
-                data-modal="modalGuide"
-              >
+              <button type="button" class="vi-link" data-doc="doc-f-glossary">
                 Reading these statistics
               </button>
             </div>
@@ -1077,18 +1075,21 @@
 
         <!-- ============ VIEW 3: DROUGHT EVENTS ============ -->
         <div id="viewEvents" role="tabpanel" aria-labelledby="tabEvents" hidden>
-          <div class="view-intro" aria-label="Workspace introduction">
+          <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step">3</span>
             <div class="vi-body">
               <div class="vi-title">
                 Drought Events
+                <span class="vi-hint"
+                  >Every drought episode found by monthly runs analysis.</span
+                >
                 <button
                   type="button"
                   class="icon-btn vi-toggle"
                   data-intro="events"
-                  aria-expanded="true"
+                  aria-expanded="false"
                   aria-controls="introDetailEvents"
-                  aria-label="Minimise workspace introduction"
+                  aria-label="Expand workspace introduction"
                   title="Minimise / expand"
                 >
                   <svg
@@ -1114,11 +1115,7 @@
               </div>
             </div>
             <div class="vi-actions">
-              <button
-                type="button"
-                class="btn btn-ghost"
-                data-modal="modalGuide"
-              >
+              <button type="button" class="vi-link" data-doc="doc-e-methods">
                 How events are defined
               </button>
             </div>
@@ -1319,18 +1316,21 @@
           aria-labelledby="tabPropagation"
           hidden
         >
-          <div class="view-intro" aria-label="Workspace introduction">
+          <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step">4</span>
             <div class="vi-body">
               <div class="vi-title">
                 Propagation &amp; Relationships
+                <span class="vi-hint"
+                  >How indicators respond to one another, at what lag.</span
+                >
                 <button
                   type="button"
                   class="icon-btn vi-toggle"
                   data-intro="propagation"
-                  aria-expanded="true"
+                  aria-expanded="false"
                   aria-controls="introDetailPropagation"
-                  aria-label="Minimise workspace introduction"
+                  aria-label="Expand workspace introduction"
                   title="Minimise / expand"
                 >
                   <svg
@@ -1355,11 +1355,7 @@
               </div>
             </div>
             <div class="vi-actions">
-              <button
-                type="button"
-                class="btn btn-ghost"
-                data-modal="modalGuide"
-              >
+              <button type="button" class="vi-link" data-doc="doc-f-glossary">
                 Reading lag &amp; correlation
               </button>
             </div>
@@ -1538,18 +1534,22 @@
 
         <!-- ============ VIEW 5: DATA, METHODOLOGY & DOWNLOADS ============ -->
         <div id="viewData" role="tabpanel" aria-labelledby="tabData" hidden>
-          <div class="view-intro" aria-label="Workspace introduction">
+          <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step">5</span>
             <div class="vi-body">
               <div class="vi-title">
                 Data &amp; Methods
+                <span class="vi-hint"
+                  >Provenance, quality, methodology, glossary &amp;
+                  downloads.</span
+                >
                 <button
                   type="button"
                   class="icon-btn vi-toggle"
                   data-intro="data"
-                  aria-expanded="true"
+                  aria-expanded="false"
                   aria-controls="introDetailData"
-                  aria-label="Minimise workspace introduction"
+                  aria-label="Expand workspace introduction"
                   title="Minimise / expand"
                 >
                   <svg
@@ -1573,284 +1573,85 @@
                 </p>
               </div>
             </div>
-            <div class="vi-actions">
-              <button
-                type="button"
-                class="btn btn-ghost"
-                data-modal="modalGuide"
-              >
-                Open the user guide
-              </button>
-            </div>
           </div>
 
-          <!-- A: guide -->
-          <details class="panel acc-panel" id="guidePanel">
-            <summary class="panel-head">
-              <div class="panel-titles">
-                <h2 class="panel-title">How to use this dashboard</h2>
-              </div>
-            </summary>
-            <div class="guide-body">
-              <div class="guide-actions">
-                <button
-                  type="button"
-                  class="btn btn-ghost"
-                  data-modal="modalGuide"
-                >
-                  Open full guide
-                </button>
-                <button type="button" class="btn btn-ghost" data-dl="userguide">
-                  Download guide (Markdown)
-                </button>
-              </div>
-              <div class="guide-grid">
-                <div class="guide-card">
-                  <h3><span>1</span> Set the scope</h3>
-                  <p>
-                    Use the dark <b>Filters</b> panel to choose a geography (all
-                    India, state or district), a drought indicator and the
-                    analysis period. These three choices apply to every
-                    workspace and every export.
-                  </p>
-                </div>
-                <div class="guide-card">
-                  <h3><span>2</span> Read the snapshot</h3>
-                  <p>
-                    On <b>Overview</b>, the observation date drives the map, KPI
-                    cards, severity distribution, ranking and animation.
-                    <b>Latest</b> jumps to the newest observation;
-                    <b>Play</b> animates the record.
-                  </p>
-                </div>
-                <div class="guide-card">
-                  <h3><span>3</span> Analyse history</h3>
-                  <p>
-                    <b>Historical Analysis</b> answers “how often, how long, how
-                    severe, is it changing?”. <b>Drought Events</b> lists
-                    individual episodes; click a row for onset, termination and
-                    recovery.
-                  </p>
-                </div>
-                <div class="guide-card">
-                  <h3><span>4</span> Compare and export</h3>
-                  <p>
-                    <b>Propagation</b> compares indicators at different lags.
-                    Every table exports CSV with a reproducibility header;
-                    <b>Downloads</b> also provides GeoJSON, JSON metadata,
-                    documentation and citation.
-                  </p>
-                </div>
-              </div>
-
-              <p class="panel-note guide-note">
-                Tip: press <kbd>?</kbd> anywhere in the app to reopen this
-                guide. Deep links are supported:
-                <span class="mono">#overview</span>,
-                <span class="mono">#historical</span>,
-                <span class="mono">#events</span>,
-                <span class="mono">#propagation</span>,
-                <span class="mono">#data</span>.
-              </p>
+          <!-- Documentation centre: sections A-G below are the single source
+               of truth for About, guidance, dataset, quality, methodology,
+               glossary and download documentation. External help buttons
+               (header, other tabs) scroll here via goDoc(). -->
+          <nav class="doc-nav" aria-label="Documentation contents">
+            <span class="doc-nav-title">Contents</span>
+            <div class="doc-nav-links">
+              <button type="button" data-doc="doc-a-about">A &middot; About</button>
+              <button type="button" data-doc="doc-b-guide">B &middot; User guide</button>
+              <button type="button" data-doc="doc-c-dataset">C &middot; Dataset &amp; provenance</button>
+              <button type="button" data-doc="doc-d-quality">D &middot; Quality &amp; validation</button>
+              <button type="button" data-doc="doc-e-methods">E &middot; Complete methodology</button>
+              <button type="button" data-doc="doc-f-glossary">F &middot; Glossary</button>
+              <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citation</button>
             </div>
-          </details>
+          </nav>
 
-          <!-- A2: glossary -->
-          <details class="panel acc-panel" id="glossPanel">
+          <!-- A: About the dashboard -->
+          <details class="panel acc-panel doc-sec" id="doc-a-about">
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title">Glossary</h2>
+                <h2 class="panel-title"><span class="doc-letter">A</span>About the dashboard</h2>
                 <span class="panel-meta"
-                  >What each table shows and how to read every chart and
-                  statistic</span
+                  >Purpose, workspaces, technology and research
+                  positioning</span
                 >
-              </div>
-              <div class="panel-actions">
-                <span class="acc-hint" aria-hidden="true"></span>
-              </div>
-            </summary>
-            <div class="guide-body">
-              <h3 class="guide-h">What each table shows</h3>
-              <div class="table-help-grid">
-                <div class="table-help">
-                  <b
-                    >District-wise ranking <span>(Historical Analysis)</span></b
-                  >
-                  <p>
-                    One row per state/UT or district. <em>Mean indicator</em> is
-                    the area-weighted mean over the analysis period (season
-                    filter applies). <em>Drought-affected area</em> is the
-                    average share of area in mild-or-worse drought; for
-                    single-district rows it is the share of valid months in
-                    drought. <em>Drought months</em> counts months whose
-                    regional mean is ≤ the moderate threshold. Rows below 50%
-                    completeness are flagged and excluded from ranking.
-                  </p>
-                </div>
-                <div class="table-help">
-                  <b>Event catalogue <span>(Drought Events)</span></b>
-                  <p>
-                    One row per drought run. <em>Onset</em> and
-                    <em>Termination</em> are the first and last month of the
-                    run; <em>Duration</em> is run length;
-                    <em>Max intensity</em> is the driest month;
-                    <em>Cumulative severity</em> sums the deficit below the
-                    truncation level; <em>Recovery</em> is the number of months
-                    until the indicator first returns to ≥ 0.
-                    <em>Censored</em> events touch the edge of the record and
-                    are excluded from duration/severity rankings.
-                  </p>
-                </div>
-                <div class="table-help">
-                  <b>Dataset information <span>(Data &amp; Methods)</span></b>
-                  <p>
-                    The top table documents the build: data mode, region,
-                    spatial and temporal resolution, declared period, reference
-                    climatology, CRS, area method and provenance. The indicator
-                    table lists each indicator’s family, units, accumulation
-                    window, valid observations, missing share, availability
-                    window and latest observation.
-                  </p>
-                </div>
-                <div class="table-help">
-                  <b>Data quality <span>(Data &amp; Methods)</span></b>
-                  <p>
-                    A live validation report recomputed in the browser:
-                    duplicate district rows, invalid date columns, non-numeric
-                    values, unknown district identifiers and completeness within
-                    each indicator’s true availability window. Missing values
-                    are never imputed.
-                  </p>
-                </div>
-              </div>
-
-              <h3 class="guide-h">Reading the charts</h3>
-              <div class="guide-grid guide-grid-3">
-                <div class="guide-card compact">
-                  <b>Time series</b>
-                  <p>
-                    Navy line = area-weighted regional mean (or the selected
-                    district). Dotted red lines are drought-class thresholds;
-                    gaps are missing months, never interpolated. Optional OLS
-                    trend is descriptive only.
-                  </p>
-                </div>
-                <div class="guide-card compact">
-                  <b>Severity distribution</b>
-                  <p>
-                    Share of the region’s equal-area surface in each severity
-                    class at the selected date. Wet classes are combined;
-                    no-data area is reported separately.
-                  </p>
-                </div>
-                <div class="guide-card compact">
-                  <b>Evolution timeline</b>
-                  <p>
-                    Percentage of region area in mild-or-worse drought through
-                    the full record. Drag the slider to set the dashboard date,
-                    or press Play.
-                  </p>
-                </div>
-                <div class="guide-card compact">
-                  <b>Lag correlation</b>
-                  <p>
-                    Pearson r at lags −12…+12 months. A positive lag means
-                    indicator B responds after A. The diamond marks the largest
-                    |r|; the bar is a moving-block bootstrap 95% CI.
-                  </p>
-                </div>
-                <div class="guide-card compact">
-                  <b>Trend panel</b>
-                  <p>
-                    Mann–Kendall Z and Sen’s slope with a 90% rank CI. When
-                    serial autocorrelation is significant, a Hamed–Rao
-                    correction is applied and both results are reported.
-                  </p>
-                </div>
-                <div class="guide-card compact">
-                  <b>Correlation heatmap</b>
-                  <p>
-                    Pairwise r at each pair’s optimal lag. SPI/SPEI at different
-                    windows are correlated by construction — compare across
-                    families for propagation insight.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </details>
-
-          <!-- A: about the application -->
-          <details class="panel acc-panel" id="aboutPanel">
-            <summary class="panel-head">
-              <div class="panel-titles">
-                <h2 class="panel-title">About</h2>
-                <span class="panel-meta"
-                  >Application overview, workspaces and technology</span
-                >
-              </div>
-              <div class="panel-actions">
-                <button
-                  type="button"
-                  class="btn btn-ghost"
-                  data-modal="modalAbout"
-                >
-                  Open About dialog
-                </button>
               </div>
             </summary>
             <div class="about-body">
               <p class="about-lead">
                 An interactive, fully client-side geospatial platform for
                 exploring drought indicators across Indian districts, built for
-                historical analysis and research communication — not operational
-                monitoring.
+                historical analysis and research communication &mdash; not
+                operational monitoring.
+              </p>
+              <h3>Developer</h3>
+              <p>
+                Ankit Deshmukh, Ph.D. &mdash; Assistant Professor, Department of
+                Civil Engineering, Pandit Deendayal Energy University, India.
+                More research applications and publications:
+                <a
+                  href="https://ankitdeshmukh.com/"
+                  target="_blank"
+                  rel="noopener"
+                  >ankitdeshmukh.com</a
+                >.
               </p>
               <h3>Workspaces</h3>
               <ol>
                 <li>
-                  <em>Overview</em> — where is drought, how severe, how has it
-                  changed: map, summary statistics, time series, district
+                  <em>Overview</em> &mdash; where is drought, how severe, how has
+                  it changed: map, summary statistics, time series, district
                   ranking, animated drought evolution.
                 </li>
                 <li>
-                  <em>Historical Analysis</em> — frequency, duration, severity,
-                  long-term trends (Mann-Kendall / Sen) and recurrence over the
-                  analysis period.
+                  <em>Historical Analysis</em> &mdash; frequency, duration,
+                  severity, long-term trends (Mann-Kendall / Sen) and recurrence
+                  over the analysis period.
                 </li>
                 <li>
-                  <em>Drought Events</em> — the event catalogue and individual
-                  events: onset, termination, intensity, recovery, definition
-                  sensitivity.
+                  <em>Drought Events</em> &mdash; the event catalogue and
+                  individual events: onset, termination, intensity, recovery,
+                  definition sensitivity.
                 </li>
                 <li>
-                  <em>Propagation &amp; Relationships</em> — cross-indicator
-                  correlation, optimal lags and district-wise propagation
-                  patterns.
+                  <em>Propagation &amp; Relationships</em> &mdash;
+                  cross-indicator correlation, optimal lags and district-wise
+                  propagation patterns.
                 </li>
                 <li>
-                  <em>Data &amp; Methods</em> — about, provenance, quality,
-                  methodology and research-ready downloads with metadata.
-                </li>
-              </ol>
-              <h3>How to use</h3>
-              <ol>
-                <li>
-                  Set <em>geography</em>, <em>indicator</em> and
-                  <em>analysis period</em> in the left filter panel — these
-                  apply to every tab.
-                </li>
-                <li>
-                  Pick the <em>observation date</em> on the Overview tab to
-                  drive the map and snapshot statistics; press Play to animate
-                  the record.
-                </li>
-                <li>
-                  Click districts on the map to focus every analysis on that
-                  district; the selection persists across tabs.
+                  <em>Data &amp; Methods</em> &mdash; this documentation centre:
+                  about, provenance, quality, methodology, glossary and
+                  research-ready downloads with metadata.
                 </li>
               </ol>
               <h3>Current data mode</h3>
-              <p id="aboutDataModeTab">—</p>
+              <p id="aboutDataMode">&mdash;</p>
               <h3>Technology</h3>
               <p>
                 HTML5 / CSS3 / vanilla JavaScript (ES6+); Leaflet for
@@ -1859,16 +1660,211 @@
                 with CDN fallbacks. No frameworks, no backend, no database, no
                 API keys.
               </p>
+              <h3>Positioning and limitations</h3>
+              <p>
+                This is a <strong>historical research and communication
+                tool</strong>, not an operational drought-warning system:
+                outputs depend on the availability, quality, temporal coverage
+                and methodological assumptions of the underlying datasets, and
+                values are model/reanalysis-based estimates aggregated to
+                administrative districts &mdash; not official drought
+                declarations and not the sole basis for operational decisions.
+                See the disclaimer in the application footer and the validation
+                report in section&nbsp;D.
+              </p>
               <h3>Citation</h3>
-              <p class="mono small" id="aboutCitationTab">—</p>
+              <p class="mono small" id="aboutCitation">&mdash;</p>
             </div>
           </details>
 
-          <!-- A: dataset information -->
-          <details class="panel acc-panel" id="dataInfoPanel" open>
+          <!-- B: user guide -->
+          <details class="panel acc-panel doc-sec" id="doc-b-guide">
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title">Dataset information</h2>
+                <h2 class="panel-title"><span class="doc-letter">B</span>User guide</h2>
+                <span class="panel-meta"
+                  >Quick start, workspace map and how to read every
+                  output</span
+                >
+              </div>
+            </summary>
+            <div class="guide-body">
+              <div class="guide-actions">
+                <button type="button" class="btn btn-ghost" data-dl="userguide">
+                  Download guide (Markdown)
+                </button>
+              </div>
+              <p class="about-lead">
+                This dashboard turns district-month drought indicators into
+                maps, statistics, event catalogues and downloadable research
+                outputs. Everything runs in your browser &mdash; no account,
+                backend or API key is required.
+              </p>
+
+              <h3>Quick start</h3>
+              <ol class="guide-list">
+                <li>
+                  <b>Choose the scope.</b> Set <em>Geographic extent</em>,
+                  <em>State / UT</em>, <em>Drought indicator</em> and
+                  <em>Analysis period</em> in the dark filter panel. These are
+                  global: every tab, chart and export follows them.
+                </li>
+                <li>
+                  <b>Pick a date (Overview).</b> The observation date controls
+                  the map, KPI cards, severity distribution, district ranking
+                  and animation. Use <em>Latest</em> to jump to the most recent
+                  observation, or <em>Play</em> to animate the record.
+                </li>
+                <li>
+                  <b>Drill down.</b> Click a district on any map (or choose it
+                  in the filters) to focus the whole application on that
+                  district. The selection survives tab changes.
+                </li>
+                <li>
+                  <b>Go deeper.</b> Use <em>Historical Analysis</em> for
+                  frequency, duration, severity, trends and recurrence;
+                  <em>Drought Events</em> for individual episodes;
+                  <em>Propagation</em> for cross-indicator relationships.
+                </li>
+                <li>
+                  <b>Export.</b> Tables offer CSV; <em>Data &amp; Methods</em>
+                  offers long-format data, statistics, the event catalogue, JSON
+                  metadata, boundaries, map PNG and documentation. Every export
+                  embeds its analysis settings (section&nbsp;G).
+                </li>
+              </ol>
+
+              <h3>What each workspace is for</h3>
+              <table class="guide-table">
+                <thead>
+                  <tr>
+                    <th>Workspace</th>
+                    <th>Question it answers</th>
+                    <th>Key outputs</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><b>1 &middot; Overview</b></td>
+                    <td>
+                      What do the latest available observations indicate, how
+                      severe, and how have conditions changed?
+                    </td>
+                    <td>
+                      Date slider, KPI snapshot, choropleth, time series,
+                      severity distribution, district ranking, animated
+                      evolution.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>2 &middot; Historical Analysis</b></td>
+                    <td>
+                      How often, how long and how severely has drought occurred;
+                      is there a trend?
+                    </td>
+                    <td>
+                      Frequency, duration/severity maps, Mann&ndash;Kendall +
+                      Sen trend, recurrence, sortable ranking table.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>3 &middot; Drought Events</b></td>
+                    <td>
+                      Which discrete drought episodes occurred, and when did
+                      they recover?
+                    </td>
+                    <td>
+                      Event catalogue, onset timeline, duration distribution,
+                      event detail, definition-sensitivity panel.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>4 &middot; Propagation</b></td>
+                    <td>
+                      How do indicators respond to each other, at what lag, and
+                      where?
+                    </td>
+                    <td>
+                      Lagged correlation with bootstrap CI, dual series, 10&times;10
+                      heatmap, district lag map, single-date comparison.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>5 &middot; Data &amp; Methods</b></td>
+                    <td>
+                      What exactly is in the data, how was it produced, and how
+                      can I reuse it?
+                    </td>
+                    <td>
+                      Provenance, validation report, full methodology, glossary,
+                      downloads, citation.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h3>Reading the maps and KPI cards</h3>
+              <h4>Maps</h4>
+              <p>
+                Discrete colours follow the indicator&rsquo;s own class
+                thresholds in <span class="mono">metadata.json</span>; the
+                continuous mode interpolates the same palette. Hover for values,
+                click to select a district, and use the legend rail for class
+                ranges and the regional summary. Hatched grey = no data, never
+                zero.
+              </p>
+              <h4>KPI cards</h4>
+              <p>
+                <em>Drought-affected area</em> sums equal-area district surfaces
+                in mild-or-worse classes. <em>Severe + extreme area</em> is the
+                stricter subset. <em>Mean indicator</em> is area-weighted and
+                classified. <em>Districts in drought</em> counts districts at or
+                below the mild threshold. The delta compares with the previous
+                available month.
+              </p>
+
+              <h3>Uncertainty &amp; significance</h3>
+              <p>
+                Charts always report sample size. The trend test uses a 5%
+                significance level and a 90% Sen confidence interval.
+                Correlations report matched months and a moving-block bootstrap
+                95% CI that preserves serial dependence. Statistical
+                significance is not proof of causation.
+              </p>
+
+              <h3>Data caveats</h3>
+              <p>
+                This is a research dataset, not an operational drought
+                declaration. Indicator values depend on the reference
+                climatology, the aggregation method and the underlying
+                model/reanalysis products. Read section&nbsp;C (provenance) and
+                section&nbsp;E (methodology) before citing a result.
+              </p>
+
+              <h3>Keyboard &amp; navigation</h3>
+              <p>
+                Tabs support <kbd>&larr;</kbd>/<kbd>&rarr;</kbd>.
+                <kbd>?</kbd> opens this guide from anywhere in the
+                application. Each workspace has a stable URL hash so you can
+                deep-link (<span class="mono">#overview</span>,
+                <span class="mono">#historical</span>,
+                <span class="mono">#events</span>,
+                <span class="mono">#propagation</span>,
+                <span class="mono">#data</span>, or a section of this page such
+                as <span class="mono">#data/e-methods</span>) and refresh
+                without losing the view.
+              </p>
+              <button type="button" class="doc-top" data-doc="doc-top">
+                &uarr; Back to top
+              </button>
+            </div>
+          </details>
+
+          <!-- C: dataset and provenance -->
+          <details class="panel acc-panel doc-sec" id="doc-c-dataset" open>
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">C</span>Dataset and data provenance</h2>
                 <span class="panel-meta"
                   >From data/metadata.json &middot; single source of truth</span
                 >
@@ -1876,11 +1872,11 @@
             </summary>
             <p class="table-help">
               <b>What these tables show:</b> the build contract (top) and
-              per-indicator availability (bottom). “Valid obs.” and “Missing”
-              are computed from the full district × month matrix; the
-              observation window is the true first–last valid month, which can
-              be shorter than the declared period (e.g. VCI starts with MODIS in
-              2000).
+              per-indicator availability (bottom). &ldquo;Valid obs.&rdquo; and
+              &ldquo;Missing&rdquo; are computed from the full district &times;
+              month matrix; the observation window is the true first&ndash;last
+              valid month, which can be shorter than the declared period (e.g.
+              VCI starts with MODIS in 2000).
             </p>
             <div class="table-scroll">
               <table class="comp-table meta-table" id="metaTable">
@@ -1910,13 +1906,16 @@
                 <tbody id="indTableBody"></tbody>
               </table>
             </div>
+            <button type="button" class="doc-top" data-doc="doc-top">
+              &uarr; Back to top
+            </button>
           </details>
 
-          <!-- B: data quality -->
-          <details class="panel acc-panel" id="qualityPanel" open>
+          <!-- D: data quality and validation -->
+          <details class="panel acc-panel doc-sec" id="doc-d-quality" open>
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title">Data quality</h2>
+                <h2 class="panel-title"><span class="doc-letter">D</span>Data quality and validation</h2>
                 <span class="panel-meta"
                   >Per-indicator validation, recomputed in your browser at load
                   time</span
@@ -1936,22 +1935,25 @@
               >
             </div>
             <p class="panel-note">
-              Checks: missing values, duplicate district–date records, invalid
-              dates, invalid indicator values, missing district identifiers,
-              boundary/data identifier consistency, completeness within the
-              availability window. Districts absent from a dataset render as
-              no-data on maps and are never imputed.
+              Checks: missing values, duplicate district&ndash;date records,
+              invalid dates, invalid indicator values, missing district
+              identifiers, boundary/data identifier consistency, completeness
+              within the availability window. Districts absent from a dataset
+              render as no-data on maps and are never imputed.
             </p>
+            <button type="button" class="doc-top" data-doc="doc-top">
+              &uarr; Back to top
+            </button>
           </details>
 
-          <!-- C: methodology — one accordion per topic -->
-          <details class="panel acc-panel" id="methDefs">
+          <!-- E: complete methodology (one collapsible subsection topic) -->
+          <details class="panel acc-panel doc-sec" id="doc-e-methods">
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title">Methodology &middot; Indicators, definitions and thresholds</h2>
+                <h2 class="panel-title"><span class="doc-letter">E</span>Complete methodology</h2>
                 <span class="panel-meta"
-                  >Standardisation windows, reference period and the class
-                  thresholds applied everywhere</span
+                  >Every formula, threshold, assumption and reference applied in
+                  this application</span
                 >
               </div>
               <div class="panel-actions">
@@ -1961,146 +1963,545 @@
               </div>
             </summary>
             <div class="meth-body">
-              <h3>1 &middot; Indicators and accumulation periods</h3>
-              <p>
-                <strong>SPI</strong> (McKee et al., 1993) standardises
-                accumulated precipitation over 1/3/6/12-month windows against
-                the per-calendar-month climatology of the reference period;
-                <strong>SPEI</strong> (Vicente-Serrano et al., 2010) applies the
-                same standardization to the climatic water balance (P &minus;
-                PET). The <strong>soil-moisture anomaly</strong> (SMA) is the
-                percent departure of root-zone-equivalent moisture from its
-                seasonal climatology; the
-                <strong>Vegetation Condition Index</strong> (VCI; Kogan, 1995)
-                rescales vegetation greenness between historical stress and
-                optimum. Reference period:
-                <span id="methReferencePeriod">—</span>. A fixed reference
-                period is essential: SPI/SPEI values are only comparable within
-                it.
+              <p class="panel-note">
+                Thirteen topics below cover: indicator calculation and
+                standardisation; classification thresholds; spatial
+                aggregation; drought frequency, duration and severity; runs
+                analysis; censoring, intensity, severity and recovery; trend
+                analysis; recurrence; temporal and spatial propagation;
+                bootstrap lags; missing data and uncertainty; and the
+                methodological assumptions. The Markdown download reproduces
+                this methodology with the full reference list.
               </p>
-              <h3>2 &middot; Classification thresholds</h3>
-              <p>
-                Values are classified with the conventional SPI/SPEI thresholds
-                below (class edges inclusive on the dry side, e.g. &minus;2.00
-                is extreme drought). SMA and VCI use their own
-                bounded-percentage thresholds from the same metadata — reusing
-                SPI thresholds on them would be invalid. These thresholds are
-                identical in every map, chart, table and export of this
-                application.
-              </p>
-              <table class="meth-table" id="methClassTable"></table>
+
+              <details class="doc-sub">
+                <summary>E1 &middot; Indicator calculation and standardisation (SPI, SPEI, SMA, VCI)</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    <strong>SPI</strong> (McKee et al., 1993) standardises
+                    accumulated precipitation over 1/3/6/12-month windows against
+                    the per-calendar-month climatology of the reference period;
+                    <strong>SPEI</strong> (Vicente-Serrano et al., 2010) applies
+                    the same standardization to the climatic water balance
+                    (P &minus; PET). The <strong>soil-moisture
+                    anomaly</strong> (SMA) is the percent departure of
+                    root-zone-equivalent moisture from its seasonal climatology;
+                    the <strong>Vegetation Condition Index</strong> (VCI; Kogan,
+                    1995) rescales vegetation greenness between historical
+                    stress and optimum. Reference period:
+                    <span id="methReferencePeriod">&mdash;</span>. A fixed
+                    reference period is essential: SPI/SPEI values are only
+                    comparable within it.
+                  </p>
+                  <p class="side-note">
+                    Standardization uses the per-calendar-month distribution of
+                    the reference period; SPI fits a gamma distribution with a
+                    mixed model for zero-rain months and SPEI fits a
+                    log-logistic distribution (L-moment estimator as in the
+                    reference SPEI package), with Gringorten plotting positions
+                    as fallback &mdash; see docs/methodology.md &sect;3.1.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E2 &middot; Classification thresholds</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    Values are classified with the conventional SPI/SPEI
+                    thresholds below (class edges inclusive on the dry side,
+                    e.g. &minus;2.00 is extreme drought). SMA and VCI use their
+                    own bounded-percentage thresholds from the same metadata
+                    &mdash; reusing SPI thresholds on them would be invalid.
+                    These thresholds are identical in every map, chart, table
+                    and export of this application.
+                  </p>
+                  <table class="meth-table" id="methClassTable"></table>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E3 &middot; Spatial aggregation and area-weighted calculations</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    Regional means are <strong>area-weighted</strong> with
+                    precomputed district surface areas; affected-area statistics
+                    sum equal-area district surfaces. Areas were precomputed in
+                    a Lambert Azimuthal Equal-Area projection centred on India
+                    (22.5&deg;N, 79.5&deg;E) &mdash; never from degree-coordinate
+                    arithmetic. Served geometry is simplified; statistical areas
+                    come from the same simplified geometry, so reported areas
+                    are internally consistent with the map.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E4 &middot; Drought frequency, duration and severity</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    <strong>Drought frequency</strong> counts months in which
+                    the regional mean is at or below the moderate-drought
+                    truncation level (season filters apply to frequency
+                    statistics). <strong>Duration</strong> is the run length of
+                    consecutive months below the truncation level;
+                    <strong>severity</strong> is the cumulative deficit below
+                    that level over the run. Keep two quantities apart when
+                    reading outputs:
+                  </p>
+                  <ul>
+                    <li>
+                      <span class="mono">%</span> of
+                      <strong>valid months in drought</strong> (a district
+                      drought-month frequency &mdash; how often a district is in
+                      drought over the analysis period), and
+                    </li>
+                    <li>
+                      <span class="mono">%</span> of
+                      <strong>area in drought</strong> (a spatial share at a
+                      given date or averaged over the period &mdash; how much of
+                      the region's equal-area surface is in drought classes).
+                    </li>
+                  </ul>
+                  <p>
+                    The ranking table column <em>Drought-affected area</em> is
+                    the area share; <em>Drought months</em> is the temporal
+                    frequency. The Event Explorer sensitivity panel re-runs the
+                    catalogue with alternative minimum durations or truncation
+                    levels; the default definition is always annotated and
+                    non-default results are visually separated.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E5 &middot; Drought event identification and runs analysis</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    Events are identified by <strong>runs analysis</strong>
+                    (Yevjevich, 1967) on the continuous monthly series: a run of
+                    at least 3 consecutive months at or below the truncation
+                    level (upper bound of the moderate-drought class:
+                    &minus;1.0 for SPI/SPEI, &minus;15% for SMA, 30% for VCI).
+                    Using the class edge keeps event identification consistent
+                    with the classification legend for every indicator.
+                    Missing months break runs &mdash; they are never
+                    interpolated, and no carry-forward is applied. Events touching
+                    the record or period edge are flagged <em>censored</em> and
+                    reported separately from complete events.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E6 &middot; Event censoring, intensity, cumulative severity and recovery</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    The per-district catalogue lists onset, termination,
+                    duration, maximum intensity (the most negative value),
+                    cumulative severity <span class="mono"
+                      >&Sigma;(truncation &minus; value)</span
+                    > and mean intensity (severity &divide; duration) of every
+                    run. Events that touch the start or end of the available
+                    record (or the analysis-period edge) are flagged
+                    <strong>censored</strong> &mdash; their true onset or
+                    termination may lie outside the observed window &mdash; and
+                    are excluded from duration/severity ranking while remaining
+                    listed.
+                  </p>
+                  <p>
+                    <strong>Recovery</strong> counts the months from an event's
+                    end to the first value &ge; 0. Note the distinction:
+                    the default view treats recovery as a
+                    <strong>return to neutral conditions</strong> (indicator
+                    &ge; 0), which is stricter than merely passing back above
+                    the drought threshold; &mdash; means the record ends first.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E7 &middot; Trend analysis (Mann&ndash;Kendall, Sen's slope, Hamed&ndash;Rao)</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    The Historical tab reports the non-parametric
+                    <strong>Mann-Kendall</strong> test (tie-corrected variance)
+                    with <strong>Sen's slope</strong> and its rank-based 90%
+                    confidence interval (Gilbert, 1987, &sect;17.3 &mdash; the
+                    standard two-sided interval for the rank-based estimate).
+                    The five-percent significance level applies to the
+                    Mann&ndash;Kendall test. Monthly drought indices are
+                    serially autocorrelated, which inflates naive significance:
+                    when significant autocorrelation exists, the
+                    <strong>Hamed-Rao (1998) variance correction</strong>
+                    (effective sample size from the significant
+                    autocorrelations of the Sen-detrended series) is applied and
+                    both the corrected and uncorrected results are shown.
+                    Default input is annual area-weighted means (12 valid months
+                    averaged per year); monthly granularity is available but
+                    strongly autocorrelated.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E8 &middot; Recurrence analysis</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    Recurrence statistics are <strong>empirical and
+                    non-parametric</strong> on the regional event sequence:
+                    mean and median inter-arrival times between event onsets,
+                    and severity-exceedance return periods computed as
+                    observation years &divide; number of events reaching an
+                    empirical severity quantile (Q50/Q75/Q90, type-7 quantile).
+                    No distribution is fitted; these point estimates do not
+                    quantify their own uncertainty and are labelled indicative
+                    only. With few events the estimates carry wide, unquantified
+                    uncertainty.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E9 &middot; Temporal propagation and cross-correlation</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    Cross-indicator relationships use Pearson correlation on
+                    <strong>matched months only</strong> (pairwise deletion; VCI
+                    contributes from 2000-02 onward). Correlations run at lags
+                    &minus;12&hellip;+12 months; the lag convention pairs
+                    A[t] with B[t+h], so a positive optimal lag means indicator
+                    B responds h months after A. The optimal lag maximises |r|
+                    over &minus;12&hellip;+12 months with a minimum of 30
+                    matched pairs.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E10 &middot; Optimal lag selection and bootstrap confidence intervals</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    Confidence intervals use a <strong>moving-block
+                    bootstrap</strong> (95%, 1&nbsp;000 resamples, block length
+                    n<sup>1/3</sup> capped at 24, fixed seed 20261103 for
+                    reproducibility, percentile method) that preserves serial
+                    dependence by resampling blocks jointly. Nominal t-based
+                    p-values are shown for reference but treat months as
+                    independent.
+                  </p>
+                  <p>
+                    <em>Selection caveat:</em> the interval is computed at the
+                    chosen optimal lag, which is itself selected as the maximum
+                    |r| across candidate lags; the reported CI therefore does
+                    not account for that cross-lag selection, and intervals at
+                    or near the optimum should be read slightly conservatively.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E11 &middot; Spatial propagation and indicator relationships</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    District-wise optimal lags are mapped from the temporal
+                    analysis; the heatmap shows pairwise r at each pair's
+                    optimal lag (SPI/SPEI at different accumulation windows are
+                    correlated by construction &mdash; compare across families
+                    for propagation insight). The single-date spatial
+                    comparison computes agreement between two indicators over
+                    <strong>matched dates and matched units only</strong>
+                    (pairwise deletion): Pearson r, r&sup2;, RMSE and bias
+                    (mean of B&minus;A), with n and the count of excluded
+                    districts displayed next to the scatter. The difference view
+                    maps B&minus;A in native units on a diverging ramp; when the
+                    two families differ (z-score vs %) the contrast mixes units
+                    and is labelled as such.
+                  </p>
+                  <p>
+                    Correlation is never interpreted as causation; streamflow
+                    and groundwater propagation sections are explicitly marked
+                    unavailable &mdash; the dataset contains no such
+                    observations and none are simulated.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E12 &middot; Missing data and uncertainty treatment</summary>
+                <div class="doc-sub-body">
+                  <p>
+                    Missing district-months are never imputed, interpolated, or
+                    silently treated as normal. Charts show gaps; maps style
+                    missing units as no-data; statistics use valid observations
+                    only and always report the valid count; tables show
+                    completeness and flag sparse rows (&lt; 50%). KPI cards show
+                    N/A rather than derived placeholders. Sample size is
+                    always reported: charts show valid counts, tables show
+                    completeness, correlations show matched months.
+                  </p>
+                </div>
+              </details>
+
+              <details class="doc-sub">
+                <summary>E13 &middot; Methodological assumptions and limitations</summary>
+                <div class="doc-sub-body">
+                  <ul>
+                    <li>
+                      Event statistics depend on the stated truncation level and
+                      minimum duration; different choices will shift counts (the
+                      sensitivity panel quantifies this).
+                    </li>
+                    <li>
+                      SMA is a land-surface reanalysis proxy, not observed
+                      hydrological drought; no streamflow or groundwater
+                      observations exist in this dataset.
+                    </li>
+                    <li>
+                      Correlation and lag statistics are associations, not
+                      causal claims; SPI/SPEI at different windows correlate by
+                      construction.
+                    </li>
+                    <li>
+                      Areal statistics use the same simplified geometry served
+                      for rendering; boundaries are community-maintained
+                      2011-census-demarcation districts, generalised for web
+                      delivery, not authoritative for legal boundary
+                      determination and do not reflect later reorganisations.
+                    </li>
+                    <li>
+                      Maps' continuous colour scale is a linear interpolation
+                      between class-anchor colours (a visual aid); all
+                      statistics use the discrete classes.
+                    </li>
+                    <li>
+                      No claim of real-time monitoring: this is a historical and
+                      analytical explorer, not an operational warning system.
+                    </li>
+                    <li>
+                      Observed values are model/reanalysis-based estimates;
+                      read the underlying dataset documentation in
+                      section&nbsp;C before citing a number.
+                    </li>
+                  </ul>
+                </div>
+              </details>
+              <button type="button" class="doc-top" data-doc="doc-top">
+                &uarr; Back to top
+              </button>
             </div>
           </details>
 
-          <details class="panel acc-panel" id="methStats">
+          <!-- F: glossary and interpretation -->
+          <details class="panel acc-panel doc-sec" id="doc-f-glossary">
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title">Methodology &middot; Statistical methods</h2>
+                <h2 class="panel-title"><span class="doc-letter">F</span>Glossary and interpretation</h2>
                 <span class="panel-meta"
-                  >Spatial aggregation, trend testing and the treatment of
-                  missing observations</span
+                  >What each table shows and how to read every chart and
+                  statistic</span
                 >
               </div>
             </summary>
-            <div class="meth-body">
-              <h3>3 &middot; Spatial aggregation and area computation</h3>
-              <p>
-                Regional means are <strong>area-weighted</strong> with
-                precomputed district surface areas; affected-area statistics sum
-                equal-area district surfaces. Areas were precomputed in a
-                Lambert Azimuthal Equal-Area projection centred on India
-                (22.5&deg;N, 79.5&deg;E) — never from degree-coordinate
-                arithmetic. Served geometry is simplified; statistical areas
-                come from the same simplified geometry, so reported areas are
-                internally consistent with the map.
-              </p>
-              <h3>5 &middot; Trend analysis</h3>
-              <p>
-                The Historical tab reports the non-parametric
-                <strong>Mann-Kendall</strong> test (tie-corrected variance) with
-                <strong>Sen's slope</strong> and its rank-based 90% confidence
-                interval. Monthly drought indices are serially autocorrelated,
-                which inflates naive significance: when significant
-                autocorrelation exists, the
-                <strong>Hamed-Rao (1998) variance correction</strong> (effective
-                sample size from the significant autocorrelations of the
-                Sen-detrended series) is applied and both the corrected and
-                uncorrected results are shown. Default input is annual
-                area-weighted means (12 valid months averaged per year); monthly
-                granularity is available but strongly autocorrelated.
-              </p>
-              <h3>7 &middot; Missing observations</h3>
-              <p>
-                Missing district-months are never imputed, interpolated, or
-                silently treated as normal. Charts show gaps; maps style missing
-                units as no-data; statistics use valid observations only and
-                always report the valid count; tables show completeness and flag
-                sparse rows (&lt; 50%). KPI cards show N/A rather than derived
-                placeholders.
-              </p>
-            </div>
-          </details>
-
-          <details class="panel acc-panel" id="methEvents">
-            <summary class="panel-head">
-              <div class="panel-titles">
-                <h2 class="panel-title">Methodology &middot; Drought event definitions</h2>
-                <span class="panel-meta"
-                  >Runs analysis, censoring and sensitivity scenarios</span
-                >
+            <div class="guide-body">
+              <h3 class="guide-h">What each table shows</h3>
+              <div class="table-help-grid">
+                <div class="table-help">
+                  <b
+                    >District-wise ranking <span>(Historical Analysis)</span></b
+                  >
+                  <p>
+                    One row per state/UT or district. <em>Mean indicator</em> is
+                    the area-weighted mean over the analysis period (season
+                    filter applies). <em>Drought-affected area</em> is the
+                    average share of area in mild-or-worse drought; for
+                    single-district rows it is the share of valid months in
+                    drought. <em>Drought months</em> counts months whose
+                    regional mean is &le; the moderate threshold. Rows below 50%
+                    completeness are flagged &ldquo;sparse&rdquo; and excluded
+                    from ranking.
+                  </p>
+                </div>
+                <div class="table-help">
+                  <b>Event catalogue <span>(Drought Events)</span></b>
+                  <p>
+                    One row per drought run. <em>Onset</em> and
+                    <em>Termination</em> are the first and last month of the
+                    run; <em>Duration</em> is run length;
+                    <em>Max intensity</em> is the driest month;
+                    <em>Cumulative severity</em> sums the deficit below the
+                    truncation level; <em>Recovery</em> is the number of months
+                    until the indicator first returns to &ge; 0.
+                    <em>Censored</em> events touch the edge of the record and
+                    are excluded from duration/severity rankings.
+                  </p>
+                </div>
+                <div class="table-help">
+                  <b>Dataset information <span>(Data &amp; Methods)</span></b>
+                  <p>
+                    The top table documents the build: data mode, region,
+                    spatial and temporal resolution, declared period, reference
+                    climatology, CRS, area method and provenance. The indicator
+                    table lists each indicator&rsquo;s family, units,
+                    accumulation window, valid observations, missing share,
+                    availability window and latest observation.
+                  </p>
+                </div>
+                <div class="table-help">
+                  <b>Comparison / agreement <span>(Propagation)</span></b>
+                  <p>
+                    The single-date comparison panel reports, for two indicators
+                    at the same month: <em>r (Pearson)</em> and <em>r&sup2;</em>
+                    across matched districts; <em>RMSE</em>; <em>Bias
+                    (B&minus;A)</em> and <em>n (matched)</em>. Pairwise deletion
+                    is used; nothing is imputed to make the sample look larger.
+                  </p>
+                </div>
+                <div class="table-help">
+                  <b>Data quality <span>(Data &amp; Methods)</span></b>
+                  <p>
+                    A live validation report recomputed in the browser:
+                    duplicate district rows, invalid date columns, non-numeric
+                    values, unknown district identifiers and completeness within
+                    each indicator&rsquo;s true availability window. Missing
+                    values are never imputed.
+                  </p>
+                </div>
               </div>
-            </summary>
-            <div class="meth-body">
-              <h3>4 &middot; Drought events</h3>
-              <p>
-                Events are identified by
-                <strong>runs analysis</strong> (Yevjevich, 1967) on the
-                continuous monthly series: a run of at least 3 consecutive
-                months at or below the truncation level (upper bound of the
-                moderate-drought class: &minus;1.0 for SPI/SPEI, &minus;15% for
-                SMA, 30% for VCI). Duration = run length; severity = cumulative
-                deficit below the truncation level; intensity = severity
-                &divide; duration. Missing months break runs — they are never
-                interpolated. Events touching the record or period edge are
-                flagged <em>censored</em> and reported separately from complete
-                events. The Event Explorer's sensitivity scenarios re-run the
-                catalogue with alternative thresholds/durations and are always
-                labelled as non-default.
-              </p>
-            </div>
-          </details>
 
-          <details class="panel acc-panel" id="methProp">
-            <summary class="panel-head">
-              <div class="panel-titles">
-                <h2 class="panel-title">Methodology &middot; Propagation and correlation</h2>
-                <span class="panel-meta"
-                  >Lagged relationships, bootstrap confidence intervals and
-                  their limits</span
-                >
+              <h3 class="guide-h">Reading the charts</h3>
+              <div class="guide-grid guide-grid-3">
+                <div class="guide-card compact">
+                  <b>Time series</b>
+                  <p>
+                    Navy line = area-weighted regional mean (or the selected
+                    district). Dotted red lines are drought-class thresholds;
+                    gaps are missing months, never interpolated. Optional OLS
+                    trend is descriptive only.
+                  </p>
+                </div>
+                <div class="guide-card compact">
+                  <b>Severity distribution</b>
+                  <p>
+                    Share of the region&rsquo;s equal-area surface in each
+                    severity class at the selected date. Wet classes are
+                    combined; no-data area is reported separately.
+                  </p>
+                </div>
+                <div class="guide-card compact">
+                  <b>Evolution timeline</b>
+                  <p>
+                    Percentage of region area in mild-or-worse drought through
+                    the full record. Drag the slider to set the dashboard date,
+                    or press Play.
+                  </p>
+                </div>
+                <div class="guide-card compact">
+                  <b>Frequency charts</b>
+                  <p>
+                    Frequency by year counts months below the truncation level
+                    (season filter applies); the district histogram shows the
+                    share of valid months in drought across districts &mdash;
+                    a frequency, not an area share.
+                  </p>
+                </div>
+                <div class="guide-card compact">
+                  <b>Lag correlation</b>
+                  <p>
+                    Pearson r at lags &minus;12&hellip;+12 months. A positive
+                    lag means indicator B responds after A. The diamond marks
+                    the largest |r|; the bar is a moving-block bootstrap 95% CI.
+                  </p>
+                </div>
+                <div class="guide-card compact">
+                  <b>Trend panel</b>
+                  <p>
+                    Mann&ndash;Kendall Z and Sen&rsquo;s slope with a 90% rank
+                    CI. When serial autocorrelation is significant, a
+                    Hamed&ndash;Rao correction is applied and both results are
+                    reported.
+                  </p>
+                </div>
+                <div class="guide-card compact">
+                  <b>Recurrence panel</b>
+                  <p>
+                    Empirical inter-arrival times and severity-exceedance return
+                    periods. No distribution is fitted; with few events these
+                    estimates carry wide, unquantified uncertainty.
+                  </p>
+                </div>
+                <div class="guide-card compact">
+                  <b>Correlation heatmap</b>
+                  <p>
+                    Pairwise r at each pair&rsquo;s optimal lag. SPI/SPEI at
+                    different windows are correlated by construction &mdash;
+                    compare across families for propagation insight.
+                  </p>
+                </div>
+                <div class="guide-card compact">
+                  <b>Sensitivity panel</b>
+                  <p>
+                    Event counts when the minimum duration or truncation level
+                    is changed. The default methodology is annotated; other
+                    points are explicitly alternative scenarios.
+                  </p>
+                </div>
               </div>
-            </summary>
-            <div class="meth-body">
-              <h3>6 &middot; Correlation and propagation</h3>
-              <p>
-                Cross-indicator relationships use Pearson correlation on
-                <strong>matched months only</strong> (pairwise deletion; VCI
-                contributes from 2000-02 onward). Optimal lag maximises |r| over
-                &minus;12…+12 months with a minimum of 30 pairs. Confidence
-                intervals use a <strong>moving-block bootstrap</strong> (95%, 1
-                000 resamples, block length n<sup>1/3</sup> capped at 24, fixed
-                seed 20261103 for reproducibility) that preserves serial
-                dependence. Correlation never implies causation; SMA is a
-                land-surface proxy, not observed hydrological drought.
+
+              <h3 class="guide-h">Key vocabulary</h3>
+              <div class="table-help-grid">
+                <div class="table-help">
+                  <b>Indicator units</b>
+                  <p>
+                    SPI/SPEI are dimensionless z-scores (population standard
+                    deviations from the climatological median, negative =
+                    deficit). SMA is a percent departure from the seasonal
+                    climatology; VCI is a percent rescaling of NDVI between
+                    historical stress and optimum (0&ndash;100).
+                  </p>
+                </div>
+                <div class="table-help">
+                  <b>Area-weighted mean</b>
+                  <p>
+                    The regional mean indicator value weighting each district by
+                    its precomputed equal-area surface &mdash; the convention
+                    used for every regional statistic in this application.
+                  </p>
+                </div>
+                <div class="table-help">
+                  <b>Drought-threshold recovery vs neutral</b>
+                  <p>
+                    Passing back above the mild-drought threshold end the event
+                    (runs analysis), while <em>Recovery</em> additionally waits
+                    for the indicator to reach &ge; 0 (fully neutral
+                    conditions); the difference is visible in longer recoveries.
+                  </p>
+                </div>
+                <div class="table-help">
+                  <b>Confidence intervals</b>
+                  <p>
+                    Trend intervals are rank-based 90% bounds on Sen&rsquo;s
+                    slope; lag intervals are 95% moving-block bootstrap
+                    percentile bounds that preserve serial dependence.
+                  </p>
+                </div>
+              </div>
+              <p class="panel-note guide-note">
+                The downloadable guide in section&nbsp;B
+                (<span class="mono">docs/user-guide.md</span>) reproduces this
+                glossary together with the full table-column reference.
               </p>
+              <button type="button" class="doc-top" data-doc="doc-top">
+                &uarr; Back to top
+              </button>
             </div>
           </details>
 
-          <!-- D: downloads -->
-          <details class="panel acc-panel" id="dlPanel">
+          <!-- G: downloads, reproducibility and citation -->
+          <details class="panel acc-panel doc-sec" id="doc-g-downloads">
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title">Downloads and citation</h2>
+                <h2 class="panel-title"><span class="doc-letter">G</span>Downloads, reproducibility and citation</h2>
                 <span class="panel-meta"
                   >All exports are generated client-side from the loaded dataset
                   &middot; every CSV includes a reproducibility metadata
@@ -2109,11 +2510,26 @@
               </div>
             </summary>
             <div class="downloads" id="downloadsTab"></div>
+            <p class="panel-note">
+              Every CSV begins with <span class="mono">#</span> comment lines
+              recording the indicator, geography, dataset and analysis periods,
+              reference period, methodology version, data mode/seed, source and
+              export timestamp. To reproduce a result externally, keep the
+              exported metadata together with: the indicator id and dataset
+              version (<span class="mono">methodology_version</span>), the
+              geographic extent and selected region/district, the observation
+              date (<span class="mono">dateIdx</span>) for snapshot statistics,
+              the analysis period and season, the event threshold and minimum
+              duration, and the trend/correlation settings where used.
+            </p>
             <div class="dl-citation">
               <h3 class="dl-cite-h">Version and citation</h3>
-              <p class="mono small" id="methCitation">—</p>
-              <p class="small" id="methVersion">—</p>
+              <p class="mono small" id="methCitation">&mdash;</p>
+              <p class="small" id="methVersion">&mdash;</p>
             </div>
+            <button type="button" class="doc-top" data-doc="doc-top">
+              &uarr; Back to top
+            </button>
           </details>
         </div>
 
@@ -2211,275 +2627,6 @@
       </main>
     </div>
 
-    <!-- ======================= MODALS ======================= -->
-    <div
-      class="modal-scrim"
-      id="modalAbout"
-      hidden
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modalAboutTitle"
-    >
-      <div class="modal">
-        <button
-          type="button"
-          class="icon-btn modal-close modal-close-float"
-          data-close
-          aria-label="Close dialog"
-        >
-          &times;
-        </button>
-        <div class="modal-head">
-          <h2 id="modalAboutTitle">About this application</h2>
-        </div>
-        <div class="modal-body">
-          <p class="lead">
-            An interactive, fully client-side geospatial platform for exploring
-            drought indicators across Indian districts, built for historical
-            analysis and research communication &mdash; not operational
-            monitoring.
-          </p>
-          <h3>Workspaces</h3>
-          <ol>
-            <li>
-              <em>Overview</em> — where is drought, how severe, how has it
-              changed: map, summary statistics, time series, district ranking,
-              animated drought evolution.
-            </li>
-            <li>
-              <em>Historical Analysis</em> — frequency, duration, severity,
-              long-term trends (Mann-Kendall / Sen) and recurrence over the
-              analysis period.
-            </li>
-            <li>
-              <em>Drought Events</em> — the event catalogue and individual
-              events: onset, termination, intensity, recovery, definition
-              sensitivity.
-            </li>
-            <li>
-              <em>Propagation &amp; Relationships</em> — cross-indicator
-              correlation, optimal lags and district-wise propagation patterns.
-            </li>
-            <li>
-              <em>Data &amp; Methods</em> — provenance, quality, methodology and
-              research-ready downloads with metadata.
-            </li>
-          </ol>
-          <h3>How to use</h3>
-          <ol>
-            <li>
-              Set <em>geography</em>, <em>indicator</em> and
-              <em>analysis period</em> in the left filter panel — these apply to
-              every tab.
-            </li>
-            <li>
-              Pick the <em>observation date</em> on the Overview tab to drive
-              the map and snapshot statistics.
-            </li>
-            <li>
-              Click districts on the map to focus every analysis on that
-              district; the selection persists across tabs.
-            </li>
-          </ol>
-          <h3>Current data mode</h3>
-          <p id="aboutDataMode">—</p>
-          <h3>Technology</h3>
-          <p>
-            HTML5 / CSS3 / vanilla JavaScript (ES6+); Leaflet for cartography;
-            Plotly (cartesian build) for scientific charts; PapaParse for CSV
-            parsing. Vendor libraries are bundled locally with CDN fallbacks. No
-            frameworks, no backend, no database, no API keys.
-          </p>
-          <h3>Citation</h3>
-          <p class="mono small" id="aboutCitation">—</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ======================= GUIDE MODAL ======================= -->
-    <div
-      class="modal-scrim"
-      id="modalGuide"
-      hidden
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modalGuideTitle"
-    >
-      <div class="modal modal-wide">
-        <button
-          type="button"
-          class="icon-btn modal-close modal-close-float"
-          data-close
-          aria-label="Close guide"
-        >
-          &times;
-        </button>
-        <div class="modal-head">
-          <h2 id="modalGuideTitle">
-            How to use the Drought Intelligence Explorer
-          </h2>
-        </div>
-        <div class="modal-body">
-          <p class="lead">
-            This dashboard turns district-month drought indicators into maps,
-            statistics, event catalogues and downloadable research outputs.
-            Everything runs in your browser — no account, backend or API key is
-            required.
-          </p>
-
-          <h3>Quick start</h3>
-          <ol class="guide-list">
-            <li>
-              <b>Choose the scope.</b> Set <em>Geographic extent</em>,
-              <em>State / UT</em>, <em>Drought indicator</em> and
-              <em>Analysis period</em> in the dark filter panel. These are
-              global: every tab, chart and export follows them.
-            </li>
-            <li>
-              <b>Pick a date (Overview).</b> The observation date controls the
-              map, KPI cards, severity distribution, district ranking and
-              animation. Use <em>Latest</em> to jump to the most recent
-              observation, or <em>Play</em> to animate the record.
-            </li>
-            <li>
-              <b>Drill down.</b> Click a district on any map (or choose it in
-              the filters) to focus the whole application on that district. The
-              selection survives tab changes.
-            </li>
-            <li>
-              <b>Go deeper.</b> Use <em>Historical Analysis</em> for frequency,
-              duration, severity, trends and recurrence;
-              <em>Drought Events</em> for individual episodes;
-              <em>Propagation</em> for cross-indicator relationships.
-            </li>
-            <li>
-              <b>Export.</b> Tables offer CSV;
-              <em>Data &amp; Methods</em> offers long-format data, statistics,
-              the event catalogue, JSON metadata, boundaries, map PNG and
-              documentation. Every export embeds its analysis settings.
-            </li>
-          </ol>
-
-          <h3>What each workspace is for</h3>
-          <table class="guide-table">
-            <thead>
-              <tr>
-                <th>Workspace</th>
-                <th>Question it answers</th>
-                <th>Key outputs</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><b>1 · Overview</b></td>
-                <td>
-                  What do the latest available observations indicate, how
-                  severe, and how have conditions changed?
-                </td>
-                <td>
-                  Date slider, KPI snapshot, choropleth, time series, severity
-                  distribution, district ranking, animated evolution.
-                </td>
-              </tr>
-              <tr>
-                <td><b>2 · Historical Analysis</b></td>
-                <td>
-                  How often, how long and how severely has drought occurred; is
-                  there a trend?
-                </td>
-                <td>
-                  Frequency, duration/severity maps, Mann–Kendall + Sen trend,
-                  recurrence, sortable ranking table.
-                </td>
-              </tr>
-              <tr>
-                <td><b>3 · Drought Events</b></td>
-                <td>
-                  Which discrete drought episodes occurred, and when did they
-                  recover?
-                </td>
-                <td>
-                  Event catalogue, onset timeline, duration distribution, event
-                  detail, definition-sensitivity panel.
-                </td>
-              </tr>
-              <tr>
-                <td><b>4 · Propagation</b></td>
-                <td>
-                  How do indicators respond to each other, at what lag, and
-                  where?
-                </td>
-                <td>
-                  Lagged correlation with bootstrap CI, dual series, 10×10
-                  heatmap, district lag map, single-date comparison.
-                </td>
-              </tr>
-              <tr>
-                <td><b>5 · Data &amp; Methods</b></td>
-                <td>
-                  What exactly is in the data, how was it produced, and how can
-                  I reuse it?
-                </td>
-                <td>
-                  Provenance, validation report, full methodology, glossary,
-                  downloads, citation.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <h3>How to read the outputs</h3>
-          <div class="guide-cols">
-            <div>
-              <h4>Maps</h4>
-              <p>
-                Discrete colours follow the indicator’s own class thresholds in
-                <span class="mono">metadata.json</span>; the continuous mode
-                interpolates the same palette. Hover for values, click to select
-                a district, and use the legend rail for class ranges and the
-                regional summary. Hatched grey = no data, never zero.
-              </p>
-              <h4>KPI cards</h4>
-              <p>
-                <em>Drought-affected area</em> sums equal-area district surfaces
-                in mild-or-worse classes. <em>Severe + extreme area</em> is the
-                stricter subset. <em>Mean indicator</em> is area-weighted and
-                classified. <em>Districts in drought</em> counts districts at or
-                below the mild threshold. The delta compares with the previous
-                available month.
-              </p>
-            </div>
-            <div>
-              <h4>Uncertainty &amp; significance</h4>
-              <p>
-                Charts always report sample size. The trend test uses a 5%
-                significance level and a 90% Sen confidence interval.
-                Correlations report matched months and a moving-block bootstrap
-                95% CI that preserves serial dependence. Statistical
-                significance is not proof of causation.
-              </p>
-              <h4>Data caveats</h4>
-              <p>
-                This is a research dataset, not an operational drought
-                declaration. Indicator values depend on the reference
-                climatology, the aggregation method and the underlying
-                model/reanalysis products. Read the provenance banner and the
-                methodology before citing a result.
-              </p>
-            </div>
-          </div>
-
-          <h3>Keyboard &amp; navigation</h3>
-          <p>
-            Tabs support <kbd>←</kbd>/<kbd>→</kbd>. <kbd>Esc</kbd> closes
-            dialogs. Press <kbd>?</kbd> to reopen this guide. Each workspace has
-            a stable URL hash so you can deep-link or refresh without losing the
-            view.
-          </p>
-        </div>
-      </div>
-    </div>
-
     <!-- toast stack -->
     <div
       class="toast-stack"
@@ -2538,7 +2685,7 @@
           startedAt: Date.now(),
         };
 
-        var ASSET_VERSION = "2026-11-05a";
+        var ASSET_VERSION = "2026-11-05c";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

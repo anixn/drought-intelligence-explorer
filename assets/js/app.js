@@ -19,7 +19,8 @@
  *                      marked unavailable hydrological-drought section.
  *      Data & Methods— metadata tables, data quality, methodology,
  *                      reproducible downloads.
- *  - Modals, fullscreen, mobile drawer, toasts, keyboard accessibility.
+ *  - Doc navigation (Data & Methods sections), fullscreen, mobile drawer,
+ *    toasts, keyboard accessibility.
  * =========================================================================== */
 (function () {
   'use strict';
@@ -213,26 +214,62 @@
 
   function routeFromHash() {
     const h = (location.hash || '').replace('#', '');
-    switchTab(TABS.some((t) => t.id === h) ? h : 'overview', false);
+    const slash = h.indexOf('/');
+    const tab = slash > 0 ? h.slice(0, slash) : h;
+    const doc = slash > 0 ? h.slice(slash + 1) : null;
+    switchTab(TABS.some((t) => t.id === tab) ? tab : 'overview', false);
+    // deep link to a Data & Methods section: #data/<section-id-suffix>
+    if (tab === 'data' && doc && DOC_SECTIONS.includes('doc-' + doc)) {
+      goDoc('doc-' + doc);
+    }
+  }
+
+  /* ==================================================== DOCS NAVIGATION ==
+   * Data & Methods is the single documentation centre (sections A-G).
+   * Every "help" control in the app carries data-doc="..." and jumps to
+   * the relevant section instead of opening a duplicated dialog. */
+  const DOC_SECTIONS = [
+    'doc-a-about', 'doc-b-guide', 'doc-c-dataset',
+    'doc-d-quality', 'doc-e-methods', 'doc-f-glossary', 'doc-g-downloads'
+  ];
+  function goDoc(sec) {
+    switchTab('data');
+    // Applied immediately (deep links must work even in an unfocused tab,
+    // where rAF is throttled) and again after a frame so the scroll measures
+    // the fresh layout of a just-revealed tab. Both runs are idempotent.
+    const apply = () => {
+      if (sec === 'doc-top') {
+        $('viewData').scrollIntoView({ behavior: 'instant', block: 'start' });
+        return;
+      }
+      const el = $(sec);
+      if (!el) return;
+      el.open = true;
+      // instant landing: smooth page-scroll would race the measurement and
+      // feel laggy for anchor-style navigation
+      el.scrollIntoView({ behavior: 'instant', block: 'start' });
+      el.classList.remove('doc-flash');
+      // restart the highlight animation
+      void el.offsetWidth;
+      el.classList.add('doc-flash');
+      setTimeout(() => el.classList.remove('doc-flash'), 1800);
+    };
+    apply();
+    requestAnimationFrame(apply);
   }
 
   /* =========================================================== SHELL UI == */
   function wireShell() {
-    // modals
-    document.querySelectorAll('[data-modal]').forEach((btn) => {
-      btn.addEventListener('click', () => openModal($(btn.dataset.modal)));
-    });
-    document.querySelectorAll('.modal-scrim').forEach((scrim) => {
-      scrim.addEventListener('click', (e) => { if (e.target === scrim) closeModal(scrim); });
-      scrim.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => closeModal(scrim)));
+    // documentation navigation (Data & Methods is the single doc centre)
+    document.querySelectorAll('[data-doc]').forEach((btn) => {
+      btn.addEventListener('click', () => goDoc(btn.dataset.doc));
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') document.querySelectorAll('.modal-scrim:not([hidden])').forEach(closeModal);
-      // "?" opens the user guide unless the user is typing in a control.
+      // "?" jumps to the user guide section unless the user is typing.
       const typing = /^(INPUT|SELECT|TEXTAREA)$/.test((document.activeElement || {}).tagName || '');
       if (e.key === '?' && !typing && e.target === document.body) {
-        const g = $('modalGuide');
-        if (g && g.hidden) { openModal(g); e.preventDefault(); }
+        goDoc('doc-b-guide');
+        e.preventDefault();
       }
       // arrow-key tab navigation on the tablist
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
@@ -274,8 +311,12 @@
       const intro = btn.closest('.view-intro');
       if (!intro) return;
       const key = 'die.introCompact.' + (btn.dataset.intro || currentTab);
-      let compact = false;
-      try { compact = sessionStorage.getItem(key) === '1'; } catch (e) {}
+      /* Default: collapsed (the strip is one line; the detail expands on
+         demand). Only an explicit stored '0' reopens a workspace. */
+      let compact = true;
+      try {
+        if (sessionStorage.getItem(key) === '0') compact = false;
+      } catch (e) {}
       const syncBtn = () => {
         const isCompact = intro.classList.contains('is-compact');
         btn.setAttribute('aria-expanded', String(!isCompact));
@@ -283,7 +324,9 @@
           ? 'Expand workspace introduction'
           : 'Minimise workspace introduction');
       };
-      if (compact) intro.classList.add('is-compact');
+      // Mirror the stored state instead of only adding it: the HTML marks every
+      // strip is-compact by default, so an explicit '0' must REMOVE the class.
+      intro.classList.toggle('is-compact', compact);
       syncBtn();
       btn.addEventListener('click', () => {
         const now = intro.classList.toggle('is-compact');
@@ -538,18 +581,6 @@
     setTimeout(() => window.dispatchEvent(new Event('resize')), 260);
   }
 
-  function openModal(scrim) {
-    if (!scrim) return;
-    scrim.hidden = false;
-    const close = scrim.querySelector('[data-close]');
-    if (close) close.focus();
-  }
-  function closeModal(scrim) {
-    scrim.hidden = true;
-    const opener = document.querySelector('[data-modal="' + scrim.id + '"]');
-    if (opener) opener.focus();
-  }
-
   /* ===================================================== STATIC TEXTS === */
   function renderStaticText() {
     $('chipUpdated').textContent = 'Updated · ' + DIE.meta.last_updated;
@@ -590,8 +621,6 @@
     $('methCitation').textContent = DIE.meta.citation;
     $('methReferencePeriod').textContent = DIE.meta.reference_period;
     $('aboutCitation').textContent = DIE.meta.citation;
-    $('aboutDataModeTab').innerHTML = $('aboutDataMode').innerHTML;
-    $('aboutCitationTab').textContent = DIE.meta.citation;
     $('footerProvenance').textContent = DIE.meta.data_provenance;
     $('footerDisclaimer').textContent = DIE.meta.disclaimer;
     $('footerVersion').textContent = 'v' + DIE.meta.version + ' · methodology ' + DIE.meta.methodology_version +

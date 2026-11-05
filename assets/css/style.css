@@ -854,7 +854,7 @@ input[type="range"] {
   padding: 14px 18px 16px;
   font-size: 13px;
 }
-.about-body .about-lead {
+.about-lead {
   font-size: 14px;
   color: var(--ink);
   margin: 0 0 10px;
@@ -1905,79 +1905,6 @@ td .sparse-tag {
   color: #7e93ab;
 }
 
-/* modals — above Leaflet panes (z 400–1000) and Plotly modebars */
-.modal-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  background: rgba(14, 27, 44, 0.55);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 5vh 16px;
-  overflow-y: auto;
-}
-.modal {
-  background: var(--panel);
-  border-radius: 8px;
-  width: 100%;
-  max-width: 640px;
-  box-shadow: 0 18px 50px rgba(14, 27, 44, 0.35);
-  margin-bottom: 5vh;
-}
-.modal-wide {
-  max-width: 880px;
-}
-.modal-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  background: var(--panel);
-  border-radius: 8px 8px 0 0;
-  z-index: 2;
-}
-.modal-head h2 {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--navy);
-}
-.modal-close {
-  font-size: 18px;
-  width: 34px;
-  height: 34px;
-}
-.modal-body {
-  padding: 16px 18px 20px;
-  font-size: 13px;
-}
-.modal-body h3 {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--navy);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin: 18px 0 6px;
-}
-.modal-body h3:first-child {
-  margin-top: 0;
-}
-.modal-body p {
-  margin: 0 0 10px;
-}
-.modal-body .lead {
-  font-size: 14px;
-  color: var(--ink);
-}
-.modal-body ol,
-.modal-body ul {
-  margin: 0 0 10px;
-  padding-left: 20px;
-}
 .meth-table {
   width: 100%;
   border-collapse: collapse;
@@ -2260,35 +2187,35 @@ td .sparse-tag {
 }
 .view-intro {
   display: flex;
-  align-items: flex-start;
-  gap: 13px;
+  align-items: center;
+  gap: 10px;
   background: linear-gradient(135deg, #ffffff 0%, #f5f9fc 100%);
   border: 1px solid var(--border);
   border-left: 3px solid var(--wet);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 13px 15px;
+  padding: 7px 12px;
 }
 .vi-step {
   flex: 0 0 auto;
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: var(--navy);
   color: #fff;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.14);
 }
 .vi-body {
   flex: 1 1 auto;
   min-width: 0;
 }
 .vi-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--navy);
   display: flex;
@@ -2308,8 +2235,24 @@ td .sparse-tag {
   border-radius: 3px;
   padding: 1px 6px;
 }
+/* One-line orientation hint, always visible while the strip is collapsed; it
+   fades out when the full detail is expanded (the paragraph repeats it). */
+.vi-hint {
+  margin: 0;
+  flex: 1 1 30ch;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.view-intro:not(.is-compact) .vi-hint {
+  visibility: hidden;
+}
 .vi-body p {
-  margin: 3px 0 0;
+  margin: 4px 0 0;
   font-size: 12.5px;
   color: var(--ink-2);
   max-width: 92ch;
@@ -2338,15 +2281,35 @@ td .sparse-tag {
   font-family: var(--mono);
   font-size: 9px;
 }
+/* Contextual help links: quiet text links instead of buttons, so they never
+   read as a second header toolbar. */
 .vi-actions {
   flex: 0 0 auto;
+  align-self: center;
   display: flex;
-  gap: 6px;
-  align-items: flex-start;
+  gap: 14px;
+  align-items: center;
 }
-.vi-actions .btn {
+.vi-link {
+  border: 0;
+  background: none;
+  padding: 2px 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wet);
+  cursor: pointer;
   white-space: nowrap;
-  font-size: 11.5px;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease;
+}
+.vi-link:hover {
+  color: var(--navy);
+  text-decoration-color: currentColor;
 }
 
 /* table purpose notes */
@@ -2577,14 +2540,18 @@ kbd {
   }
 }
 @media (max-width: 760px) {
+  /* On small screens the hint text goes (each strip keeps title + link +
+     chevron on one line) and the solid panel background is applied below. */
   .view-intro {
     flex-wrap: wrap;
   }
-  .vi-actions {
-    width: 100%;
+  .vi-hint {
+    display: none;
   }
-  .vi-actions .btn {
-    width: 100%;
+  .vi-actions {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    padding-top: 4px;
   }
   .guide-grid,
   .guide-grid-3,
@@ -2981,19 +2948,158 @@ details.acc-panel > summary.panel-head:focus-visible {
   border-bottom-color: #9fc2d6;
 }
 
-/* ----------------------------------------------------------------- modals */
-/* The dialog heading scrolls away with the content (it was pinned, which made
-   long reads awkward); only the floating × stays visible. */
-.modal-head {
-  position: static;
+/* ------------------------------------------- documentation centre ------- */
+/* The Data & Methods tab is the single documentation centre: an anchored
+   contents strip, collapsible lettered sections and back-to-top links. */
+.doc-nav {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding: 10px 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 12px;
 }
-.modal-close-float {
-  display: flex; /* block-level so margin-left:auto right-aligns it */
-  position: sticky;
-  top: 8px;
-  margin: 6px 12px -46px auto;
-  background: rgba(255, 255, 255, 0.92);
-  z-index: 3;
+.doc-nav-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.doc-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 7px;
+}
+.doc-nav-links button {
+  border: 1px solid var(--border-2);
+  background: #fff;
+  color: var(--navy);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.doc-nav-links button:hover {
+  border-color: var(--navy);
+  background: #f2f6fa;
+}
+.doc-sec {
+  scroll-margin-top: 10px;
+}
+.doc-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border-radius: 4px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  vertical-align: 2px;
+}
+/* collapsible methodology subsections */
+.doc-sub {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 0 0 8px;
+  background: #fafbfc;
+}
+.doc-sub > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--navy);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+.doc-sub > summary::-webkit-details-marker {
+  display: none;
+}
+.doc-sub > summary::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--ink-2);
+  border-bottom: 2px solid var(--ink-2);
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+.doc-sub[open] > summary::before {
+  transform: rotate(225deg);
+}
+.doc-sub > summary:hover {
+  background: #f2f6fa;
+}
+.doc-sub-body {
+  padding: 2px 14px 10px;
+  border-top: 1px dashed var(--border);
+}
+.doc-sub-body p {
+  font-size: 12.5px;
+  color: var(--ink);
+  line-height: 1.6;
+  margin: 10px 0;
+}
+.doc-sub-body ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+.doc-sub-body li {
+  font-size: 12.5px;
+  color: var(--ink);
+  line-height: 1.6;
+  margin: 4px 0;
+}
+/* quick-start list (was modal-only styling) */
+.guide-list li {
+  font-size: 12.5px;
+  line-height: 1.6;
+  margin: 0 0 8px;
+}
+/* section heading inside section bodies (was h4 in modal) */
+.guide-body h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 12px 0 4px;
+}
+/* back-to-top link at the end of long sections */
+.doc-top {
+  display: inline-block;
+  margin: 10px 14px 14px;
+  border: 0;
+  background: none;
+  color: var(--navy);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.doc-top:hover {
+  color: var(--ink);
+}
+/* highlight pulse when a section is targeted from another tab */
+@keyframes doc-flash-pulse {
+  0% { box-shadow: 0 0 0 3px rgba(47, 111, 158, 0.45); }
+  70% { box-shadow: 0 0 0 3px rgba(47, 111, 158, 0.25); }
+  100% { box-shadow: 0 0 0 3px rgba(47, 111, 158, 0); }
+}
+.doc-sec.doc-flash {
+  animation: doc-flash-pulse 1.8s ease-out 1;
 }
 
 /* ------------------------------------------------- Data & Methods ribbon */
@@ -3071,19 +3177,13 @@ details.acc-panel > summary.panel-head:focus-visible {
   .brand-author {
     display: none;
   }
-  /* compact icon-only header buttons: the brand title keeps priority */
-  #guideBtn,
-  button[data-modal="modalAbout"] {
+  /* compact icon-only header button: the brand title keeps priority */
+  #guideBtn {
     font-size: 0;
     padding: 7px 9px;
   }
   #guideBtn::before {
     content: "?";
-    font-size: 12.5px;
-    font-weight: 700;
-  }
-  button[data-modal="modalAbout"]::before {
-    content: "i";
     font-size: 12.5px;
     font-weight: 700;
   }

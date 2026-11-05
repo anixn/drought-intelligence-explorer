@@ -35,7 +35,7 @@ data/
 
 Each indicator CSV is wide-format: `district_id, district_name, state_name,` followed by one `YYYY-MM` column per month. Missing cells are empty. `district_id` values must match `id` properties in `india_districts.geojson`. Thresholds, units, palettes and descriptions live in `metadata.json`, so **adding or replacing a dataset never requires code changes** — see README ("Adding and updating datasets").
 
-The application validates at load time: duplicate district rows, invalid date columns, non-numeric values, unknown district ids, boundary districts absent from the dataset, and overall completeness. The report is shown in the *Data Sources* dialog and the browser console.
+The application validates at load time: duplicate district rows, invalid date columns, non-numeric values, unknown district ids, boundary districts absent from the dataset, and overall completeness. The report is shown in the **Data quality and validation** section of the *Data & Methods* tab (section D) and in the browser console.
 
 ## 2. Underlying source datasets
 

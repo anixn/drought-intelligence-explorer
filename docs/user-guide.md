@@ -2,7 +2,7 @@
 
 The Drought Intelligence Explorer turns district-month drought indicators for India into maps, statistics, event catalogues and downloadable research outputs. Everything runs in your browser: there is no account, backend or API key.
 
-This guide mirrors the in-app **How to use** dialog (press <kbd>?</kbd> anywhere in the app) and the guide panel on the **Data & Methods** tab.
+This guide mirrors the in-app **User guide** section on the **Data & Methods** tab (press <kbd>?</kbd> anywhere in the app to jump there), where all documentation — about, dataset provenance, quality, methodology and glossary — is consolidated in one place.
 
 ---
 
@@ -18,7 +18,7 @@ This guide mirrors the in-app **How to use** dialog (press <kbd>?</kbd> anywhere
 
 - <kbd>←</kbd> / <kbd>→</kbd> move between tabs when a tab has focus.
 - <kbd>Esc</kbd> closes any dialog.
-- <kbd>?</kbd> reopens this guide.
+- <kbd>?</kbd> jumps to this guide (Data & Methods · section B).
 - Each workspace has a stable URL hash: `#overview`, `#historical`, `#events`, `#propagation`, `#data`.
 
 ---
