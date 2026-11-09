@@ -2746,6 +2746,23 @@
           startedAt: Date.now(),
         };
 
+        /* -- file:// guard ------------------------------------------------
+         * Browsers block fetch() of local files (CORS, null origin), so the
+         * app can never load its CSV/JSON data when index.html is opened
+         * directly from disk. Explain clearly instead of failing silently. */
+        if (location.protocol === "file:") {
+          document.body.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f7fa;font-family:Inter,\u0027Segoe UI\u0027,system-ui,sans-serif;padding:24px;box-sizing:border-box">' +
+            '<div style="max-width:560px;background:#fff;border:1px solid #e2e7ee;border-radius:10px;padding:28px 30px;box-shadow:0 1px 2px rgba(20,38,61,.06),0 1px 6px rgba(20,38,61,.05)">' +
+            '<div style="font-size:12px;font-weight:700;letter-spacing:.08em;color:#687588;text-transform:uppercase">Drought Intelligence Explorer</div>' +
+            '<h1 style="margin:10px 0 14px;font-size:22px;line-height:1.3;color:#14263d">The app can\u2019t run from this location</h1>' +
+            '<p style="margin:0 0 12px;color:#1f2937;line-height:1.55">This page was opened straight from your disk (<code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#f5f7fa;padding:1px 5px;border-radius:4px">file://</code>). For security, browsers block data files (CSV/JSON) from loading that way, so the app has nothing to display.</p>' +
+            '<p style="margin:0 0 18px;color:#1f2937;line-height:1.55"><strong>How to open it:</strong> double-click <strong>Start Drought Explorer.bat</strong> in the same folder as this file. A small local server starts and the app opens in your browser automatically.</p>' +
+            '<p style="margin:0;color:#687588;font-size:13px;line-height:1.5">Technical detail: <code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#f5f7fa;padding:1px 5px;border-radius:4px">fetch()</code> to <code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#f5f7fa;padding:1px 5px;border-radius:4px">file://</code> URLs is blocked by CORS (origin <code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#f5f7fa;padding:1px 5px;border-radius:4px">null</code>), which is why the app cannot boot here.</p>' +
+            "</div></div>";
+          return;
+        }
+
         var ASSET_VERSION = "2026-11-09";
         var LIBS = {
           L: {

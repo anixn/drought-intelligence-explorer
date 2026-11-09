@@ -97,7 +97,11 @@ The interface is organised into five analytical workspaces, reachable by URL has
 
 ## Run locally
 
-The app fetches data with `fetch()`, so it must be served over HTTP (opening `index.html` directly from disk will show a warning):
+The app fetches data with `fetch()`, so it must be served over HTTP (opening `index.html` directly from disk shows a guard message instead of the app).
+
+**Easiest way (Windows, nothing to install):** double-click **`Start Drought Explorer.bat`** in the project folder. It runs the bundled `serve.ps1` (built-in PowerShell/.NET only), serves the folder on the first free port 8471–8480, and opens the app in your default browser automatically. Keep the console window open while using the app; closing it stops the server.
+
+**Any static server works too:**
 
 ```bash
 cd drought-intelligence-explorer
@@ -105,7 +109,7 @@ python3 -m http.server 8000
 # open http://localhost:8000/
 ```
 
-Any static server works (`npx serve`, `php -S`, nginx…). Requirements for regenerating data: Python 3.10+ with `numpy`, `shapely`, `pyproj` (plus `npx mapshaper` for boundaries); the full data pipeline (`data-pipeline/`) additionally uses `pandas`, `scipy`, `rasterio`, `netCDF4`, `cdsapi` — see `data-pipeline/requirements.txt`.
+Other options: `npx serve`, `php -S`, nginx… Requirements for regenerating data: Python 3.10+ with `numpy`, `shapely`, `pyproj` (plus `npx mapshaper` for boundaries); the full data pipeline (`data-pipeline/`) additionally uses `pandas`, `scipy`, `rasterio`, `netCDF4`, `cdsapi` — see `data-pipeline/requirements.txt`.
 
 ## Deploy on GitHub Pages
 
