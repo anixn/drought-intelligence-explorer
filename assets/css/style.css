@@ -3188,3 +3188,206 @@ details.acc-panel > summary.panel-head:focus-visible {
     font-weight: 700;
   }
 }
+
+/* ===========================================================================
+   Contextual control sidebar + mobile ergonomics (2026-11-09) — appended
+   overrides; earlier rules above remain valid except where a selector with
+   equal/higher specificity re-states a property.
+   =========================================================================== */
+
+/* ------------------------------------------------- contextual sections -- *
+ * The sidebar is one rail with two section kinds:
+ *   data-side="global" — always visible (Geography, Indicator, Period, Reset)
+ *   data-side="<tab>"  — visible only while that tab is active. Visibility
+ * is driven purely by body[data-tab] (set in switchTab); no JS toggling.
+ * The re-display re-runs the small entrance animation, which makes the
+ * swap legible without being noisy. */
+.side-sec[data-side]:not([data-side="global"]) {
+  display: none;
+}
+body[data-tab="overview"] .side-sec[data-side="overview"],
+body[data-tab="historical"] .side-sec[data-side="historical"],
+body[data-tab="events"] .side-sec[data-side="events"],
+body[data-tab="propagation"] .side-sec[data-side="propagation"],
+body[data-tab="data"] .side-sec[data-side="data"] {
+  display: block;
+  animation: sideSecIn 0.18s ease;
+}
+@keyframes sideSecIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Visual cue: tab-specific sections carry a left accent, global ones do
+   not — you can see at a glance which controls follow the workspace. */
+.side-sec.tab-sec {
+  border-left: 3px solid rgba(79, 145, 184, 0.55);
+  padding-left: 13px;
+}
+
+/* active-workspace badge in the sidebar head */
+.sidebar-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(79, 145, 184, 0.22);
+  border: 1px solid rgba(79, 145, 184, 0.5);
+  color: #bcd8ea;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+  white-space: nowrap;
+}
+
+/* ------------------- dark-theme overrides for controls moved into the rail */
+/* table + event search inputs */
+.sidebar .search-input {
+  width: 100%;
+  background-color: #1d3450;
+  color: #e8eef4;
+  border-color: #2e4660;
+}
+.sidebar .search-input::placeholder {
+  color: #64788e;
+}
+
+/* segmented radio controls (trend granularity, sensitivity, comparison view) */
+.sidebar .seg {
+  display: flex;
+  width: 100%;
+  border-color: #3c5570;
+  background: #1d3450;
+}
+.sidebar .seg label {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.sidebar .seg span {
+  background: transparent;
+  color: #a7b7c8;
+  text-align: center;
+  padding: 7px 8px;
+}
+.sidebar .seg input:checked + span {
+  background: #4f91b8;
+  color: #ffffff;
+}
+
+/* observation-date slider row (was the workspace date panel) */
+.sidebar .date-slider-row {
+  padding: 2px 0 4px;
+  gap: 8px;
+}
+.sidebar .date-slider-label {
+  color: #a7b7c8;
+  font-size: 10.5px;
+  min-width: 0;
+  flex: 0 0 auto;
+}
+
+/* Data & Methods quick-jump list */
+.doc-jump {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.doc-jump button {
+  text-align: left;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #d5e0ea;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #2e4660;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.doc-jump button:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+.doc-jump button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+/* ======================================================= mobile first aid =
+ * ergonomics for touch devices: dynamic viewport heights (iOS URL bar),
+ * notch-safe paddings, no iOS focus-zoom on form controls, larger touch
+ * targets, and a sticky, horizontally scrollable tab bar. */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+@supports (height: 100dvh) {
+  .sidebar {
+    height: calc(100dvh - var(--topbar-h));
+  }
+}
+.toast-stack {
+  bottom: max(16px, env(safe-area-inset-bottom));
+  right: max(16px, env(safe-area-inset-right));
+}
+
+@media (max-width: 1024px) {
+  /* sticky tab strip: workspace switching stays reachable while scrolling
+     long analytical pages (z below the topbar's 60) */
+  .tabs {
+    position: sticky;
+    top: var(--topbar-h);
+    z-index: 55;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .tabs button {
+    flex: 0 0 auto;
+    min-height: 44px;
+    scroll-margin-left: 8px;
+  }
+  .sidebar {
+    box-shadow: 0 0 40px rgba(14, 27, 44, 0.5);
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 640px) {
+  /* prevent iOS Safari zoom-on-focus: form controls need >= 16px */
+  select,
+  input[type="search"],
+  .mini-field select,
+  .search-input {
+    font-size: 16px;
+  }
+  .tabs button {
+    padding: 11px 14px;
+  }
+  .topbar {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+  /* roomier touch targets inside the drawer */
+  .sidebar .seg span {
+    padding: 10px 8px;
+  }
+  .switch {
+    padding: 7px 0;
+  }
+  .btn.btn-sidebar.btn-block {
+    padding: 10px 12px;
+  }
+  .date-slider-row input[type="range"] {
+    height: 28px;
+  }
+}

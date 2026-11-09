@@ -480,6 +480,14 @@
       onDistrictClick: (id) => {
         const d = DIE.registry.districts.get(id);
         if (!d) return;
+        try {
+          if (DIE.Telemetry)
+            DIE.Telemetry.track("district_focus", {
+              district: d.name,
+              state: d.state,
+              source: "map_click",
+            });
+        } catch (e) {}
         DIE.Filters.set({ extent: "district", stateId: d.sid, districtId: id });
       },
     });
@@ -564,6 +572,13 @@
         ".png";
       a.href = canvas.toDataURL("image/png");
       a.click();
+      try {
+        if (DIE.Telemetry)
+          DIE.Telemetry.track("export_data", {
+            file_type: "png",
+            file_name: a.download,
+          });
+      } catch (e) {}
       DIE.App.toast("Map exported", "Current map view saved as PNG.");
     } catch (e) {
       DIE.App.toast(

@@ -658,6 +658,19 @@
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+    // Every export in the application funnels through here — the single
+    // highest-value behavioural signal, so it is tracked with its type.
+    try {
+      if (DIE.Telemetry) {
+        DIE.Telemetry.track('export_data', {
+          file_name: filename,
+          file_type: /\.csv$/i.test(filename) ? 'csv'
+            : /\.json$/i.test(filename) ? 'json'
+            : /\.png$/i.test(filename) ? 'png'
+            : /\.md$/i.test(filename) ? 'markdown' : 'file'
+        });
+      }
+    } catch (e) { /* telemetry must never break exports */ }
   }
 
   /* ------------------------------------------ reproducibility metadata -- */

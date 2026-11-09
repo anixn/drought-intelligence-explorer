@@ -104,6 +104,7 @@
         ? +ds.availableFrom.slice(0, 4) : +DIE.meta.period.start.slice(0, 4);
       DIE.state.period.to = ds && ds.availableTo
         ? +ds.availableTo.slice(0, 4) : +DIE.meta.period.end.slice(0, 4);
+      try { if (DIE.Telemetry) DIE.Telemetry.track('reset_filters', {}); } catch (e) {}
       renderControls();
       DIE.bus.emit('state', { state: DIE.state, changed: ['extent', 'stateId', 'districtId', 'dateIdx', 'period', 'map'] });
     }

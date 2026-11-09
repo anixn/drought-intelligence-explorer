@@ -2,7 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <!-- ================== Google Tag Manager (GTM-MDF5QQ4D) ==================
+         dataLayer is initialised before the async container loader so that
+         telemetry.js (assets/js/telemetry.js) can push deep-application
+         events (tab views, filter use, exports, engagement value) from the
+         very first interaction. Event schema: docs/analytics-events.md -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+    </script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtm.js?id=GTM-MDF5QQ4D"
+    ></script>
     <title>
       Drought Intelligence Explorer — India | Hydroclimatic Analytics
     </title>
@@ -30,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-05c" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-09" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -148,10 +167,23 @@
     </header>
 
     <div class="layout" id="layout">
-      <!-- ======================= GLOBAL FILTER SIDEBAR ======================= -->
-      <aside class="sidebar" id="sidebar" aria-label="Global filters">
+      <!-- ================ CONTEXTUAL CONTROL SIDEBAR ================
+           One rail, two kinds of sections:
+           · data-side="global" — Geography, Indicator, Analysis period and
+             Reset. Genuinely shared state: every tab follows them.
+           · data-side="<tab>"  — controls that belong to the active
+             workspace only. Visibility is driven by body[data-tab] (set in
+             switchTab), so sections swap automatically as tabs change.
+           All control IDs are unchanged, so the wiring in app.js and
+           filters.js is untouched. -->
+      <aside class="sidebar" id="sidebar" aria-label="Workspace controls">
         <div class="sidebar-head">
-          <span class="sidebar-title">Filters</span>
+          <span class="sidebar-title"
+            >Controls
+            <span class="sidebar-badge" id="sidebarTabBadge" aria-live="polite"
+              >Overview</span
+            ></span
+          >
           <span class="sidebar-head-actions">
             <button
               type="button"
@@ -206,8 +238,8 @@
         </div>
 
         <div class="sidebar-body" id="sidebarBody">
-        <!-- Geography -->
-        <section class="side-sec" aria-labelledby="secGeoH">
+        <!-- GLOBAL · Geography -->
+        <section class="side-sec" data-side="global" aria-labelledby="secGeoH">
           <h2 id="secGeoH">Geography</h2>
           <label class="field">
             <span class="field-label">Geographic extent</span>
@@ -231,8 +263,8 @@
           </label>
         </section>
 
-        <!-- Indicator -->
-        <section class="side-sec" aria-labelledby="secIndH">
+        <!-- GLOBAL · Indicator -->
+        <section class="side-sec" data-side="global" aria-labelledby="secIndH">
           <h2 id="secIndH">Drought indicator</h2>
           <div
             class="ind-list"
@@ -249,8 +281,8 @@
           ></p>
         </section>
 
-        <!-- Analysis period -->
-        <section class="side-sec" aria-labelledby="secTimeH">
+        <!-- GLOBAL · Analysis period -->
+        <section class="side-sec" data-side="global" aria-labelledby="secTimeH">
           <h2 id="secTimeH">Analysis period</h2>
           <div class="field-row">
             <label class="field"
@@ -283,8 +315,50 @@
           </label>
         </section>
 
-        <!-- Map display preferences -->
-        <section class="side-sec" aria-labelledby="secMapH">
+        <!-- OVERVIEW · Observation date (moved from the workspace date panel) -->
+        <section class="side-sec tab-sec" data-side="overview" aria-labelledby="secDateH">
+          <h2 id="secDateH">Observation date</h2>
+          <div class="field-row">
+            <label class="field"
+              ><span class="field-label">Year</span>
+              <select
+                id="yearSelect"
+                aria-label="Observation year"
+              ></select
+            ></label>
+            <label class="field"
+              ><span class="field-label">Month</span>
+              <select
+                id="monthSelect"
+                aria-label="Observation month"
+              ></select
+            ></label>
+          </div>
+          <div class="date-slider-row">
+            <input
+              type="range"
+              id="dateSlider"
+              min="0"
+              max="239"
+              value="239"
+              step="1"
+              aria-label="Observation date slider"
+            />
+            <span class="mono date-slider-label" id="dateSliderLabel">—</span>
+          </div>
+          <button
+            type="button"
+            class="btn btn-sidebar btn-block"
+            id="latestBtn"
+            title="Jump to the latest available observation"
+          >
+            Latest observation
+          </button>
+          <p class="side-note" id="datePanelMeta">—</p>
+        </section>
+
+        <!-- OVERVIEW · Map display -->
+        <section class="side-sec tab-sec" data-side="overview" aria-labelledby="secMapH">
           <h2 id="secMapH">Map display</h2>
           <label class="switch"
             ><input type="checkbox" id="tgDistricts" checked /><span
@@ -310,6 +384,196 @@
             ></span
             ><span class="switch-label">Map labels</span></label
           >
+          <label class="field">
+            <span class="field-label">Colour</span>
+            <select id="colourMode" aria-label="Colour mode">
+              <option value="classes" selected>Severity classes</option>
+              <option value="continuous">Continuous scale</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Basemap</span>
+            <select id="basemapSelect" aria-label="Basemap">
+              <option value="plain" selected>Plain (offline)</option>
+              <option value="light">Light reference tiles</option>
+              <option value="streets">OpenStreetMap</option>
+            </select>
+          </label>
+        </section>
+
+        <!-- HISTORICAL · trend + ranking table controls -->
+        <section class="side-sec tab-sec" data-side="historical" aria-labelledby="secHistH">
+          <h2 id="secHistH">Historical analysis</h2>
+          <label class="field">
+            <span class="field-label">Ranking table level</span>
+            <select id="tableLevel" aria-label="Comparison level">
+              <option value="state" selected>States / UTs</option>
+              <option value="district">Districts</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Search the table</span>
+            <input
+              type="search"
+              id="tableSearch"
+              class="search-input"
+              placeholder="Search region…"
+              aria-label="Search regions"
+            />
+          </label>
+          <div class="field">
+            <span class="field-label">Trend granularity</span>
+            <div class="seg seg-block" role="radiogroup" aria-label="Trend granularity">
+              <label
+                ><input
+                  type="radio"
+                  name="trendGran"
+                  value="annual"
+                  checked
+                /><span>Annual means</span></label
+              >
+              <label
+                ><input
+                  type="radio"
+                  name="trendGran"
+                  value="monthly"
+                /><span>Monthly values</span></label
+              >
+            </div>
+          </div>
+          <button type="button" class="btn btn-sidebar btn-block" id="tableCsvBtn">
+            Export ranking table (CSV)
+          </button>
+        </section>
+
+        <!-- EVENTS · catalogue filters -->
+        <section class="side-sec tab-sec" data-side="events" aria-labelledby="secEvtH">
+          <h2 id="secEvtH">Event catalogue</h2>
+          <label class="field">
+            <span class="field-label">Minimum duration (months)</span>
+            <select id="evtMinDur" aria-label="Minimum event duration">
+              <option value="3" selected>3 (default)</option>
+              <option value="4">4</option>
+              <option value="6">6</option>
+              <option value="9">9</option>
+              <option value="12">12</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Truncation level</span>
+            <select id="evtThreshold" aria-label="Event truncation level">
+              <option value="default" selected>
+                Default (class threshold)
+              </option>
+              <option value="-0.5">mild-or-worse</option>
+              <option value="-1.0">moderate-or-worse (default)</option>
+              <option value="-1.5">severe-or-worse</option>
+              <option value="-2.0">extreme</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Search district</span>
+            <input
+              type="search"
+              id="evtSearch"
+              class="search-input"
+              placeholder="Search district…"
+              aria-label="Search districts"
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">Onset year</span>
+            <select id="evtYear" aria-label="Filter by start year">
+              <option value="">All years</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-sidebar btn-block" id="evtCsvBtn">
+            Export event catalogue (CSV)
+          </button>
+        </section>
+
+        <section class="side-sec tab-sec" data-side="events" aria-labelledby="secSensH">
+          <h2 id="secSensH">Sensitivity scenario</h2>
+          <div class="seg seg-block" role="radiogroup" aria-label="Sensitivity scenario">
+            <label
+              ><input
+                type="radio"
+                name="sensMode"
+                value="dur"
+                checked
+              /><span>Minimum duration</span></label
+            >
+            <label
+              ><input type="radio" name="sensMode" value="thr" /><span
+                >Truncation level</span
+              ></label
+            >
+          </div>
+        </section>
+
+        <!-- PROPAGATION · indicator pair + single-date comparison -->
+        <section class="side-sec tab-sec" data-side="propagation" aria-labelledby="secPropH">
+          <h2 id="secPropH">Indicator pair</h2>
+          <label class="field">
+            <span class="field-label">Indicator A (lead candidate)</span>
+            <select id="propIndA" aria-label="Indicator A"></select>
+          </label>
+          <label class="field">
+            <span class="field-label">Indicator B (response)</span>
+            <select id="propIndB" aria-label="Indicator B"></select>
+          </label>
+        </section>
+
+        <section class="side-sec tab-sec" data-side="propagation" aria-labelledby="secCmpH">
+          <h2 id="secCmpH">Single-date comparison</h2>
+          <label class="field">
+            <span class="field-label">Indicator A</span>
+            <select id="cmpIndA" aria-label="Comparison indicator A"></select>
+          </label>
+          <label class="field">
+            <span class="field-label">Indicator B</span>
+            <select id="cmpIndB" aria-label="Comparison indicator B"></select>
+          </label>
+          <label class="field">
+            <span class="field-label">Date</span>
+            <select id="cmpDate" aria-label="Comparison date"></select>
+          </label>
+          <div class="field">
+            <span class="field-label">Right map view</span>
+            <div class="seg seg-block" role="radiogroup" aria-label="Right map view">
+              <label
+                ><input
+                  type="radio"
+                  name="cmpView"
+                  value="b"
+                  checked
+                /><span>Indicator B</span></label
+              >
+              <label
+                ><input type="radio" name="cmpView" value="diff" /><span
+                  >Difference B−A</span
+                ></label
+              >
+            </div>
+          </div>
+        </section>
+
+        <!-- DATA & METHODS · quick section jump -->
+        <section class="side-sec tab-sec" data-side="data" aria-labelledby="secDocH">
+          <h2 id="secDocH">Documentation sections</h2>
+          <div class="doc-jump" aria-label="Jump to documentation section">
+            <button type="button" data-doc="doc-a-about">A &middot; About</button>
+            <button type="button" data-doc="doc-b-guide">B &middot; User guide</button>
+            <button type="button" data-doc="doc-c-dataset">C &middot; Dataset &amp; provenance</button>
+            <button type="button" data-doc="doc-d-quality">D &middot; Quality &amp; validation</button>
+            <button type="button" data-doc="doc-e-methods">E &middot; Complete methodology</button>
+            <button type="button" data-doc="doc-f-glossary">F &middot; Glossary</button>
+            <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citation</button>
+          </div>
+        </section>
+
+        <!-- GLOBAL · reset -->
+        <section class="side-sec" data-side="global">
           <button type="button" class="btn btn-sidebar btn-block" id="resetBtn">
             Reset filters
           </button>
@@ -437,51 +701,9 @@
             </div>
           </div>
 
-          <!-- Observation date controls (contextual: needed only here) -->
-          <section class="panel date-panel" id="datePanel">
-            <div class="panel-head">
-              <div class="panel-titles">
-                <h2 class="panel-title">Observation date</h2>
-                <span class="panel-meta" id="datePanelMeta">—</span>
-              </div>
-              <div class="panel-actions">
-                <label class="mini-field"
-                  ><span>Year</span
-                  ><select
-                    id="yearSelect"
-                    aria-label="Observation year"
-                  ></select
-                ></label>
-                <label class="mini-field"
-                  ><span>Month</span
-                  ><select
-                    id="monthSelect"
-                    aria-label="Observation month"
-                  ></select
-                ></label>
-                <button
-                  type="button"
-                  class="btn btn-ghost"
-                  id="latestBtn"
-                  title="Jump to the latest available observation"
-                >
-                  Latest
-                </button>
-              </div>
-            </div>
-            <div class="date-slider-row">
-              <input
-                type="range"
-                id="dateSlider"
-                min="0"
-                max="239"
-                value="239"
-                step="1"
-                aria-label="Observation date slider"
-              />
-              <span class="mono date-slider-label" id="dateSliderLabel">—</span>
-            </div>
-          </section>
+          <!-- The observation-date controls now live in the sidebar
+               (data-side="overview"), which keeps this workspace focused on
+               results; the sidebar badge shows the active workspace. -->
 
           <!-- Summary statistics -->
           <section class="kpi-row" id="kpiRow" aria-label="Scientific summary">
@@ -566,21 +788,6 @@
                 <span class="panel-meta" id="mapPanelMeta">—</span>
               </div>
               <div class="panel-actions">
-                <label class="mini-field"
-                  ><span>Colour</span>
-                  <select id="colourMode" aria-label="Colour mode">
-                    <option value="classes" selected>Severity classes</option>
-                    <option value="continuous">Continuous scale</option>
-                  </select></label
-                >
-                <label class="mini-field"
-                  ><span>Basemap</span>
-                  <select id="basemapSelect" aria-label="Basemap">
-                    <option value="plain" selected>Plain (offline)</option>
-                    <option value="light">Light reference tiles</option>
-                    <option value="streets">OpenStreetMap</option>
-                  </select></label
-                >
                 <button
                   type="button"
                   class="btn btn-ghost"
@@ -929,29 +1136,6 @@
                 <h2 class="panel-title">D &middot; Long-term trend</h2>
                 <span class="panel-meta" id="trendMeta">—</span>
               </div>
-              <div class="panel-actions">
-                <div
-                  class="seg"
-                  role="radiogroup"
-                  aria-label="Trend granularity"
-                >
-                  <label
-                    ><input
-                      type="radio"
-                      name="trendGran"
-                      value="annual"
-                      checked
-                    /><span>Annual means</span></label
-                  >
-                  <label
-                    ><input
-                      type="radio"
-                      name="trendGran"
-                      value="monthly"
-                    /><span>Monthly values</span></label
-                  >
-                </div>
-              </div>
             </div>
             <div class="hist-2col">
               <div class="chart-box trend-chart" id="trendChart"></div>
@@ -978,25 +1162,6 @@
               <div class="panel-titles">
                 <h2 class="panel-title">District-wise ranking</h2>
                 <span class="panel-meta" id="tableMeta">—</span>
-              </div>
-              <div class="panel-actions">
-                <label class="mini-field"
-                  ><span>Level</span>
-                  <select id="tableLevel" aria-label="Comparison level">
-                    <option value="state" selected>States / UTs</option>
-                    <option value="district">Districts</option>
-                  </select></label
-                >
-                <input
-                  type="search"
-                  id="tableSearch"
-                  class="search-input"
-                  placeholder="Search region…"
-                  aria-label="Search regions"
-                />
-                <button type="button" class="btn btn-ghost" id="tableCsvBtn">
-                  Export CSV
-                </button>
               </div>
             </div>
             <p class="table-help">
@@ -1128,47 +1293,6 @@
                 <h2 class="panel-title">Event catalogue</h2>
                 <span class="panel-meta" id="evtMeta">—</span>
               </div>
-              <div class="panel-actions">
-                <label class="mini-field"
-                  ><span>Min duration (months)</span>
-                  <select id="evtMinDur" aria-label="Minimum event duration">
-                    <option value="3" selected>3 (default)</option>
-                    <option value="4">4</option>
-                    <option value="6">6</option>
-                    <option value="9">9</option>
-                    <option value="12">12</option>
-                  </select></label
-                >
-                <label class="mini-field"
-                  ><span>Truncation level</span>
-                  <select id="evtThreshold" aria-label="Event truncation level">
-                    <option value="default" selected>
-                      Default (class threshold)
-                    </option>
-                    <option value="-0.5">mild-or-worse</option>
-                    <option value="-1.0">moderate-or-worse (default)</option>
-                    <option value="-1.5">severe-or-worse</option>
-                    <option value="-2.0">extreme</option>
-                  </select></label
-                >
-                <input
-                  type="search"
-                  id="evtSearch"
-                  class="search-input"
-                  placeholder="Search district…"
-                  aria-label="Search districts"
-                />
-                <select
-                  id="evtYear"
-                  class="search-input"
-                  aria-label="Filter by start year"
-                >
-                  <option value="">All years</option>
-                </select>
-                <button type="button" class="btn btn-ghost" id="evtCsvBtn">
-                  Export CSV
-                </button>
-              </div>
             </div>
             <p class="table-help">
               <b>What this table shows:</b> one row per drought episode (runs
@@ -1282,27 +1406,6 @@
                   methodology</span
                 >
               </div>
-              <div class="panel-actions">
-                <div
-                  class="seg"
-                  role="radiogroup"
-                  aria-label="Sensitivity scenario"
-                >
-                  <label
-                    ><input
-                      type="radio"
-                      name="sensMode"
-                      value="dur"
-                      checked
-                    /><span>Minimum duration</span></label
-                  >
-                  <label
-                    ><input type="radio" name="sensMode" value="thr" /><span
-                      >Truncation level</span
-                    ></label
-                  >
-                </div>
-              </div>
             </div>
             <div class="chart-box chart-box-short" id="sensChart"></div>
             <p class="chart-foot" id="sensFoot">—</p>
@@ -1373,16 +1476,6 @@
                   −12 to +12 months</span
                 >
               </div>
-              <div class="panel-actions">
-                <label class="mini-field"
-                  ><span>Indicator A (lead candidate)</span
-                  ><select id="propIndA" aria-label="Indicator A"></select
-                ></label>
-                <label class="mini-field"
-                  ><span>Indicator B (response)</span
-                  ><select id="propIndB" aria-label="Indicator B"></select
-                ></label>
-              </div>
             </div>
             <div class="prop-grid">
               <div class="chart-box prop-lag-chart" id="propLagChart"></div>
@@ -1431,41 +1524,6 @@
                   >Matched districts only &middot; pairwise deletion of missing
                   values</span
                 >
-              </div>
-              <div class="panel-actions">
-                <label class="mini-field"
-                  ><span>Indicator A</span
-                  ><select
-                    id="cmpIndA"
-                    aria-label="Comparison indicator A"
-                  ></select
-                ></label>
-                <label class="mini-field"
-                  ><span>Indicator B</span
-                  ><select
-                    id="cmpIndB"
-                    aria-label="Comparison indicator B"
-                  ></select
-                ></label>
-                <label class="mini-field"
-                  ><span>Date</span
-                  ><select id="cmpDate" aria-label="Comparison date"></select
-                ></label>
-                <div class="seg" role="radiogroup" aria-label="Right map view">
-                  <label
-                    ><input
-                      type="radio"
-                      name="cmpView"
-                      value="b"
-                      checked
-                    /><span>Indicator B</span></label
-                  >
-                  <label
-                    ><input type="radio" name="cmpView" value="diff" /><span
-                      >Difference B−A</span
-                    ></label
-                  >
-                </div>
               </div>
             </div>
             <div class="cmp-maps">
@@ -1706,8 +1764,11 @@
                 <li>
                   <b>Choose the scope.</b> Set <em>Geographic extent</em>,
                   <em>State / UT</em>, <em>Drought indicator</em> and
-                  <em>Analysis period</em> in the dark filter panel. These are
-                  global: every tab, chart and export follows them.
+                  <em>Analysis period</em> in the dark control panel. These are
+                  global: every tab, chart and export follows them. The panel
+                  adapts to the active workspace &mdash; tab-specific controls
+                  (observation date, map display, event filters, indicator
+                  pairs) appear in it as you switch tabs.
                 </li>
                 <li>
                   <b>Pick a date (Overview).</b> The observation date controls
@@ -2685,7 +2746,7 @@
           startedAt: Date.now(),
         };
 
-        var ASSET_VERSION = "2026-11-05c";
+        var ASSET_VERSION = "2026-11-09";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
@@ -2710,6 +2771,7 @@
           "data-loader",
           "stats",
           "filters",
+          "telemetry",
           "map",
           "charts",
           "analytics",

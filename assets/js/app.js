@@ -37,6 +37,13 @@
     { id: 'propagation', btn: 'tabPropagation', view: 'viewPropagation' },
     { id: 'data', btn: 'tabData', view: 'viewData' }
   ];
+  const TAB_LABELS = {
+    overview: 'Overview',
+    historical: 'Historical',
+    events: 'Events',
+    propagation: 'Propagation',
+    data: 'Data & Methods'
+  };
   let currentTab = 'overview';
   // Tabs are marked dirty on state changes while hidden and re-render only
   // when entered. This avoids updating 5 workspaces on every slider tick.
@@ -88,6 +95,22 @@
   function debounce(fn, ms) {
     let t;
     return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+  }
+
+  /* ----------------------------- telemetry helpers (deep instrumentation) */
+  /** Debounced table-search tracking: one event per typing burst. */
+  const trackSearch = debounce((table) => {
+    if (DIE.Telemetry) DIE.Telemetry.track('table_search', { table: table });
+  }, 1500);
+  function trackPropPair() {
+    if (DIE.Telemetry) DIE.Telemetry.track('propagation_pair',
+      { a: $('propIndA').value, b: $('propIndB').value });
+  }
+  function trackCmp() {
+    if (DIE.Telemetry) DIE.Telemetry.track('comparison_change', {
+      a: $('cmpIndA').value, b: $('cmpIndB').value,
+      view: (document.querySelector('input[name="cmpView"]:checked') || {}).value || 'b'
+    });
   }
   const periodLabel = () => DIE.state.period.from + '–' + DIE.state.period.to +
     (DIE.state.period.season === 'all' ? '' : ' · ' + $('seasonSelect').selectedOptions[0].textContent);
@@ -152,6 +175,9 @@
       DIE.MapView.fitRegion();
 
       wireShell();
+      // Deep event instrumentation (GTM dataLayer). Never throws into the
+      // boot path; wire() only subscribes listeners.
+      if (DIE.Telemetry) run(() => DIE.Telemetry.wire());
       renderStaticText();
       routeFromHash();
 
@@ -210,6 +236,21 @@
       }
     }, 60);
     document.body.dataset.tab = tab.id;
+    syncSidebar(tab.id);
+    if (DIE.Telemetry) DIE.Telemetry.track('tab_view', { tab: tab.id });
+  }
+
+  /** Contextual sidebar sync: badge + keep the active tab visible on
+   *  scrollable (mobile) tab bars. Section visibility itself is pure CSS
+   *  (body[data-tab] selectors), so nothing to toggle here. */
+  function syncSidebar(tabId) {
+    const badge = $('sidebarTabBadge');
+    if (badge) badge.textContent = TAB_LABELS[tabId] || 'Filters';
+    const btn = $(TABS.find((t) => t.id === tabId).btn);
+    if (btn && btn.scrollIntoView) {
+      try { btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); }
+      catch (e) { /* older browsers: leave the tab bar as-is */ }
+    }
   }
 
   function routeFromHash() {
@@ -233,6 +274,7 @@
     'doc-d-quality', 'doc-e-methods', 'doc-f-glossary', 'doc-g-downloads'
   ];
   function goDoc(sec) {
+    if (DIE.Telemetry) DIE.Telemetry.track('docs_open', { section: sec });
     switchTab('data');
     // Applied immediately (deep links must work even in an unfocused tab,
     // where rAF is throttled) and again after a frame so the scroll measures
@@ -289,6 +331,7 @@
 
     // fullscreen
     $('fullscreenBtn').addEventListener('click', () => {
+      if (DIE.Telemetry) DIE.Telemetry.track('fullscreen', { entering: !document.fullscreenElement });
       if (!document.fullscreenElement) {
         (document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen || function () {}).call(document.documentElement);
       } else {
@@ -302,6 +345,7 @@
       const open = $('sidebar').classList.toggle('is-open');
       $('navToggle').setAttribute('aria-expanded', String(open));
       $('scrim').hidden = !open;
+      if (DIE.Telemetry) DIE.Telemetry.track('drawer_toggle', { open: open });
     });
     $('sidebarClose').addEventListener('click', closeDrawer);
     $('scrim').addEventListener('click', closeDrawer);
@@ -340,6 +384,12 @@
       setFiltersCollapsed(true, true));
     $('sidebarExpand').addEventListener('click', () =>
       setFiltersCollapsed(false, true));
+    $('sidebarCollapse').addEventListener('click', () => {
+      if (DIE.Telemetry) DIE.Telemetry.track('panel_toggle', { control: 'sidebar', collapsed: true });
+    });
+    $('sidebarExpand').addEventListener('click', () => {
+      if (DIE.Telemetry) DIE.Telemetry.track('panel_toggle', { control: 'sidebar', collapsed: false });
+    });
     const storedCollapsed = (() => {
       try { return localStorage.getItem(FILTERS_KEY) === '1'; } catch (e) { return false; }
     })();
@@ -378,7 +428,7 @@
     // Events controls
     $('evtMinDur').addEventListener('change', () => EventsView.refresh());
     $('evtThreshold').addEventListener('change', () => EventsView.refresh());
-    $('evtSearch').addEventListener('input', () => EventsView.renderTable());
+    $('evtSearch').addEventListener('input', () => { trackSearch('events'); EventsView.renderTable(); });
     $('evtYear').addEventListener('change', () => EventsView.renderTable());
     $('evtCsvBtn').addEventListener('click', () => EventsView.exportCSV());
     document.querySelectorAll('#evtTable th.sortable').forEach((th) => {
@@ -386,6 +436,7 @@
         const key = th.dataset.key;
         if (EventsView.sortKey === key) EventsView.sortDir *= -1;
         else { EventsView.sortKey = key; EventsView.sortDir = key === 'district' || key === 'state' || key === 'start' || key === 'end' ? 1 : -1; }
+        if (DIE.Telemetry) DIE.Telemetry.track('table_sort', { table: 'events', key: key });
         EventsView.renderTable();
       });
     });
@@ -394,8 +445,19 @@
       r.addEventListener('change', () => EventsView.renderSensitivity()));
 
     // Propagation controls
-    $('propIndA').addEventListener('change', () => { Propagation.renderMain(); Propagation.renderDistrictLagMap(); });
-    $('propIndB').addEventListener('change', () => { Propagation.renderMain(); Propagation.renderDistrictLagMap(); });
+    $('propIndA').addEventListener('change', () => {
+      trackPropPair();
+      Propagation.renderMain(); Propagation.renderDistrictLagMap();
+    });
+    $('propIndB').addEventListener('change', () => {
+      trackPropPair();
+      Propagation.renderMain(); Propagation.renderDistrictLagMap();
+    });
+    // Single-date comparison module (Propagation tab)
+    ['cmpIndA', 'cmpIndB', 'cmpDate'].forEach((id) =>
+      $(id).addEventListener('change', () => trackCmp()));
+    document.querySelectorAll('input[name="cmpView"]').forEach((r) =>
+      r.addEventListener('change', () => trackCmp()));
 
     // Data tab
     $('methDocBtn').addEventListener('click', async () => {
@@ -405,7 +467,10 @@
       } catch (err) { toast('Download failed', String(err.message || err), 'error'); }
     });
     if ($('validateAllBtn')) {
-      $('validateAllBtn').addEventListener('click', () => DataView.validateAll());
+      $('validateAllBtn').addEventListener('click', () => {
+        if (DIE.Telemetry) DIE.Telemetry.track('validate_all', {});
+        DataView.validateAll();
+      });
     }
     // User-guide download buttons live outside #downloadsTab (guide panel).
     document.addEventListener('click', async (e) => {
@@ -424,11 +489,16 @@
         const key = th.dataset.key;
         if (Table.sortKey === key) Table.sortDir *= -1;
         else { Table.sortKey = key; Table.sortDir = key === 'name' ? 1 : -1; }
+        if (DIE.Telemetry) DIE.Telemetry.track('table_sort', { table: 'comparison', key: key });
         renderTable();
       });
     });
-    $('tableSearch').addEventListener('input', () => { Table.page = 0; renderTable(); });
-    $('tableLevel').addEventListener('change', () => { Table.page = 0; renderTable(); });
+    $('tableSearch').addEventListener('input', () => { Table.page = 0; trackSearch('comparison'); renderTable(); });
+    $('tableLevel').addEventListener('change', () => {
+      Table.page = 0;
+      if (DIE.Telemetry) DIE.Telemetry.track('table_level', { level: $('tableLevel').value });
+      renderTable();
+    });
     $('tableCsvBtn').addEventListener('click', exportTableCSV);
 
     // state changes — recompute only what the change affects, only for the
@@ -941,12 +1011,14 @@
       // loop from the start when the record is exhausted
       if (this.frame < 0 || this.frame >= ds.dates.length - 1) this.frame = 0;
       this.playing = true;
+      if (DIE.Telemetry) DIE.Telemetry.track('animation_play', { action: 'play', speed_ms: this.speed });
       $('evoPlay').textContent = 'Pause';
       $('evoPlay').setAttribute('aria-label', 'Pause animation');
       this.timer = setInterval(() => this.step(1), this.speed);
     },
 
     pause() {
+      if (this.playing && DIE.Telemetry) DIE.Telemetry.track('animation_play', { action: 'pause', speed_ms: this.speed });
       this.playing = false;
       if (this.timer) { clearInterval(this.timer); this.timer = null; }
       const b = $('evoPlay');
@@ -1371,7 +1443,7 @@
         const b = document.createElement('button');
         b.textContent = label; b.disabled = disabled;
         if (cur) b.className = 'cur';
-        b.addEventListener('click', () => { this.page = page; this.renderTable(); });
+        b.addEventListener('click', () => { this.page = page; if (DIE.Telemetry) DIE.Telemetry.track('table_page', { table: 'events', page: page + 1 }); this.renderTable(); });
         pager.appendChild(b);
       };
       btn('‹', this.page - 1, false, this.page === 0);
@@ -1415,6 +1487,12 @@
       const row = this.cat.rows.find((r) => r.districtId === districtId && r.startIdx === startIdx);
       if (!row) return;
       this.selected = { districtId, startIdx };
+      if (DIE.Telemetry) DIE.Telemetry.track('event_detail_open', {
+        district: row.district, state: row.state,
+        duration_months: row.duration,
+        severity: +row.severity.toFixed(2),
+        censored: !!row.censoring
+      });
       const series = A().districtSeries(ds, districtId);
       // find the event within the full series (startIdx is relative to period slice)
       const ev = this.findEvent(districtId, startIdx);
@@ -2095,7 +2173,7 @@
       const b = document.createElement('button');
       b.textContent = label; b.disabled = disabled;
       if (cur) b.className = 'cur';
-      b.addEventListener('click', () => { Table.page = page; renderTable(); });
+      b.addEventListener('click', () => { Table.page = page; if (DIE.Telemetry) DIE.Telemetry.track('table_page', { table: 'comparison', page: page + 1 }); renderTable(); });
       pager.appendChild(b);
     };
     btn('‹', Table.page - 1, false, Table.page === 0);
