@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-09" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-09d" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -122,7 +122,7 @@
       </div>
 
       <nav class="topnav" aria-label="Application navigation">
-        <button type="button" id="guideBtn" data-doc="doc-b-guide">
+        <button type="button" id="guideBtn" data-doc="doc-i-guide">
           How to use
         </button>
         <button
@@ -167,15 +167,17 @@
     </header>
 
     <div class="layout" id="layout">
-      <!-- ================ CONTEXTUAL CONTROL SIDEBAR ================
-           One rail, two kinds of sections:
-           · data-side="global" — Geography, Indicator, Analysis period and
-             Reset. Genuinely shared state: every tab follows them.
-           · data-side="<tab>"  — controls that belong to the active
-             workspace only. Visibility is driven by body[data-tab] (set in
-             switchTab), so sections swap automatically as tabs change.
-           All control IDs are unchanged, so the wiring in app.js and
-           filters.js is untouched. -->
+      <!-- ==================== STUDY CONTEXT SIDEBAR ====================
+           One rail, two parts:
+           · "Study context" group — Geography, Indicator, Analysis period.
+             Genuinely shared state: every workspace and every panel follows
+             it, in every tab.
+           · sidebar-foot — Documentation & Resources (book icon), Reset,
+             Export, Copy link and the collapse control.
+           Workspace-specific controls live on the panels they drive
+           (panel heads and the scope strips), not here. All control IDs
+           are unchanged, so the wiring in app.js and filters.js is
+           untouched. -->
       <aside class="sidebar" id="sidebar" aria-label="Workspace controls">
         <div class="sidebar-head">
           <span class="sidebar-title"
@@ -238,6 +240,14 @@
         </div>
 
         <div class="sidebar-body" id="sidebarBody">
+        <!-- Persistent study context: shared by all four workspaces. The
+             grouping wrapper is purely visual; section visibility and the
+             wiring of every control are unchanged. -->
+        <div class="side-group" aria-label="Study context">
+          <div class="side-group-label">
+            Study context
+            <span class="group-note">&mdash; applies to every workspace</span>
+          </div>
         <!-- GLOBAL · Geography -->
         <section class="side-sec" data-side="global" aria-labelledby="secGeoH">
           <h2 id="secGeoH">Geography</h2>
@@ -314,272 +324,127 @@
             </select>
           </label>
         </section>
-
-        <!-- OVERVIEW · Observation date (moved from the workspace date panel) -->
-        <section class="side-sec tab-sec" data-side="overview" aria-labelledby="secDateH">
-          <h2 id="secDateH">Observation date</h2>
-          <div class="field-row">
-            <label class="field"
-              ><span class="field-label">Year</span>
-              <select
-                id="yearSelect"
-                aria-label="Observation year"
-              ></select
-            ></label>
-            <label class="field"
-              ><span class="field-label">Month</span>
-              <select
-                id="monthSelect"
-                aria-label="Observation month"
-              ></select
-            ></label>
-          </div>
-          <div class="date-slider-row">
-            <input
-              type="range"
-              id="dateSlider"
-              min="0"
-              max="239"
-              value="239"
-              step="1"
-              aria-label="Observation date slider"
-            />
-            <span class="mono date-slider-label" id="dateSliderLabel">—</span>
-          </div>
-          <button
-            type="button"
-            class="btn btn-sidebar btn-block"
-            id="latestBtn"
-            title="Jump to the latest available observation"
-          >
-            Latest observation
-          </button>
-          <p class="side-note" id="datePanelMeta">—</p>
-        </section>
-
-        <!-- OVERVIEW · Map display -->
-        <section class="side-sec tab-sec" data-side="overview" aria-labelledby="secMapH">
-          <h2 id="secMapH">Map display</h2>
-          <label class="switch"
-            ><input type="checkbox" id="tgDistricts" checked /><span
-              class="switch-track"
-            ></span
-            ><span class="switch-label">District boundaries</span></label
-          >
-          <label class="switch"
-            ><input type="checkbox" id="tgStates" checked /><span
-              class="switch-track"
-            ></span
-            ><span class="switch-label">State boundaries</span></label
-          >
-          <label class="switch"
-            ><input type="checkbox" id="tgOutline" checked /><span
-              class="switch-track"
-            ></span
-            ><span class="switch-label">Study-area outline</span></label
-          >
-          <label class="switch"
-            ><input type="checkbox" id="tgLabels" /><span
-              class="switch-track"
-            ></span
-            ><span class="switch-label">Map labels</span></label
-          >
-          <label class="field">
-            <span class="field-label">Colour</span>
-            <select id="colourMode" aria-label="Colour mode">
-              <option value="classes" selected>Severity classes</option>
-              <option value="continuous">Continuous scale</option>
-            </select>
-          </label>
-          <label class="field">
-            <span class="field-label">Basemap</span>
-            <select id="basemapSelect" aria-label="Basemap">
-              <option value="plain" selected>Plain (offline)</option>
-              <option value="light">Light reference tiles</option>
-              <option value="streets">OpenStreetMap</option>
-            </select>
-          </label>
-        </section>
-
-        <!-- HISTORICAL · trend + ranking table controls -->
-        <section class="side-sec tab-sec" data-side="historical" aria-labelledby="secHistH">
-          <h2 id="secHistH">Historical analysis</h2>
-          <label class="field">
-            <span class="field-label">Ranking table level</span>
-            <select id="tableLevel" aria-label="Comparison level">
-              <option value="state" selected>States / UTs</option>
-              <option value="district">Districts</option>
-            </select>
-          </label>
-          <label class="field">
-            <span class="field-label">Search the table</span>
-            <input
-              type="search"
-              id="tableSearch"
-              class="search-input"
-              placeholder="Search region…"
-              aria-label="Search regions"
-            />
-          </label>
-          <div class="field">
-            <span class="field-label">Trend granularity</span>
-            <div class="seg seg-block" role="radiogroup" aria-label="Trend granularity">
-              <label
-                ><input
-                  type="radio"
-                  name="trendGran"
-                  value="annual"
-                  checked
-                /><span>Annual means</span></label
-              >
-              <label
-                ><input
-                  type="radio"
-                  name="trendGran"
-                  value="monthly"
-                /><span>Monthly values</span></label
-              >
-            </div>
-          </div>
-          <button type="button" class="btn btn-sidebar btn-block" id="tableCsvBtn">
-            Export ranking table (CSV)
-          </button>
-        </section>
-
-        <!-- EVENTS · catalogue filters -->
-        <section class="side-sec tab-sec" data-side="events" aria-labelledby="secEvtH">
-          <h2 id="secEvtH">Event catalogue</h2>
-          <label class="field">
-            <span class="field-label">Minimum duration (months)</span>
-            <select id="evtMinDur" aria-label="Minimum event duration">
-              <option value="3" selected>3 (default)</option>
-              <option value="4">4</option>
-              <option value="6">6</option>
-              <option value="9">9</option>
-              <option value="12">12</option>
-            </select>
-          </label>
-          <label class="field">
-            <span class="field-label">Truncation level</span>
-            <select id="evtThreshold" aria-label="Event truncation level">
-              <option value="default" selected>
-                Default (class threshold)
-              </option>
-              <option value="-0.5">mild-or-worse</option>
-              <option value="-1.0">moderate-or-worse (default)</option>
-              <option value="-1.5">severe-or-worse</option>
-              <option value="-2.0">extreme</option>
-            </select>
-          </label>
-          <label class="field">
-            <span class="field-label">Search district</span>
-            <input
-              type="search"
-              id="evtSearch"
-              class="search-input"
-              placeholder="Search district…"
-              aria-label="Search districts"
-            />
-          </label>
-          <label class="field">
-            <span class="field-label">Onset year</span>
-            <select id="evtYear" aria-label="Filter by start year">
-              <option value="">All years</option>
-            </select>
-          </label>
-          <button type="button" class="btn btn-sidebar btn-block" id="evtCsvBtn">
-            Export event catalogue (CSV)
-          </button>
-        </section>
-
-        <section class="side-sec tab-sec" data-side="events" aria-labelledby="secSensH">
-          <h2 id="secSensH">Sensitivity scenario</h2>
-          <div class="seg seg-block" role="radiogroup" aria-label="Sensitivity scenario">
-            <label
-              ><input
-                type="radio"
-                name="sensMode"
-                value="dur"
-                checked
-              /><span>Minimum duration</span></label
-            >
-            <label
-              ><input type="radio" name="sensMode" value="thr" /><span
-                >Truncation level</span
-              ></label
-            >
-          </div>
-        </section>
-
-        <!-- PROPAGATION · indicator pair + single-date comparison -->
-        <section class="side-sec tab-sec" data-side="propagation" aria-labelledby="secPropH">
-          <h2 id="secPropH">Indicator pair</h2>
-          <label class="field">
-            <span class="field-label">Indicator A (lead candidate)</span>
-            <select id="propIndA" aria-label="Indicator A"></select>
-          </label>
-          <label class="field">
-            <span class="field-label">Indicator B (response)</span>
-            <select id="propIndB" aria-label="Indicator B"></select>
-          </label>
-        </section>
-
-        <section class="side-sec tab-sec" data-side="propagation" aria-labelledby="secCmpH">
-          <h2 id="secCmpH">Single-date comparison</h2>
-          <label class="field">
-            <span class="field-label">Indicator A</span>
-            <select id="cmpIndA" aria-label="Comparison indicator A"></select>
-          </label>
-          <label class="field">
-            <span class="field-label">Indicator B</span>
-            <select id="cmpIndB" aria-label="Comparison indicator B"></select>
-          </label>
-          <label class="field">
-            <span class="field-label">Date</span>
-            <select id="cmpDate" aria-label="Comparison date"></select>
-          </label>
-          <div class="field">
-            <span class="field-label">Right map view</span>
-            <div class="seg seg-block" role="radiogroup" aria-label="Right map view">
-              <label
-                ><input
-                  type="radio"
-                  name="cmpView"
-                  value="b"
-                  checked
-                /><span>Indicator B</span></label
-              >
-              <label
-                ><input type="radio" name="cmpView" value="diff" /><span
-                  >Difference B−A</span
-                ></label
-              >
-            </div>
-          </div>
-        </section>
-
-        <!-- DATA & METHODS · quick section jump -->
-        <section class="side-sec tab-sec" data-side="data" aria-labelledby="secDocH">
-          <h2 id="secDocH">Documentation sections</h2>
-          <div class="doc-jump" aria-label="Jump to documentation section">
-            <button type="button" data-doc="doc-a-about">A &middot; About</button>
-            <button type="button" data-doc="doc-b-guide">B &middot; User guide</button>
-            <button type="button" data-doc="doc-c-dataset">C &middot; Dataset &amp; provenance</button>
-            <button type="button" data-doc="doc-d-quality">D &middot; Quality &amp; validation</button>
-            <button type="button" data-doc="doc-e-methods">E &middot; Complete methodology</button>
-            <button type="button" data-doc="doc-f-glossary">F &middot; Glossary</button>
-            <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citation</button>
-          </div>
-        </section>
-
-        <!-- GLOBAL · reset -->
-        <section class="side-sec" data-side="global">
-          <button type="button" class="btn btn-sidebar btn-block" id="resetBtn">
-            Reset filters
-          </button>
-        </section>
+        </div>
+        <!-- /side-group: study context -->
 
         <div class="sidebar-foot">
+          <div class="foot-actions">
+            <button
+              type="button"
+              class="foot-btn foot-btn-docs"
+              id="footDocsBtn"
+              title="Documentation &amp; Resources — data sources, methodology, validation, downloads"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path
+                  d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+                />
+              </svg>
+              <span>Docs</span>
+            </button>
+            <button
+              type="button"
+              class="foot-btn"
+              id="resetBtn"
+              title="Reset all filters to their defaults"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+              </svg>
+              <span>Reset</span>
+            </button>
+            <button
+              type="button"
+              class="foot-btn"
+              id="footExportBtn"
+              title="Export the current analysis"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="M7 10l5 5 5-5M12 15V3" />
+              </svg>
+              <span id="footExportLabel">Export</span>
+            </button>
+            <button
+              type="button"
+              class="foot-btn"
+              id="footShareBtn"
+              title="Copy a link to the current analysis view"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                />
+                <path
+                  d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                />
+              </svg>
+              <span>Copy link</span>
+            </button>
+            <button
+              type="button"
+              class="foot-btn"
+              id="footCollapseBtn"
+              title="Collapse the control panel"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M11 19l-7-7 7-7M18 19l-7-7 7-7" />
+              </svg>
+              <span>Hide</span>
+            </button>
+          </div>
           <div class="foot-line" id="footPeriod">—</div>
           <div class="foot-line" id="footRes">—</div>
           <div class="foot-line" id="footMode">—</div>
@@ -590,7 +455,8 @@
 
       <!-- ======================= WORKSPACE ======================= -->
       <main class="workspace" id="workspace">
-        <!-- Five primary tabs -->
+        <!-- Four primary workspaces; documentation lives in the sidebar
+             footer (book icon) and deep-links to #data or #docs. -->
         <div class="tabs" role="tablist" aria-label="Analytical workspaces">
           <button
             type="button"
@@ -599,6 +465,21 @@
             aria-selected="true"
             aria-controls="viewOverview"
           >
+            <svg
+              class="tab-ic"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M1 6l7-3 8 3 7-3v15l-7 3-8-3-7 3z" />
+              <path d="M8 3v15M16 6v15" />
+            </svg>
             Overview
           </button>
           <button
@@ -609,6 +490,20 @@
             aria-controls="viewHistorical"
             tabindex="-1"
           >
+            <svg
+              class="tab-ic"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 20V10M12 20V4M6 20v-6" />
+            </svg>
             Historical Analysis
           </button>
           <button
@@ -619,6 +514,20 @@
             aria-controls="viewEvents"
             tabindex="-1"
           >
+            <svg
+              class="tab-ic"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
             Drought Events
           </button>
           <button
@@ -629,17 +538,23 @@
             aria-controls="viewPropagation"
             tabindex="-1"
           >
+            <svg
+              class="tab-ic"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="6" r="3" />
+              <path d="M6 15V9a3 3 0 0 1 3-3h6" />
+            </svg>
             Propagation &amp; Relationships
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabData"
-            aria-selected="false"
-            aria-controls="viewData"
-            tabindex="-1"
-          >
-            Data &amp; Methods
           </button>
         </div>
 
@@ -701,9 +616,51 @@
             </div>
           </div>
 
-          <!-- The observation-date controls now live in the sidebar
-               (data-side="overview"), which keeps this workspace focused on
-               results; the sidebar badge shows the active workspace. -->
+          <!-- Workspace scope strip: the observation date drives every
+               Overview panel (summary cards, map, time series, ranking,
+               evolution), so it sits directly above them as one bar. -->
+          <div class="ws-strip" id="overviewStrip" role="group" aria-label="Observation date">
+            <span class="ws-strip-label">Observation date</span>
+            <div class="field-row">
+              <label class="field"
+                ><span class="field-label">Year</span>
+                <select
+                  id="yearSelect"
+                  class="panel-ctl"
+                  aria-label="Observation year"
+                ></select
+              ></label>
+              <label class="field"
+                ><span class="field-label">Month</span>
+                <select
+                  id="monthSelect"
+                  class="panel-ctl"
+                  aria-label="Observation month"
+                ></select
+              ></label>
+            </div>
+            <div class="date-slider-row">
+              <input
+                type="range"
+                id="dateSlider"
+                min="0"
+                max="239"
+                value="239"
+                step="1"
+                aria-label="Observation date slider"
+              />
+              <span class="mono date-slider-label" id="dateSliderLabel">—</span>
+            </div>
+            <button
+              type="button"
+              class="btn btn-ghost"
+              id="latestBtn"
+              title="Jump to the latest available observation"
+            >
+              Latest
+            </button>
+            <p class="side-note" id="datePanelMeta">—</p>
+          </div>
 
           <!-- Summary statistics -->
           <section class="kpi-row" id="kpiRow" aria-label="Scientific summary">
@@ -797,6 +754,54 @@
                   Export PNG
                 </button>
               </div>
+            </div>
+            <!-- Panel-local display controls: they shape THIS map only,
+                 except the basemap, which every map in the app follows. -->
+            <div class="map-toolbar" id="mapToolbar" role="group" aria-label="Map display controls">
+              <label class="map-ctl"
+                ><span>Colour</span>
+                <select id="colourMode" class="panel-ctl" aria-label="Colour mode">
+                  <option value="classes" selected>Severity classes</option>
+                  <option value="continuous">Continuous scale</option>
+                </select>
+              </label>
+              <label class="map-ctl"
+                ><span>Basemap</span>
+                <select
+                  id="basemapSelect"
+                  class="panel-ctl"
+                  aria-label="Basemap"
+                  title="Applies to every map in the dashboard"
+                >
+                  <option value="plain" selected>Plain (offline)</option>
+                  <option value="light">Light reference tiles</option>
+                  <option value="streets">OpenStreetMap</option>
+                </select>
+              </label>
+              <label class="switch"
+                ><input type="checkbox" id="tgDistricts" checked /><span
+                  class="switch-track"
+                ></span
+                ><span class="switch-label">Districts</span></label
+              >
+              <label class="switch"
+                ><input type="checkbox" id="tgStates" checked /><span
+                  class="switch-track"
+                ></span
+                ><span class="switch-label">States</span></label
+              >
+              <label class="switch"
+                ><input type="checkbox" id="tgOutline" checked /><span
+                  class="switch-track"
+                ></span
+                ><span class="switch-label">Outline</span></label
+              >
+              <label class="switch"
+                ><input type="checkbox" id="tgLabels" /><span
+                  class="switch-track"
+                ></span
+                ><span class="switch-label">Labels</span></label
+              >
             </div>
             <div class="map-body">
               <div class="map-wrap">
@@ -1060,7 +1065,7 @@
               </div>
             </div>
             <div class="vi-actions">
-              <button type="button" class="vi-link" data-doc="doc-f-glossary">
+              <button type="button" class="vi-link" data-doc="doc-j-glossary">
                 Reading these statistics
               </button>
             </div>
@@ -1136,6 +1141,25 @@
                 <h2 class="panel-title">D &middot; Long-term trend</h2>
                 <span class="panel-meta" id="trendMeta">—</span>
               </div>
+              <div class="panel-actions">
+                <div class="seg" role="radiogroup" aria-label="Trend granularity">
+                  <label
+                    ><input
+                      type="radio"
+                      name="trendGran"
+                      value="annual"
+                      checked
+                    /><span>Annual means</span></label
+                  >
+                  <label
+                    ><input
+                      type="radio"
+                      name="trendGran"
+                      value="monthly"
+                    /><span>Monthly values</span></label
+                  >
+                </div>
+              </div>
             </div>
             <div class="hist-2col">
               <div class="chart-box trend-chart" id="trendChart"></div>
@@ -1162,6 +1186,26 @@
               <div class="panel-titles">
                 <h2 class="panel-title">District-wise ranking</h2>
                 <span class="panel-meta" id="tableMeta">—</span>
+              </div>
+              <div class="panel-actions">
+                <select
+                  id="tableLevel"
+                  class="panel-ctl"
+                  aria-label="Comparison level"
+                >
+                  <option value="state" selected>States / UTs</option>
+                  <option value="district">Districts</option>
+                </select>
+                <input
+                  type="search"
+                  id="tableSearch"
+                  class="search-input"
+                  placeholder="Search region…"
+                  aria-label="Search regions"
+                />
+                <button type="button" class="btn btn-ghost" id="tableCsvBtn">
+                  Ranking CSV
+                </button>
               </div>
             </div>
             <p class="table-help">
@@ -1280,10 +1324,40 @@
               </div>
             </div>
             <div class="vi-actions">
-              <button type="button" class="vi-link" data-doc="doc-e-methods">
+              <button type="button" class="vi-link" data-doc="doc-c-methods">
                 How events are defined
               </button>
             </div>
+          </div>
+
+          <!-- Workspace scope strip: the event definition re-runs detection
+               for every Events panel (timeline, catalogue, distribution,
+               sensitivity), so it sits above all of them. -->
+          <div class="ws-strip" id="evtStrip" role="group" aria-label="Event definition">
+            <span class="ws-strip-label">Event definition</span>
+            <label class="map-ctl"
+              ><span>Minimum duration</span>
+              <select id="evtMinDur" class="panel-ctl" aria-label="Minimum event duration">
+                <option value="3" selected>3 (default)</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+                <option value="9">9</option>
+                <option value="12">12</option>
+              </select>
+            </label>
+            <label class="map-ctl"
+              ><span>Truncation level</span>
+              <select id="evtThreshold" class="panel-ctl" aria-label="Event truncation level">
+                <option value="default" selected>
+                  Default (class threshold)
+                </option>
+                <option value="-0.5">mild-or-worse</option>
+                <option value="-1.0">moderate-or-worse (default)</option>
+                <option value="-1.5">severe-or-worse</option>
+                <option value="-2.0">extreme</option>
+              </select>
+            </label>
+            <span class="ws-strip-note">re-runs detection for every Events panel</span>
           </div>
 
           <!-- Event catalogue -->
@@ -1292,6 +1366,25 @@
               <div class="panel-titles">
                 <h2 class="panel-title">Event catalogue</h2>
                 <span class="panel-meta" id="evtMeta">—</span>
+              </div>
+              <div class="panel-actions">
+                <input
+                  type="search"
+                  id="evtSearch"
+                  class="search-input"
+                  placeholder="Search district…"
+                  aria-label="Search districts"
+                />
+                <select
+                  id="evtYear"
+                  class="panel-ctl"
+                  aria-label="Filter by start year"
+                >
+                  <option value="">All years</option>
+                </select>
+                <button type="button" class="btn btn-ghost" id="evtCsvBtn">
+                  Events CSV
+                </button>
               </div>
             </div>
             <p class="table-help">
@@ -1406,6 +1499,23 @@
                   methodology</span
                 >
               </div>
+              <div class="panel-actions">
+                <div class="seg" role="radiogroup" aria-label="Sensitivity scenario">
+                  <label
+                    ><input
+                      type="radio"
+                      name="sensMode"
+                      value="dur"
+                      checked
+                    /><span>Minimum duration</span></label
+                  >
+                  <label
+                    ><input type="radio" name="sensMode" value="thr" /><span
+                      >Truncation level</span
+                    ></label
+                  >
+                </div>
+              </div>
             </div>
             <div class="chart-box chart-box-short" id="sensChart"></div>
             <p class="chart-foot" id="sensFoot">—</p>
@@ -1458,10 +1568,28 @@
               </div>
             </div>
             <div class="vi-actions">
-              <button type="button" class="vi-link" data-doc="doc-f-glossary">
+              <button type="button" class="vi-link" data-doc="doc-j-glossary">
                 Reading lag &amp; correlation
               </button>
             </div>
+          </div>
+
+          <!-- Workspace scope strip: the indicator pair drives the
+               cross-correlation and district-pattern panels below. -->
+          <div class="ws-strip" id="propStrip" role="group" aria-label="Indicator pair">
+            <span class="ws-strip-label">Indicator pair</span>
+            <label class="map-ctl"
+              ><span>Lead (A)</span>
+              <select id="propIndA" class="panel-ctl" aria-label="Indicator A"></select>
+            </label>
+            <label class="map-ctl"
+              ><span>Response (B)</span>
+              <select id="propIndB" class="panel-ctl" aria-label="Indicator B"></select>
+            </label>
+            <span class="ws-strip-note"
+              >drives the cross-correlation &amp; district-pattern panels
+              &middot; the heatmap scans all pairs</span
+            >
           </div>
 
           <!-- Temporal relationship -->
@@ -1524,6 +1652,26 @@
                   >Matched districts only &middot; pairwise deletion of missing
                   values</span
                 >
+              </div>
+              <div class="panel-actions cmp-controls">
+                <select id="cmpIndA" class="panel-ctl" aria-label="Comparison indicator A"></select>
+                <select id="cmpIndB" class="panel-ctl" aria-label="Comparison indicator B"></select>
+                <select id="cmpDate" class="panel-ctl" aria-label="Comparison date"></select>
+                <div class="seg" role="radiogroup" aria-label="Right map view">
+                  <label
+                    ><input
+                      type="radio"
+                      name="cmpView"
+                      value="b"
+                      checked
+                    /><span>Indicator B</span></label
+                  >
+                  <label
+                    ><input type="radio" name="cmpView" value="diff" /><span
+                      >Difference B−A</span
+                    ></label
+                  >
+                </div>
               </div>
             </div>
             <div class="cmp-maps">
@@ -1591,15 +1739,32 @@
         </div>
 
         <!-- ============ VIEW 5: DATA, METHODOLOGY & DOWNLOADS ============ -->
-        <div id="viewData" role="tabpanel" aria-labelledby="tabData" hidden>
+        <div id="viewData" role="tabpanel" aria-label="Documentation and Resources" hidden>
           <div class="view-intro is-compact" aria-label="Workspace introduction">
-            <span class="vi-step">5</span>
+            <span class="vi-step" aria-hidden="true">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path
+                  d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+                />
+              </svg>
+            </span>
             <div class="vi-body">
               <div class="vi-title">
-                Data &amp; Methods
+                Documentation &amp; Resources
                 <span class="vi-hint"
-                  >Provenance, quality, methodology, glossary &amp;
-                  downloads.</span
+                  >About, data sources, methodology, validation, uncertainty,
+                  reproducibility, downloads &amp; version history &mdash; open
+                  any time from the book icon in the sidebar footer.</span
                 >
                 <button
                   type="button"
@@ -1626,27 +1791,36 @@
               <div class="vi-detail" id="introDetailData">
                 <p>
                   Understand the data before using the results: provenance,
-                  quality checks, the full methodology, a glossary of every
-                  table and chart, and research-ready downloads.
+                  quality checks, uncertainty and limitations, the full
+                  methodology, a glossary of every table and chart, version
+                  history and research-ready downloads.
                 </p>
               </div>
             </div>
           </div>
 
-          <!-- Documentation centre: sections A-G below are the single source
-               of truth for About, guidance, dataset, quality, methodology,
-               glossary and download documentation. External help buttons
-               (header, other tabs) scroll here via goDoc(). -->
+          <!-- Documentation centre: sections A-J below are the single source
+               of truth for About, data sources, methodology, quality,
+               uncertainty, reproducibility, downloads, version history,
+               guidance and the glossary. The entry point is the book icon in
+               the sidebar footer; external help buttons scroll here via
+               goDoc(). -->
           <nav class="doc-nav" aria-label="Documentation contents">
             <span class="doc-nav-title">Contents</span>
             <div class="doc-nav-links">
-              <button type="button" data-doc="doc-a-about">A &middot; About</button>
-              <button type="button" data-doc="doc-b-guide">B &middot; User guide</button>
-              <button type="button" data-doc="doc-c-dataset">C &middot; Dataset &amp; provenance</button>
-              <button type="button" data-doc="doc-d-quality">D &middot; Quality &amp; validation</button>
-              <button type="button" data-doc="doc-e-methods">E &middot; Complete methodology</button>
-              <button type="button" data-doc="doc-f-glossary">F &middot; Glossary</button>
-              <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citation</button>
+              <button type="button" data-doc="doc-a-about">A &middot; About the Explorer</button>
+              <button type="button" data-doc="doc-b-dataset">B &middot; Data sources</button>
+              <button type="button" data-doc="doc-c-methods">C &middot; Methodology</button>
+              <button type="button" data-doc="doc-d-quality">D &middot; Validation &amp; data quality</button>
+              <button type="button" data-doc="doc-e-limits">E &middot; Uncertainty &amp; limitations</button>
+              <button type="button" data-doc="doc-f-repro">F &middot; Reproducibility</button>
+              <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citations</button>
+              <button type="button" data-doc="doc-h-versions">H &middot; Version history</button>
+            </div>
+            <span class="doc-nav-title">Handbook</span>
+            <div class="doc-nav-links">
+              <button type="button" data-doc="doc-i-guide">I &middot; User guide</button>
+              <button type="button" data-doc="doc-j-glossary">J &middot; Glossary</button>
             </div>
           </nav>
 
@@ -1654,7 +1828,7 @@
           <details class="panel acc-panel doc-sec" id="doc-a-about">
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title"><span class="doc-letter">A</span>About the dashboard</h2>
+                <h2 class="panel-title"><span class="doc-letter">A</span>About the Explorer</h2>
                 <span class="panel-meta"
                   >Purpose, workspaces, technology and research
                   positioning</span
@@ -1703,9 +1877,11 @@
                   propagation patterns.
                 </li>
                 <li>
-                  <em>Data &amp; Methods</em> &mdash; this documentation centre:
-                  about, provenance, quality, methodology, glossary and
-                  research-ready downloads with metadata.
+                  <em>Documentation &amp; Resources</em> &mdash; the book-icon
+                  entry in the sidebar footer: this documentation centre with
+                  data sources, methodology, validation, uncertainty,
+                  reproducibility, downloads, version history, the user guide
+                  and glossary.
                 </li>
               </ol>
               <h3>Current data mode</h3>
@@ -1718,28 +1894,16 @@
                 with CDN fallbacks. No frameworks, no backend, no database, no
                 API keys.
               </p>
-              <h3>Positioning and limitations</h3>
-              <p>
-                This is a <strong>historical research and communication
-                tool</strong>, not an operational drought-warning system:
-                outputs depend on the availability, quality, temporal coverage
-                and methodological assumptions of the underlying datasets, and
-                values are model/reanalysis-based estimates aggregated to
-                administrative districts &mdash; not official drought
-                declarations and not the sole basis for operational decisions.
-                See the disclaimer in the application footer and the validation
-                report in section&nbsp;D.
-              </p>
               <h3>Citation</h3>
               <p class="mono small" id="aboutCitation">&mdash;</p>
             </div>
           </details>
 
-          <!-- B: user guide -->
-          <details class="panel acc-panel doc-sec" id="doc-b-guide">
+          <!-- I: user guide -->
+          <details class="panel acc-panel doc-sec" id="doc-i-guide">
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title"><span class="doc-letter">B</span>User guide</h2>
+                <h2 class="panel-title"><span class="doc-letter">I</span>User guide</h2>
                 <span class="panel-meta"
                   >Quick start, workspace map and how to read every
                   output</span
@@ -1788,8 +1952,9 @@
                   <em>Propagation</em> for cross-indicator relationships.
                 </li>
                 <li>
-                  <b>Export.</b> Tables offer CSV; <em>Data &amp; Methods</em>
-                  offers long-format data, statistics, the event catalogue, JSON
+                  <b>Export.</b> Tables offer CSV; <em>Documentation &amp;
+                  Resources</em> (book icon in the sidebar footer) offers
+                  long-format data, statistics, the event catalogue, JSON
                   metadata, boundaries, map PNG and documentation. Every export
                   embeds its analysis settings (section&nbsp;G).
                 </li>
@@ -1851,14 +2016,15 @@
                     </td>
                   </tr>
                   <tr>
-                    <td><b>5 &middot; Data &amp; Methods</b></td>
+                    <td><b>Docs &middot; Documentation &amp; Resources</b></td>
                     <td>
                       What exactly is in the data, how was it produced, and how
                       can I reuse it?
                     </td>
                     <td>
-                      Provenance, validation report, full methodology, glossary,
-                      downloads, citation.
+                      Data sources, validation report, uncertainty &amp;
+                      limitations, full methodology, glossary, downloads,
+                      citation, version history.
                     </td>
                   </tr>
                 </tbody>
@@ -1898,8 +2064,8 @@
                 This is a research dataset, not an operational drought
                 declaration. Indicator values depend on the reference
                 climatology, the aggregation method and the underlying
-                model/reanalysis products. Read section&nbsp;C (provenance) and
-                section&nbsp;E (methodology) before citing a result.
+                model/reanalysis products. Read section&nbsp;B (data sources)
+                and section&nbsp;C (methodology) before citing a result.
               </p>
 
               <h3>Keyboard &amp; navigation</h3>
@@ -1911,8 +2077,10 @@
                 <span class="mono">#historical</span>,
                 <span class="mono">#events</span>,
                 <span class="mono">#propagation</span>,
-                <span class="mono">#data</span>, or a section of this page such
-                as <span class="mono">#data/e-methods</span>) and refresh
+                <span class="mono">#data</span> or
+                <span class="mono">#docs</span> for Documentation &amp;
+                Resources, or a section of that page such as
+                <span class="mono">#data/c-methods</span>) and refresh
                 without losing the view.
               </p>
               <button type="button" class="doc-top" data-doc="doc-top">
@@ -1921,11 +2089,11 @@
             </div>
           </details>
 
-          <!-- C: dataset and provenance -->
-          <details class="panel acc-panel doc-sec" id="doc-c-dataset" open>
+          <!-- B: data sources and provenance -->
+          <details class="panel acc-panel doc-sec" id="doc-b-dataset" open>
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title"><span class="doc-letter">C</span>Dataset and data provenance</h2>
+                <h2 class="panel-title"><span class="doc-letter">B</span>Data sources and provenance</h2>
                 <span class="panel-meta"
                   >From data/metadata.json &middot; single source of truth</span
                 >
@@ -1976,7 +2144,7 @@
           <details class="panel acc-panel doc-sec" id="doc-d-quality" open>
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title"><span class="doc-letter">D</span>Data quality and validation</h2>
+                <h2 class="panel-title"><span class="doc-letter">D</span>Validation and data quality</h2>
                 <span class="panel-meta"
                   >Per-indicator validation, recomputed in your browser at load
                   time</span
@@ -2007,11 +2175,144 @@
             </button>
           </details>
 
-          <!-- E: complete methodology (one collapsible subsection topic) -->
-          <details class="panel acc-panel doc-sec" id="doc-e-methods">
+          <!-- E: uncertainty and limitations -->
+          <details class="panel acc-panel doc-sec" id="doc-e-limits">
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title"><span class="doc-letter">E</span>Complete methodology</h2>
+                <h2 class="panel-title"><span class="doc-letter">E</span>Uncertainty and limitations</h2>
+                <span class="panel-meta"
+                  >What these historical estimates can &mdash; and cannot
+                  &mdash; tell you</span
+                >
+              </div>
+            </summary>
+            <div class="about-body">
+              <p class="about-lead">
+                Every output here is a historical, model-based research
+                estimate. Read it with the uncertainties below &mdash; not as an
+                operational drought declaration.
+              </p>
+              <h3>Estimates, not declarations</h3>
+              <p>
+                SPI, SPEI, the soil-moisture anomaly and the Vegetation
+                Condition Index are derived from CHIRPS, ERA5-Land and MODIS
+                MOD13A3 with Google Earth Engine. Each inherits the biases,
+                resolution and retrieval assumptions of its source product;
+                labelling a month &ldquo;mild / moderate / severe /
+                extreme&rdquo; is a statement about the indicator, not an
+                official drought declaration.
+              </p>
+              <h3>Spatial and temporal simplifications</h3>
+              <ul>
+                <li>
+                  District aggregation smooths within-district heterogeneity
+                  &mdash; a district value is only as representative as its
+                  area-weighted mean.
+                </li>
+                <li>
+                  The reference climatology and aggregation window set the zero
+                  point of every indicator (section&nbsp;C).
+                </li>
+                <li>
+                  The vegetation record starts in February 2000 (MODIS); earlier
+                  vegetation conditions are absent by design, not by data loss.
+                </li>
+                <li>
+                  Reanalysis-driven estimates are least reliable where station
+                  density is low; the validation report (section&nbsp;D)
+                  quantifies coverage per indicator.
+                </li>
+              </ul>
+              <h3>Statistical caution</h3>
+              <p>
+                Trend significance (5% level), Sen confidence intervals and
+                bootstrap correlation intervals quantify sampling uncertainty
+                only &mdash; they do not address model or structural
+                uncertainty, and association found in the Propagation &amp;
+                Relationships workspace is not causation.
+              </p>
+              <h3>Intended use</h3>
+              <p>
+                This is a <strong>historical research and communication
+                tool</strong>, not an operational drought-warning system:
+                outputs depend on the availability, quality, temporal coverage
+                and methodological assumptions of the underlying datasets, and
+                values are model/reanalysis-based estimates aggregated to
+                administrative districts &mdash; not official drought
+                declarations and not the sole basis for operational decisions.
+                See the disclaimer in the application footer and the validation
+                report in section&nbsp;D.
+              </p>
+            </div>
+            <button type="button" class="doc-top" data-doc="doc-top">
+              &uarr; Back to top
+            </button>
+          </details>
+
+          <!-- F: reproducibility -->
+          <details class="panel acc-panel doc-sec" id="doc-f-repro">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">F</span>Reproducibility</h2>
+                <span class="panel-meta"
+                  >Exact settings, versions and metadata for citing or
+                  re-running an analysis</span
+                >
+              </div>
+            </summary>
+            <div class="about-body">
+              <p class="about-lead">
+                To reproduce a number seen in the app outside the app, keep the
+                exported metadata together with the settings below.
+              </p>
+              <p class="panel-note">
+                Every CSV begins with <span class="mono">#</span> comment lines
+                recording the indicator, geography, dataset and analysis
+                periods, reference period, methodology version, data mode/seed,
+                source and export timestamp. To reproduce a result externally,
+                keep the exported metadata together with: the indicator id and
+                dataset version (<span class="mono">methodology_version</span>),
+                the geographic extent and selected region/district, the
+                observation date (<span class="mono">dateIdx</span>) for
+                snapshot statistics, the analysis period and season, the event
+                threshold and minimum duration, and the trend/correlation
+                settings where used.
+              </p>
+              <h3>Pipeline and contracts</h3>
+              <ul>
+                <li>
+                  <span class="mono">data/metadata.json</span> &mdash; the build
+                  contract: sources, periods, indicator definitions, version and
+                  provenance (section&nbsp;B renders it live).
+                </li>
+                <li>
+                  <span class="mono">docs/methodology.md</span> &mdash; the
+                  complete methodology (section&nbsp;C), also downloadable from
+                  that section.
+                </li>
+                <li>
+                  <span class="mono">data-pipeline/</span> &mdash; the reference
+                  Python / Earth-Engine pipeline, including
+                  <span class="mono">docs/gee-update-guide.md</span> for
+                  refreshing the dataset.
+                </li>
+              </ul>
+              <p>
+                The application itself is static and client-side: identical
+                inputs and settings produce identical outputs in any browser;
+                there is no server-side state that could alter a result.
+              </p>
+            </div>
+            <button type="button" class="doc-top" data-doc="doc-top">
+              &uarr; Back to top
+            </button>
+          </details>
+
+          <!-- C: complete methodology (one collapsible subsection topic) -->
+          <details class="panel acc-panel doc-sec" id="doc-c-methods">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">C</span>Complete methodology</h2>
                 <span class="panel-meta"
                   >Every formula, threshold, assumption and reference applied in
                   this application</span
@@ -2354,10 +2655,10 @@
           </details>
 
           <!-- F: glossary and interpretation -->
-          <details class="panel acc-panel doc-sec" id="doc-f-glossary">
+          <details class="panel acc-panel doc-sec" id="doc-j-glossary">
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title"><span class="doc-letter">F</span>Glossary and interpretation</h2>
+                <h2 class="panel-title"><span class="doc-letter">J</span>Glossary and interpretation</h2>
                 <span class="panel-meta"
                   >What each table shows and how to read every chart and
                   statistic</span
@@ -2562,7 +2863,7 @@
           <details class="panel acc-panel doc-sec" id="doc-g-downloads">
             <summary class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title"><span class="doc-letter">G</span>Downloads, reproducibility and citation</h2>
+                <h2 class="panel-title"><span class="doc-letter">G</span>Downloads and citation</h2>
                 <span class="panel-meta"
                   >All exports are generated client-side from the loaded dataset
                   &middot; every CSV includes a reproducibility metadata
@@ -2572,21 +2873,64 @@
             </summary>
             <div class="downloads" id="downloadsTab"></div>
             <p class="panel-note">
-              Every CSV begins with <span class="mono">#</span> comment lines
-              recording the indicator, geography, dataset and analysis periods,
-              reference period, methodology version, data mode/seed, source and
-              export timestamp. To reproduce a result externally, keep the
-              exported metadata together with: the indicator id and dataset
-              version (<span class="mono">methodology_version</span>), the
-              geographic extent and selected region/district, the observation
-              date (<span class="mono">dateIdx</span>) for snapshot statistics,
-              the analysis period and season, the event threshold and minimum
-              duration, and the trend/correlation settings where used.
+              How to reproduce an export externally &mdash; the metadata each
+              file carries and the settings to record &mdash; is described in
+              section&nbsp;F (Reproducibility).
             </p>
             <div class="dl-citation">
               <h3 class="dl-cite-h">Version and citation</h3>
               <p class="mono small" id="methCitation">&mdash;</p>
               <p class="small" id="methVersion">&mdash;</p>
+            </div>
+            <button type="button" class="doc-top" data-doc="doc-top">
+              &uarr; Back to top
+            </button>
+          </details>
+
+          <!-- H: version history -->
+          <details class="panel acc-panel doc-sec" id="doc-h-versions">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">H</span>Version history</h2>
+                <span class="panel-meta"
+                  >Application, dataset and methodology versions for this
+                  build</span
+                >
+              </div>
+            </summary>
+            <div class="about-body">
+              <p class="mono small" id="versionMeta">&mdash;</p>
+              <h3>Changelog</h3>
+              <ul>
+                <li>
+                  <b>2026-11</b> &mdash; Four-workspace navigation redesign:
+                  Data &amp; Methods moved out of the primary tabs into a
+                  dedicated Documentation &amp; Resources entry (book icon in
+                  the sidebar footer), a persistent study-context group,
+                  per-workspace accent identity and footer actions (export,
+                  copy link, reset, collapse).
+                </li>
+                <li>
+                  <b>2026-11</b> &mdash; Contextual control sidebar
+                  (workspace-specific sections in one rail), mobile ergonomics
+                  (drawer, safe-area layout, touch targets) and deep event
+                  instrumentation.
+                </li>
+                <li>
+                  <b>Initial release</b> &mdash; historical research dataset
+                  (CHIRPS v2.0, ERA5-Land, MODIS MOD13A3 via Google Earth
+                  Engine), four analytical workspaces, documentation centre and
+                  download centre.
+                </li>
+              </ul>
+              <p class="small">
+                Version identifiers are declared by the dataset build in
+                <span class="mono">data/metadata.json</span>
+                (<span class="mono">version</span>,
+                <span class="mono">methodology_version</span>,
+                <span class="mono">last_updated</span>) and rendered above; the
+                application footer repeats them.
+              </p>
             </div>
             <button type="button" class="doc-top" data-doc="doc-top">
               &uarr; Back to top
@@ -2635,28 +2979,10 @@
                     >Research Tools</a
                   >
                   <a
-                    href="https://ankitdeshmukh.com/activities/teaching/"
-                    target="_blank"
-                    rel="noopener"
-                    >Teaching</a
-                  >
-                  <a
-                    href="https://ankitdeshmukh.com/updates/"
-                    target="_blank"
-                    rel="noopener"
-                    >Updates &amp; Activities</a
-                  >
-                  <a
                     href="https://ankitdeshmukh.com/post/"
                     target="_blank"
                     rel="noopener"
                     >Blog</a
-                  >
-                  <a
-                    href="https://ankitdeshmukh.com/about/"
-                    target="_blank"
-                    rel="noopener"
-                    >About &amp; Contact</a
                   >
                 </span>
               </nav>
@@ -2763,7 +3089,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-09";
+        var ASSET_VERSION = "2026-11-09d";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

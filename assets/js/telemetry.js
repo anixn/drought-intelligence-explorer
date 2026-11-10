@@ -50,6 +50,7 @@
     table_page: 1,
     table_level: 1,
     outbound_link: 1,
+    share_copy: 3,          // copying an analysis deep link (share intent)
     validate_all: 2,
     drawer_toggle: 0,
     panel_toggle: 0,

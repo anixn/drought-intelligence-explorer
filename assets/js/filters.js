@@ -333,26 +333,31 @@
 
   /* ------------------------------------------------------------ wiring --- */
   function wire() {
+    /* Discrete, potentially slow selections (geography, indicator, period)
+       show the progress cursor for the recompute: deferBusy paints the
+       busy state first, then runs the synchronous update, then restores. */
+    const slow = (fn) => { if (DIE.deferBusy) DIE.deferBusy(fn); else fn(); };
+
     $('extentSelect').addEventListener('change', (e) => {
       const v = e.target.value;
-      Filters.set(v === 'india' ? { extent: v, stateId: null, districtId: null }
+      slow(() => Filters.set(v === 'india' ? { extent: v, stateId: null, districtId: null }
         : v === 'state' ? { extent: v, districtId: null }
-        : { extent: v });
+        : { extent: v }));
     });
     $('stateSelect').addEventListener('change', (e) => {
-      Filters.set({ stateId: e.target.value || null, districtId: null });
+      slow(() => Filters.set({ stateId: e.target.value || null, districtId: null }));
     });
     $('districtSelect').addEventListener('change', (e) => {
-      Filters.set({ districtId: e.target.value || null });
+      slow(() => Filters.set({ districtId: e.target.value || null }));
     });
 
     $('indicatorList').addEventListener('change', (e) => {
       if (e.target.name === 'indicator') {
-        Filters.set({
+        slow(() => Filters.set({
           indicator: e.target.value,
           dateIdx: -1,
           period: { from: null, to: null }
-        });
+        }));
       }
     });
 
@@ -393,16 +398,16 @@
       const from = +e.target.value;
       const patch = { period: { from } };
       if (DIE.state.period.to < from) patch.period.to = from;
-      Filters.set(patch);
+      slow(() => Filters.set(patch));
     });
     $('toYearSelect').addEventListener('change', (e) => {
       const to = +e.target.value;
       const patch = { period: { to } };
       if (DIE.state.period.from > to) patch.period.from = to;
-      Filters.set(patch);
+      slow(() => Filters.set(patch));
     });
     $('seasonSelect').addEventListener('change', (e) => {
-      Filters.set({ period: { season: e.target.value } });
+      slow(() => Filters.set({ period: { season: e.target.value } }));
     });
 
     // "Latest" button jumps to the newest available observation of the
@@ -411,7 +416,7 @@
       const ds = DIE.datasets.get(DIE.state.indicator);
       if (!ds) return;
       const idx = ds.availableEndIndex >= 0 ? ds.availableEndIndex : ds.dates.length - 1;
-      Filters.set({ dateIdx: idx });
+      slow(() => Filters.set({ dateIdx: idx }));
     });
 
     $('tgDistricts').addEventListener('change', (e) => Filters.set({ map: { districts: e.target.checked } }));

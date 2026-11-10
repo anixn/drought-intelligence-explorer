@@ -11,7 +11,7 @@ A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScr
 
 ## Contents
 
-- [Workspaces (five tabs)](#workspaces-five-tabs)
+- [Workspaces (four tabs + documentation)](#workspaces-four-tabs--documentation)
 - [Features](#features)
 - [Repository structure](#repository-structure)
 - [Run locally](#run-locally)
@@ -24,15 +24,15 @@ A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScr
 - [Technology, performance and design decisions](#technology-performance-and-design-decisions)
 - [License](#license)
 
-## Workspaces (five tabs)
+## Workspaces (four tabs + documentation)
 
-The interface is organised into five analytical workspaces, reachable by URL hash (`#overview`, `#historical`, `#events`, `#propagation`, `#data`) so refresh and deep links preserve the view. Geography, indicator and analysis period are **global filters** (left panel) shared by every tab; only the observation date is a contextual control of the Overview tab.
+The interface is organised into four analytical workspaces, reachable by URL hash (`#overview`, `#historical`, `#events`, `#propagation`) so refresh and deep links preserve the view. Geography, indicator and analysis period are **global study-context controls** (left panel) shared by every tab — the sidebar holds nothing else. Workspace-specific controls sit on the panels they drive, Grafana/Tableau style: an **Observation date** strip above the Overview panels, an **Event definition** strip above the Events panels, an **Indicator pair** strip above the Propagation panels, display controls (colour mode, layers, basemap) on a toolbar attached to the main map, and per-panel filters in panel heads (ranking level/search/CSV, catalogue search/year/CSV, trend granularity, sensitivity scenario, comparison pair). The basemap choice on the map toolbar applies to **every map** in the dashboard, including event-detail, propagation-pattern and comparison maps. The former fifth tab, Data & Methods, is now **Documentation & Resources**: a dedicated documentation area opened with the book icon in the sidebar footer (URL hash `#data` or `#docs`), covering About, Data Sources, Methodology, Validation & Data Quality, Uncertainty & Limitations, Reproducibility, Downloads & Citations and Version History. Each workspace has its own accent identity; drought-severity palettes and plot colours remain independent of it.
 
 1. **Overview** — where is drought, how severe, how has it changed: date slider, snapshot KPIs (affected/severe area in equal-area km², area-weighted mean, districts in drought with change vs the previous month), the interactive district map with legend, the full time series with drought-class thresholds, the severity distribution, a top-10 most-affected-district ranking (by severity or affected area) and a historical-context timeline (% of region area in drought) with playback.
 2. **Historical Analysis** — frequency (months and % in drought, per-year bars, district frequency histogram), duration and severity (summary statistics plus per-district choropleth maps), non-parametric trend analysis (Mann-Kendall with tie correction and Hamed-Rao variance correction when significant autocorrelation exists; Sen's slope with 90% confidence interval; annual or monthly granularity), empirical recurrence (inter-arrival times, severity-exceedance return periods — no fitted distribution), and the district-wise ranking table (sortable/searchable/paginated, CSV export).
 3. **Drought Events** — the event catalogue (runs analysis per district: onset, termination, duration, maximum intensity, cumulative severity, censoring flag, recovery months; filterable by year/district, sortable, CSV export), the onset timeline, the duration distribution, an event detail view (event-specific series with the shaded event window and a map extent) and a definition-sensitivity panel (minimum duration / truncation scenarios, clearly separated from the default methodology).
 4. **Propagation & Relationships** — lagged cross-correlation (−12…+12 months, matched months only) between any two indicators with the optimal lag, Pearson r and moving-block bootstrap 95% CI (serial dependence preserved, fixed seed), a dual-series comparison chart, a full 10×10 correlation heatmap, a district-wise optimal-lag map, the migrated single-date spatial comparison (synchronized maps, difference map, agreement statistics, scatter), and an explicitly **unavailable** section for streamflow/groundwater propagation (no such data in the dataset — nothing is simulated).
-5. **Data & Methods** — dataset information (source, modes, units, windows, latest observation, reference period), per-indicator data quality (valid %, missing %) with the live validation report, the full methodology (indicators, thresholds, aggregation, events, trends, correlation, missing-data policy) and the download centre: long-format CSV, wide matrix, district statistics, event catalogue, analysis-metadata JSON, boundary GeoJSON, map PNG, documentation, citation — every CSV export carries a `#`-comment reproducibility header (indicator, geography, periods, reference period, export timestamp, methodology version, data mode and seed, source).
+5. **Documentation & Resources** (book icon in the sidebar footer, hash `#data`/`#docs`) — dataset information (source, modes, units, windows, latest observation, reference period), per-indicator data quality (valid %, missing %) with the live validation report, uncertainty and limitations, the full methodology (indicators, thresholds, aggregation, events, trends, correlation, missing-data policy) and the download centre: long-format CSV, wide matrix, district statistics, event catalogue, analysis-metadata JSON, boundary GeoJSON, map PNG, documentation, citation — every CSV export carries a `#`-comment reproducibility header (indicator, geography, periods, reference period, export timestamp, methodology version, data mode and seed, source). Organised as About the Explorer · Data Sources · Methodology · Validation & Data Quality · Uncertainty and Limitations · Reproducibility · Downloads & Citations · Version History, plus the user guide and glossary.
 
 ## Features
 
@@ -48,14 +48,15 @@ The interface is organised into five analytical workspaces, reachable by URL has
 - **Responsive**: fixed filter panel on desktop, filter drawer on tablet/mobile, stacked charts, scrollable tables, touch-friendly controls.
 - **Accessibility**: keyboard-operable tabs (arrow keys) and controls, visible focus states, ARIA roles on tabs/dialogs/status, skip link, descriptive legends and tooltips, plus a `?` shortcut for the in-app guide.
 - **Fast by design**: parallel boot with cached indicator text, memoised analytics aggregates, hidden-tab dirty tracking, targeted filter-control rebuilds, transient slider updates, progressive chart rendering while Plotly loads, and on-demand html2canvas.
-- **Built-in guidance**: a workspace introduction on every tab, a full “How to use” dialog, a Data & Methods guide/glossary, purpose notes above every table, and a downloadable [user guide](docs/user-guide.md).
+- **Built-in guidance**: a workspace introduction on every tab, a full "How to use" dialog, a Documentation & Resources guide/glossary, purpose notes above every table, and a downloadable [user guide](docs/user-guide.md).
 
 ## Repository structure
 
 ```
 .
-├── index.html                  application shell (five-tab nav, global filter
-│                               panel, workspaces, About modal, boot loader)
+├── index.html                  application shell (four-workspace nav +
+│                               documentation centre, global filter
+│                               panel, workspaces, boot loader)
 ├── assets/
 │   ├── css/style.css           design system
 │   ├── css/leaflet.css         bundled Leaflet stylesheet
@@ -66,7 +67,7 @@ The interface is organised into five analytical workspaces, reachable by URL has
 │   │   ├── map.js              Leaflet views (main + statistical maps), legends, PNG export
 │   │   ├── charts.js           Plotly chart builders
 │   │   ├── analytics.js        statistics, event analysis, CSV builders
-│   │   ├── app.js              orchestration, hash router, five view controllers
+│   │   ├── app.js              orchestration, hash router, four view controllers + docs centre
 │   │   └── vendor/             bundled libraries (CDN fallback configured)
 │   └── images/                 logo, favicon, Leaflet icons
 ├── data/
@@ -230,7 +231,7 @@ This cleans the raw file, rounds coordinates (districts at ~100 m precision, sta
 
 ## Data validation and quality
 
-At load time the application checks every dataset for: duplicate district rows (merged, last kept), invalid date columns (skipped), non-numeric values (treated as missing), district ids missing from the boundaries (dropped), boundary districts absent from the dataset (rendered as no-data), and overall completeness. The report appears in the **Data & Methods** tab (data-quality section) and the browser console. Only indicators already loaded in the session are reported by default; **Validate all indicators** downloads the remaining matrices in small parallel batches and updates the report as each one finishes. Missing observations are never imputed or treated as normal conditions — see `docs/methodology.md` §6.
+At load time the application checks every dataset for: duplicate district rows (merged, last kept), invalid date columns (skipped), non-numeric values (treated as missing), district ids missing from the boundaries (dropped), boundary districts absent from the dataset (rendered as no-data), and overall completeness. The report appears in **Documentation & Resources** (book icon in the sidebar footer → Validation and data quality) and the browser console. Only indicators already loaded in the session are reported by default; **Validate all indicators** downloads the remaining matrices in small parallel batches and updates the report as each one finishes. Missing observations are never imputed or treated as normal conditions — see `docs/methodology.md` §6.
 
 ## Citing the application and datasets
 
@@ -260,7 +261,7 @@ Dataset citations depend on what you deploy: this build uses CHIRPS v2.0 Final, 
 - **Plotly "cartesian" bundle only** — D3 was deliberately omitted (Plotly covers the required scientific charts; lighter payload).
 - **Areas precomputed in an equal-area projection**; regional means are area-weighted; no degree-coordinate arithmetic anywhere.
 - **Single source of truth:** classification thresholds, palettes, units, tooltips and provenance all live in `data/metadata.json`.
-- **Self-documenting interface:** workspace intros, table-purpose notes, a full guide dialog, a Data & Methods glossary and a downloadable user guide.
+- **Self-documenting interface:** workspace intros, table-purpose notes, a full guide dialog, a Documentation & Resources glossary and a downloadable user guide.
 
 ## License
 

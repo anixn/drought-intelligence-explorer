@@ -51,7 +51,7 @@ Common fields on every event: `event` (name below, prefixed `die_`),
 | Event name (`die_…`) | Params | Value | Fired when |
 | --- | --- | ---: | --- |
 | `die_session_start` | — | 0 | page load (Telemetry wire) |
-| `die_tab_view` | `tab` | 1 overview · 3 historical/events · 4 propagation · 2 data | workspace switch (incl. hash routing) |
+| `die_tab_view` | `tab` | 1 overview · 3 historical/events · 4 propagation · 2 data (docs) | workspace switch incl. footer docs entry (incl. hash routing) |
 | `die_filter_change` | `keys`, `extent`, `state_id`, `district_id`, `period`, `season` | 1 | geography/period state change |
 | `die_indicator_change` | `indicator` | 4 | drought indicator swap |
 | `die_date_change` | `date` (YYYY-MM) | 1 | committed observation-date change (slider drag → one event) |
@@ -66,7 +66,8 @@ Common fields on every event: `event` (name below, prefixed `die_`),
 | `die_comparison_change` | `a`, `b`, `view` | 6 | single-date comparison module changed |
 | `die_export_data` | `file_name`, `file_type` (csv/json/png/markdown) | 25 | any download funnelled through `downloadBlob` (all CSV/JSON/MD exports, map PNG) |
 | `die_chart_export` | `tool` | 10 | Plotly modebar export |
-| `die_docs_open` | `section` | 2 | any "how to read this" / guide jump |
+| `die_docs_open` | `section` | 2 | any "how to read this" / guide jump (incl. the sidebar-footer Documentation & Resources entry) |
+| `die_share_copy` | `tab` | 3 | "Copy link" in the sidebar footer copied the analysis deep link |
 | `die_validate_all` | — | 2 | full data-quality audit |
 | `die_outbound_link` | `destination` | 1 | external link (author site) |
 | `die_drawer_toggle` | `open` | 0 | mobile drawer opened/closed |

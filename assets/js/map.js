@@ -161,6 +161,14 @@
   }
 
   /* ---------------------------------------------- choropleth map factory -- */
+  // Every choropleth registers itself here so the basemap setting (a single
+  // study-context choice) can be pushed to all maps at once.
+  const choropleths = new Set();
+
+  function setBasemapAll(kind) {
+    choropleths.forEach((m) => m.setBasemap(kind));
+  }
+
   function createChoropleth(container, opts) {
     opts = opts || {};
     const map = L.map(container, {
@@ -194,7 +202,9 @@
         }).addTo(map);
       }
     }
-    setBasemap(opts.basemap || "plain");
+    // Sub-maps (event detail, propagation, comparison) follow the shared
+    // basemap unless a caller forces one explicitly.
+    setBasemap(opts.basemap !== undefined ? opts.basemap : DIE.state.basemap || "plain");
 
     const districtsLayer = L.geoJSON(DIE.boundaries.districts, {
       style: () => ({
@@ -373,7 +383,7 @@
     }
     map.on("zoomend", updateZoomLabels);
 
-    return {
+    const api = {
       map,
       applyData,
       setBasemap,
@@ -384,6 +394,8 @@
       layerBySid,
       invalidateSize: () => map.invalidateSize(),
     };
+    choropleths.add(api);
+    return api;
   }
 
   /* --------------------------------------------------- tooltip / popup --- */
@@ -508,7 +520,8 @@
         DIE.state.colourMode,
         DIE.state.districtId,
       );
-    main.setBasemap(DIE.state.basemap);
+    // One basemap choice drives every map in the dashboard.
+    setBasemapAll(DIE.state.basemap);
     main.setLayersVisible(DIE.state.map);
     main.setLabels(DIE.state.map.labels);
 
@@ -601,6 +614,7 @@
     valueAt,
     districtCompleteness,
     classChip,
+    setBasemapAll,
     get main() {
       return main;
     },

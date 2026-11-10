@@ -2,24 +2,24 @@
 
 The Drought Intelligence Explorer turns district-month drought indicators for India into maps, statistics, event catalogues and downloadable research outputs. Everything runs in your browser: there is no account, backend or API key.
 
-This guide mirrors the in-app **User guide** section on the **Data & Methods** tab (press <kbd>?</kbd> anywhere in the app to jump there), where all documentation — about, dataset provenance, quality, methodology and glossary — is consolidated in one place.
+This guide mirrors the in-app **User guide** section of **Documentation & Resources** (open it with the book icon in the sidebar footer, or press <kbd>?</kbd> anywhere in the app to jump there), where all documentation — about, data sources, methodology, validation, uncertainty, reproducibility, version history and glossary — is consolidated in one place.
 
 ---
 
 ## 1 · Quick start
 
-1. **Choose the scope.** In the dark **Filters** panel set the geographic extent (All India, a state/UT or a district), the drought indicator and the analysis period. These choices are global — every tab, chart, table and export follows them.
-2. **Pick an observation date (Overview).** The date controls the map, KPI cards, severity distribution, ranking and animation. Use **Latest** to jump to the newest observation, or **Play** to animate the record.
+1. **Choose the scope.** In the dark **Study context** panel set the geographic extent (All India, a state/UT or a district), the drought indicator and the analysis period. These choices are global — every tab, chart, table and export follows them. The sidebar holds only these study-context choices; every other control lives on the panel it drives.
+2. **Pick an observation date (Overview).** The **Observation date** strip sits directly above the Overview panels it drives — the map, KPI cards, severity distribution, ranking and animation. Use **Latest** to jump to the newest observation, or **Play** to animate the record.
 3. **Drill down.** Click a district on any map (or select it in the filters) to focus the whole application on that district. The selection persists while you change tabs.
 4. **Go deeper.** Use **Historical Analysis** for frequency, duration, severity, trends and recurrence; **Drought Events** for individual episodes; **Propagation & Relationships** for cross-indicator comparisons.
-5. **Export.** Tables offer CSV. **Data & Methods** provides long-format data, district statistics, the event catalogue, JSON metadata, boundaries, a map PNG, documentation and the citation. Every CSV embeds its analysis settings in a `#` metadata header.
+5. **Export.** Tables offer CSV. The sidebar footer **Export** button triggers the current workspace's primary export; **Documentation & Resources** (book icon in the footer) provides long-format data, district statistics, the event catalogue, JSON metadata, boundaries, a map PNG, documentation and the citation. Every CSV embeds its analysis settings in a `#` metadata header.
 
 ### Keyboard and deep links
 
 - <kbd>←</kbd> / <kbd>→</kbd> move between tabs when a tab has focus.
 - <kbd>Esc</kbd> closes any dialog.
-- <kbd>?</kbd> jumps to this guide (Data & Methods · section B).
-- Each workspace has a stable URL hash: `#overview`, `#historical`, `#events`, `#propagation`, `#data`.
+- <kbd>?</kbd> jumps to this guide (Documentation & Resources · section I).
+- Each workspace has a stable URL hash: `#overview`, `#historical`, `#events`, `#propagation`, and `#data` (or `#docs`) for Documentation & Resources.
 
 ---
 
@@ -31,7 +31,7 @@ This guide mirrors the in-app **User guide** section on the **Data & Methods** t
 | **2 · Historical Analysis** | How often, how long and how severely has drought occurred; is there a trend? | Frequency statistics, duration/severity maps, Mann–Kendall + Sen trend, recurrence, sortable ranking table. |
 | **3 · Drought Events** | Which discrete drought episodes occurred, and when did they recover? | Event catalogue, onset timeline, duration distribution, event detail, definition-sensitivity panel. |
 | **4 · Propagation & Relationships** | How do indicators respond to each other, at what lag, and where? | Lagged correlation with bootstrap CI, dual series, 10×10 heatmap, district lag map, single-date comparison. |
-| **5 · Data & Methods** | What exactly is in the data, how was it produced, and how can I reuse it? | Provenance, validation report, full methodology, glossary, downloads, citation. |
+| **Docs · Documentation & Resources** | What exactly is in the data, how was it produced, and how can I reuse it? | Data sources, validation report, uncertainty & limitations, full methodology, glossary, downloads, citation, version history. |
 
 ---
 
@@ -85,11 +85,11 @@ One row per drought run.
 
 Click a row to open the event detail: the district series around the event, the shaded event window, summary statistics and a map extent.
 
-### Dataset information (Data & Methods)
+### Dataset information (Documentation & Resources · Data sources)
 
 The top table documents the build: data mode, region, spatial and temporal resolution, declared period, reference climatology, CRS, area method and provenance. The indicator table lists each indicator's family, units, accumulation window, valid observations, missing share, true availability window and latest observation.
 
-### Data quality (Data & Methods)
+### Data quality (Documentation & Resources · Validation)
 
 A live validation report recomputed in the browser:
 

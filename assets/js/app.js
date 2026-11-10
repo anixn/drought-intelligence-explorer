@@ -42,7 +42,7 @@
     historical: 'Historical',
     events: 'Events',
     propagation: 'Propagation',
-    data: 'Data & Methods'
+    data: 'Documentation'
   };
   let currentTab = 'overview';
   // Tabs are marked dirty on state changes while hidden and re-render only
@@ -96,6 +96,9 @@
     let t;
     return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
   }
+  // Exposed for sibling modules (filters.js): shows the progress cursor for
+  // one paint, then runs the (synchronous) recompute, then restores it.
+  DIE.deferBusy = deferBusy;
 
   /* ----------------------------- telemetry helpers (deep instrumentation) */
   /** Debounced table-search tracking: one event per typing burst. */
@@ -205,11 +208,15 @@
     const tab = TABS.find((t) => t.id === which) || TABS[0];
     currentTab = tab.id;
     TABS.forEach((t) => {
-      const btn = $(t.btn), view = $(t.view);
+      const view = $(t.view), btn = $(t.btn);
       const active = t.id === tab.id;
       view.hidden = !active;
-      btn.setAttribute('aria-selected', String(active));
-      btn.tabIndex = active ? 0 : -1;
+      // The documentation workspace has no primary tab button (it opens from
+      // the sidebar footer), so btn can be null.
+      if (btn) {
+        btn.setAttribute('aria-selected', String(active));
+        btn.tabIndex = active ? 0 : -1;
+      }
     });
     if (push !== false && location.hash !== '#' + tab.id) {
       history.replaceState(null, '', '#' + tab.id);
@@ -240,16 +247,26 @@
     if (DIE.Telemetry) DIE.Telemetry.track('tab_view', { tab: tab.id });
   }
 
-  /** Contextual sidebar sync: badge + keep the active tab visible on
-   *  scrollable (mobile) tab bars. Section visibility itself is pure CSS
-   *  (body[data-tab] selectors), so nothing to toggle here. */
+  /** Contextual sidebar sync: badge, footer export label, and keeping the
+   *  active tab visible on scrollable (mobile) tab bars. Section visibility
+   *  itself is pure CSS (body[data-tab] selectors), so nothing to toggle. */
   function syncSidebar(tabId) {
     const badge = $('sidebarTabBadge');
     if (badge) badge.textContent = TAB_LABELS[tabId] || 'Filters';
-    const btn = $(TABS.find((t) => t.id === tabId).btn);
+    const entry = TABS.find((t) => t.id === tabId);
+    const btn = entry && $(entry.btn);
     if (btn && btn.scrollIntoView) {
       try { btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); }
       catch (e) { /* older browsers: leave the tab bar as-is */ }
+    }
+    // The footer export button names the active workspace's primary export.
+    const lbl = $('footExportLabel');
+    if (lbl) {
+      const titles = {
+        overview: 'Map PNG', historical: 'Ranking CSV',
+        events: 'Events CSV', propagation: 'Downloads', data: 'Downloads'
+      };
+      lbl.textContent = titles[tabId] || 'Export';
     }
   }
 
@@ -258,9 +275,12 @@
     const slash = h.indexOf('/');
     const tab = slash > 0 ? h.slice(0, slash) : h;
     const doc = slash > 0 ? h.slice(slash + 1) : null;
-    switchTab(TABS.some((t) => t.id === tab) ? tab : 'overview', false);
-    // deep link to a Data & Methods section: #data/<section-id-suffix>
-    if (tab === 'data' && doc && DOC_SECTIONS.includes('doc-' + doc)) {
+    // '#docs' and '#documentation' are friendly aliases for the
+    // Documentation & Resources workspace (whose router id stays 'data').
+    const routed = { docs: 'data', documentation: 'data' }[tab] || tab;
+    switchTab(TABS.some((t) => t.id === routed) ? routed : 'overview', false);
+    // deep link to a documentation section: #data/<section-id-suffix>
+    if (routed === 'data' && doc && DOC_SECTIONS.includes('doc-' + doc)) {
       goDoc('doc-' + doc);
     }
   }
@@ -270,8 +290,9 @@
    * Every "help" control in the app carries data-doc="..." and jumps to
    * the relevant section instead of opening a duplicated dialog. */
   const DOC_SECTIONS = [
-    'doc-a-about', 'doc-b-guide', 'doc-c-dataset',
-    'doc-d-quality', 'doc-e-methods', 'doc-f-glossary', 'doc-g-downloads'
+    'doc-a-about', 'doc-b-dataset', 'doc-c-methods', 'doc-d-quality',
+    'doc-e-limits', 'doc-f-repro', 'doc-g-downloads', 'doc-h-versions',
+    'doc-i-guide', 'doc-j-glossary'
   ];
   function goDoc(sec) {
     if (DIE.Telemetry) DIE.Telemetry.track('docs_open', { section: sec });
@@ -310,14 +331,16 @@
       // "?" jumps to the user guide section unless the user is typing.
       const typing = /^(INPUT|SELECT|TEXTAREA)$/.test((document.activeElement || {}).tagName || '');
       if (e.key === '?' && !typing && e.target === document.body) {
-        goDoc('doc-b-guide');
+        goDoc('doc-i-guide');
         e.preventDefault();
       }
-      // arrow-key tab navigation on the tablist
+      // arrow-key tab navigation on the tablist (documentation has no tab
+      // button, so it is not part of the tablist cycle)
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-        const idx = TABS.findIndex((t) => t.id === currentTab);
+        const navTabs = TABS.filter((t) => $(t.btn));
+        const idx = navTabs.findIndex((t) => t.id === currentTab);
         if (idx >= 0 && document.activeElement && document.activeElement.role === 'tab') {
-          const next = TABS[(idx + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length];
+          const next = navTabs[(idx + (e.key === 'ArrowRight' ? 1 : navTabs.length - 1)) % navTabs.length];
           $(next.btn).focus();
           switchTab(next.id);
           e.preventDefault();
@@ -325,8 +348,55 @@
       }
     });
 
-    // tabs
-    TABS.forEach((t) => $(t.btn).addEventListener('click', () => switchTab(t.id)));
+    /* --------------------------------------- sidebar footer actions ------- */
+    // Documentation & Resources entry (book icon): opens the documentation
+    // workspace at the top and is tracked by goDoc() as docs_open.
+    $('footDocsBtn').addEventListener('click', () => goDoc('doc-top'));
+    // Contextual export: triggers the active workspace's primary export
+    // (reusing the existing, already-instrumented controls).
+    $('footExportBtn').addEventListener('click', () => {
+      const map = { overview: 'mapPngBtn', historical: 'tableCsvBtn', events: 'evtCsvBtn' };
+      const target = map[currentTab];
+      if (target && $(target)) { $(target).click(); return; }
+      goDoc('doc-g-downloads'); // propagation + docs: export centre
+    });
+    // Copy a deep link to the current analysis view (hash preserves the view).
+    $('footShareBtn').addEventListener('click', async () => {
+      if (DIE.Telemetry) DIE.Telemetry.track('share_copy', { tab: currentTab });
+      const url = location.href;
+      try {
+        await navigator.clipboard.writeText(url);
+        toast('Link copied', 'The analysis URL is on your clipboard.');
+      } catch (err) {
+        // Clipboard API denied or unavailable: textarea fallback.
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          toast('Link copied', 'The analysis URL is on your clipboard.');
+        } catch (err2) {
+          toast('Copy failed', url, 'error');
+        }
+        ta.remove();
+      }
+    });
+    // Collapse the panel on desktop (drawer mode ignores this; same code
+    // path as the chevron in the sidebar head).
+    $('footCollapseBtn').addEventListener('click', () => {
+      if (DIE.Telemetry) DIE.Telemetry.track('panel_toggle', { control: 'sidebar_footer', collapsed: true });
+      setFiltersCollapsed(true, true);
+    });
+
+    // tabs (the documentation workspace has no primary tab button — it
+    // opens from the sidebar footer — so btn can be null)
+    TABS.forEach((t) => {
+      const btn = $(t.btn);
+      if (btn) btn.addEventListener('click', () => switchTab(t.id));
+    });
     window.addEventListener('hashchange', routeFromHash);
 
     // fullscreen
@@ -425,9 +495,11 @@
     document.querySelectorAll('input[name="trendGran"]').forEach((r) =>
       r.addEventListener('change', () => Historical.renderTrend()));
 
-    // Events controls
-    $('evtMinDur').addEventListener('change', () => EventsView.refresh());
-    $('evtThreshold').addEventListener('change', () => EventsView.refresh());
+    // Events controls (definition changes re-run detection — show the
+    // progress cursor; the strip sits on the workspace so the wait is visible)
+    const slowEvt = (fn) => { if (DIE.deferBusy) DIE.deferBusy(fn); else fn(); };
+    $('evtMinDur').addEventListener('change', () => slowEvt(() => EventsView.refresh()));
+    $('evtThreshold').addEventListener('change', () => slowEvt(() => EventsView.refresh()));
     $('evtSearch').addEventListener('input', () => { trackSearch('events'); EventsView.renderTable(); });
     $('evtYear').addEventListener('change', () => EventsView.renderTable());
     $('evtCsvBtn').addEventListener('click', () => EventsView.exportCSV());
@@ -444,14 +516,15 @@
     document.querySelectorAll('input[name="sensMode"]').forEach((r) =>
       r.addEventListener('change', () => EventsView.renderSensitivity()));
 
-    // Propagation controls
+    // Propagation controls (pair change recomputes correlations + bootstrap)
+    const slowProp = (fn) => { if (DIE.deferBusy) DIE.deferBusy(fn); else fn(); };
     $('propIndA').addEventListener('change', () => {
       trackPropPair();
-      Propagation.renderMain(); Propagation.renderDistrictLagMap();
+      slowProp(() => { Propagation.renderMain(); Propagation.renderDistrictLagMap(); });
     });
     $('propIndB').addEventListener('change', () => {
       trackPropPair();
-      Propagation.renderMain(); Propagation.renderDistrictLagMap();
+      slowProp(() => { Propagation.renderMain(); Propagation.renderDistrictLagMap(); });
     });
     // Single-date comparison module (Propagation tab)
     ['cmpIndA', 'cmpIndB', 'cmpDate'].forEach((id) =>
@@ -695,6 +768,13 @@
     $('footerDisclaimer').textContent = DIE.meta.disclaimer;
     $('footerVersion').textContent = 'v' + DIE.meta.version + ' · methodology ' + DIE.meta.methodology_version +
       ' · ' + (demo ? 'demonstration build (synthetic data)' : 'historical research build (GEE-derived data)');
+    // Version history section (Documentation & Resources)
+    if ($('versionMeta')) {
+      $('versionMeta').textContent = 'Application v' + DIE.meta.version +
+        ' · methodology ' + DIE.meta.methodology_version +
+        ' · dataset built ' + DIE.meta.last_updated +
+        ' · data mode ' + DIE.meta.data_mode;
+    }
 
     // methodology classification table
     const spi = DIE.indicatorById.get('spi_3');

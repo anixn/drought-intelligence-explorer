@@ -3391,3 +3391,659 @@ body {
     height: 28px;
   }
 }
+
+/* ===========================================================================
+   Four-workspace navigation redesign (2026-11-09b) — appended overrides.
+   1. Workspace accent identity: per-tab CSS custom properties consumed by
+      nav, headings, selected controls and contextual indicators.
+   2. Documentation & Resources: the former fifth tab becomes a footer entry;
+      its panels are visually reordered purely with CSS `order`.
+   3. Sidebar: study-context grouping + footer actions.
+   Severity palettes, map classifications and statistical plot colours are
+   deliberately NOT derived from these accents.
+   =========================================================================== */
+
+/* ------------------------------------------- workspace accent variables -- *
+ * Two families of tokens per workspace:
+ *   --ws / --ws-ink / --ws-soft / --ws-line  → on light panels
+ *   --ws-bright / --ws-soft-dark / --ws-line-dark → on the navy sidebar
+ * --ws-ink is a contrast-darkened variant for text on white (amber needs it);
+ * --ws-bright is a contrast-lifted variant for text on navy. The defaults on
+ * `body` (no data-tab yet, or docs) are the app's neutral wet-blue. */
+body {
+  --ws: #4f91b8;
+  --ws-ink: #3a7ba3;
+  --ws-soft: rgba(79, 145, 184, 0.12);
+  --ws-line: rgba(79, 145, 184, 0.45);
+  --ws-bright: #86b8d8;
+  --ws-soft-dark: rgba(79, 145, 184, 0.24);
+  --ws-line-dark: rgba(79, 145, 184, 0.5);
+}
+body[data-tab="overview"] {
+  --ws: #168c83;
+  --ws-ink: #0f615b;
+  --ws-soft: rgba(22, 140, 131, 0.12);
+  --ws-line: rgba(22, 140, 131, 0.45);
+  --ws-bright: #4fc3b8;
+  --ws-soft-dark: rgba(22, 140, 131, 0.28);
+  --ws-line-dark: rgba(22, 140, 131, 0.55);
+}
+body[data-tab="historical"] {
+  --ws: #4779b8;
+  --ws-ink: #3a67a0;
+  --ws-soft: rgba(71, 121, 184, 0.12);
+  --ws-line: rgba(71, 121, 184, 0.45);
+  --ws-bright: #82aade;
+  --ws-soft-dark: rgba(71, 121, 184, 0.28);
+  --ws-line-dark: rgba(71, 121, 184, 0.55);
+}
+body[data-tab="events"] {
+  --ws: #c58b42;
+  --ws-ink: #8a5e22;
+  --ws-soft: rgba(197, 139, 66, 0.13);
+  --ws-line: rgba(197, 139, 66, 0.48);
+  --ws-bright: #e0ac6a;
+  --ws-soft-dark: rgba(197, 139, 66, 0.28);
+  --ws-line-dark: rgba(197, 139, 66, 0.58);
+}
+body[data-tab="propagation"] {
+  --ws: #9172b5;
+  --ws-ink: #6f5694;
+  --ws-soft: rgba(145, 114, 181, 0.12);
+  --ws-line: rgba(145, 114, 181, 0.45);
+  --ws-bright: #b79ade;
+  --ws-soft-dark: rgba(145, 114, 181, 0.28);
+  --ws-line-dark: rgba(145, 114, 181, 0.55);
+}
+body[data-tab="data"] {
+  --ws: #64788e;
+  --ws-ink: #55677c;
+  --ws-soft: rgba(100, 120, 142, 0.12);
+  --ws-line: rgba(100, 120, 142, 0.45);
+  --ws-bright: #a7b7c8;
+  --ws-soft-dark: rgba(100, 120, 142, 0.3);
+  --ws-line-dark: rgba(143, 163, 186, 0.5);
+}
+
+/* ------------------------------------------------- primary tab identity -- *
+ * Icons join the labels; the active tab takes the workspace accent for its
+ * icon, underline and a subtle background tint. Inactive tabs stay neutral. */
+.tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition:
+    color 0.25s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+.tabs button .tab-ic {
+  flex: 0 0 auto;
+  opacity: 0.7;
+  transition: opacity 0.25s ease;
+}
+.tabs button[aria-selected="true"] {
+  color: var(--ws-ink);
+  border-bottom-color: var(--ws);
+  background: var(--ws-soft);
+}
+.tabs button[aria-selected="true"] .tab-ic {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tabs button,
+  .tabs button .tab-ic,
+  .sidebar-badge,
+  .side-sec.tab-sec,
+  .view-intro,
+  .vi-step,
+  .switch-track,
+  .doc-nav-links button,
+  .doc-jump button,
+  .foot-btn {
+    transition: none;
+  }
+}
+
+/* workspace heading: accent intro border, step badge and title */
+.view-intro {
+  border-left-color: var(--ws);
+  transition: border-color 0.25s ease;
+}
+.vi-step {
+  background: var(--ws);
+  transition: background-color 0.25s ease;
+}
+.vi-title {
+  color: var(--ws-ink);
+}
+
+/* --------------------------------------- accent on selected sidebar UI -- */
+.sidebar-badge {
+  background: var(--ws-soft-dark);
+  border-color: var(--ws-line-dark);
+  color: var(--ws-bright);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+.side-sec.tab-sec {
+  border-left-color: var(--ws-line-dark);
+  transition: border-color 0.25s ease;
+}
+.sidebar .seg input:checked + span {
+  background: var(--ws);
+  transition: background-color 0.25s ease;
+}
+.switch input:checked + .switch-track {
+  background: var(--ws);
+}
+.sidebar input[type="radio"],
+.sidebar input[type="checkbox"],
+.sidebar input[type="range"],
+.date-slider-row input[type="range"] {
+  accent-color: var(--ws);
+}
+/* indicator list: selected option picks up the workspace accent line */
+.ind-opt input:checked + .ind-body {
+  border-color: var(--ws-line-dark);
+  background: linear-gradient(0deg, var(--ws-soft-dark), var(--ws-soft-dark)),
+    #22405f;
+}
+.ind-opt input:focus-visible + .ind-body {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+/* ------------------------------- documentation panel reorder (pure CSS) -- *
+ * Panels keep their DOM positions and stable A-J ids; flex `order` renders
+ * them in the Documentation & Resources taxonomy sequence:
+ * A About · B Data sources · C Methodology · D Validation · E Uncertainty ·
+ * F Reproducibility · G Downloads · H Versions · I Guide · J Glossary. */
+#viewData {
+  display: flex;
+  flex-direction: column;
+}
+#viewData[hidden] {
+  display: none; /* display:flex would otherwise defeat the hidden attribute */
+}
+#viewData > .view-intro {
+  order: 0;
+}
+#viewData > .doc-nav {
+  order: 1;
+}
+#viewData > #doc-a-about {
+  order: 2;
+}
+#viewData > #doc-b-dataset {
+  order: 3;
+}
+#viewData > #doc-c-methods {
+  order: 4;
+}
+#viewData > #doc-d-quality {
+  order: 5;
+}
+#viewData > #doc-e-limits {
+  order: 6;
+}
+#viewData > #doc-f-repro {
+  order: 7;
+}
+#viewData > #doc-g-downloads {
+  order: 8;
+}
+#viewData > #doc-h-versions {
+  order: 9;
+}
+#viewData > #doc-i-guide {
+  order: 10;
+}
+#viewData > #doc-j-glossary {
+  order: 11;
+}
+.doc-nav-links button:hover {
+  border-color: var(--ws-ink);
+  background: var(--ws-soft);
+}
+
+/* -------------------------------------------- sidebar: study context ----- *
+ * Visual grouping of the persistent global sections. */
+.side-group-label {
+  padding: 12px 16px 0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #64788e;
+}
+.side-group .side-sec:last-of-type {
+  border-bottom: 1px solid var(--navy-line);
+}
+
+/* --------------------------------------------------- sidebar footer UI --- *
+ * Documentation entry + study actions: compact icon-touch targets on the
+ * navy rail, below the provenance lines. */
+.sidebar-foot {
+  padding-top: 10px;
+}
+.foot-actions {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.foot-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 44px;
+  padding: 6px 2px 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #2e4660;
+  border-radius: 6px;
+  color: #a7b7c8;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+.foot-btn svg {
+  flex: 0 0 auto;
+}
+.foot-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #56718c;
+  color: #ffffff;
+}
+.foot-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+/* the Documentation & Resources entry: the only accent-styled footer button */
+.foot-btn-docs {
+  color: var(--ws-bright);
+  border-color: var(--ws-line-dark);
+  background: var(--ws-soft-dark);
+}
+.foot-btn-docs:hover {
+  color: #ffffff;
+  border-color: var(--ws-line-dark);
+  background: var(--ws-soft-dark);
+  filter: brightness(1.15);
+}
+@media (max-width: 640px) {
+  .foot-btn {
+    font-size: 8px;
+  }
+}
+
+/* ===========================================================================
+   Refinement round (2026-11-09c) — appended overrides.
+   1. Sidebar recolors completely with the active workspace (tokenised rail).
+   2. Sidebar headings name the panels they control (.sec-target).
+   3. Compact application footer.
+   Severity palettes and plot colours remain independent of all of this.
+   =========================================================================== */
+
+/* ------------------------------------- 1a. rail token definitions -------- *
+ * --rail-* are the fixed navy control colours, tokenised. Defaults below
+ * reproduce the previous palette exactly; each body[data-tab] re-points the
+ * tokens to a dark tint of the workspace accent, so the whole rail —
+ * background, inputs, segmented controls, switches, buttons, dividers,
+ * scrollbar — shifts together. */
+body {
+  --rail-ctl: #1d3450;    /* input / segmented / hover background          */
+  --rail-line: #2e4660;   /* control borders, switch track                 */
+  --rail-strong: #3c5570; /* emphasised borders (buttons, seg frame)       */
+  --rail-check: #22405f;  /* checked item background                       */
+  --rail-check-line: #35577c;
+  --rail-thumb: #2c4358;  /* scrollbar thumb                               */
+  --rail-div: var(--navy-line); /* section dividers                        */
+}
+body[data-tab="overview"] {
+  --rail: #0d2b29;
+  --rail-ctl: #143c38;
+  --rail-line: #265a54;
+  --rail-strong: #35726a;
+  --rail-check: #1c4f49;
+  --rail-check-line: #35726a;
+  --rail-thumb: #234843;
+  --rail-div: rgba(79, 195, 184, 0.18);
+}
+body[data-tab="historical"] {
+  --rail: #142c49;
+  --rail-ctl: #1d3d5e;
+  --rail-line: #31587e;
+  --rail-strong: #446e96;
+  --rail-check: #24486e;
+  --rail-check-line: #3d6a94;
+  --rail-thumb: #2a4664;
+  --rail-div: rgba(130, 170, 222, 0.18);
+}
+body[data-tab="events"] {
+  --rail: #2e2413;
+  --rail-ctl: #453618;
+  --rail-line: #6b5426;
+  --rail-strong: #8a6f38;
+  --rail-check: #56411c;
+  --rail-check-line: #8a6f38;
+  --rail-thumb: #54401e;
+  --rail-div: rgba(224, 172, 106, 0.2);
+}
+body[data-tab="propagation"] {
+  --rail: #251d38;
+  --rail-ctl: #362a52;
+  --rail-line: #4e3d73;
+  --rail-strong: #665489;
+  --rail-check: #413263;
+  --rail-check-line: #665489;
+  --rail-thumb: #4a3a6e;
+  --rail-div: rgba(183, 154, 222, 0.18);
+}
+body[data-tab="data"] {
+  --rail: #18232e;
+  --rail-ctl: #24313f;
+  --rail-line: #3a4c5e;
+  --rail-strong: #4e637a;
+  --rail-check: #2e3f50;
+  --rail-check-line: #4e637a;
+  --rail-thumb: #2c3c4c;
+  --rail-div: rgba(167, 183, 200, 0.16);
+}
+
+/* ------------------------------------- 1b. rail surfaces ----------------- */
+.sidebar {
+  background: var(--rail, var(--navy)); /* recolors instantly with the tab —
+  no fade, so the rail never lags the workspace switch */
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--rail-thumb);
+}
+.sidebar-head {
+  border-bottom-color: var(--rail-div);
+}
+.side-sec,
+.side-group .side-sec:last-of-type {
+  border-bottom-color: var(--rail-div);
+}
+.sidebar-foot {
+  border-top-color: var(--rail-div);
+}
+
+/* ------------------------------------- 1c. rail controls ----------------- *
+ * Scoped to .sidebar (selects also exist on light panels — evoSpeed — and
+ * must stay untouched). */
+.sidebar select,
+.sidebar input[type="search"] {
+  background: var(--rail-ctl);
+  border-color: var(--rail-line);
+}
+.sidebar .search-input {
+  background-color: var(--rail-ctl);
+  border-color: var(--rail-line);
+}
+.sidebar .seg {
+  border-color: var(--rail-strong);
+  background: var(--rail-ctl);
+}
+.switch-track {
+  background: var(--rail-line);
+}
+.btn.btn-sidebar,
+.sidebar .btn-ghost:not(.btn-sidebar) {
+  border-color: var(--rail-strong);
+}
+.doc-jump button {
+  border-color: var(--rail-line);
+}
+.foot-btn {
+  border-color: var(--rail-line);
+}
+.ind-opt .ind-body:hover {
+  background: var(--rail-ctl);
+}
+.ind-opt input:checked + .ind-body {
+  background: linear-gradient(0deg, var(--ws-soft-dark), var(--ws-soft-dark)),
+    var(--rail-check);
+  border-color: var(--ws-line-dark);
+}
+/* smooth hand-off between workspace colours */
+.sidebar select,
+.sidebar input[type="search"],
+.sidebar .seg,
+.sidebar .btn,
+.sidebar .doc-jump button,
+.sidebar .foot-btn,
+.ind-opt .ind-body {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sidebar select,
+  .sidebar input[type="search"],
+  .sidebar .seg,
+  .sidebar .btn,
+  .sidebar .doc-jump button,
+  .sidebar .foot-btn,
+  .ind-opt .ind-body {
+    transition: none;
+  }
+}
+
+/* ------------------------------------- 2. heading → panel mapping -------- *
+ * Each sidebar heading names the panel(s) it drives, so the controller for a
+ * figure can be found at a glance. Accent-bright for legibility on any rail. */
+.sec-target {
+  display: block;
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  line-height: 1.35;
+  color: var(--ws-bright);
+}
+.group-note {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #64788e;
+}
+
+/* ------------------------------------- 3. compact footer ----------------- */
+.app-footer {
+  margin-top: 2px;
+  padding: 14px 18px 10px;
+}
+.footer-grid {
+  gap: 18px;
+}
+.footer-title {
+  font-size: 12.5px;
+  margin-bottom: 5px;
+}
+.footer-title-sm {
+  font-size: 9.5px;
+  margin-bottom: 4px;
+}
+.footer-text {
+  font-size: 11px;
+  margin: 0 0 5px;
+}
+.footer-author {
+  font-size: 12px;
+  margin: 0 0 5px;
+}
+.footer-role {
+  font-size: 10.5px;
+}
+.footer-domains {
+  font-size: 10px;
+  margin: 0 0 8px;
+}
+.footer-more {
+  gap: 5px;
+  margin: 0 0 10px;
+}
+.footer-more-links {
+  gap: 4px 14px;
+}
+.footer-more-links a,
+.footer-links a {
+  font-size: 11px;
+}
+.footer-disclaimer {
+  font-size: 10px;
+}
+.footer-bottom {
+  margin-top: 10px;
+  padding-top: 8px;
+}
+
+/* ===========================================================================
+   Panel-local controls (2026-11-09d) — appended overrides.
+   UX architecture: the sidebar holds ONLY study context (geography,
+   indicator, period). Everything else lives where it applies:
+   · .ws-strip     — a scope bar above the panels it drives (observation
+                     date on Overview; event definition on Events; indicator
+                     pair on Propagation)
+   · .map-toolbar  — display controls attached to the main map (colour,
+                     basemap — which every map in the app follows — layers)
+   · .panel-actions— panel-specific controls in panel heads (trend
+                     granularity, ranking level + search + CSV, catalogue
+                     search + year + CSV, sensitivity scenario, comparison)
+   =========================================================================== */
+
+/* -------------------------------------------- workspace scope strip ------ */
+.ws-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 8px 14px;
+}
+.ws-strip-label {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ws-ink);
+  transition: color 0.25s ease;
+}
+.ws-strip-note {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--ink-2);
+  text-align: right;
+}
+/* field labels are dark-theme (sidebar); strips and toolbars are light */
+.ws-strip .field-label,
+.map-ctl > span {
+  color: var(--ink-2);
+}
+.ws-strip .side-note {
+  margin: 0;
+  font-size: 10.5px;
+  color: var(--ink-2);
+}
+.ws-strip .field-row {
+  gap: 10px;
+}
+.ws-strip .date-slider-row {
+  flex: 1 1 240px;
+  min-width: 200px;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+.ws-strip .date-slider-label {
+  color: var(--ink);
+}
+
+/* ------------------------------- compact light select (strips/panels) ---- */
+.panel-ctl {
+  width: auto;
+  min-width: 0;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1px solid var(--border-2);
+  padding: 5px 22px 5px 8px;
+  font-size: 11.5px;
+}
+
+/* ------------------------------------------------- inline control label -- */
+.map-ctl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------- map panel toolbar -------- */
+.map-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: #f7fafc;
+}
+/* light-theme switches (the dark track/label styles were sidebar-only) */
+.map-toolbar .switch-label {
+  color: var(--ink-2);
+  font-size: 11.5px;
+}
+.map-toolbar .switch-track {
+  background: #c2cfdd;
+}
+.map-toolbar .switch-track::after {
+  background: #ffffff;
+}
+/* checked track keeps the workspace accent via the shared accent rule */
+
+/* ------------------------------------------ panel-head control groups ---- */
+.panel-actions .seg span {
+  padding: 4px 9px;
+  font-size: 11px;
+}
+.panel-actions .panel-ctl {
+  padding: 5px 22px 5px 8px;
+}
+.cmp-controls {
+  row-gap: 6px;
+}
+
+@media (max-width: 640px) {
+  .ws-strip {
+    padding: 8px 10px;
+  }
+  .ws-strip .date-slider-row {
+    flex-basis: 100%;
+  }
+  .ws-strip-note {
+    margin-left: 0;
+    text-align: left;
+    flex-basis: 100%;
+  }
+}
