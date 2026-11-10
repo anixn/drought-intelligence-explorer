@@ -181,7 +181,7 @@ Ten sections shipped inside the application: About; Data sources (build provenan
 - **Exports:** 10 products; CSVs carry `#` reproducibility headers.
 - **Tech stack:** vanilla JavaScript (no framework, no build step), Leaflet, Plotly, html2canvas (on demand); static hosting; Google Tag Manager for usage telemetry.
 - **Citation of the software (as shipped):** Deshmukh, A. (2026). *Drought Intelligence Explorer: An Interactive Geospatial Platform for Drought Monitoring and Analysis in India* [computer software]. https://ankitdeshmukh.com/
-- **Methodology version:** research-gee-1.0.1; data mode: static research (GEE-derived).
+- **Methodology version:** research-gee-1.0.2; data mode: static research (GEE-derived).
 
 ---
 

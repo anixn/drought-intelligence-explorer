@@ -1,6 +1,6 @@
 # Methodology — Drought Intelligence Explorer (India)
 
-**Version:** research-gee-1.0.1 · **Data mode:** static research (GEE-derived) · **Last updated:** 2026-11-03
+**Version:** research-gee-1.0.2 · **Data mode:** static research (GEE-derived) · **Last updated:** 2026-11-10
 **Citation:** Deshmukh, A. (2026). *Drought Intelligence Explorer: An Interactive Geospatial Platform for Drought Monitoring and Analysis in India* [computer software]. https://ankitdeshmukh.com/
 
 > **Read this first.** This build ships a **historical research dataset** derived with Google Earth Engine from CHIRPS precipitation, ERA5-Land evapotranspiration and soil moisture, and MODIS NDVI. Indicator values are model- and observation-based district aggregates, not official drought declarations and not a substitute for operational monitoring. Each value is reproducible from the public inputs and the documented pipeline under `data-pipeline/` (see `data-sources.md`).

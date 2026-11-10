@@ -3,7 +3,7 @@
 **An interactive geospatial platform for historical drought analysis in India.**
 A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScript (ES6+), Leaflet, Plotly and PapaParse. No frameworks, no backend, no database, no API keys, no mandatory external services. Leaflet and PapaParse are the only blocking libraries; Plotly loads in the background and html2canvas is fetched only when a map PNG is exported.
 
-> **Current build: historical research data.** The bundled dataset is a Google Earth Engine extract (CHIRPS v2.0, ERA5-Land and MODIS MOD13A3) processed by the reference pipeline (methodology `research-gee-1.0.1`). Indicator values are model- and observation-based estimates, not official drought declarations. The provenance banner, chips, methodology tab and footer all update automatically from `data/metadata.json`; swapping in a new extract requires no code changes.
+> **Current build: historical research data.** The bundled dataset is a Google Earth Engine extract (CHIRPS v2.0, ERA5-Land and MODIS MOD13A3) processed by the reference pipeline (methodology `research-gee-1.0.2`). Indicator values are model- and observation-based estimates, not official drought declarations. The provenance banner, chips, methodology tab and footer all update automatically from `data/metadata.json`; swapping in a new extract requires no code changes.
 
 > **New to the dashboard?** Start with the [user guide](docs/user-guide.md) or press <kbd>?</kbd> in the app. It explains every workspace, table and chart in plain language.
 
