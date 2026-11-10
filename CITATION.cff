@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use this software or dataset in your research, please cite the following."
+title: "Drought Intelligence Explorer: An Interactive Geospatial Platform for Drought Monitoring and Analysis in India"
+version: "1.0.0"
+doi: 10.5281/zenodo.24113364
+date-released: 2026-11-10
+authors:
+  - family-names: Deshmukh
+    given-names: Ankit
+    orcid: 0000-0002-1433-3872
+    affiliation: 
+    website: https://ankitdeshmukh.com/
+repository-code: https://github.com/anixn/drought-intelligence-explorer
+url: https://drought.ankitdeshmukh.com/
+abstract: 
+keywords:
+  - drought
+  - India
+  - geospatial
+  - SPI
+  - SPEI
+  - VCI
+  - soil moisture
+  - CHIRPS
+  - ERA5-Land
+  - MODIS
+  - Google Earth Engine
+license: MIT (or appropriate)
+type: software
+references:
+  - type: dataset
+    title: "Drought Intelligence Explorer Dataset: CHIRPS, ERA5-Land, and MODIS Derived Drought Indicators for India (1981–2025)"
+    authors:
+      - family-names: Deshmukh
+        given-names: Ankit
+    year: 2026
+    version: "1.0.0"
