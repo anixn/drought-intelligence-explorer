@@ -1,1 +1,3 @@
 data-pipeline/data_processed
+__pycache__/
+*.pyc

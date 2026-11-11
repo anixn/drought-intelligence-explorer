@@ -8,11 +8,11 @@ authors:
   - family-names: Deshmukh
     given-names: Ankit
     orcid: 0000-0002-1433-3872
-    affiliation: 
+    affiliation: "Pandit Deendayal Energy University"
     website: https://ankitdeshmukh.com/
 repository-code: https://github.com/anixn/drought-intelligence-explorer
 url: https://drought.ankitdeshmukh.com/
-abstract: 
+abstract: "A fully static, client-side geospatial platform and its reproducible Python pipeline, which turn Google Earth Engine extracts of CHIRPS v2.0, ERA5-Land and MODIS MOD13A3 into ten standardized drought indicators (SPI, SPEI, SMA, VCI) for 724 Indian districts over 1981-2025."
 keywords:
   - drought
   - India
@@ -25,7 +25,7 @@ keywords:
   - ERA5-Land
   - MODIS
   - Google Earth Engine
-license: MIT (or appropriate)
+license: MIT
 type: software
 references:
   - type: dataset
@@ -35,3 +35,4 @@ references:
         given-names: Ankit
     year: 2026
     version: "1.0.0"
+    doi: 10.5281/zenodo.24113364

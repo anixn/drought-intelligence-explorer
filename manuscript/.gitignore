@@ -1,0 +1,10 @@
+# LaTeX build artefacts (latexmk); main.pdf is the compiled output and is kept
+main.aux
+main.log
+main.out
+main.fls
+main.fdb_latexmk
+main.synctex.gz
+main.xdv
+*.bbl
+*.blg

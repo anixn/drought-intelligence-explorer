@@ -3,6 +3,10 @@
 **An interactive geospatial platform for historical drought analysis in India.**
 A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScript (ES6+), Leaflet, Plotly and PapaParse. No frameworks, no backend, no database, no API keys, no mandatory external services. Leaflet and PapaParse are the only blocking libraries; Plotly loads in the background and html2canvas is fetched only when a map PNG is exported.
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24113364.svg)](https://doi.org/10.5281/zenodo.24113364)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Live app](https://img.shields.io/badge/Live%20app-drought.ankitdeshmukh.com-2A5F85)](https://drought.ankitdeshmukh.com/)
+
 > **Current build: historical research data.** The bundled dataset is a Google Earth Engine extract (CHIRPS v2.0, ERA5-Land and MODIS MOD13A3) processed by the reference pipeline (methodology `research-gee-1.0.2`). Indicator values are model- and observation-based estimates, not official drought declarations. The provenance banner, chips, methodology tab and footer all update automatically from `data/metadata.json`; swapping in a new extract requires no code changes.
 
 > **New to the dashboard?** Start with the [user guide](docs/user-guide.md) or press <kbd>?</kbd> in the app. It explains every workspace, table and chart in plain language.
@@ -17,10 +21,10 @@ A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScr
 - [Run locally](#run-locally)
 - [Deploy on GitHub Pages](#deploy-on-github-pages)
 - [Configuring the base path](#configuring-the-base-path)
-- [Embedding in Hugo PaperMod](#embedding-in-hugo-papermod)
 - [Adding and updating datasets](#adding-and-updating-datasets)
 - [Data validation and quality](#data-validation-and-quality)
-- [Citing the application and datasets](#citing-the-application-and-datasets)
+- [Citation](#citation)
+- [Manuscript](#manuscript)
 - [Technology, performance and design decisions](#technology-performance-and-design-decisions)
 - [License](#license)
 
@@ -79,30 +83,27 @@ The interface is organised into four analytical workspaces, reachable by URL has
 ├── docs/
 │   ├── user-guide.md           plain-language guide: workspaces, tables, charts, exports
 │   ├── methodology.md          full scientific methodology
-│   ├── data-sources.md         provenance, production sources, citation guidance
-│   └── refactor-plan.md        five-tab refactor audit and migration plan
-├── scripts/
-│   └── relabel_demo.py         data-mode relabel utility (idempotent)
-├── data-pipeline/               offline pipeline that turns public gridded
-│   (Python + R)                 datasets into data/ — see its README,
-│                                docs/data-update-guide.md for the local
-│                                runbook, and docs/gee-update-guide.md for
-│                                the Google Earth Engine route (CHIRPS,
-│                                ERA5-Land, MODIS). Boundary and demo-data
-│                                utilities live here too:
-│                                prepare_boundaries.py,
-│                                generate_demonstration_data.py.
+│   └── data-sources.md         provenance, production sources, citation guidance
+├── data-pipeline/              offline Python pipeline that turns public gridded
+│                               datasets into data/ — see its README. Entry points:
+│                               run.py (update / gee / indicators / export /
+│                               validate / status), selftest.py (82-assertion
+│                               offline end-to-end test), verify_paper_claims.py
+│                               (reproduces the quantitative evidence quoted in
+│                               the manuscript), prepare_boundaries.py. Route
+│                               guides in data-pipeline/docs/.
+├── manuscript/                 LaTeX source of the EarthArXiv preprint
+│                               (main.tex + figures/); see manuscript/README.md
+├── CITATION.cff                machine-readable citation metadata (cff 1.2.0)
+├── CNAME                       custom domain for GitHub Pages
+├── LICENSE                     MIT license (application code)
 ├── .nojekyll                   bypasses GitHub Pages Jekyll processing
 └── README.md
 ```
 
 ## Run locally
 
-The app fetches data with `fetch()`, so it must be served over HTTP (opening `index.html` directly from disk shows a guard message instead of the app).
-
-**Easiest way (Windows, nothing to install):** double-click **`Start Drought Explorer.bat`** in the project folder. It runs the bundled `serve.ps1` (built-in PowerShell/.NET only), serves the folder on the first free port 8471–8480, and opens the app in your default browser automatically. Keep the console window open while using the app; closing it stops the server.
-
-**Any static server works too:**
+The app fetches data with `fetch()`, so it must be served over HTTP (opening `index.html` directly from disk shows a guard message instead of the app):
 
 ```bash
 cd drought-intelligence-explorer
@@ -110,7 +111,18 @@ python3 -m http.server 8000
 # open http://localhost:8000/
 ```
 
-Other options: `npx serve`, `php -S`, nginx… Requirements for regenerating data: Python 3.10+ with `numpy`, `shapely`, `pyproj` (plus `npx mapshaper` for boundaries); the full data pipeline (`data-pipeline/`) additionally uses `pandas`, `scipy`, `rasterio`, `netCDF4`, `cdsapi` — see `data-pipeline/requirements.txt`.
+Any static server works too: `npx serve`, `php -S`, nginx…
+
+**Regenerating the data** requires the pipeline environment (`data-pipeline/requirements.txt`: Python 3.10+ with `numpy`, `pandas`, `scipy`, `pyyaml`, `requests`, `rasterio`, `pyproj`, `netCDF4`; `cdsapi`, `earthaccess` and `earthengine-api` are needed only for their specific download routes):
+
+```bash
+cd data-pipeline
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Boundary preparation (`prepare_boundaries.py`) additionally needs Node.js on the PATH (`npx mapshaper`) plus the Python packages `shapely` and `pyproj`.
 
 ## Deploy on GitHub Pages
 
@@ -137,29 +149,9 @@ If you serve the app from an unusual mount point and need to force a base path, 
 
 (Omit it entirely for auto-detection. It must end with a slash.)
 
-## Embedding in Hugo PaperMod
-
-Two supported patterns on an existing Hugo site (e.g. an Academic profile):
-
-**1. iframe embed (keeps the app self-contained).** Commit the app to a folder (e.g. `static/drought-explorer/`) so it is served at `/drought-explorer/index.html`, then create a page:
-
-```html
-<!-- content/drought-explorer.md -->
----
-title: "Drought Intelligence Explorer"
-summary: "Interactive district-level drought analysis for India"
----
-<iframe src="/drought-explorer/" style="width:100%;height:88vh;border:0"
-        title="Drought Intelligence Explorer"></iframe>
-```
-
-The app auto-detects the `/drought-explorer/` base path, so no configuration is needed. Add `loading="lazy"` if you want it deferred below the fold.
-
-**2. Direct route (recommended for a dedicated subdomain).** Point GitHub Pages (or any static host) at the repository and map a subdomain such as `drought.ankitdeshmukh.com`; then link to it from your PaperMod menu (`config.yml` → `menu.main`) or from a post. This gives the app the full viewport and clean URLs.
-
 ## Adding and updating datasets
 
-### Update real data every few months (recommended)
+### Update the bundled record
 
 The repository ships an offline pipeline for exactly this:
 
@@ -172,12 +164,12 @@ python run.py update     # downloads missing months -> computes indicators
 It pulls CHIRPS v3.0 rainfall, ERA5-Land PET/soil moisture and MODIS NDVI
 (no credentials needed for CHIRPS; free CDS and Earthdata accounts for the
 other two), computes SPI/SPEI/SMA/VCI exactly as documented in
-`docs/methodology.md`, and writes the full data contract below. The
-step-by-step guide — including the first-time 1981-present backfill, the
-quarterly runbook, and the one-time switch of the interface wording from
-demonstration to research mode — is
-**`data-pipeline/docs/data-update-guide.md`**. An R alternative lives in
-`data-pipeline/r_alternative/`.
+`docs/methodology.md`, and writes the full data contract. The step-by-step
+guide — including the first-time 1981-present backfill — is
+**`data-pipeline/docs/data-update-guide.md`**. Note that the offline route
+targets CHIRPS v3.0, while the shipped release was extracted through Google
+Earth Engine from CHIRPS v2.0; do not mix the two versions in one record
+(the route guides cover this).
 
 **Google Earth Engine route.** If you have an Earth Engine project, the
 download/prepare/zonal steps can be replaced by GEE (CHIRPS, ERA5-Land and
@@ -193,7 +185,7 @@ This writes the historical dataset through **2025-12** into `data/`. Setup,
 dataset mapping, checkpointing and caveats are in
 **`data-pipeline/docs/gee-update-guide.md`**.
 
-### Replace the demonstration data with real data (manual contract)
+### Bring your own indicator matrices (manual contract)
 
 1. Compute district-month indicator values with any tool you like (Python/R/CDO/QGIS). Output **wide CSV**: first three columns `district_id,district_name,state_name`, then one `YYYY-MM` column per month; empty cell = missing.
 2. Keep `district_id` identical to the `id` property in `data/boundaries/india_districts.geojson` (or regenerate boundaries with `data-pipeline/prepare_boundaries.py` and new ids — then also regenerate `data/districts.csv`/`states.csv`).
@@ -202,24 +194,13 @@ dataset mapping, checkpointing and caveats are in
    - `data_mode`: `"static-research"`,
    - `data_provenance`, `last_updated`, `methodology_version`, `period`,
    - for each indicator: `file`, `reference_period`, `classes` (thresholds are yours to define — the whole UI follows them),
-   - optional but recommended: `available_from` / `available_to` (e.g. `2000-02` for VCI) so the UI can label and clamp a shorter data record,
+   - recommended: `available_from` / `available_to` (e.g. `2000-02` for VCI) so the UI can label and clamp a shorter data record,
    - `sources`: real citations with access dates.
-5. Reload the app. The banner, chips, KPI provenance tags, methodology tab and footer all read from metadata, so the interface updates automatically — the data-mode relabel utility `scripts/relabel_demo.py` shows the exact field set.
+5. Reload the app. The banner, chips, KPI provenance tags, methodology tab and footer all read from metadata, so the interface updates automatically.
 
 ### Add a new indicator
 
 Add one entry to `metadata.indicators` (with `classes`, `scale`, `file`, tooltips) and its CSV. It appears in the sidebar, map legend, charts, comparison and downloads with no code changes.
-
-### Regenerate the demonstration dataset (offline UI testing only)
-
-The shipped app uses the observed dataset in `data/`. The seeded synthetic
-generator is kept in the pipeline folder for offline UI testing:
-
-```bash
-python3 data-pipeline/generate_demonstration_data.py .
-```
-
-(seed and model parameters are constants at the top of the script; outputs are byte-identical for identical inputs and boundaries. Running it overwrites `data/`, so use a throwaway checkout.)
 
 ### Regenerate boundaries from a new source GeoJSON
 
@@ -233,19 +214,36 @@ This cleans the raw file, rounds coordinates (districts at ~100 m precision, sta
 
 At load time the application checks every dataset for: duplicate district rows (merged, last kept), invalid date columns (skipped), non-numeric values (treated as missing), district ids missing from the boundaries (dropped), boundary districts absent from the dataset (rendered as no-data), and overall completeness. The report appears in **Documentation & Resources** (book icon in the sidebar footer → Validation and data quality) and the browser console. Only indicators already loaded in the session are reported by default; **Validate all indicators** downloads the remaining matrices in small parallel batches and updates the report as each one finishes. Missing observations are never imputed or treated as normal conditions — see `docs/methodology.md` §6.
 
-## Citing the application and datasets
+## Citation
+
+If the platform or the dataset contributes to your research, please cite it. The canonical machine-readable metadata is [CITATION.cff](CITATION.cff) (cff-version 1.2.0); Zenodo archives the release with a versioned DOI.
+
+**Software — the platform and its pipeline:**
 
 ```bibtex
 @software{deshmukh2026droughtexplorer,
   author  = {Deshmukh, Ankit},
+  orcid   = {0000-0002-1433-3872},
   title   = {Drought Intelligence Explorer: An Interactive Geospatial Platform
              for Drought Monitoring and Analysis in India},
   year    = {2026},
-  url     = {https://ankitdeshmukh.com/}
+  version = {1.0.0},
+  doi     = {10.5281/zenodo.24113364},
+  url     = {https://github.com/anixn/drought-intelligence-explorer}
 }
 ```
 
-Dataset citations depend on what you deploy: this build uses CHIRPS v2.0 Final, ERA5-Land and MODIS MOD13A3 (templates in `docs/data-sources.md`); the synthetic generator in `data-pipeline/` is only for offline UI testing.
+**Dataset — the indicator archive:**
+
+> Deshmukh, A. (2026). *Drought Intelligence Explorer Dataset: CHIRPS, ERA5-Land, and MODIS Derived Drought Indicators for India (1981–2025)*, version 1.0.0. Zenodo. <https://doi.org/10.5281/zenodo.24113364>
+
+**Preprint:** the accompanying manuscript ([`manuscript/`](manuscript/)) is prepared for [EarthArXiv](https://eartharxiv.org/); insert the preprint DOI here once minted.
+
+Citation templates for the input products (CHIRPS, ERA5-Land, MODIS) are in [`docs/data-sources.md`](docs/data-sources.md).
+
+## Manuscript
+
+The [`manuscript/`](manuscript/) folder holds the LaTeX source of the platform's data-descriptor preprint (manuscript version 1.3): `main.tex` with an inline bibliography and the six figures in `manuscript/figures/`. Compile with `tectonic main.tex` or `latexmk -pdf main.tex`; see `manuscript/README.md` for details, including regenerating Figure 2 from `data/metadata.json`. Every quantified methodological claim in the paper is checkable with one command, `python verify_paper_claims.py` in `data-pipeline/`.
 
 ## Technology, performance and design decisions
 
@@ -265,8 +263,8 @@ Dataset citations depend on what you deploy: this build uses CHIRPS v2.0 Final, 
 
 ## License
 
-The application code is released under the MIT License (see `LICENSE`). Data licensing follows the source datasets: CHIRPS, ERA5-Land and MODIS have their own terms and citation requirements — see `docs/data-sources.md` before redistributing derived data.
+The application code and the data pipeline are released under the MIT License (see `LICENSE`). The Zenodo archival record is published under CC BY 4.0. Data licensing follows the source datasets: CHIRPS, ERA5-Land and MODIS have their own terms and citation requirements — see `docs/data-sources.md` before redistributing derived data.
 
 ---
 
-*Developed as a geospatial research application by **Ankit Deshmukh, Ph.D.** — Assistant Professor, Department of Civil Engineering, Pandit Deendayal Energy University, India. Research domains: Computational Hydrology | Drought Analysis | Geospatial Modelling | Hydroclimatic Extremes.*
+*Developed by **Ankit Deshmukh, Ph.D.** — Assistant Professor, Department of Civil Engineering, Pandit Deendayal Energy University, India ([ORCID: 0000-0002-1433-3872](https://orcid.org/0000-0002-1433-3872)). Research domains: Computational Hydrology | Drought Analysis | Geospatial Modelling | Hydroclimatic Extremes. Live platform: [drought.ankitdeshmukh.com](https://drought.ankitdeshmukh.com/).*

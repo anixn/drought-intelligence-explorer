@@ -1,8 +1,8 @@
 # Data pipeline — Drought Intelligence Explorer (India)
 
-Offline Python (reference) and R pipelines that turn public gridded
-datasets into the application's static data bundle, so the web app itself
-stays backend-free and key-free.
+Offline Python pipeline that turns public gridded datasets into the
+application's static data bundle, so the web app itself stays
+backend-free and key-free.
 
 **Read `docs/data-update-guide.md` first** — it contains the source
 catalogue (verified URLs), credential setup, the first-time backfill, and
@@ -15,13 +15,21 @@ cd data-pipeline
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-python selftest.py          # offline end-to-end test — must PASS
-python run.py status        # what is on disk / what the app currently holds
-python run.py update        # download missing months -> compute -> export -> validate
+python selftest.py              # offline end-to-end test — must PASS (82 assertions)
+python run.py status            # what is on disk / what the app currently holds
+python run.py update            # download missing months -> compute -> export -> validate
+python verify_paper_claims.py   # reproduces the manuscript's quantitative evidence
 ```
 
 `python run.py indicators` also refreshes `../data/` and validates the result,
 so there is no manual copy from `data_processed/`.
+
+`verify_paper_claims.py` re-runs the six statistical experiments quoted in
+the manuscript (L-moment parameter recovery, the small-sample MLE wet bias
+of the SPEI fit, Gringorten tie handling, classification continuity,
+area-weighting accuracy and the Benjamini-Hochberg trend demonstration) on
+the released record with a fixed seed, and exits non-zero if any quoted
+number drifts. See its docstring for the per-experiment details.
 
 Credentials (only the download steps need them; the app never does):
 
@@ -115,13 +123,6 @@ The extraction step alone never writes to `data/`.
 
 Full details and parameter locations: `docs/data-update-guide.md` §8 and
 the module docstrings.
-
-## R users
-
-`r_alternative/drought_indices.R` mirrors the pipeline with
-`terra`/`sf`/`SPEI`/`jsonlite`. See `r_alternative/README.md` — validate
-it against the Python output on one month before using it for live
-updates.
 
 ## Verified status (2026-10-31)
 
