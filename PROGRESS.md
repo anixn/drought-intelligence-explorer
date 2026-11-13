@@ -96,6 +96,11 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 **Assumption added this session:** none beyond AS1–AS6.
 
+**Session-1 additions (2026-11-12/13):**
+- **OD7 resolved — Route A (raw CMIP6 + own QDM) is the committed era C route.** NEX-GDDP-CMIP6 v2 (BCSD vs GMFD, CC0, 35 models, S3 + NCCS THREDDS) was evaluated per Owner request and is documented as a **known alternative only** — not used in production, because (a) it abandons the IMD-primary QDM reference (decisions D/C1), and (b) BCSD does not preserve the precipitation change signal the way QDM does. If bandwidth/compute becomes a blocker, reopening Route B requires a register entry. Verified facts: pr = kg m⁻² s⁻¹ (×86400 → mm/day), tas = K, fill 1e20, model-varying time references/calendars, v2 files only (v1.x pr compromised in dry areas), 0.25° grid offset ~0.125° from IMD.
+- **Ranking-before-SSP strategy (Owner proposal, adopted):** with historical (24 models) + IMD (1951–2025) in hand, the M2 chain runs on historical only, `08_validate_gcm.py` ranks models vs observed 1981–2014 → `best_subset.yaml` (8–12). **Owner downloads SSPs (ssp245+ssp585, 2015–2100) only for the best subset.** Consequences registered: ensemble stats computed over the subset (n shown honestly, never "24"); historical skill ≠ future skill (documented limitation); agreement layers reflect the subset.
+- **Download gaps found (Owner action):** CESM2 + IITM-ESM lack tasmax/tasmin (120 files); all 24 models lack historical 1981–1984 (288 files). IMD pr/tmax/tmin 1951–2025 verified complete (75 files each).
+
 ## 9. Next recommended task
 
 ### M1.1 — Install the suite and open the v2 branch (Owner + OpenCode joint, session-sized)
@@ -118,3 +123,4 @@ Create per AGENTS.md §5: `data/parquet/`, `data/geo/`, `data/fixtures/`, `scrip
 |---|---|---|---|---|---|
 | 0 | 2026-11-12 | M0.1–M0.3: v1.0.0 audit (live site, GitHub repo `anixn/drought-intelligence-explorer`, manuscript main.tex, 4 planning docs); conflict arbitration; documentation suite written | AGENTS.md, PROGRESS.md, docs/v2/01–05 (package, not yet in repo) | Suite cross-checked against the 5 uploaded sources and the live-site audit facts; all user requirements mapped to docs (§11 checklist) | M1.1 |
 | 1 | 2026-11-12 | M1.1: suite installed into repo root + `docs/v2/`; `v2-dev` branched from `master` @ `f3f773a`; tag `v2-base`; read-only repo audit (assets, data, pipeline entry points); Owner's CMIP6 download state inspected (6 test files, historical-only, from 1985 — gaps noted) | AGENTS.md, PROGRESS.md, docs/v2/00–05 (committed `a2d28f9`) | `data-pipeline/selftest.py` PASS on branch; git log + tag verified | M1.2 |
+| 2 | 2026-11-13 | Era C route research + decision: NEX-GDDP-CMIP6 v2 evaluated from official tech note + S3 listing (units, BCSD method, model overlap, CC0); Owner chose **Route A (raw + own QDM)** via structured question; ranking-before-SSP strategy adopted; Owner download inventory verified (CMIP6 historical 22/24 complete; IMD 1951–2025 complete; gaps listed) | PROGRESS.md (decisions, session log) | S3 bucket listing + v2 tech note extracted and cross-checked; die-data folder inventory run (file counts per model/var) | M1.2 |
