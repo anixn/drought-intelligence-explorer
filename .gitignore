@@ -1,3 +1,14 @@
 data-pipeline/data_processed
+data-pipeline/.selftest/
 __pycache__/
 *.pyc
+.venv/
+
+# gcm-pipeline run outputs (per-model era C products — large, not shipped)
+gcm-pipeline/work/*
+gcm-pipeline/out/*
+!gcm-pipeline/work/.gitkeep
+!gcm-pipeline/out/.gitkeep
+
+# PROJ/GDAL scratch (never commit generated rasters)
+*.tif.aux.xml
