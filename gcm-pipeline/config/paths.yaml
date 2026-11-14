@@ -1,0 +1,36 @@
+# DIE v2.0 — gcm-pipeline paths
+#
+# Machine-local data roots. This file is COMMITTED (small, structural) but the
+# paths it names live OUTSIDE the repository (gitignored by policy — see
+# PROGRESS.md §9 handoff note). If a path differs on a given machine, correct
+# it here and note the change in the PROGRESS.md session log.
+#
+# Verified on this machine (2026-11-14, PC #2):
+#   D:\Websites\die-data\ exists with the expected layout below.
+#   NOTE: imd\pr holds 125 files (1901-2025), NOT the 1951-2025 recorded in the
+#   earlier audit — richer than assumed; calibration 1981-2020 unaffected.
+
+paths:
+  # Owner's CMIP6 raw downloads (R cmip6 route, mt-climate-office/cmip6).
+  # ESGF v2.0-style filenames — parse model/experiment/variable/variant/year
+  # from filenames; NEVER rename source files (handoff note 2026-11-13).
+  cmip6_raw:        "D:/Websites/die-data/cmip6/outdir"      # main historical download (22/24 models per session-2 inventory)
+  cmip6_gapfill:    "D:/Websites/die-data/cmip6/outdir_1"    # historical 1981-1984 gap fill (download.R, in progress 2026-11-13)
+  # The inventory checker (01_inventory_check.py) scans BOTH roots and
+  # de-duplicates by (model, experiment, variable, year).
+
+  # IMD gridded observations (QDM reference + validation; decision D:
+  # IMD primary, CHIRPS/ERA5-Land alternates).
+  imd_pr:           "D:/Websites/die-data/imd/pr"     # IMD_rain_YYYY.nc  daily, 1901-2025 (125 files)
+  imd_tmax:         "D:/Websites/die-data/imd/tmax"   # IMD_tmax_YYYY.nc  daily, 1951-2025 (75 files)
+  imd_tmin:         "D:/Websites/die-data/imd/tmin"   # IMD_tmin_YYYY.nc  daily, 1951-2025 (75 files)
+
+  # Pipeline intermediates and products (relative to gcm-pipeline/).
+  work_dir:         "work"    # intermediates — never shipped (gitignored)
+  out_dir:          "out"     # validated era C products -> copied to data/parquet/projections/ by 09_export_parquet.py
+
+notes:
+  download_gaps:      # Owner is filling; 01_inventory_check.py must verify, not assume
+    - "historical 1981-1984 missing for all 24 models (288 files) — outdir_1 fill in progress"
+    - "tasmax + tasmin missing entirely for CESM2 and IITM-ESM (120 files); IITM-ESM daily tasmax/tasmin may not exist on ESGF — report formally if confirmed absent"
+  ssp_policy: "Do NOT download ssp245/ssp585 yet. Ranking-before-SSP strategy (PROGRESS.md §8, session-2 additions): chain runs on historical only; 08_validate_gcm.py ranks vs IMD 1981-2014 -> best_subset.yaml (8-12 models); only then SSP downloads for that subset."

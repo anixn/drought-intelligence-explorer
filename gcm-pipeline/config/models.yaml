@@ -1,0 +1,68 @@
+# DIE v2.0 — gcm-pipeline models.yaml
+#
+# Task M2.1 (docs/v2/02 §M2.1). Owner action (OD1): confirm/verify this list.
+#
+# PROVISIONAL PRE-FILL (2026-11-14): the 24 source_ids below are taken verbatim
+# from the Owner's R download list (D:/Websites/die-data/cmip6/download.R,
+# dated 2026-10-30). They are the models the Owner has ALREADY chosen to
+# download — recorded here so 01_inventory_check.py can run against reality.
+# Per-model variant/grid_label/coverage fields are TEMPLATE DEFAULTS
+# (r1i1p1f1 / gn); the inventory checker and download manifest are the
+# authoritative source for the real values — update this file from their
+# output, never the reverse.
+#
+# SELECTION CRITERIA (all must hold — docs/v2/03 §3.1):
+#   - activity_id CMIP6, experiment_id in {historical, ssp245, ssp585}
+#   - table_id day (daily); variables: pr, tasmax, tasmin
+#   - one documented variant per model (default r1i1p1f1); record grid_label
+#   - historical coverage >= 1981 (calibration 1981-2020 uses model
+#     historical 1981-2014 combined with ssp 2015-2020 — AS6)
+#   - future coverage to 2100
+#
+# DOWNLOAD POLICY (PROGRESS.md §8, session-2 additions — ranking-before-SSP):
+#   Phase 1 (now):   historical only, 1981-2014, all listed models.
+#   Phase 2 (later): ssp245 + ssp585 2015-2100 ONLY for the best subset
+#                    (8-12 models) selected by 08_validate_gcm.py.
+#   Ensemble statistics are computed over the best subset; n is shown honestly
+#   (never labelled "24 models").
+
+meta:
+  status: provisional-owner-review      # Owner confirms at OD1 gate (M2.1)
+  list_source: "download.R (Owner R cmip6 route), 2026-10-30"
+  era_c_route: A                        # raw CMIP6 + own QDM vs IMD (OD7 resolved, register §1)
+  scenarios_full_record: [historical, ssp245, ssp585]
+  phase1_experiments: [historical]      # what downloads exist now
+  known_gaps:                           # Owner filling; inventory checker verifies
+    - "historical 1981-1984 missing for all 24 models (288 files) — gap fill in progress (outdir_1)"
+    - "tasmax + tasmin missing for CESM2 and IITM-ESM (120 files); verify whether IITM-ESM daily tasmax/tasmin exists on ESGF at all"
+  commented_from_r_list:
+    - CMCC-CM2-SR5                      # commented out in download.R by the Owner
+
+models:
+  - {source_id: "ACCESS-CM2",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "ACCESS-ESM1-5",     variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "BCC-CSM2-MR",       variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "CanESM5",           variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "CESM2",             variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # gap: tasmax/tasmin (Owner action)
+  - {source_id: "MRI-ESM2-0",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "CMCC-ESM2",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "CNRM-CM6-1",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "EC-Earth3",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "EC-Earth3-Veg-LR",  variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "FGOALS-g3",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "GFDL-ESM4",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "GISS-E2-1-G",       variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "HadGEM3-GC31-MM",   variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "IITM-ESM",          variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # gap: tasmax/tasmin — may not exist on ESGF (report formally)
+  - {source_id: "INM-CM4-8",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "INM-CM5-0",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # verify on ESGF
+  - {source_id: "IPSL-CM6A-LR",      variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "MIROC-ES2L",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "MIROC6",            variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "MPI-ESM1-2-HR",     variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "MPI-ESM1-2-LR",     variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "NorESM2-MM",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "TaiESM1",           variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+
+# Best-subset (filled by 08_validate_gcm.py at the validation gate, NOT by hand):
+# best_subset: {n_models: null, source_ids: []}
