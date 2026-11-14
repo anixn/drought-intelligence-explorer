@@ -31,10 +31,13 @@ meta:
   list_source: "download.R (Owner R cmip6 route), 2026-10-30"
   era_c_route: A                        # raw CMIP6 + own QDM vs IMD (OD7 resolved, register §1)
   scenarios_full_record: [historical, ssp245, ssp585]
-  phase1_experiments: [historical]      # what downloads exist now
-  known_gaps:                           # Owner filling; inventory checker verifies
-    - "historical 1981-1984 missing for all 24 models (288 files) — gap fill in progress (outdir_1)"
-    - "tasmax + tasmin missing for CESM2 and IITM-ESM (120 files); verify whether IITM-ESM daily tasmax/tasmin exists on ESGF at all"
+  phase1_experiments: [historical]
+  historical_phase1: complete           # Owner report + OpenCode verification, 2026-11-14: 24 models x 34 years (1981-2014), 2312 files, all v2.0, merged into outdir
+  effective_era_c_models: 22            # 24 listed; CESM2 + IITM-ESM excluded (Owner decision 2026-11-14)
+  known_gaps:                           # verified by OpenCode inventory scan 2026-11-14 (2312 files, 0 unparsed)
+    - "RESOLVED 2026-11-14: historical 1981-1984 gap filled — all 24 models now complete 1981-2014 in outdir"
+    - "CESM2 + IITM-ESM have pr ONLY (daily tasmax/tasmin absent per Owner report 2026-11-14) -> EXCLUDED from the era C ensemble (Owner decision 2026-11-14); ensemble stats computed over n=22, shown honestly"
+    - "IITM-ESM daily tasmax/tasmin does not exist on ESGF (Owner confirmed). CESM2 day-temperature may exist under other variant labels (e.g. r10i1p1f1) - one optional variant re-check permitted; if it succeeds, the exclusion can be reversed via a register update"
   commented_from_r_list:
     - CMCC-CM2-SR5                      # commented out in download.R by the Owner
 
@@ -43,7 +46,7 @@ models:
   - {source_id: "ACCESS-ESM1-5",     variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
   - {source_id: "BCC-CSM2-MR",       variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
   - {source_id: "CanESM5",           variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
-  - {source_id: "CESM2",             variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # gap: tasmax/tasmin (Owner action)
+  - {source_id: "CESM2",             variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}, era_c_ensemble: false}   # pr-only (no daily tasmax/tasmin) — excluded from era C ensemble per Owner decision 2026-11-14
   - {source_id: "MRI-ESM2-0",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
   - {source_id: "CMCC-ESM2",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
   - {source_id: "CNRM-CM6-1",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
@@ -53,7 +56,7 @@ models:
   - {source_id: "GFDL-ESM4",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
   - {source_id: "GISS-E2-1-G",       variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
   - {source_id: "HadGEM3-GC31-MM",   variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
-  - {source_id: "IITM-ESM",          variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # gap: tasmax/tasmin — may not exist on ESGF (report formally)
+  - {source_id: "IITM-ESM",          variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}, era_c_ensemble: false}   # pr-only — daily tasmax/tasmin not on ESGF (Owner confirmed); excluded per Owner decision 2026-11-14
   - {source_id: "INM-CM4-8",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
   - {source_id: "INM-CM5-0",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # verify on ESGF
   - {source_id: "IPSL-CM6A-LR",      variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}

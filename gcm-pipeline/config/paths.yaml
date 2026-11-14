@@ -30,7 +30,7 @@ paths:
   out_dir:          "out"     # validated era C products -> copied to data/parquet/projections/ by 09_export_parquet.py
 
 notes:
-  download_gaps:      # Owner is filling; 01_inventory_check.py must verify, not assume
-    - "historical 1981-1984 missing for all 24 models (288 files) — outdir_1 fill in progress"
-    - "tasmax + tasmin missing entirely for CESM2 and IITM-ESM (120 files); IITM-ESM daily tasmax/tasmin may not exist on ESGF — report formally if confirmed absent"
-  ssp_policy: "Do NOT download ssp245/ssp585 yet. Ranking-before-SSP strategy (PROGRESS.md §8, session-2 additions): chain runs on historical only; 08_validate_gcm.py ranks vs IMD 1981-2014 -> best_subset.yaml (8-12 models); only then SSP downloads for that subset."
+  download_gaps:      # verified by OpenCode inventory scan 2026-11-14 (2312 files, 0 unparsed)
+    - "RESOLVED 2026-11-14: historical 1981-1984 gap filled — all 24 models complete 1981-2014 in cmip6_raw (outdir); the R fill targeted outdir_1 but files merged into outdir"
+    - "CESM2 + IITM-ESM have pr ONLY (no daily tasmax/tasmin, Owner report 2026-11-14) — excluded from era C ensemble per Owner decision 2026-11-14 (n=22 shown honestly); details in models.yaml"
+  ssp_policy: "Do NOT download ssp245/ssp585 yet. Ranking-before-SSP strategy (PROGRESS.md §8, session-2 additions): chain runs on historical only; 08_validate_gcm.py ranks vs IMD 1981-2014 -> best_subset.yaml (8-12 models of the 22 eligible); only then SSP downloads for that subset."
