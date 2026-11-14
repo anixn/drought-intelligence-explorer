@@ -8,10 +8,10 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ STATUS:        ACTIVE — M1/M2 configs · Next: M1.3                      │
+| STATUS:        ACTIVE — M1 · Next: M1.5 (catalog.json)                  │
 │ PHASE:         M1 — engine, era-B Parquet, regression harness           │
-│ ROADMAP:       ██░░░░░░░░  ~11%  (M0–M1.2 + M2.1–M2.2 done)             │
-│ LAST SESSION:  2026-11-14 (Session 3 — env setup, M1.2, M2.1–M2.2)      │
+│ ROADMAP:       ██░░░░░░░░  ~15%  (M0–M1.4 + M2.1–M2.2 done)             │
+│ LAST SESSION:  2026-11-14 (Session 3 — env, M1.2, M2.1–2.2, M1.3–1.4)   │
 │ BLOCKERS:      none blocking M1; owner actions pending for M2/M4/M6     │
 │ BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)              │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -34,6 +34,8 @@ Milestone board: **M0 ✅ · M1 ⬜ (M1.1–M1.2 ✅) · M2 ⬜ (M2.1–M2.2 ✅
 | M1.2 | 2026-11-14 | Directory skeleton per AGENTS.md §5 (`data/parquet`, `data/geo`, `data/fixtures`, `scripts/`, `gcm-pipeline/{config,work,out}`, `atlas-pipeline/`, `validation-studies/`, `.gitkeep` placeholders; `work/`+`out/` contents gitignored) + Range-capable `server.py` at repo root. Commit `3342d4d` |
 | M2.1 | 2026-11-14 | `gcm-pipeline/config/models.yaml`: selection criteria + download-policy comments, **pre-filled with the Owner's 24 models** from `download.R` (2026-10-30), status `provisional-owner-review` (OD1 = Owner confirms). Known gaps encoded (1981–1984 fill; CESM2/IITM-ESM tasmax/tasmin). Commit `cf46021` |
 | M2.2 | 2026-11-14 | `gcm-pipeline/config/reference.yaml` per register resolutions D/C1/C2/C3/C7 (IMD primary + paths + citations + licence-verify flags, 0.25° grid, calibration 1981–2020, era C 2026–2100, PET seam, per-era bounds) and `gcm-pipeline/config/paths.yaml` with verified data root `D:/Websites/die-data/`. Commit `cf46021` |
+| M1.3 | 2026-11-14 | `scripts/convert_to_parquet.py`: era B wide CSVs → long Parquet per docs/v2/03 §1.2/§8.1 (4-column schema, dictionary district_id, int16 year, int8 month, float32 value; absent-row rule for missing cells; zstd level 19; 13 row groups aligned to 60 districts; deterministic metadata with source SHA-256 — stable checksums). Total **5.40 MB** (gate ≤ ~30 MB); per-file 284–633 KB (3 spei files ~5% over the "~600 KB" soft target — documented trade-off of the locked 60-district row-group contract; compression-level tests recorded in the script). Commit `50bbe04` |
+| M1.4 | 2026-11-14 | Round-trip verification built into the converter (`--verify N`, seed 20261103): **25 random cells per variable × 10 variables = 244 present-cell checks + 11 absent-cell confirmations, 0 mismatches, 0 phantom rows**; max |parquet − CSV| = 9.5e-08 (float32 quantisation as expected; sma/vci exact at 0). Total present rows = **3,715,048 — exactly the audited v1.0.0 valid-value count**; absence patterns reconcile with indicator windows (SPI-12 missing 11×724 = 1981 spin-up, SPI-6 5×724, SPI-3 2×724; VCI 225,154 rows = 311 nominal months − 10 real gaps). Commit `50bbe04` |
 
 **M1.1 repo audit (read-only, 2026-11-12):** `assets/js/` = analytics.js (40 KB), app.js (123 KB), charts.js (31 KB), data-loader.js (18 KB), filters.js (19 KB), map.js (20 KB), stats.js (12 KB), telemetry.js (9 KB); `assets/css/` = style.css (87 KB), leaflet.css (14 KB); `assets/vendor/` is empty (third-party libs load via CDN in `index.html`). `data/drought/` = 10 wide CSVs, 18.4 MB total. `data-pipeline/` entry points: `run.py`, `selftest.py` (82 assertions, PASS on branch), `config.yaml`, `prepare_boundaries.py`, `verify_paper_claims.py`, `requirements.txt`. Conda: `drought` env (`C:\Users\deshm\miniconda3\envs\drought\python.exe`) is the Python for pipeline work; `python` is not on PATH.
 
@@ -52,11 +54,11 @@ None (Session 0 ended after documentation).
 
 | Order | Task | Milestone | Depends on | Notes |
 |---|---|---|---|---|
-| 1 | ~~M1.1~~ ✅ · ~~M1.2~~ ✅ · ~~M2.1–M2.2~~ ✅ (see §3) | — | — | — |
-| 2 | **M1.3** `scripts/convert_to_parquet.py` — era B wide CSVs → long Parquet (zstd, dictionary, row groups 60 districts) | M1 | M1.2 | Next task |
-| 3 | M1.4–M1.5 round-trip + catalog.json generator | M1 | M1.3 | |
-| 4 | M2.3–M2.14 GCM scripts 00–09 + selftest_gcm + runbook | M2 | M2.1–M2.2 ✅ | Owner's downloads start when this lands |
-| 5 | M1.6–M1.8 ducklab.js engine + Engine Lab + Historical behind flag | M1 | M1.5 | Reuse `work/die-2.0` prototype if present |
+| 1 | ~~M1.1~~ · ~~M1.2~~ · ~~M2.1–M2.2~~ · ~~M1.3–M1.4~~ ✅ (see §3) | — | — | — |
+| 2 | **M1.5** `catalog.json` generator + schema doc §1.5; gate: all paths resolve HTTP 200 via `server.py` | M1 | M1.4 ✅ | Next task |
+| 3 | M2.3–M2.14 GCM scripts 00–09 + selftest_gcm + runbook | M2 | M2.1–M2.2 ✅ | Owner's downloads start when this lands |
+| 4 | M1.6–M1.8 ducklab.js engine + Engine Lab + Historical behind flag | M1 | M1.5 | Prototype `work/die-2.0` **not on this PC** — rebuild to spec (AS2 anticipated) |
+| 5 | M1.9–M1.10 regression harness + national pre-aggregate | M1 | M1.6–M1.8 | |
 
 (Full task tables per milestone: `docs/v2/02-roadmap-milestones.md` §3.)
 
@@ -133,3 +135,4 @@ Era B wide CSVs (`data/drought/*.csv`: `district_id,district_name,state_name,198
 | 2 | 2026-11-13 | Era C route research + decision: NEX-GDDP-CMIP6 v2 evaluated from official tech note + S3 listing (units, BCSD method, model overlap, CC0); Owner chose **Route A (raw + own QDM)** via structured question; ranking-before-SSP strategy adopted; Owner download inventory verified (CMIP6 historical 22/24 complete; IMD 1951–2025 complete; gaps listed) | PROGRESS.md (decisions, session log) | S3 bucket listing + v2 tech note extracted and cross-checked; die-data folder inventory run (file counts per model/var) | M1.2 |
 | 3 | 2026-11-14 | New-PC setup + M1.2 + M2.1–M2.2: conda `drought` env located (full path, not on PATH), pyarrow 26.0.1 installed, PostGIS `PROJ_LIB`/`GDAL_DATA` conflict diagnosed + per-run fix recorded, baseline selftest re-verified PASS; M1.2 skeleton + `server.py` built and verified (206/416/404, byte-exact ranges, keep-alive; 3 zombie server processes diagnosed and killed during debugging — Windows `SO_REUSEADDR` artifacts); M2.1–M2.2 configs committed (models.yaml pre-filled with Owner's 24 from `download.R`, reference.yaml IMD-primary, paths.yaml verified layout; IMD pr found to start 1901, richer than audited) | server.py (new), gcm-pipeline/config/{models,reference,paths}.yaml (new), .gitignore, data/{parquet,geo,fixtures}/.gitkeep, scripts/.gitkeep, atlas-pipeline/.gitkeep, validation-studies/.gitkeep, gcm-pipeline/{work,out}/.gitkeep, PROGRESS.md | Selftest PASS; yaml parse check (24 models, 0 dupes, window/grid verified); 8-request server battery ALL PASS on one keep-alive session; commits `3342d4d`, `cf46021` | M1.3 |
 | 3b | 2026-11-14 | Owner compute verified: CMIP6 historical phase complete (24 models x 1981-2014, 2312 files, 0 unparsed — 1981-1984 gap closed, merged into outdir); CESM2 + IITM-ESM confirmed pr-only; Owner decision recorded: both excluded from era C ensemble (single honest n=22; optional CESM2 variant re-check documented); models.yaml + paths.yaml synced | gcm-pipeline/config/models.yaml, gcm-pipeline/config/paths.yaml, PROGRESS.md | Filename inventory scan (model x var x year matrix printed); 2+2+2=... count reconciled: 24x34x3 - 2x34x2 = 2312 = files found | M1.3 |
+| 4 | 2026-11-14 | M1.3+M1.4: `scripts/convert_to_parquet.py` written and run (era B -> long Parquet, 5.40 MB total, 60-district row groups, absent-row rule, deterministic metadata); compression tuned (zstd level 19; byte_stream_split tested, no gain); round-trip verified 244 cells + 11 absent confirmations, 0 mismatches; row total = 3,715,048 exactly matches the v1.0.0 audit | scripts/convert_to_parquet.py (new), data/parquet/observed/variable=*[10]/part-0.parquet (new, 5.4 MB) | Converter self-checks (order assertion, district decomposition), `--verify 25` ALL PASS, size gates checked in-script; commit `50bbe04` | M1.5 |
