@@ -364,6 +364,7 @@
   DIE.Engine = {
     ensureEngine, ensureCatalog, query, slice, mapMonth, national, ensemble,
     bytes, lastMs,
+    version: DUCKDB_VERSION,
     catalog: () => state.catalog,
     isReady: () => !!state.conn,
     reset() {   // test hook only

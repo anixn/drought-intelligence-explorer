@@ -35,6 +35,7 @@
     { id: 'historical', btn: 'tabHistorical', view: 'viewHistorical' },
     { id: 'events', btn: 'tabEvents', view: 'viewEvents' },
     { id: 'propagation', btn: 'tabPropagation', view: 'viewPropagation' },
+    { id: 'engine', btn: 'tabEngine', view: 'viewEngine' },
     { id: 'data', btn: 'tabData', view: 'viewData' }
   ];
   const TAB_LABELS = {
@@ -42,12 +43,13 @@
     historical: 'Historical',
     events: 'Events',
     propagation: 'Propagation',
+    engine: 'Engine Lab',
     data: 'Documentation'
   };
   let currentTab = 'overview';
   // Tabs are marked dirty on state changes while hidden and re-render only
   // when entered. This avoids updating 5 workspaces on every slider tick.
-  const DIRTY = { overview: true, historical: true, events: true, propagation: true, data: true };
+  const DIRTY = { overview: true, historical: true, events: true, propagation: true, engine: true, data: true };
   const markDirty = (tab) => { DIRTY[tab] = true; };
 
   /** Run work when the browser is idle (never blocks interaction). */
@@ -264,7 +266,8 @@
     if (lbl) {
       const titles = {
         overview: 'Map PNG', historical: 'Ranking CSV',
-        events: 'Events CSV', propagation: 'Downloads', data: 'Downloads'
+        events: 'Events CSV', propagation: 'Downloads', engine: 'Results CSV',
+        data: 'Downloads'
       };
       lbl.textContent = titles[tabId] || 'Export';
     }
@@ -355,7 +358,7 @@
     // Contextual export: triggers the active workspace's primary export
     // (reusing the existing, already-instrumented controls).
     $('footExportBtn').addEventListener('click', () => {
-      const map = { overview: 'mapPngBtn', historical: 'tableCsvBtn', events: 'evtCsvBtn' };
+      const map = { overview: 'mapPngBtn', historical: 'tableCsvBtn', events: 'evtCsvBtn', engine: 'elResultCsv' };
       const target = map[currentTab];
       if (target && $(target)) { $(target).click(); return; }
       goDoc('doc-g-downloads'); // propagation + docs: export centre
@@ -2422,6 +2425,7 @@
     historical() { Historical.ready ? Historical.renderAll() : Historical.init(); },
     events() { EventsView.ready ? EventsView.refresh() : EventsView.init(); },
     propagation() { Propagation.ready ? Propagation.refresh() : Propagation.init(); },
+    engine() { DIE.EngineLab.init(); },
     data() { DataView.init(); }
   };
 

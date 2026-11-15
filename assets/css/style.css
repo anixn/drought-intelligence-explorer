@@ -3464,6 +3464,15 @@ body[data-tab="data"] {
   --ws-soft-dark: rgba(100, 120, 142, 0.3);
   --ws-line-dark: rgba(143, 163, 186, 0.5);
 }
+body[data-tab="engine"] {
+  --ws: #4f8f66;
+  --ws-ink: #3a6b4c;
+  --ws-soft: rgba(79, 143, 102, 0.12);
+  --ws-line: rgba(79, 143, 102, 0.45);
+  --ws-bright: #7cba93;
+  --ws-soft-dark: rgba(79, 143, 102, 0.28);
+  --ws-line-dark: rgba(124, 186, 147, 0.55);
+}
 
 /* ------------------------------------------------- primary tab identity -- *
  * Icons join the labels; the active tab takes the workspace accent for its
@@ -3760,6 +3769,16 @@ body[data-tab="data"] {
   --rail-thumb: #2c3c4c;
   --rail-div: rgba(167, 183, 200, 0.16);
 }
+body[data-tab="engine"] {
+  --rail: #16271d;
+  --rail-ctl: #21382b;
+  --rail-line: #38574a;
+  --rail-strong: #4d7461;
+  --rail-check: #2b473a;
+  --rail-check-line: #4d7461;
+  --rail-thumb: #2a4034;
+  --rail-div: rgba(124, 186, 147, 0.16);
+}
 
 /* ------------------------------------- 1b. rail surfaces ----------------- */
 .sidebar {
@@ -4045,5 +4064,106 @@ body[data-tab="data"] {
     margin-left: 0;
     text-align: left;
     flex-basis: 100%;
+  }
+}
+
+/* ======================================================= ENGINE LAB (v2) ==
+ * #engine surface (task M1.7, docs/v2/04 section 4.1). Reuses panel/comp-table
+ * styling; only the lab-specific pieces live here: status list, SQL editor,
+ * result meta and error. Dark-theme-safe via existing tokens + --ws accent. */
+.panel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.el-status {
+  margin: 0;
+  font-size: 13px;
+}
+.el-status div {
+  display: flex;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.el-status div:last-child {
+  border-bottom: none;
+}
+.el-status dt {
+  flex: 0 0 118px;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.el-status dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.el-preset-label {
+  font-size: 12px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.el-sql {
+  width: 100%;
+  resize: vertical;
+  min-height: 120px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  background: #f8fafc;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre;
+}
+.el-sql:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  border-color: var(--focus);
+}
+.el-result-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 8px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  font-family: var(--mono);
+  flex-wrap: wrap;
+}
+.el-result-wrap {
+  max-height: 480px;
+}
+.el-result-wrap table {
+  font-size: 12.5px;
+}
+.el-result-wrap td {
+  font-family: var(--mono);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.el-error {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(185, 71, 71, 0.4);
+  border-left: 3px solid var(--red);
+  border-radius: var(--radius);
+  background: rgba(185, 71, 71, 0.07);
+  color: var(--sev);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .panel-grid {
+    grid-template-columns: 1fr;
+  }
+  .el-status dt {
+    flex-basis: 96px;
   }
 }

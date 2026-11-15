@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-09d" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-15a" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -555,6 +555,32 @@
               <path d="M6 15V9a3 3 0 0 1 3-3h6" />
             </svg>
             Propagation &amp; Relationships
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tabEngine"
+            aria-selected="false"
+            aria-controls="viewEngine"
+            tabindex="-1"
+          >
+            <svg
+              class="tab-ic"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <ellipse cx="12" cy="5" rx="9" ry="3" />
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+              <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+            </svg>
+            Engine Lab
           </button>
         </div>
 
@@ -1738,7 +1764,117 @@
           </section>
         </div>
 
-        <!-- ============ VIEW 5: DATA, METHODOLOGY & DOWNLOADS ============ -->
+        <!-- ============ VIEW 5: ENGINE LAB (v2.0, M1.7) ============
+             Live proof that every number on the site is queryable: SQL over
+             the Parquet store via DuckDB-WASM, with byte/time readouts and
+             the catalog browser. Engine initialises lazily — first open of
+             this tab is the first time DuckDB is downloaded (docs/v2/04 §4.1). -->
+        <div id="viewEngine" role="tabpanel" aria-labelledby="tabEngine" hidden>
+          <div class="view-intro is-compact" id="introEngine" aria-label="Workspace introduction">
+            <span class="vi-step">5</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                Engine Lab <span class="vi-tag">v2.0</span>
+                <span class="vi-hint"
+                  >Query the Parquet archive directly — every published number,
+                  verifiable.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-grid">
+            <section class="panel" id="elStatusPanel" aria-label="Engine status">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Engine status</h2>
+                  <span class="panel-meta" id="elStatusMeta">not initialised</span>
+                </div>
+                <div class="panel-actions">
+                  <button type="button" class="btn btn-ghost" id="elInitBtn">
+                    Initialise engine
+                  </button>
+                </div>
+              </div>
+              <p class="table-help">
+                The engine is <b>lazy</b>: DuckDB-WASM is fetched from a CDN only
+                when you initialise it (or run your first query). The four
+                analytical workspaces keep using the v1.0 CSV loader; this lab is
+                the SQL view of the same published numbers.
+              </p>
+              <dl class="el-status" id="elStatusList">
+                <div><dt>Engine</dt><dd id="elStatusEngine">not initialised</dd></div>
+                <div><dt>Settings</dt><dd id="elStatusSettings">—</dd></div>
+                <div><dt>Bytes fetched</dt><dd id="elStatusBytes">0</dd></div>
+                <div><dt>HTTP requests</dt><dd id="elStatusRequests">0</dd></div>
+                <div><dt>Last query</dt><dd id="elStatusLast">—</dd></div>
+              </dl>
+            </section>
+
+            <section class="panel" id="elCatalogPanel" aria-label="Catalog browser">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Catalog</h2>
+                  <span class="panel-meta" id="elCatalogMeta">data/parquet/catalog.json</span>
+                </div>
+              </div>
+              <div class="table-scroll" id="elCatalogWrap">
+                <table class="comp-table" id="elCatalogTable">
+                  <thead>
+                    <tr>
+                      <th scope="col">Variable</th>
+                      <th scope="col">Eras</th>
+                      <th scope="col" class="num">Years</th>
+                      <th scope="col">Files</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <p class="table-help" id="elEraNote"></p>
+            </section>
+          </div>
+
+          <section class="panel" id="elQueryPanel" aria-label="SQL query">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">SQL</h2>
+                <span class="panel-meta">read-only · Parquet + DuckDB-WASM</span>
+              </div>
+              <div class="panel-actions">
+                <label class="el-preset-label" for="elPreset">Pattern query</label>
+                <select id="elPreset" class="panel-ctl" aria-label="Pattern query"></select>
+                <button type="button" class="btn btn-solid" id="elRunBtn">Run query</button>
+              </div>
+            </div>
+            <textarea
+              id="elSql"
+              class="el-sql"
+              spellcheck="false"
+              rows="7"
+              aria-label="SQL query editor"
+              placeholder="SELECT year, month, value FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet']) WHERE district_id = 'gujarat-ahmedabad' ORDER BY year, month LIMIT 50;"
+            ></textarea>
+            <p class="table-help" id="elSqlHelp">
+              Absolute paths are optional — the served site root is the URL root.
+              Heavy scans are fine: results stream from Apache Parquet column
+              chunks, and repeat queries cost <b>0 bytes</b> (in-memory cache).
+            </p>
+            <div class="el-result-meta" id="elResultMeta" hidden>
+              <span id="elResultStats"></span>
+              <button type="button" class="btn btn-ghost" id="elResultCsv">Results CSV</button>
+            </div>
+            <div class="table-scroll el-result-wrap" id="elResultWrap" hidden>
+              <table class="comp-table" id="elResultTable">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="el-error" id="elError" hidden></p>
+          </section>
+        </div>
+
+        <!-- ============ VIEW 6: DATA, METHODOLOGY & DOWNLOADS ============ -->
         <div id="viewData" role="tabpanel" aria-label="Documentation and Resources" hidden>
           <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step" aria-hidden="true">
@@ -3089,7 +3225,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-09d";
+        var ASSET_VERSION = "2026-11-15a";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
@@ -3118,6 +3254,8 @@
           "map",
           "charts",
           "analytics",
+          "ducklab",
+          "engine-lab",
         ];
         var inflight = {};
 
