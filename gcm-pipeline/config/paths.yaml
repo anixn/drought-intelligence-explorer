@@ -1,36 +1,19 @@
-# DIE v2.0 — gcm-pipeline paths
+# DIE v2.0 — gcm-pipeline paths.yaml
 #
-# Machine-local data roots. This file is COMMITTED (small, structural) but the
-# paths it names live OUTSIDE the repository (gitignored by policy — see
-# PROGRESS.md §9 handoff note). If a path differs on a given machine, correct
-# it here and note the change in the PROGRESS.md session log.
+# Task M2.3 companion config (docs/v2/03 §3.1). All roots listed here are
+# OWNER-LOCAL storage — nothing under raw/work/out is ever committed or
+# shipped (docs/v2/03 §3.1; .gitignore covers gcm-pipeline/work/* and out/*).
 #
-# Verified on this machine (2026-11-14, PC #2):
-#   D:\Websites\die-data\ exists with the expected layout below.
-#   NOTE: imd\pr holds 125 files (1901-2025), NOT the 1951-2025 recorded in the
-#   earlier audit — richer than assumed; calibration 1981-2020 unaffected.
+# REALITY NOTE (2026-11-15): the spec sketch used work/raw/<model>/<exp>/<var>.nc,
+# but the Owner's completed phase-1 download (download.R, 2,312 files) lives in
+# a flat per-variable layout:
+#
+#   <raw_root>/<variable>/<var>_day_<model>_<experiment>_<variant>_<grid>_<year>_v2.0.nc
+#
+# Code is the source of truth: this layout is now the convention ALL gcm-pipeline
+# scripts parse (00 download, 01 inventory, 02 regrid, ...). New downloads
+# (phase 2 SSPs) must follow the SAME naming so the pipeline stays uniform.
 
-paths:
-  # Owner's CMIP6 raw downloads (R cmip6 route, mt-climate-office/cmip6).
-  # ESGF v2.0-style filenames — parse model/experiment/variable/variant/year
-  # from filenames; NEVER rename source files (handoff note 2026-11-13).
-  cmip6_raw:        "D:/Websites/die-data/cmip6/outdir"      # main historical download (22/24 models per session-2 inventory)
-  cmip6_gapfill:    "D:/Websites/die-data/cmip6/outdir_1"    # historical 1981-1984 gap fill (download.R, in progress 2026-11-13)
-  # The inventory checker (01_inventory_check.py) scans BOTH roots and
-  # de-duplicates by (model, experiment, variable, year).
-
-  # IMD gridded observations (QDM reference + validation; decision D:
-  # IMD primary, CHIRPS/ERA5-Land alternates).
-  imd_pr:           "D:/Websites/die-data/imd/pr"     # IMD_rain_YYYY.nc  daily, 1901-2025 (125 files)
-  imd_tmax:         "D:/Websites/die-data/imd/tmax"   # IMD_tmax_YYYY.nc  daily, 1951-2025 (75 files)
-  imd_tmin:         "D:/Websites/die-data/imd/tmin"   # IMD_tmin_YYYY.nc  daily, 1951-2025 (75 files)
-
-  # Pipeline intermediates and products (relative to gcm-pipeline/).
-  work_dir:         "work"    # intermediates — never shipped (gitignored)
-  out_dir:          "out"     # validated era C products -> copied to data/parquet/projections/ by 09_export_parquet.py
-
-notes:
-  download_gaps:      # verified by OpenCode inventory scan 2026-11-14 (2312 files, 0 unparsed)
-    - "RESOLVED 2026-11-14: historical 1981-1984 gap filled — all 24 models complete 1981-2014 in cmip6_raw (outdir); the R fill targeted outdir_1 but files merged into outdir"
-    - "CESM2 + IITM-ESM have pr ONLY (no daily tasmax/tasmin, Owner report 2026-11-14) — excluded from era C ensemble per Owner decision 2026-11-14 (n=22 shown honestly); details in models.yaml"
-  ssp_policy: "Do NOT download ssp245/ssp585 yet. Ranking-before-SSP strategy (PROGRESS.md §8, session-2 additions): chain runs on historical only; 08_validate_gcm.py ranks vs IMD 1981-2014 -> best_subset.yaml (8-12 models of the 22 eligible); only then SSP downloads for that subset."
+raw_root: "D:/Websites/die-data/cmip6/outdir"   # phase-1 store, already populated (2312 historical files)
+work_root: "work"    # relative to gcm-pipeline/ — manifests, plans, intermediates; NEVER shipped
+out_root: "out"      # validated era-C products; only these ever reach data/parquet/projections/
