@@ -262,6 +262,32 @@
     const indicator = DIE.indicatorById.get(indicatorId);
     if (!indicator) throw new Error('Unknown indicator: ' + indicatorId);
 
+    /* v2.0 (?engine=1): build the identical dataset from the Parquet store
+     * via DuckDB-WASM (docs/v2/04 §3.4). The CSV path below stays the default
+     * and the permanent fallback: any engine failure (CDN unreachable, catalog
+     * error, schema surprise) logs a warning, toasts, and falls back. */
+    if (DIE.EngineData && DIE.EngineData.enabled() && !DIE.EngineData.failedOnce()) {
+      try {
+        const ds = await DIE.EngineData.buildDataset(indicator, indicatorId);
+        DIE.datasets.set(indicatorId, ds);
+        DIE.bus.emit('dataset:loaded', ds);
+        console.info('[DIE] loaded ' + indicatorId + ' (engine/parquet): ' +
+          ds.districtIds.length + ' districts × ' + ds.dates.length +
+          ' months · completeness ' + (ds.report.completeness * 100).toFixed(1) + '%',
+          ds.report);
+        return ds;
+      } catch (err) {
+        DIE.EngineData.markFailed();
+        console.warn('[DIE] engine path failed — falling back to the CSV loader for this session', err);
+        try {
+          if (DIE.App && DIE.App.toast) {
+            DIE.App.toast('Engine data unavailable',
+              'The Parquet engine could not serve this dataset; the CSV loader took over (identical values).');
+          }
+        } catch (e) { /* toast is best-effort */ }
+      }
+    }
+
     const text = await fetchText(indicator.file);
     if (!window.Papa) throw new Error('PapaParse unavailable — cannot parse ' + indicator.file);
     const parsed = Papa.parse(text, { skipEmptyLines: 'greedy' });

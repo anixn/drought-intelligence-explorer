@@ -4067,6 +4067,15 @@ body[data-tab="engine"] {
   }
 }
 
+/* ======================================================= ENGINE DATA chip ==
+ * Topbar mode label shown only under ?engine=1 (task M1.8): the data source
+ * is always visible (R2). Reuses the v1 .chip geometry; sage engine accent. */
+.chip-engine {
+  border-color: rgba(79, 143, 102, 0.55);
+  color: #3a6b4c;
+  background: rgba(79, 143, 102, 0.1);
+}
+
 /* ======================================================= ENGINE LAB (v2) ==
  * #engine surface (task M1.7, docs/v2/04 section 4.1). Reuses panel/comp-table
  * styling; only the lab-specific pieces live here: status list, SQL editor,
