@@ -41,6 +41,14 @@ meta:
   commented_from_r_list:
     - CMCC-CM2-SR5                      # commented out in download.R by the Owner
 
+# Amendment (docs/v2/06 §2, M2.1): per-model genealogy (CMIP6 parent /
+# institution family) so agreement fractions can be reported family-collapsed
+# (24 models are NOT 24 independent models). Ranking stays model-level; the
+# genealogy view is display-only. Fill at OD1 confirmation:
+#   genealogy:
+#     "ACCESS-CM2": {family: "ACCESS", institution: "CSIRO-ARCCSS"}
+genealogy: {}
+
 models:
   - {source_id: "ACCESS-CM2",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
   - {source_id: "ACCESS-ESM1-5",     variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}

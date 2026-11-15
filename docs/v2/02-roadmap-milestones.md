@@ -70,6 +70,30 @@ Every feature carries: ID, tier, worth (1–5), effort (S/M/L), dependencies, an
 | F13 | Other-region redeployment of the same contract | 3 | Pipeline is region-parameterised by design |
 | F14 | Non-stationary return periods | 3 | Sample-size and diagnostics gate |
 
+### 2.4 Owner-amendment backlog (docs/v2/06-amendments.md, 2026-11-15)
+
+Added by the Owner's amendments memo; tracked with the same one-task-per-session discipline. Items marked **[Owner]** need sign-off before they enter the build order.
+
+| ID | Feature | Tier | Worth | Effort | Depends on | Spec notes |
+|---|---|---|---|---|---|---|
+| E14 | Future drought event analytics (era C): frozen v1.0 event machinery over validated era C products; frequency/duration/severity per window (2026–2040 / 2041–2060 / 2081–2100) vs observed 1981–2020 baseline per district; fourth view in `#projections` | 1 (candidate, **[Owner: confirm]** — OD9) | 5 | M | E05 real data | Reuses event machinery; never run on fixtures for public numbers; ensemble-median-based windows with agreement reported alongside |
+| E15 | People-in-drought, static exposure: projected drought-month counts × Census/WorldPop population ("X million people in moderate-or-worse drought months per year by 2050/2100") | 2 | 4 | S | E05; population grid verified (licence) | Static exposure only; hazard and exposure never conflated (register safeguard 5); minimal version of F05 promoted forward |
+| E16 | PET-method sensitivity study: Hargreaves (committed C3) vs ERA5-Land PET vs a Penman–Monteith variant (`huss`, `rlds`, `sfcWind` — availability-checked in 01_inventory_check.py; run only where supplied) on 1981–2020, best-subset models; validation-study memo + methodology v2 uncertainty statement quantifying the era B↔C PET seam | 2 **[Owner: compute]** | 4 | M | M2 framework; IMD/ERA5-Land reference | Never changes the committed default (C3); sensitivity only — OD10 |
+| E17 | Era B ↔ era C cross-validation panel: corrected-model-historical (1981–2014) vs observed era B over the overlap, symmetric to the Atlas↔Observed panel (r, bias, class agreement, event match, discrepancy map) | 2 | 4 | S | M2.8 outputs | Reuses crossval schema; add `era` column or second partition file; the 2025/2026 seam gets the same treatment as the 1901/1981 seam |
+| E18 | Flash drought + compound drought–heat detection (era B first, era C if it holds up). Flash: one documented rapid-intensification definition picked and registered (Ford/Otkin-style). Compound: joint SPI/SPEI + Tmax extremes same month, lag-0 dependence noted | 2 | 4 | M | — | Definition fixed in code + methodology page before any map ships — OD11; absorbs Tier 3 F08 |
+| O13 | Alternate-reference QDM sensitivity product: QDM chain with CHIRPS/ERA5-Land reference (register D) alongside IMD-primary; divergence as downloadable sensitivity product + methodology paragraph | 2 **[Owner: compute]** | 3 | M (Owner) | M2 chain | Schema unchanged; `reference_id` column or parallel partition root |
+| O14 | Standardisation-baseline sensitivity for era C: fixed 1981–2020 (C2) vs rolling/era-specific baseline on a subset — separates climate signal from baseline-definition effect | 3 | 3 | S | E14 optional | One memo section; not a UI default |
+| O15 | ENSO/IOD conditioning panels (existing O07 promoted): ONI + DMI association with district drought frequency; association only, never causal; JJAS-conditioned composites | 2 | 3 | M | index data verified | Keep out of any projection claim |
+
+**Promotions within the existing backlog (amendment memo §1):**
+
+- **O02 (Pettitt change-point) → Tier 1.** Wire into the Historical tab trend view next to Mann–Kendall; client-side, S effort.
+- **O03 (BH-FDR view) → Tier 1.** District trend maps ship with the q = 0.05 FDR view as default-adjacent toggle (v1.0 demo: 382 → 324 of 724). Reviewers will not accept uncorrected district trend maps.
+- **F08 → superseded by E18** (register marks it; definition gate moves to OD11).
+- **O07 → O15** (same feature, promoted forward from Tier 2 to the amendment backlog).
+
+**Process amendments (OpenCode-executable, memo §3):** CI workflow gating `selftest.py` + regression harness (once M1.9 lands) + `selftest_gcm.py`/`selftest_atlas.py` (once they exist); separate versioned Zenodo deposits per era dataset (software DOI stays one deposit; mapping recorded in register + CITATION.cff); README freshness badge rendering `data/status.json`; `scripts/reproduce_figures.py` closing the data↔paper loop before M7. Scheduled: CI at M1.9, badge at M3.2, DOI mapping at M7.2, figure script at M7.4.
+
 ## 3. Milestone plan (dependency-based)
 
 Ordering logic: **engine + regression protection first** (nothing is built on a moving foundation); **GCM framework handed to the Owner as early as possible** (their downloads are the long pole and can run in parallel with UI work); freshness next (credibility); validation studies before projections UI ships real numbers; Atlas and release last. Milestones map onto the Dec 2026 – May 2027 window from the committed plan, with dates as suggestions only.
@@ -101,7 +125,7 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 
 | Task | Content | Size | Gate |
 |---|---|---|---|
-| M2.1 | `gcm-pipeline/config/models.yaml` template + selection criteria (daily pr/tasmax/tasmin, historical + ssp245 + ssp585, documented variant, 1950–2100 coverage) | S | Owner fills final 24-model list (Owner action) |
+| M2.1 | `gcm-pipeline/config/models.yaml` template + selection criteria (daily pr/tasmax/tasmin, historical + ssp245 + ssp585, documented variant, 1950–2100 coverage); **amendment (06 §2): per-model `genealogy:` field (CMIP6 parent/institution family) so agreement fractions can be reported family-collapsed — ranking stays model-level, genealogy view is display-only** | S | Owner fills final 24-model list (Owner action) |
 | M2.2 | `config/reference.yaml` — IMD primary reference (0.25° rainfall; temperature product per Owner choice), CHIRPS/ERA5-Land alternates; grid spec 0.25° | S | decision recorded in register |
 | M2.3 | `00_download_cmip6.py` — ESGF/Pangeo-Google subsetting per model/scenario/var, resumable, manifest + SHA-256 | M | dry-run on one model var verified |
 | M2.4 | `01_inventory_check.py` — availability matrix (model × var × scenario × period × calendar), fails hard on gaps | S | runs on template list |
@@ -109,9 +133,9 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 | M2.6 | `03_qdm_bias_correct.py` — QDM vs reference (1981–2020), per calendar month; multiplicative for precip (zero-guard), additive for temperature; preserve-change diagnostics | L | synthetic-world test: known signal preserved; quantile mapping inverts correctly |
 | M2.7 | `04_pet_hargreaves.py` — Hargreaves PET on corrected tasmin/tasmax (FAO-56 Ra by latitude/day-of-year); mm/month | S | spot-check against published worked example |
 | M2.8 | `05_spi_spei_compute.py` — **reuse `data-pipeline/indicators.py` machinery**; fits on fixed 1981–2020; bounds [−5, +5] for era C; per-fit gates as v1.0 | M | base-period calibration gates pass on synthetic world |
-| M2.9 | `06_district_aggregate.py` — area-weighted aggregation to 724 districts; v1.0 buffer-fallback semantics for sub-pixel units; LAEA areas reused | M | national totals plausible; sub-pixel flags match v1.0 handling |
+| M2.9 | `06_district_aggregate.py` — area-weighted aggregation to 724 districts; v1.0 buffer-fallback semantics for sub-pixel units; LAEA areas reused; **amendment (06 §2): sub-pixel transparency list — every district whose aggregation rests on ≤ 2 grid cells published as a `flag` value + downloadable CSV so users can filter them out** | M | national totals plausible; sub-pixel flags match v1.0 handling |
 | M2.10 | `07_ensemble_stats.py` — median/p25/p75, agreement (≤ −1.0, ≤ −1.5 fractions), direction-of-change agreement (late-window vs reference mean), n_models | S | exact definitions verified on synthetic ensemble |
-| M2.11 | `08_validate_gcm.py` — validation gate: corrected-historical consistency vs reference; drought frequency/duration/severity vs observed 1981–2014 by region; model ranking (multi-metric); best-subset 8–12 models; SPI–SPEI divergence quantification; non-zero exit on failure | M | gate logic proven on synthetic world |
+| M2.11 | `08_validate_gcm.py` — validation gate: corrected-historical consistency vs reference; drought frequency/duration/severity vs observed 1981–2014 by region; model ranking (multi-metric); best-subset 8–12 models; SPI–SPEI divergence quantification; **amendment (06 §2): tail checks — Q–Q comparison of corrected-historical vs reference plus p90/p95 drought-tail statistics by region/season; gate fails on declared tail tolerance breach (means can pass while tails fail)**; non-zero exit on failure | M | gate logic proven on synthetic world |
 | M2.12 | `09_export_parquet.py` — era C partitions (scenario × stat × variable × year), ≤ ~0.5 MB per file; catalog update; manifest checksums | M | catalog integration test |
 | M2.13 | `gcm-pipeline/selftest_gcm.py` — synthetic 3-model × 2-scenario mini-world end-to-end; seed-deterministic | M | all assertions pass |
 | M2.14 | `gcm-pipeline/README.md` runbook for the Owner: env setup (conda/requirements), execution order, checkpointing, storage estimates, where outputs land, what gets recorded in PROGRESS.md | S | Owner can start downloads without further code work |
@@ -136,7 +160,7 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 |---|---|---|
 | M4.1 | `validation-studies/imd/` acquisition scripts: IMD 0.25° daily rainfall → monthly (Pai et al. 2014 product); IMD temperature product (verify current resolution/version, record in register) | Owner-run download succeeds; grid metadata recorded |
 | M4.2 | IMD-SPI/SPEI computation reusing `indicators.py` (same gates, same reference window 1981–2020) | fit-report parity with era B machinery |
-| M4.3 | Comparison framework: correlation, bias, RMSD, drought-class agreement, event match — by season and region; BH-FDR trend-map view | metrics table generated from Owner-run outputs |
+| M4.3 | Comparison framework: correlation, bias, RMSD, drought-class agreement, event match — by season and region; BH-FDR trend-map view (**mandatory, amendment 06 §2 — not optional**) | metrics table generated from Owner-run outputs |
 | M4.4 | Validation memo template + methodology page v2 section; discrepancies published | memo drafted with real numbers (Owner-gated) |
 
 **Exit gate M4:** validation memo exists with real IMD comparison numbers, or the memo ships with the flagged "pending Owner run" sections clearly marked (never with synthetic values).
@@ -153,6 +177,7 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 | M5.5 | Model ranking panel (from `08_validate_gcm.py` outputs; multi-metric, best-subset selectable) | no single-metric ranking |
 | M5.6 | SPI–SPEI divergence map + copy ("Rainfall alone does not decide India's drought future; demand does half the work.") | divergence computed from shipped products only |
 | M5.7 | Projection banner ("Projections from 24 CMIP6 models. Median shown with 25–75 % range. Model disagreement is the finding."); era labels; no-splice rules | banner present on every era C surface |
+| M5.8 | **E14 future drought event analytics** (amendment 06 §2): frozen event machinery on validated era C; frequency/duration/severity per window vs 1981–2020 baseline; fourth view in `#projections`. Tier-1 entry gated on **OD9 (Owner confirmation)** | runs only on real era C data past the release gate |
 
 **Exit gate M5 (ship gate):** tab verified on **real Owner-produced era C data** after `08_validate_gcm.py` passes (CMIP6 release gate in register §6). Until then the tab may exist in `v2-dev` behind a flag with fixtures, never on the live site.
 
@@ -198,7 +223,7 @@ Work Tier 2 (O01–O12) in worth order; Tier 3 items only when their data/licenc
 | M5 | E05, E13 |
 | M6 | E06, E07 |
 | M7 | E09, E10, E11, E12 |
-| M8+ | O01–O12, then Tier 3 |
+| M8+ | O01–O12, O13–O15 (amendment backlog, docs/v2/06), then Tier 3 |
 
 ## 5. Owner-executed compute register (what OpenCode must never assume is done)
 

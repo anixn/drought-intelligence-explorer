@@ -14,6 +14,8 @@
 | **D4** | Scenarios & uncertainty | **SSP2-4.5 + SSP5-8.5** at launch with median + 25–75 % band + agreement layers; schema ready for SSP1-2.6 / SSP3-7.0 |
 | **D5** | Open-science posture | **Versioned download portal** + Zenodo DOI + citation line in UI |
 
+**Amendment cross-references (Owner memo docs/v2/06, 2026-11-15):** E14 extends the D1/D4 projections module with event analytics (Tier-1 confirmation = OD9); E16 is a sensitivity study *under* C3, never a replacement; O13 is a sensitivity run *under* D (IMD primary unchanged); E18/O14/O15 are analytical layers under safeguard rules (association ≠ causation; definitions registered before shipping). Task amendments: M2.1 `genealogy:` field (family-collapsed agreement display), M2.11 tail checks (Q–Q + p90/p95 by region/season), M2.9 sub-pixel transparency list (≤ 2 grid cells flagged + CSV), M4.3 FDR view mandatory. Backlog promotions: O02, O03 → Tier 1; F08 superseded by E18; O07 → O15. Process amendments: CI gate, per-era Zenodo deposits (software DOI stays one deposit), README freshness badge, `scripts/reproduce_figures.py`.
+
 ## 2. Method choices (C1–C7) — with v1.0-continuity resolutions
 
 | # | Choice | Committed default | Continuity note |
@@ -70,8 +72,11 @@ The four planning inputs (build specification, implementation specification, wor
 | OD4 | Atlas v2 release verification (licence, variables, timescales, units) | Blocked until verified; era A tab cannot ship before |
 | OD5 | Tehsil geometry source + licence | Tehsil layer stays Tier 2/gated |
 | OD6 | Hosting at scale (GitHub Pages vs Cloudflare R2) | GitHub Pages until payload/traffic forces R2 |
-| OD7 | CMIP6 download route (ESGF vs Google/Pangeo cloud) | Owner choice; both scripted |
+| OD7 | CMIP6 download route (ESGF vs Google/Pangeo cloud) | **Resolved 2026-11-13: Route A — raw CMIP6 + own QDM** (PROGRESS.md §8, session-2 additions) |
 | OD8 | v2.0 release timing | Data-gated, not date-gated |
+| OD9 | **E14 Tier-1 confirmation** (owner amendment 06 §1): future drought event analytics as the fourth `#projections` view | Tier 1 *candidate*; M5.8 scheduled but gated on Owner sign-off |
+| OD10 | **E16 Penman–Monteith variant definition** (inputs `huss`/`rlds`/`sfcWind`): exact formulation + which models supply them | Availability-checked in 01_inventory_check.py; runs only where supplied; committed default (C3 Hargreaves) unchanged |
+| OD11 | **E18 flash-drought definition** (Ford/Otkin-style rapid-intensification rate) and compound drought–heat joint-extreme definition | One definition picked and registered before any map ships; absorbs F08 |
 
 ## 6. CMIP6 module release gate (the projections tab is not "research-ready" until)
 
