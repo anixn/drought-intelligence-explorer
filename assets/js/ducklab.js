@@ -319,14 +319,22 @@
 
   async function national(opts) {
     const cat = state.catalog || (await ensureCatalog());
-    const v = catalogVariable(opts.variable);
     if (!cat.national) {
       throw newEngineError('no-national',
         'national pre-aggregate not generated yet (task M1.10); use slice()');
     }
-    void v;
+    // variable is whitelist-validated against the catalog before it touches
+    // the SQL string (the ids are catalog keys, so this is both safe and
+    // honest: an unknown id cannot be smuggled in)
+    let where = '';
+    if (opts.variable) {
+      catalogVariable(opts.variable);
+      where = " WHERE variable = '" + opts.variable + "'";
+    }
     return toRows(await query(
-      'SELECT * FROM read_parquet(["' + absPath(cat.national) + '"])'));
+      'SELECT variable, year, month, value::DOUBLE AS value, n_districts ' +
+      'FROM read_parquet(["' + absPath(cat.national) + '"])' + where +
+      ' ORDER BY variable, year, month'));
   }
 
   async function ensemble(opts) {

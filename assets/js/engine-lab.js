@@ -150,6 +150,16 @@
           "FROM read_parquet(['" + vci + "']);"
       });
     }
+    if (cat.national) {
+      presets.push({
+        label: "National series \u2014 SPI-3 (area-weighted pre-aggregate)",
+        sql:
+          "SELECT year, month, round(value, 4) AS national, n_districts\n" +
+          "FROM read_parquet(['" + abs(cat.national) + "'])\n" +
+          "WHERE variable = 'spi_03'\n" +
+          "ORDER BY year, month;"
+      });
+    }
     const sel = $("elPreset");
     sel.innerHTML =
       "<option value=\"\">Preloaded pattern query\u2026</option>" +
@@ -325,6 +335,7 @@
     });
 
     $("elPreset").addEventListener("change", (e) => {
+      if (e.target.value === "") return;   // placeholder: leave the editor as-is
       const p = presets[Number(e.target.value)];
       if (p) { $("elSql").value = p.sql; hideError(); }
     });

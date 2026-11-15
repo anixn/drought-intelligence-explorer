@@ -168,6 +168,9 @@ def compute() -> dict:
         out["sha256"]["csv/" + var_id] = sha256(REPO / rel)
         out["sha256"]["parquet/" + var_id] = sha256(parquet_file(var_id))
     out["sha256"]["catalog.json"] = sha256(REPO / "data" / "parquet" / "catalog.json")
+    national_path = REPO / "data" / "parquet" / "_national_monthly.parquet"
+    if national_path.exists():
+        out["sha256"]["national"] = sha256(national_path)
 
     # --- 2. catalog fingerprint ------------------------------------------
     cat = json.loads((REPO / "data" / "parquet" / "catalog.json").read_text(encoding="utf-8"))
@@ -227,6 +230,31 @@ def compute() -> dict:
             ("weighted_mean", math.fsum(num) / math.fsum(den)),
         ])
     out["anchors"]["spi_03_by_state"] = state_block
+
+    # --- 6. national pre-aggregate fingerprint (M1.10) --------------------
+    if national_path.exists():
+        nat_tbl = pq.read_table(national_path)
+        nat_vars = nat_tbl.column("variable").to_pylist()
+        nat_years = nat_tbl.column("year").to_pylist()
+        nat_months = nat_tbl.column("month").to_pylist()
+        nat_vals = nat_tbl.column("value").to_pylist()
+        per_var = OrderedDict()
+        for var_id in VARIABLES:
+            ks = [k for k in range(len(nat_vars)) if nat_vars[k] == var_id]
+            if not ks:
+                continue
+            num = []
+            for k in ks:
+                if (nat_years[k] * 100 + nat_months[k]) <= 202012:
+                    if nat_vals[k] is not None and math.isfinite(nat_vals[k]):
+                        num.append(nat_vals[k])
+            per_var[var_id] = OrderedDict([
+                ("rows", len(ks)),
+                ("first", [nat_years[ks[0]], nat_months[ks[0]]]),
+                ("last", [nat_years[ks[-1]], nat_months[ks[-1]]]),
+                ("mean_1981_2020", math.fsum(num) / len(num) if num else None),
+            ])
+        out["national"] = per_var
     return out
 
 

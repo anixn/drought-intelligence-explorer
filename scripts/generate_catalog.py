@@ -99,12 +99,18 @@ def build() -> dict:
         if yrs and yrs != [1981, 2025]:
             entry["observed_years"] = yrs   # e.g. vci [2000, 2025]
         catalog["variables"].append(entry)
+
+    # national pre-aggregate: emitted only once the file exists (exact-path
+    # rule - never point at a 404). Task M1.10.
+    national_path = "data/parquet/_national_monthly.parquet"
+    if (REPO / national_path).exists():
+        catalog["national"] = national_path
     return catalog
 
 
 def validate(catalog: dict) -> list[str]:
-    """Paths the UI can query (available eras' files) must exist on disk.
-    Unavailable eras expose no files, so their directory absence is fine."""
+    """Paths the UI can query (available eras' files + national) must exist on
+    disk. Unavailable eras expose no files, so their directory absence is fine."""
     problems = []
     for era in catalog["eras"].values():
         if era["available"] and not (REPO / era["path"]).exists():
@@ -114,6 +120,8 @@ def validate(catalog: dict) -> list[str]:
             for f in era_files:
                 if not (REPO / f).exists():
                     problems.append(f"variable path missing: {f}")
+    if "national" in catalog and not (REPO / catalog["national"]).exists():
+        problems.append(f"national path missing: {catalog['national']}")
     return problems
 
 
@@ -121,6 +129,8 @@ def check_urls(base: str, catalog: dict) -> int:
     """M1.5 gate: every path in the catalog must resolve over HTTP (HEAD)."""
     import urllib.request
     paths = [era["path"] for era in catalog["eras"].values() if era["available"]]
+    if "national" in catalog:
+        paths.append(catalog["national"])
     for var in catalog["variables"]:
         for era_files in var["files"].values():
             paths.extend(era_files)
