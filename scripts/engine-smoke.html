@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!-- DEV ONLY — engine smoke test for task M1.6 verification.
+     Not part of any shipped surface; lives in scripts/ alongside build tools.
+     Serve the repo root with server.py, then open /scripts/engine-smoke.html -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DIE engine smoke (dev)</title>
+<style>
+  body { font: 14px/1.5 Consolas, monospace; margin: 2rem; background: #101418; color: #d8e0e8; }
+  h1 { font-size: 16px; }
+  .ok { color: #7dd487; } .bad { color: #ff8f8f; } .dim { color: #8a97a5; }
+  pre { white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>DIE engine smoke test (dev only — M1.6 gates)</h1>
+<pre id="out">starting…</pre>
+<script src="../assets/js/ducklab.js?v=2"></script>
+<script>
+(function () {
+  const out = document.getElementById('out');
+  const lines = [];
+  const say = (cls, s) => { lines.push('<span class="' + cls + '">' + s + '</span>'); out.innerHTML = lines.join('\n'); };
+
+  (async () => {
+    try {
+      const t0 = performance.now();
+      await DIE.Engine.ensureEngine();
+      await DIE.Engine.ensureCatalog();
+      const initMs = Math.round(performance.now() - t0);
+      say(initMs < 8000 ? 'ok' : 'bad', 'GATE init < 8000 ms          -> ' + initMs + ' ms  ' + (initMs < 8000 ? 'PASS' : 'FAIL'));
+
+      // cold district slice
+      const d = 'gujarat-ahmedabad';
+      const t1 = performance.now();
+      const rows = await DIE.Engine.slice({ variable: 'spi_03', district: d });
+      const coldMs = Math.round(performance.now() - t1);
+      const coldBytes = DIE.Engine.bytes();
+      say(coldMs < 100 ? 'ok' : 'bad', 'GATE cold slice < 100 ms     -> ' + coldMs + ' ms  ' + (coldMs < 100 ? 'PASS' : 'FAIL'));
+      say('dim', '        rows=' + rows.length + ' first=' + JSON.stringify(rows[0]) + ' last=' + JSON.stringify(rows[rows.length - 1]));
+      say('dim', '        cumulative bytes so far=' + coldBytes.bytes + ' requests=' + coldBytes.requests);
+
+      // repeat slice must be 0 KB (byte interceptor + file cache)
+      const b0 = DIE.Engine.bytes().bytes;
+      await DIE.Engine.slice({ variable: 'spi_03', district: d });
+      const repeatDelta = DIE.Engine.bytes().bytes - b0;
+      say(repeatDelta === 0 ? 'ok' : 'bad', 'GATE repeat slice = 0 KB     -> ' + repeatDelta + ' bytes  ' + (repeatDelta === 0 ? 'PASS' : 'FAIL'));
+
+      // a second district (new file range, still same cached file bytes)
+      const r2 = await DIE.Engine.slice({ variable: 'vci', district: d, yearRange: [2010, 2020] });
+      say('dim', 'vci 2010-2020 rows=' + r2.length + ' first=' + JSON.stringify(r2[0]));
+
+      // mapMonth sanity
+      const mm = await DIE.Engine.mapMonth({ variable: 'spi_03', date: '2002-07' });
+      const present = mm.filter(x => x.value !== null && x.value !== undefined).length;
+      say('dim', 'mapMonth 2002-07 rows=' + mm.length + ' present=' + present);
+
+      // guard checks (must reject cleanly, not hang)
+      try { await DIE.Engine.slice({ variable: 'spi_03', district: "x' OR 1=1--" }); say('bad', 'GUARD FAIL: injection accepted'); }
+      catch (e) { say('ok', 'GUARD injection rejected -> ' + e.kind); }
+      try { await DIE.Engine.ensemble({ scenario: 'ssp245', variable: 'spi_03', district: d }); say('bad', 'GUARD FAIL: era C accepted without data'); }
+      catch (e) { say('ok', 'GUARD era C rejected -> ' + e.kind); }
+
+      const fin = DIE.Engine.bytes();
+      say('dim', 'FINAL bytes=' + fin.bytes + ' requests=' + fin.requests + ' lastMs=' + Math.round(fin.lastMs));
+      say('ok', 'SMOKE DONE — no uncaught errors');
+    } catch (err) {
+      say('bad', 'SMOKE ERROR: ' + (err && err.message || err));
+      if (console && console.error) console.error(err);
+    }
+  })();
+})();
+</script>
+</body>
+</html>

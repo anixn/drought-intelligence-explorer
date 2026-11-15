@@ -81,6 +81,7 @@ class RangeHandler(SimpleHTTPRequestHandler):
 
         size = os.fstat(f.fileno()).st_size
         ctype = self.guess_type(path)
+        ext = os.path.splitext(str(path))[1].lower()
 
         rng = self.headers.get("Range")
         start, end = 0, size - 1
@@ -116,6 +117,11 @@ class RangeHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(length))
         self.send_header("Accept-Ranges", "bytes")
+        # Pitfall P2 (docs/v2/04 §3.3): browsers heuristically cache HTML/JS/JSON,
+        # which serves stale code after edits; data files (.parquet) are
+        # content-addressed by the catalog and may cache.
+        if ext in (".html", ".js", ".mjs", ".json", ".css"):
+            self.send_header("Cache-Control", "no-cache")
         self.send_header("Last-Modified", self.date_time_string(os.path.getmtime(path)))
         for k, v in extra.items():
             self.send_header(k, v)
