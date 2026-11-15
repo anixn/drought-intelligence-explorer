@@ -1,0 +1,160 @@
+{
+  "version": "2.0.0",
+  "eras": {
+    "observed": {
+      "label": "Observed 1981-2025 -> current",
+      "path": "data/parquet/observed",
+      "available": true,
+      "years": [
+        1981,
+        2025
+      ]
+    },
+    "atlas": {
+      "label": "Atlas reconstruction (1901-2025, pending verification)",
+      "path": "data/parquet/atlas",
+      "available": false
+    },
+    "projections": {
+      "label": "CMIP6 projections 2026-2100 (Owner compute pending)",
+      "path": "data/parquet/projections",
+      "available": false
+    }
+  },
+  "variables": [
+    {
+      "id": "spi_01",
+      "label": "SPI-1",
+      "unit": "z",
+      "eras": [
+        "observed"
+      ],
+      "files": {
+        "observed": [
+          "data/parquet/observed/variable=spi_01/part-0.parquet"
+        ]
+      }
+    },
+    {
+      "id": "spi_03",
+      "label": "SPI-3",
+      "unit": "z",
+      "eras": [
+        "observed"
+      ],
+      "files": {
+        "observed": [
+          "data/parquet/observed/variable=spi_03/part-0.parquet"
+        ]
+      }
+    },
+    {
+      "id": "spi_06",
+      "label": "SPI-6",
+      "unit": "z",
+      "eras": [
+        "observed"
+      ],
+      "files": {
+        "observed": [
+          "data/parquet/observed/variable=spi_06/part-0.parquet"
+        ]
+      }
+    },
+    {
+      "id": "spi_12",
+      "label": "SPI-12",
+      "unit": "z",
+      "eras": [
+        "observed"
+      ],
+      "files": {
+        "observed": [
+          "data/parquet/observed/variable=spi_12/part-0.parquet"
+        ]
+      }
+    },
+    {
+      "id": "spei_01",
+      "label": "SPEI-1",
+      "unit": "z",
+      "eras": [
+        "observed"
+      ],
+      "files": {
+        "observed": [
+          "data/parquet/observed/variable=spei_01/part-0.parquet"
+        ]
+      }
+    },
+    {
+      "id": "spei_03",
+      "label": "SPEI-3",
+      "unit": "z",
+      "eras": [
+        "observed"
+      ],
+      "files": {
+        "observed": [
+          "data/parquet/observed/variable=spei_03/part-0.parquet"
+        ]
+      }
+    },
+    {
+      "id": "spei_06",
+      "label": "SPEI-6",
+      "unit": "z",
+      "eras": [
+        "observed"
+      ],
+      "files": {
+        "observed": [
+          "data/parquet/observed/variable=spei_06/part-0.parquet"
+        ]
+      }
+    },
+    {
+      "id": "spei_12",
+      "label": "SPEI-12",
+      "unit": "z",
+      "eras": [
+        "observed"
+      ],
+      "files": {
+        "observed": [
+          "data/parquet/observed/variable=spei_12/part-0.parquet"
+        ]
+      }
+    },
+    {
+      "id": "sma",
+      "label": "Soil Moisture Anomaly",
+      "unit": "%",
+      "eras": [
+        "observed"
+      ],
+      "files": {
+        "observed": [
+          "data/parquet/observed/variable=sma/part-0.parquet"
+        ]
+      }
+    },
+    {
+      "id": "vci",
+      "label": "VCI",
+      "unit": "%",
+      "eras": [
+        "observed"
+      ],
+      "files": {
+        "observed": [
+          "data/parquet/observed/variable=vci/part-0.parquet"
+        ]
+      },
+      "observed_years": [
+        2000,
+        2025
+      ]
+    }
+  ]
+}

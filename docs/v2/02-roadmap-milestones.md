@@ -111,7 +111,7 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 | M1.2 | Directory skeleton per AGENTS.md §5 (`data/parquet`, `data/geo`, `data/fixtures`, `scripts/`, `gcm-pipeline/`, `atlas-pipeline/`, `validation-studies/`, `server.py`) | S | tree matches spec |
 | M1.3 | `scripts/convert_to_parquet.py` — era B wide CSVs → long Parquet (zstd, dictionary-encoded, row groups aligned to 60 districts); print per-variable rows/sizes | M | total ≤ ~30 MB era B; per-file ≤ ~600 KB |
 | M1.4 | Round-trip verification: ≥ 5 random cells per variable, exact match vs CSV | S | 100 % match, logged |
-| M1.5 | `catalog.json` generator + schema doc (`docs/v2/03 §1.5`) | S | all paths resolve HTTP 200 via `server.py` |
+| M1.5 | `catalog.json` generator + schema doc (`docs/v2/03 section 8.2`) | S | all paths resolve HTTP 200 via `server.py` |
 | M1.6 | `assets/js/ducklab.js` engine service (worker blob + byte interceptor + settings) — reuse `work/die-2.0` prototype if present | M | init < 8 s; district slice < 100 ms cold; repeat 0 KB |
 | M1.7 | Engine Lab tab `#engine` (status, SQL box, byte/time readouts) | S | zero console errors across all tabs |
 | M1.8 | Wire Historical tab to engine behind `?engine=1` flag (CSV loader default); numbers must match CSV path exactly | M | identical values on ≥ 3 spot checks |
