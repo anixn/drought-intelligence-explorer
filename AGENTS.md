@@ -156,6 +156,7 @@ drought-intelligence-explorer/
 ## 9. Verification harness (what must pass before anything is called done)
 
 - `python selftest.py` — 82 assertions, seed-deterministic; must pass unchanged unless the task explicitly extends it.
+- `python scripts/regression_check.py` — numeric regression baseline (M1.9): checksums, CSV/Parquet round-trip sample, area-weighted anchors; must be green before every commit that touches data, the catalog, converters, or loaders. Legitimate data drift (monthly refresh) is re-blessed with `--bless` after review; CI (`.github/workflows/ci.yml`, amendment O14) runs both checks on every push to `v2-dev`.
 - Round-trip rule: any converted data must be verified cell-level against its source (≥ 5 random cells per file, exact match).
 - Numeric regression baseline: regional summaries + selected catalogue entries snapshot; must match exactly after refactors (capture before, compare after).
 - Engine checks (once live): district slice < 100 ms cold; repeat query 0 KB (byte interceptor); catalog paths all resolve (HTTP 200).

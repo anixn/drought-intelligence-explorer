@@ -1,0 +1,913 @@
+{
+  "schema": "die-regression-baseline/1.0",
+  "seed": 20261103,
+  "window": [
+    "1981-01",
+    "2020-12"
+  ],
+  "sha256": {
+    "csv/spi_01": "ab3387710c81ab32eff170283e01e5ce587f2c1258ea3f0e69f69ae999360be6",
+    "parquet/spi_01": "0b127d1036cc7d5422ba04ec7d8435437af3b5f41800d76d4d62733b806aac51",
+    "csv/spi_03": "c3e98ac5945b2c50c36e5d770aaff4ac4854f30ebe7eb0f3491352abd4412a7b",
+    "parquet/spi_03": "8e1f3c509aa275c4d07c279659b3104ae56ee2e643cb9a7078f78f3c0f29a565",
+    "csv/spi_06": "200c4015e0a93f832e1d323baf8442a03707928e7898919d70753f313abd39a8",
+    "parquet/spi_06": "bf54df26953a328c468337dcd1622072b1be99d2494215f4ee4c5d53118c8bb3",
+    "csv/spi_12": "5aea3011fff2daf9bc127047772598b92a9a181f844d99b5e287778a93979e09",
+    "parquet/spi_12": "6e20de9817e740bb2e9354572f7e9782324e6292d9b98d679ba889680b812f9a",
+    "csv/spei_01": "facdd6a9ba4b2d57644eecf8f0087cba8cb1d4619a0074c3a3d6fa95d97b9322",
+    "parquet/spei_01": "ba2358515eb6a0e2a96e2d34c4bab5dc78d3e7bdb46af33915f6f306770b8497",
+    "csv/spei_03": "fa92952de1c1e2dc794acf84f41012afe08cb4fe73136a9bf03d62e110e663d3",
+    "parquet/spei_03": "9bb725d188de9d07a7c9be560d33385ca61b4e96ae1a046bf9abbeae86b846ea",
+    "csv/spei_06": "0d59553f12dd400ef271aa50e2d3cb02f013ff319588e28147e688b71cfd9748",
+    "parquet/spei_06": "5a01f941dd8d57d7b74a19c31ac83764a2c0f126d7b849ae8d9f3f1717ef2c74",
+    "csv/spei_12": "149f874eaf99c68b223886d97ff74407907acfafe6c412155965dbc496e26a52",
+    "parquet/spei_12": "27e6bf2eebe0453e1a20badb17c873f1fff48208b83a9fdcf3346bd94da0ad8d",
+    "csv/sma": "5de3aeb5989f401fd1b6665e13c3906ed0240bc28cb6bfa90382e2d26b443fee",
+    "parquet/sma": "c6166e495f20af337d4090b880eea3ddf43fab0264150b9ec6168a31c97f7662",
+    "csv/vci": "c2f449a275df3cb8ac8961c43453dcadbd10af60dfba9cd854ef084fbb681bbf",
+    "parquet/vci": "c7a7913e9d968f40b9b7ee8be1378aef489e26623c53c63fa8c871b2a64652fe",
+    "catalog.json": "451ef0d5d5d01119564620ecfffdce7a5d3fe26bb0f5437e2eb36ea742d01197"
+  },
+  "catalog": {
+    "version": "2.0.0",
+    "variables": [
+      "spi_01",
+      "spi_03",
+      "spi_06",
+      "spi_12",
+      "spei_01",
+      "spei_03",
+      "spei_06",
+      "spei_12",
+      "sma",
+      "vci"
+    ],
+    "eras": [
+      "atlas",
+      "observed",
+      "projections"
+    ],
+    "available_eras": [
+      "observed"
+    ],
+    "file_count": 10
+  },
+  "per_variable": {
+    "spi_01": {
+      "districts": 724,
+      "date_cols": 540,
+      "first_date": "1981-01",
+      "last_date": "2025-12",
+      "finite": 390960,
+      "empty": 0
+    },
+    "spi_03": {
+      "districts": 724,
+      "date_cols": 540,
+      "first_date": "1981-01",
+      "last_date": "2025-12",
+      "finite": 389512,
+      "empty": 1448
+    },
+    "spi_06": {
+      "districts": 724,
+      "date_cols": 540,
+      "first_date": "1981-01",
+      "last_date": "2025-12",
+      "finite": 387340,
+      "empty": 3620
+    },
+    "spi_12": {
+      "districts": 724,
+      "date_cols": 540,
+      "first_date": "1981-01",
+      "last_date": "2025-12",
+      "finite": 382996,
+      "empty": 7964
+    },
+    "spei_01": {
+      "districts": 724,
+      "date_cols": 540,
+      "first_date": "1981-01",
+      "last_date": "2025-12",
+      "finite": 390420,
+      "empty": 540
+    },
+    "spei_03": {
+      "districts": 724,
+      "date_cols": 540,
+      "first_date": "1981-01",
+      "last_date": "2025-12",
+      "finite": 388974,
+      "empty": 1986
+    },
+    "spei_06": {
+      "districts": 724,
+      "date_cols": 540,
+      "first_date": "1981-01",
+      "last_date": "2025-12",
+      "finite": 386805,
+      "empty": 4155
+    },
+    "spei_12": {
+      "districts": 724,
+      "date_cols": 540,
+      "first_date": "1981-01",
+      "last_date": "2025-12",
+      "finite": 382467,
+      "empty": 8493
+    },
+    "sma": {
+      "districts": 724,
+      "date_cols": 540,
+      "first_date": "1981-01",
+      "last_date": "2025-12",
+      "finite": 390420,
+      "empty": 540
+    },
+    "vci": {
+      "districts": 724,
+      "date_cols": 540,
+      "first_date": "1981-01",
+      "last_date": "2025-12",
+      "finite": 225154,
+      "empty": 165806
+    }
+  },
+  "roundtrip": {
+    "spi_01": [
+      {
+        "district": "gujarat-jamnagar",
+        "date": "2021-06",
+        "csv": -0.34,
+        "parquet": -0.3400000035762787,
+        "match": true
+      },
+      {
+        "district": "telangana-jagtial",
+        "date": "1981-11",
+        "csv": 0.08,
+        "parquet": 0.07999999821186066,
+        "match": true
+      },
+      {
+        "district": "west-bengal-dakshin-dinajpur",
+        "date": "2010-08",
+        "csv": -0.37,
+        "parquet": -0.3700000047683716,
+        "match": true
+      },
+      {
+        "district": "uttar-pradesh-lakhimpur-kheri",
+        "date": "1998-06",
+        "csv": -0.58,
+        "parquet": -0.5799999833106995,
+        "match": true
+      },
+      {
+        "district": "andhra-pradesh-srikakulam",
+        "date": "2020-07",
+        "csv": -1.32,
+        "parquet": -1.3200000524520874,
+        "match": true
+      },
+      {
+        "district": "tamil-nadu-thanjavur",
+        "date": "2000-05",
+        "csv": 0.07,
+        "parquet": 0.07000000029802322,
+        "match": true
+      },
+      {
+        "district": "tamil-nadu-kanyakumari",
+        "date": "2021-07",
+        "csv": 0.44,
+        "parquet": 0.4399999976158142,
+        "match": true
+      },
+      {
+        "district": "tamil-nadu-salem",
+        "date": "1992-10",
+        "csv": -0.48,
+        "parquet": -0.47999998927116394,
+        "match": true
+      }
+    ],
+    "spi_03": [
+      {
+        "district": "uttar-pradesh-kaushambi",
+        "date": "2018-12",
+        "csv": -1.29,
+        "parquet": -1.2899999618530273,
+        "match": true
+      },
+      {
+        "district": "gujarat-devbhumi-dwarka",
+        "date": "1984-07",
+        "csv": -0.15,
+        "parquet": -0.15000000596046448,
+        "match": true
+      },
+      {
+        "district": "madhya-pradesh-alirajpur",
+        "date": "2018-07",
+        "csv": 0.73,
+        "parquet": 0.7300000190734863,
+        "match": true
+      },
+      {
+        "district": "uttar-pradesh-basti",
+        "date": "1983-11",
+        "csv": 1.9,
+        "parquet": 1.899999976158142,
+        "match": true
+      },
+      {
+        "district": "punjab-amritsar",
+        "date": "1990-01",
+        "csv": -0.23,
+        "parquet": -0.23000000417232513,
+        "match": true
+      },
+      {
+        "district": "odisha-khordha",
+        "date": "2001-04",
+        "csv": 0.78,
+        "parquet": 0.7799999713897705,
+        "match": true
+      },
+      {
+        "district": "assam-dibrugarh",
+        "date": "2006-07",
+        "csv": 0.78,
+        "parquet": 0.7799999713897705,
+        "match": true
+      },
+      {
+        "district": "himachal-pradesh-kullu",
+        "date": "2025-02",
+        "csv": 0.47,
+        "parquet": 0.4699999988079071,
+        "match": true
+      }
+    ],
+    "spi_06": [
+      {
+        "district": "karnataka-uttara-kannada",
+        "date": "1988-08",
+        "csv": 0.61,
+        "parquet": 0.6100000143051147,
+        "match": true
+      },
+      {
+        "district": "arunachal-pradesh-changlang",
+        "date": "2014-06",
+        "csv": -1.6,
+        "parquet": -1.600000023841858,
+        "match": true
+      },
+      {
+        "district": "nagaland-mokokchung",
+        "date": "1993-03",
+        "csv": 0.36,
+        "parquet": 0.36000001430511475,
+        "match": true
+      },
+      {
+        "district": "karnataka-chamarajanagara",
+        "date": "2009-04",
+        "csv": -0.25,
+        "parquet": -0.25,
+        "match": true
+      },
+      {
+        "district": "kerala-kannur",
+        "date": "2005-05",
+        "csv": -0.3,
+        "parquet": -0.30000001192092896,
+        "match": true
+      },
+      {
+        "district": "andhra-pradesh-chittoor",
+        "date": "2002-01",
+        "csv": 0.61,
+        "parquet": 0.6100000143051147,
+        "match": true
+      },
+      {
+        "district": "karnataka-bidar",
+        "date": "2012-09",
+        "csv": -0.3,
+        "parquet": -0.30000001192092896,
+        "match": true
+      },
+      {
+        "district": "kerala-wayanad",
+        "date": "2014-08",
+        "csv": -1.02,
+        "parquet": -1.0199999809265137,
+        "match": true
+      }
+    ],
+    "spi_12": [
+      {
+        "district": "andhra-pradesh-visakhapatnam",
+        "date": "2023-07",
+        "csv": 0.41,
+        "parquet": 0.4099999964237213,
+        "match": true
+      },
+      {
+        "district": "haryana-karnal",
+        "date": "2000-09",
+        "csv": -1.18,
+        "parquet": -1.1799999475479126,
+        "match": true
+      },
+      {
+        "district": "nagaland-peren",
+        "date": "2017-05",
+        "csv": -0.0,
+        "parquet": -0.0,
+        "match": true
+      },
+      {
+        "district": "madhya-pradesh-singrauli",
+        "date": "1984-11",
+        "csv": -0.02,
+        "parquet": -0.019999999552965164,
+        "match": true
+      },
+      {
+        "district": "uttar-pradesh-agra",
+        "date": "2025-01",
+        "csv": 2.2,
+        "parquet": 2.200000047683716,
+        "match": true
+      },
+      {
+        "district": "odisha-balangir",
+        "date": "1987-07",
+        "csv": -1.67,
+        "parquet": -1.6699999570846558,
+        "match": true
+      },
+      {
+        "district": "rajasthan-baran",
+        "date": "2016-08",
+        "csv": 1.65,
+        "parquet": 1.649999976158142,
+        "match": true
+      },
+      {
+        "district": "haryana-hisar",
+        "date": "2003-05",
+        "csv": -1.99,
+        "parquet": -1.9900000095367432,
+        "match": true
+      }
+    ],
+    "spei_01": [
+      {
+        "district": "west-bengal-paschim-medinipur",
+        "date": "2012-02",
+        "csv": -0.78,
+        "parquet": -0.7799999713897705,
+        "match": true
+      },
+      {
+        "district": "assam-south-salmara-mankachar",
+        "date": "2009-08",
+        "csv": 1.54,
+        "parquet": 1.5399999618530273,
+        "match": true
+      },
+      {
+        "district": "manipur-tamenglong",
+        "date": "2021-07",
+        "csv": -0.75,
+        "parquet": -0.75,
+        "match": true
+      },
+      {
+        "district": "madhya-pradesh-chhatarpur",
+        "date": "2017-01",
+        "csv": -0.26,
+        "parquet": -0.25999999046325684,
+        "match": true
+      },
+      {
+        "district": "maharashtra-amravati",
+        "date": "2009-10",
+        "csv": 0.56,
+        "parquet": 0.5600000023841858,
+        "match": true
+      },
+      {
+        "district": "tamil-nadu-nilgiris",
+        "date": "1983-07",
+        "csv": -0.79,
+        "parquet": -0.7900000214576721,
+        "match": true
+      },
+      {
+        "district": "maharashtra-sangli",
+        "date": "1996-01",
+        "csv": 0.28,
+        "parquet": 0.2800000011920929,
+        "match": true
+      },
+      {
+        "district": "gujarat-surendranagar",
+        "date": "2015-11",
+        "csv": -0.96,
+        "parquet": -0.9599999785423279,
+        "match": true
+      }
+    ],
+    "spei_03": [
+      {
+        "district": "gujarat-surat",
+        "date": "2022-03",
+        "csv": 1.34,
+        "parquet": 1.340000033378601,
+        "match": true
+      },
+      {
+        "district": "telangana-nizamabad",
+        "date": "1981-09",
+        "csv": 1.21,
+        "parquet": 1.2100000381469727,
+        "match": true
+      },
+      {
+        "district": "punjab-fazilka",
+        "date": "2018-08",
+        "csv": 0.98,
+        "parquet": 0.9800000190734863,
+        "match": true
+      },
+      {
+        "district": "madhya-pradesh-burhanpur",
+        "date": "2007-12",
+        "csv": -0.51,
+        "parquet": -0.5099999904632568,
+        "match": true
+      },
+      {
+        "district": "rajasthan-churu",
+        "date": "2001-11",
+        "csv": -1.1,
+        "parquet": -1.100000023841858,
+        "match": true
+      },
+      {
+        "district": "bihar-bhagalpur",
+        "date": "2010-11",
+        "csv": -0.29,
+        "parquet": -0.28999999165534973,
+        "match": true
+      },
+      {
+        "district": "gujarat-tapi",
+        "date": "2021-01",
+        "csv": 1.41,
+        "parquet": 1.409999966621399,
+        "match": true
+      },
+      {
+        "district": "gujarat-mehsana",
+        "date": "2001-03",
+        "csv": -2.2,
+        "parquet": -2.200000047683716,
+        "match": true
+      }
+    ],
+    "spei_06": [
+      {
+        "district": "madhya-pradesh-vidisha",
+        "date": "1996-10",
+        "csv": 0.21,
+        "parquet": 0.20999999344348907,
+        "match": true
+      },
+      {
+        "district": "nagaland-wokha",
+        "date": "1981-07",
+        "csv": 0.76,
+        "parquet": 0.7599999904632568,
+        "match": true
+      },
+      {
+        "district": "madhya-pradesh-damoh",
+        "date": "2015-05",
+        "csv": 1.79,
+        "parquet": 1.7899999618530273,
+        "match": true
+      },
+      {
+        "district": "andhra-pradesh-west-godavari",
+        "date": "2001-08",
+        "csv": -0.35,
+        "parquet": -0.3499999940395355,
+        "match": true
+      },
+      {
+        "district": "west-bengal-howrah",
+        "date": "2019-04",
+        "csv": 1.29,
+        "parquet": 1.2899999618530273,
+        "match": true
+      },
+      {
+        "district": "rajasthan-sirohi",
+        "date": "2022-02",
+        "csv": 1.69,
+        "parquet": 1.690000057220459,
+        "match": true
+      },
+      {
+        "district": "bihar-madhubani",
+        "date": "1998-10",
+        "csv": 0.63,
+        "parquet": 0.6299999952316284,
+        "match": true
+      },
+      {
+        "district": "rajasthan-nagaur",
+        "date": "1985-02",
+        "csv": 0.04,
+        "parquet": 0.03999999910593033,
+        "match": true
+      }
+    ],
+    "spei_12": [
+      {
+        "district": "arunachal-pradesh-tirap",
+        "date": "2001-01",
+        "csv": 0.47,
+        "parquet": 0.4699999988079071,
+        "match": true
+      },
+      {
+        "district": "madhya-pradesh-rewa",
+        "date": "2023-09",
+        "csv": -0.4,
+        "parquet": -0.4000000059604645,
+        "match": true
+      },
+      {
+        "district": "west-bengal-darjeeling",
+        "date": "1993-03",
+        "csv": -1.75,
+        "parquet": -1.75,
+        "match": true
+      },
+      {
+        "district": "himachal-pradesh-hamirpur",
+        "date": "2004-09",
+        "csv": -1.75,
+        "parquet": -1.75,
+        "match": true
+      },
+      {
+        "district": "bihar-munger",
+        "date": "1986-06",
+        "csv": 0.48,
+        "parquet": 0.47999998927116394,
+        "match": true
+      },
+      {
+        "district": "tamil-nadu-viluppuram",
+        "date": "1984-06",
+        "csv": 1.0,
+        "parquet": 1.0,
+        "match": true
+      },
+      {
+        "district": "west-bengal-kolkata",
+        "date": "1999-06",
+        "csv": -0.38,
+        "parquet": -0.3799999952316284,
+        "match": true
+      },
+      {
+        "district": "uttar-pradesh-jalaun",
+        "date": "2011-07",
+        "csv": 1.33,
+        "parquet": 1.3300000429153442,
+        "match": true
+      }
+    ],
+    "sma": [
+      {
+        "district": "uttar-pradesh-deoria",
+        "date": "2016-04",
+        "csv": -5.0,
+        "parquet": -5.0,
+        "match": true
+      },
+      {
+        "district": "jammu-and-kashmir-muzaffarabad",
+        "date": "1991-12",
+        "csv": 2.0,
+        "parquet": 2.0,
+        "match": true
+      },
+      {
+        "district": "uttar-pradesh-bhadohi",
+        "date": "1996-10",
+        "csv": 9.0,
+        "parquet": 9.0,
+        "match": true
+      },
+      {
+        "district": "goa-north-goa",
+        "date": "1988-06",
+        "csv": -4.0,
+        "parquet": -4.0,
+        "match": true
+      },
+      {
+        "district": "jammu-and-kashmir-budgam",
+        "date": "2010-03",
+        "csv": 4.0,
+        "parquet": 4.0,
+        "match": true
+      },
+      {
+        "district": "manipur-chandel",
+        "date": "2021-05",
+        "csv": -15.0,
+        "parquet": -15.0,
+        "match": true
+      },
+      {
+        "district": "telangana-karimnagar",
+        "date": "2015-11",
+        "csv": -28.0,
+        "parquet": -28.0,
+        "match": true
+      },
+      {
+        "district": "odisha-rayagada",
+        "date": "2011-10",
+        "csv": -13.0,
+        "parquet": -13.0,
+        "match": true
+      }
+    ],
+    "vci": [
+      {
+        "district": "west-bengal-howrah",
+        "date": "2008-05",
+        "csv": 16.0,
+        "parquet": 16.0,
+        "match": true
+      },
+      {
+        "district": "arunachal-pradesh-east-siang",
+        "date": "2005-09",
+        "csv": 13.0,
+        "parquet": 13.0,
+        "match": true
+      },
+      {
+        "district": "telangana-warangal-urban",
+        "date": "2009-06",
+        "csv": 4.0,
+        "parquet": 4.0,
+        "match": true
+      },
+      {
+        "district": "tamil-nadu-krishnagiri",
+        "date": "1985-07",
+        "csv": null,
+        "parquet": null,
+        "match": true
+      },
+      {
+        "district": "himachal-pradesh-kullu",
+        "date": "1988-03",
+        "csv": null,
+        "parquet": null,
+        "match": true
+      },
+      {
+        "district": "assam-udalguri",
+        "date": "1981-05",
+        "csv": null,
+        "parquet": null,
+        "match": true
+      },
+      {
+        "district": "andhra-pradesh-vizianagaram",
+        "date": "2010-05",
+        "csv": 22.0,
+        "parquet": 22.0,
+        "match": true
+      },
+      {
+        "district": "chhattisgarh-koriya",
+        "date": "2001-09",
+        "csv": 0.0,
+        "parquet": 0.0,
+        "match": true
+      }
+    ]
+  },
+  "anchors": {
+    "weighted_mean/spi_01": 0.008186110980104954,
+    "weighted_mean/spi_03": 0.0005288507099213385,
+    "weighted_mean/spi_06": 3.667359695619535e-05,
+    "weighted_mean/spi_12": 0.0003461673997040085,
+    "weighted_mean/spei_01": 0.006091658055588593,
+    "weighted_mean/spei_03": 0.005001335406510226,
+    "weighted_mean/spei_06": 0.0037286326257513205,
+    "weighted_mean/spei_12": 0.002506539862132292,
+    "weighted_mean/sma": -0.001672071408128694,
+    "weighted_mean/vci": 43.95713281879305,
+    "spi_03_by_state": {
+      "Andaman and Nicobar Islands": {
+        "districts": 3,
+        "finite": 1614,
+        "weighted_mean": -0.0007064531648343668
+      },
+      "Andhra Pradesh": {
+        "districts": 13,
+        "finite": 6994,
+        "weighted_mean": -0.0015200396861147945
+      },
+      "Arunachal Pradesh": {
+        "districts": 25,
+        "finite": 13450,
+        "weighted_mean": -0.0003403434351133626
+      },
+      "Assam": {
+        "districts": 33,
+        "finite": 17754,
+        "weighted_mean": -0.00018539934008579708
+      },
+      "Bihar": {
+        "districts": 38,
+        "finite": 20444,
+        "weighted_mean": -0.00036736166610568344
+      },
+      "Chandigarh": {
+        "districts": 1,
+        "finite": 538,
+        "weighted_mean": -0.0005230125523012568
+      },
+      "Chhattisgarh": {
+        "districts": 27,
+        "finite": 14526,
+        "weighted_mean": -0.0012648366885068124
+      },
+      "Dadra and Nagar Haveli and Daman and Diu": {
+        "districts": 3,
+        "finite": 1614,
+        "weighted_mean": 0.02191211987673488
+      },
+      "Delhi": {
+        "districts": 1,
+        "finite": 538,
+        "weighted_mean": -0.0010669456066945621
+      },
+      "Goa": {
+        "districts": 2,
+        "finite": 1076,
+        "weighted_mean": -0.005862842543610599
+      },
+      "Gujarat": {
+        "districts": 34,
+        "finite": 18292,
+        "weighted_mean": 0.014671547753423848
+      },
+      "Haryana": {
+        "districts": 22,
+        "finite": 11836,
+        "weighted_mean": -0.0010751212858938668
+      },
+      "Himachal Pradesh": {
+        "districts": 12,
+        "finite": 6456,
+        "weighted_mean": 0.0015972983593395694
+      },
+      "Jammu and Kashmir": {
+        "districts": 22,
+        "finite": 11836,
+        "weighted_mean": -0.0004915943089124106
+      },
+      "Jharkhand": {
+        "districts": 24,
+        "finite": 12912,
+        "weighted_mean": -0.0013002434364334944
+      },
+      "Karnataka": {
+        "districts": 30,
+        "finite": 16140,
+        "weighted_mean": 0.00013607792208500616
+      },
+      "Kerala": {
+        "districts": 14,
+        "finite": 7532,
+        "weighted_mean": -0.0011348657253064229
+      },
+      "Ladakh": {
+        "districts": 2,
+        "finite": 1076,
+        "weighted_mean": -0.00019345944989543118
+      },
+      "Lakshadweep": {
+        "districts": 1,
+        "finite": 538,
+        "weighted_mean": -0.000753138075313809
+      },
+      "Madhya Pradesh": {
+        "districts": 52,
+        "finite": 27976,
+        "weighted_mean": -0.0012128492196680494
+      },
+      "Maharashtra": {
+        "districts": 35,
+        "finite": 18830,
+        "weighted_mean": -0.0019099402725474474
+      },
+      "Manipur": {
+        "districts": 16,
+        "finite": 8608,
+        "weighted_mean": -0.000693988507113494
+      },
+      "Meghalaya": {
+        "districts": 11,
+        "finite": 5918,
+        "weighted_mean": 0.0006785274821787402
+      },
+      "Mizoram": {
+        "districts": 10,
+        "finite": 5380,
+        "weighted_mean": -0.0007555475996570684
+      },
+      "Nagaland": {
+        "districts": 11,
+        "finite": 5918,
+        "weighted_mean": -0.00013667275303925672
+      },
+      "Odisha": {
+        "districts": 30,
+        "finite": 16140,
+        "weighted_mean": -0.0010600178306977876
+      },
+      "Puducherry": {
+        "districts": 4,
+        "finite": 2152,
+        "weighted_mean": -0.0011207911753518436
+      },
+      "Punjab": {
+        "districts": 22,
+        "finite": 11836,
+        "weighted_mean": -0.0005972233417393394
+      },
+      "Rajasthan": {
+        "districts": 33,
+        "finite": 17754,
+        "weighted_mean": 0.004758211211422101
+      },
+      "Sikkim": {
+        "districts": 4,
+        "finite": 2152,
+        "weighted_mean": -0.000532137328733077
+      },
+      "Tamil Nadu": {
+        "districts": 37,
+        "finite": 19906,
+        "weighted_mean": -0.001411138213780122
+      },
+      "Telangana": {
+        "districts": 33,
+        "finite": 17754,
+        "weighted_mean": -3.5843832199226554e-06
+      },
+      "Tripura": {
+        "districts": 8,
+        "finite": 4304,
+        "weighted_mean": -0.0008286009105638934
+      },
+      "Uttar Pradesh": {
+        "districts": 75,
+        "finite": 40350,
+        "weighted_mean": -0.0019243650402609766
+      },
+      "Uttarakhand": {
+        "districts": 13,
+        "finite": 6994,
+        "weighted_mean": -0.0012432386702668442
+      },
+      "West Bengal": {
+        "districts": 23,
+        "finite": 12374,
+        "weighted_mean": -0.0007100895185829551
+      }
+    }
+  }
+}
