@@ -108,8 +108,26 @@ validation:
     # ratio metrics are mapped to closeness first:
     #   closeness = max(0, 1 - |ln(ratio)| / ln(closeness_cap_ratio))
     closeness_cap_ratio: 3.0
-    # subset size committed range 8-12 (docs/v2/03 §3.8); default 10
-    subset_size: 10
+    # subset selection (committed 2026-11-16 after Owner arbitration -
+    # replaces the arbitrary fixed "top 10"): NO fixed count.
+    #   core    = models above the LARGEST inter-rank composite gap (the
+    #             data's own separation; ties -> earliest boundary)
+    #   floor   = if core < size_range[0], extend by REWEIGHTING-STABILITY
+    #             order (inclusion frequency in the top-size_range[0] set
+    #             across Dirichlet weight perturbations, deterministic seed)
+    #   ceiling = cap at size_range[1]
+    #   final size also capped by the number of candidates
+    # Rationale (measured, 2026-11-16 run): ranks 1-7 have 95-100% inclusion
+    # stability; ranks 8-14 are a statistically-tied plateau (13-71% at
+    # top-10 - any fixed count there is a coin flip); ranks 15+ never make
+    # it (<=6%). The 8th member is therefore NOT a quality choice but the
+    # registered minimum ensemble size, filled by the most stable of the
+    # tied models.
+    subset_criterion:
+      size_range: [8, 12]           # docs/v2/03 section 3.8 committed range
+      stability_draws: 1000         # Dirichlet weight perturbations
+      dirichlet_concentration: 40.0 # ~ +/-20-40% weight variation
+      stability_seed: 20261103
     # seasonal detail stored for these seasons (all is the composite basis)
     detail_seasons: [sw_monsoon]
 

@@ -29,7 +29,9 @@ distribution - see the remediation note in the config):
   3. Per-model ranking: 8 metrics (pearson_r, abs_bias, rmsd,
      class_agreement, freq_ratio, duration_ratio, severity_ratio,
      spatial_r) -> weighted composite (documented weights, no
-     single-metric ranking) -> best subset 8-12 models -> best_subset.yaml.
+     single-metric ranking) -> committed SUBSET CRITERION (largest-gap
+     core extended to the registered floor by reweighting-stability
+     order; NOT a fixed count) -> best_subset.yaml.
      Free-running decorrelation caveat: temporal-synchrony metrics carry
      mostly noise (measured r ~ 0, M2.8) and are weighted accordingly.
   4. SPI-SPEI divergence quantified (national + regional, per season) -
@@ -49,9 +51,11 @@ selftest_gcm.py at M2.13) exercise the REAL gate functions:
   T2 consistency gate: identical pass; shifted/heavier world flagged
   T3 tail gate: same-tail pass; heavy-tail world flagged
   T4 ranking: closeness transform + min-max + composite ordering exact;
-     subset size honoured
+     subset = registered floor when candidates below it
   T5 SPI-SPEI divergence exact
   T6 all-NaN district excluded from a region pool and counted
+  T7 subset criterion: largest-gap core detected; floor extension by
+     stability order exact
 
 Usage:
   python 08_validate_gcm.py --selftest
@@ -296,10 +300,74 @@ def mckee_classes(z: np.ndarray) -> np.ndarray:
     return np.where(np.isfinite(z), out, -1)
 
 
+def select_subset(goodness: dict, models: list, rank_cfg: dict,
+                  iids) -> dict:
+    """Committed subset criterion (config/validation.yaml ranking.
+    subset_criterion): core = models above the largest inter-rank composite
+    gap; extended to the registered floor by reweighting-stability order
+    (Dirichlet weight perturbations, deterministic seed); capped at the
+    registered ceiling and the candidate count. Returns the subset plus the
+    full audit (gaps, inclusion frequencies) for the report."""
+    weights = rank_cfg["metrics"]
+    metric_names = list(weights.keys())
+    w0 = np.array([weights[k] for k in metric_names])
+    crit = rank_cfg["subset_criterion"]
+    lo, hi = (int(x) for x in crit["size_range"])
+    have = [m for m in models if any(m in goodness.get(iid, {})
+                                     for iid in iids)]
+
+    def composite(w: np.ndarray) -> dict:
+        out = {}
+        for m in have:
+            cs = [sum(w[j] * goodness[iid][m][metric_names[j]]
+                      for j in range(len(metric_names)))
+                  for iid in iids if m in goodness[iid]]
+            out[m] = float(np.mean(cs)) if cs else -9e9
+        return out
+
+    base = composite(w0)
+    order = sorted(have, key=lambda m: (-base[m], m))
+    gaps = [base[order[i]] - base[order[i + 1]]
+            for i in range(len(order) - 1)]
+    core = 1
+    if gaps:
+        g_max = max(gaps)
+        core = gaps.index(g_max) + 1          # earliest boundary on ties
+    freq = {}
+    if core < lo:
+        rng = np.random.default_rng(int(crit["stability_seed"]))
+        draws = int(crit["stability_draws"])
+        conc = float(crit["dirichlet_concentration"])
+        for _ in range(draws):
+            c = composite(rng.dirichlet(w0 * conc))
+            for m in sorted(have, key=lambda x: (-c[x], x))[:lo]:
+                freq[m] = freq.get(m, 0) + 1
+        freq = {m: f / draws for m, f in freq.items()}
+        candidates = [m for m in order[core:] if m in freq]
+        candidates.sort(key=lambda m: (-freq.get(m, 0.0), -base[m], m))
+        subset = order[:core] + candidates[:lo - core]
+    else:
+        subset = order[:core]
+    if len(subset) > hi:
+        subset = subset[:hi]
+    return {"subset": subset, "core": core,
+            "core_gap": r6(g_max) if gaps else None,
+            "size_range": [lo, hi],
+            "inclusion_freq_at_floor": {m: r6(freq.get(m, 1.0 if m in subset
+                                                   else 0.0)) for m in have},
+            "base_composites": {m: r6(base[m]) for m in order},
+            "rule": "core = largest inter-rank composite gap; extend to "
+                    "size_range[0] by reweighting-stability order "
+                    "(Dirichlet weight perturbations); cap at "
+                    "size_range[1] and candidate count (see "
+                    "config/validation.yaml ranking.subset_criterion)"}
+
+
 def rank_models(models_z: dict, ref_z: dict, iids, ev_cfg: dict,
                 rank_cfg: dict, years: float) -> tuple:
     """Per-model metrics per iid -> composite (documented weights,
-    min-max normalised across models) -> ranking. Returns (rows, subset)."""
+    min-max normalised across models) -> ranking. Returns (rows, per_iid,
+    goodness) - subset selection is select_subset's job."""
     names = list(models_z.keys())
     per_iid = {}
     for iid in iids:
@@ -416,8 +484,7 @@ def rank_models(models_z: dict, ref_z: dict, iids, ev_cfg: dict,
                               -(rw["composite"] or -9e9)))
     for i, rw in enumerate(rows):
         rw["rank"] = i + 1
-    subset = [rw["model"] for rw in rows[:int(rank_cfg["subset_size"])]]
-    return rows, subset, per_iid
+    return rows, per_iid, goodness
 
 
 # ------------------------------------------------------------------ selftest --
@@ -479,15 +546,19 @@ def selftest() -> int:
     world = {"mA": 0.0, "mB": 1.0, "mC": 2.0, "mD": 4.0}   # |bias| ladder
     models_z = {m: {iid: ref + b for iid in IIDS[:2]} for m, b in world.items()}
     ref_z = {iid: ref for iid in IIDS[:2]}
-    rows, subset, _ = rank_models(models_z, ref_z, IIDS[:2], EV_CFG,
-                                  cfg["ranking"], years)
+    rows, _, goodness = rank_models(models_z, ref_z, IIDS[:2], EV_CFG,
+                                    cfg["ranking"], years)
+    sub = select_subset(goodness, list(world), cfg["ranking"], IIDS[:2])
     order = [rw["model"] for rw in rows]
-    n_sub = min(len(world), int(cfg["ranking"]["subset_size"]))
-    ok = order[0] == "mA" and order[-1] == "mD" and len(subset) == n_sub
+    ok = order[0] == "mA" and order[-1] == "mD" and \
+        len(sub["subset"]) == min(len(world),
+                                  cfg["ranking"]["subset_criterion"]
+                                  ["size_range"][0])
     cl = closeness(1.0, 3.0)
     ok2 = abs(cl - 1.0) < 1e-12 and closeness(3.0, 3.0) == 0.0
     print(f"T4 ranking: order={order} (mA best, mD worst), "
-          f"subset={len(subset)}: {ok}; closeness(1)=1, closeness(3)=0: {ok2}")
+          f"subset={len(sub['subset'])}: {ok}; closeness(1)=1, "
+          f"closeness(3)=0: {ok2}")
     if not (ok and ok2):
         fails.append("T4 ranking broken")
 
@@ -510,10 +581,33 @@ def selftest() -> int:
     if not ok:
         fails.append("T6 region exclusion broken")
 
+    # ---- T7 subset criterion (largest-gap core + stability extension) ------
+    mnames = [f"m{k:02d}" for k in range(1, 13)]
+
+    def mk_goodness(top_n):
+        g = {}
+        for iid in IIDS[:2]:
+            g[iid] = {m: {k: (1.0 if int(m[1:]) <= top_n else 0.0)
+                          for k in cfg["ranking"]["metrics"]} for m in mnames}
+        return g
+
+    sub_a = select_subset(mk_goodness(9), mnames, cfg["ranking"], IIDS[:2])
+    ok = sub_a["core"] == 9 and sub_a["subset"] == mnames[:9]
+    sub_b = select_subset(mk_goodness(6), mnames, cfg["ranking"], IIDS[:2])
+    ok2 = sub_b["core"] == 6 and len(sub_b["subset"]) == \
+        cfg["ranking"]["subset_criterion"]["size_range"][0] and \
+        sub_b["subset"][:6] == mnames[:6]
+    print(f"T7 subset: gap-core 9 -> {sub_a['core']}/"
+          f"{len(sub_a['subset'])} (expect 9/9): {ok}; core 6 below floor "
+          f"-> extended to {len(sub_b['subset'])} = {sub_b['subset']} "
+          f"(expect 8, m01..m06 + most-stable plateau): {ok2}")
+    if not (ok and ok2):
+        fails.append("T7 subset criterion broken")
+
     if fails:
         print(f"SELFTEST FAIL ({len(fails)}): {fails}")
         return 1
-    print("SELFTEST PASS (T1, T2, T3, T4, T5, T6)")
+    print("SELFTEST PASS (T1, T2, T3, T4, T5, T6, T7)")
     return 0
 
 
@@ -769,8 +863,10 @@ def main() -> int:
 
     # ------------- gate 3: per-model ranking ------------------------------
     print("[3/5] per-model ranking (composite, documented weights)")
-    rows, subset, per_iid = rank_models(models_z, ref_z, IIDS, EV_CFG,
-                                        cfg["ranking"], float(years))
+    rows, per_iid, goodness = rank_models(models_z, ref_z, IIDS, EV_CFG,
+                                          cfg["ranking"], float(years))
+    sub = select_subset(goodness, models, cfg["ranking"], IIDS)
+    subset = sub["subset"]
     # seasonal detail for detail_seasons
     detail = {}
     for sname in cfg["ranking"]["detail_seasons"]:
@@ -789,7 +885,8 @@ def main() -> int:
                     "pearson_r": r6(r), "abs_bias": r6(abs(x.mean() - y.mean())),
                     "rmsd": r6(float(np.sqrt(((x - y) ** 2).mean()))),
                     "n_pairs": n}
-    gates["ranking"] = {"pass": True, "rows": rows, "seasonal_detail": detail}
+    gates["ranking"] = {"pass": True, "rows": rows, "seasonal_detail": detail,
+                        "subset": sub}
 
     # ------------- gate 4: SPI-SPEI divergence (reported, no gate) --------
     print("[4/5] SPI-SPEI divergence (reported, no gate)")
@@ -882,15 +979,20 @@ def main() -> int:
     rep_path.write_text(json.dumps(report, indent=2, default=str,
                                    ensure_ascii=False), encoding="utf-8")
 
-    best = {"schema": "die-best-subset/1.0", "seed": SEED,
+    best = {"schema": "die-best-subset/1.1", "seed": SEED,
             "window": [y_lo, y_hi], "n_candidates": len(models),
-            "subset_size": cfg["ranking"]["subset_size"],
+            "criterion": cfg["ranking"]["subset_criterion"],
+            "criterion_rule": sub["rule"],
+            "core_size": sub["core"], "core_gap": sub["core_gap"],
+            "inclusion_freq_at_floor": sub["inclusion_freq_at_floor"],
             "weights_verbatim": cfg["ranking"]["metrics"],
             "closeness_cap_ratio": cfg["ranking"]["closeness_cap_ratio"],
             "method": "composite rank (8 metrics, min-max normalised across "
                       "models per indicator, mean over indicators); "
                       "free-running decorrelation caveat documented in "
-                      "config/validation.yaml",
+                      "config/validation.yaml; subset size = committed "
+                      "stability criterion (largest-gap core extended to "
+                      "the registered floor), NOT a fixed count",
             "subset": subset,
             "ranking": [{"rank": rw["rank"], "model": rw["model"],
                          "composite": rw["composite"]} for rw in rows]}
