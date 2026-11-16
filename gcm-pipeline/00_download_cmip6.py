@@ -228,21 +228,29 @@ def audit_mode(args, raw_root: Path, work_root: Path, models_cfg: list) -> None:
 
 # ------------------------------------------------------------------ pangeo ---
 def pangeo_catalog(work_root: Path) -> list:
-    """Fetch + cache the Pangeo CMIP6 catalog (one static JSON). Returns the
-    list-of-dicts rows. Cached to work/pangeo-cmip6.json for the day."""
+    """Fetch + cache the Pangeo CMIP6 catalog. The top-level JSON is an ESM
+    catalog SPEC; the actual rows live in its `catalog_file` CSV (one row per
+    zarr store, attribute columns included). Cached to work/ for the day."""
     cache = work_root / "pangeo-cmip6.json"
     if cache.exists() and time.time() - cache.stat().st_mtime < 86400:
         with open(cache, encoding="utf-8") as fh:
             return json.load(fh)
+    import csv as _csv
+    import io
     import requests
-    print(f"  fetching Pangeo catalog: {PANGEO_CATALOG_URL}")
-    r = requests.get(PANGEO_CATALOG_URL, timeout=300)
+    print(f"  fetching Pangeo catalog spec: {PANGEO_CATALOG_URL}")
+    spec = requests.get(PANGEO_CATALOG_URL, timeout=300)
+    spec.raise_for_status()
+    catalog_file = spec.json().get("catalog_file")
+    if not catalog_file:
+        sys.exit("FATAL: Pangeo catalog spec has no catalog_file key")
+    print(f"  fetching catalog table: {catalog_file}")
+    r = requests.get(catalog_file, timeout=600)
     r.raise_for_status()
-    doc = r.json()
-    rows = doc["catalog_entry"] if "catalog_entry" in doc else doc
+    rows = list(_csv.DictReader(io.StringIO(r.text)))
     with open(cache, "w", encoding="utf-8") as fh:
         json.dump(rows, fh)
-    print(f"  catalog cached: {len(rows)} entries -> {cache.name}")
+    print(f"  catalog cached: {len(rows)} zarr stores -> {cache.name}")
     return rows
 
 
@@ -397,15 +405,14 @@ def build_plan(args, raw_root: Path, work_root: Path, models_cfg: list,
                     print(f"  {model:18s} {exp:10s} {var:7s} already on disk")
                     continue
                 if rows is not None:
-                    dr = avail[0].get("date_range", "?")
+                    ver = avail[0].get("version", "?")
                     plan_items.append({
                         "model": model, "exp": exp, "var": var,
                         "action": "pangeo-subset", "years": want,
-                        "zstore": avail[0]["zstore"], "date_range": dr,
-                        "version": avail[0].get("version"),
+                        "zstore": avail[0]["zstore"], "version": ver,
                         "bbox": bbox})
                     print(f"  {model:18s} {exp:10s} {var:7s} {len(want):3d} yr "
-                          f"({want[0]}-{want[-1]}) zarr {dr}")
+                          f"({want[0]}-{want[-1]}) zarr v{ver}")
                 else:
                     per_year = {}
                     for a in avail:
