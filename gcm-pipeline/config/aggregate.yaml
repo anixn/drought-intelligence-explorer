@@ -1,0 +1,36 @@
+# DIE v2.0 - gcm-pipeline step 06 aggregation parameters (task M2.9).
+#
+# Amendment (docs/v2/06 section 2, M2.9): every district whose aggregation
+# rests on <= 2 grid cells is published as a `flag` value + downloadable CSV
+# (sub_pixel_flags.csv) so users can filter them out.
+#
+# Geometry core has NO shapely/geopandas dependency: Sutherland-Hodgman
+# clipping of district rings against the (convex) 0.25-deg cell rectangles in
+# lon/lat, ring areas by shoelace after pyproj transform to the v1.0 LAEA
+# equal-area projection (data-pipeline/prepare_boundaries.py AREA_PROJ4,
+# reused verbatim - R1).
+
+district_aggregation:
+  boundaries_geojson: "../data/boundaries/india_districts.geojson"   # 724 features
+  registry_csv: "../data/districts.csv"                              # ids + LAEA registry areas
+  area_proj4: "+proj=laea +lat_0=22.5 +lon_0=79.5 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+  weights: "area_overlap"        # w_cell = overlap area / district area (sums to 1)
+
+  # v1.0 buffer-fallback semantics, transposed to a 0.25-deg grid: v1.0
+  # expanded a buffer (6/16/16/2 km by source) until reduceRegions captured
+  # >= 1 source pixel. Here: a district whose geometry intersects NO grid
+  # cell (sub-pixel island/edge cases) captures the NEAREST cell centre with
+  # weight 1.0, and the capture distance is recorded. All fallback districts
+  # are flagged (they rest on exactly 1 cell by construction).
+  # PROVISIONAL implementation choice 2026-11-16 - recorded in the decision
+  # register (open decision O-06a); nearest-centre == "buffer until capture"
+  # with the minimal buffer radius, deterministic, and flagged in output.
+  buffer_fallback:
+    max_km: 30                   # > half a cell diagonal (~19 km); beyond this
+                                 # the district is treated as outside_domain
+  sub_pixel_flag_threshold: 2    # n_cells <= 2 -> flag = 1 (amendment M2.9)
+
+  outputs:
+    weights_manifest: "work/aggregate/weights.json"          # per-district weights + provenance
+    sub_pixel_flags_csv: "work/aggregate/sub_pixel_flags.csv"
+    district_dir: "work/aggregate"                           # <...>/<model>/<tag>/<iid>_districts_<period>.nc
