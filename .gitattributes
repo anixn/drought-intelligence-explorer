@@ -1,0 +1,22 @@
+# DIE v2.0 - line-ending policy (added while fixing CI regression-harness
+# failures, 2026-11-16). The regression baseline (scripts/
+# regression_baseline.json) checksums shipped data files byte-for-byte; a
+# Windows worktree checked out with core.autocrlf=true differs byte-wise from
+# the same content on Linux (CRLF vs LF), which broke the ubuntu CI run.
+# Forcing LF for all text files makes every platform's checkout
+# byte-identical, so checksums are stable. Binary formats are marked binary
+# explicitly (git would auto-detect them, but be explicit for safety).
+* text=auto eol=lf
+*.parquet binary
+*.pmtiles binary
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.zip binary
+*.gz binary
+*.nc binary
