@@ -1,0 +1,22 @@
+# DIE v2.0 - gcm-pipeline step 07 ensemble parameters (task M2.10).
+#
+# Exact definitions fixed per docs/v2/03 section 3.7 and printed VERBATIM
+# into the output manifest; the UI must render them as tooltips (docs/v2/04
+# section 4.2). Never show a single model; never hide disagreement behind a
+# mean (C5). n is the count of AVAILABLE models per district-month - never
+# assumed 24 (honest-ensemble X3: the historical-corrected product carries
+# n = 22; SSP products are subset-gated by 08 -> best_subset.yaml).
+
+ensemble:
+  # quantile method (numpy): linear interpolation between order statistics
+  quantile_method: "linear"
+  # agreement thresholds on the standardised index scale
+  agreement_moderate_threshold: -1.0    # fraction of models <= -1.0 (moderate)
+  agreement_severe_threshold: -1.5      # fraction of models <= -1.5 (severe)
+  # direction-of-change agreement (per window; ssp mode only):
+  dir_agreement_window: [2081, 2100]    # future window mean
+  dir_agreement_base: [1981, 2020]      # vs base-period mean (per model's own
+                                        # base record in historical mode)
+  # dir_agreement_drier = fraction of models whose window mean is drier
+  # (lower z) than their base mean. Not applicable in historical-corrected
+  # mode (no future window) - recorded as null in that manifest.
