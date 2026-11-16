@@ -44,3 +44,31 @@
 ## 4. Explicit non-goals (unchanged)
 
 Nothing here pulls hydrological modelling, operational warning, ML-without-a-question, or composite-default indices into scope; era seams still are never spliced; fixtures never ship; pending Owner runs stay marked pending, never filled with synthetic values.
+
+---
+
+## 5. External-review adoption (2026-11-16) — strategic memo triage
+
+Source: Owner-supplied external review memo (`suggestions.md`, DeepSeek strategic session spec, 2026-11-15). Owner instruction: evaluate, adopt what is valid, amend the plan. Every point below is cross-referenced against the committed roadmap/registers; points NOT adopted are listed with reasons — nothing is adopted silently.
+
+### Adopted (binding)
+
+| ID | Adoption | Where it lands |
+|---|---|---|
+| **X1** | **Build-order constraint, not renumbering:** the `#crossval` panel (M6.6) must pass its gate **before** any projections surface ships (M5.2+). Development of the projections tab against `FIXTURE — SYNTHETIC` fixtures may proceed in parallel, but nothing under `#projections` goes live before `#crossval` is live. Evidence precedes interface. | `02-roadmap-milestones.md` M5 header note + PROGRESS.md build order |
+| **X2** | **Agreement-first default in `#projections`:** the DEFAULT choropleth is the agreement fraction (models ≤ −1.0, then ≤ −1.5), with median + 25–75 % band as the secondary toggle — reversing the earlier median-default plan. Hover tooltip: median, p25, p75, agreement, model count n (shown honestly, see X3). | M5.3/M5.4 amended |
+| **X3** | **Banner-count honesty:** M5.7's projection banner must state the ACTUAL ensemble size (best-subset n from `08_validate_gcm.py`, 8–12 models) — the memo's suggested "Projections from 24 CMIP6 models" copy is REJECTED as inconsistent with the ranking-before-SSP policy (n=22 effective at best; never labelled "24"). | M5.7 amended |
+| **X4** | **E16 → Tier 1, scoped:** PET-method sensitivity (Hargreaves vs ERA5-Land PET over 1981–2020) — computable from data already in hand (IMD/ERA5-Land temperature), requires NO new CMIP6 daily variables. The Penman–Monteith GCM-side variant needs `huss`/`rlds` daily downloads and stays an OPTIONAL sensitivity extension, not a Tier-1 requirement. | backlog tier flip + scope note |
+| **X5** | **E17 → Tier 1:** era B ↔ era C seam panel — corrected model-historical (1981–2014) vs observed era B over the overlap, added to `#crossval` as a second seam. Cheap (reuses step-03 outputs), directly serves seam honesty. | backlog tier flip |
+| **X6** | **Era-metadata exports:** every v2 export (CSV + Parquet bundle + Engine Lab results) MUST carry `era`, `source`, `base_period`, `pet_method`, `seam_note` in its reproducibility header; a regression-harness check fails any export missing them (v1.0 headers extended, not replaced). | M7.1 amended + `scripts/regression_check.py` extension task |
+| **X7** | **`seam_uncertainty` metric:** per district, the SD of (era A − era B) SPEI-12 over the 1981–2020 overlap, computed once at cross-validation time and stored alongside the projections store; surfaced in projection tooltips as "Historical seam uncertainty: ±X SPEI units". Converts the unfixable A/B seam from a hidden assumption into a displayed uncertainty. | new task M6.8 |
+| **X8** | **IMD temperature 1951 constraint stated everywhere it matters:** IMD gridded tmax/tmin begin 1951 — the IMD validation comparison is restricted to 1951 onward, and both the validation memo (M4.4) and the in-app methodology page must state that the pre-1951 era A temperature basis is the Atlas reconstruction, not IMD. Era A is NOT truncated to 1951. | M4.3/M4.4 note + validation-studies spec |
+| **X9** | **gcm-pipeline write-safety convention (made explicit):** steps 00–08 write ONLY under `gcm-pipeline/work/` (never `data/`, never `out/`); only `09_export_parquet.py` writes to `out/` → `data/parquet/projections/`, and only after the step-08 gate. Each script gains `--dry-run` writing to `work/test-output/`. `selftest_gcm.py` (M2.13) proves the whole chain 00→09 on a synthetic world with deterministic output. | docs/v2/03 §3.1 convention note (already implicit; now binding) |
+
+### Rejected or already-covered (recorded, not adopted)
+
+- "Era A 1901–2021" — the platform window stays 1901–2025 **pending Atlas v2 verification** (OD4); no change.
+- Banner copy "24 models" — rejected by X3 above (conflicts with recorded ensemble-honesty policy).
+- QDM identity/trend-preservation tests, no-splice rules, fixture labelling, frozen era-B science, "agreement definitions in tooltips" — already binding (docs/v2/03 §3.5, R1–R3, M5.4); no amendment needed.
+- M6.5 historical-event anchoring (1918, 1965, 1972, 1987, 2002) — already a roadmap task verbatim; the memo's acceptance criterion is the same gate.
+- Wholesale M5/M6 renumbering — rejected in favour of the X1 sequencing constraint (same effect, no churn, task IDs stay stable).

@@ -79,7 +79,7 @@ Added by the Owner's amendments memo; tracked with the same one-task-per-session
 | E14 | Future drought event analytics (era C): frozen v1.0 event machinery over validated era C products; frequency/duration/severity per window (2026–2040 / 2041–2060 / 2081–2100) vs observed 1981–2020 baseline per district; fourth view in `#projections` | 1 (candidate, **[Owner: confirm]** — OD9) | 5 | M | E05 real data | Reuses event machinery; never run on fixtures for public numbers; ensemble-median-based windows with agreement reported alongside |
 | E15 | People-in-drought, static exposure: projected drought-month counts × Census/WorldPop population ("X million people in moderate-or-worse drought months per year by 2050/2100") | 2 | 4 | S | E05; population grid verified (licence) | Static exposure only; hazard and exposure never conflated (register safeguard 5); minimal version of F05 promoted forward |
 | E16 | PET-method sensitivity study: Hargreaves (committed C3) vs ERA5-Land PET vs a Penman–Monteith variant (`huss`, `rlds`, `sfcWind` — availability-checked in 01_inventory_check.py; run only where supplied) on 1981–2020, best-subset models; validation-study memo + methodology v2 uncertainty statement quantifying the era B↔C PET seam | 2 **[Owner: compute]** | 4 | M | M2 framework; IMD/ERA5-Land reference | Never changes the committed default (C3); sensitivity only — OD10 |
-| E17 | Era B ↔ era C cross-validation panel: corrected-model-historical (1981–2014) vs observed era B over the overlap, symmetric to the Atlas↔Observed panel (r, bias, class agreement, event match, discrepancy map) | 2 | 4 | S | M2.8 outputs | Reuses crossval schema; add `era` column or second partition file; the 2025/2026 seam gets the same treatment as the 1901/1981 seam |
+| E17 | Era B ↔ era C cross-validation panel: corrected-model-historical (1981–2014) vs observed era B over the overlap, symmetric to the Atlas↔Observed panel (r, bias, class agreement, event match, discrepancy map) | **1** (X5) | 4 | S | M2.8 outputs | Reuses crossval schema; add `era` column or second partition file; the 2025/2026 seam gets the same treatment as the 1901/1981 seam |
 | E18 | Flash drought + compound drought–heat detection (era B first, era C if it holds up). Flash: one documented rapid-intensification definition picked and registered (Ford/Otkin-style). Compound: joint SPI/SPEI + Tmax extremes same month, lag-0 dependence noted | 2 | 4 | M | — | Definition fixed in code + methodology page before any map ships — OD11; absorbs Tier 3 F08 |
 | O13 | Alternate-reference QDM sensitivity product: QDM chain with CHIRPS/ERA5-Land reference (register D) alongside IMD-primary; divergence as downloadable sensitivity product + methodology paragraph | 2 **[Owner: compute]** | 3 | M (Owner) | M2 chain | Schema unchanged; `reference_id` column or parallel partition root |
 | O14 | Standardisation-baseline sensitivity for era C: fixed 1981–2020 (C2) vs rolling/era-specific baseline on a subset — separates climate signal from baseline-definition effect | 3 | 3 | S | E14 optional | One memo section; not a UI default |
@@ -161,22 +161,23 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 | M4.1 | `validation-studies/imd/` acquisition scripts: IMD 0.25° daily rainfall → monthly (Pai et al. 2014 product); IMD temperature product (verify current resolution/version, record in register) | Owner-run download succeeds; grid metadata recorded |
 | M4.2 | IMD-SPI/SPEI computation reusing `indicators.py` (same gates, same reference window 1981–2020) | fit-report parity with era B machinery |
 | M4.3 | Comparison framework: correlation, bias, RMSD, drought-class agreement, event match — by season and region; BH-FDR trend-map view (**mandatory, amendment 06 §2 — not optional**) | metrics table generated from Owner-run outputs |
-| M4.4 | Validation memo template + methodology page v2 section; discrepancies published | memo drafted with real numbers (Owner-gated) |
+| M4.4 | Validation memo template + methodology page v2 section; discrepancies published; **explicit statement (X8): IMD temperature begins 1951 — comparison restricted to 1951– onwards, pre-1951 era A temperature basis is the Atlas reconstruction** | memo drafted with real numbers (Owner-gated) |
 
 **Exit gate M4:** validation memo exists with real IMD comparison numbers, or the memo ships with the flagged "pending Owner run" sections clearly marked (never with synthetic values).
 
-### M5 — Future Projections workspace (E05, E13)
+### M5 - Future Projections workspace (E05, E13)
+**Build-order constraint (amendment 06 §5 X1):** `#crossval` (M6.6) gates ANY projections surface going live; fixture-based development may proceed in parallel. Default view is AGREEMENT, not median (X2); banner states the honest ensemble n, never "24 models" (X3).
 *Suggested: Feb–Mar 2027. Depends on: M2 (fixtures for build; real data for ship), M1 engine.*
 
 | Task | Content | Gate |
 |---|---|---|
 | M5.1 | Era C fixture generation (`data/fixtures/`, labelled synthetic, realistic schema) | fixtures carry `FIXTURE — SYNTHETIC` banner end to end |
 | M5.2 | `#projections` tab skeleton: era toggle wiring, scenario switch, variable/timescale selector | zero console errors; mobile drawer OK |
-| M5.3 | Ensemble band chart (median + 25–75 %), district time-series, choropleth of ensemble stat per month/year | queries via engine < 150 ms cold |
-| M5.4 | Agreement layer (fraction of models ≤ −1.0 / ≤ −1.5; direction-of-change map) with exact definitions in tooltips | definitions text matches 07_ensemble_stats output |
+| M5.3 | Ensemble band chart (median + 25–75 %), district time-series, choropleth of ensemble stat per month/year — **choropleth DEFAULT = agreement fraction (X2); median is the secondary toggle** | queries via engine < 150 ms cold |
+| M5.4 | Agreement layer (fraction of models ≤ −1.0 / ≤ −1.5; direction-of-change map) with exact definitions + per-district seam_uncertainty (X7) in tooltips; agreement-first default (X2) | definitions text matches 07_ensemble_stats output |
 | M5.5 | Model ranking panel (from `08_validate_gcm.py` outputs; multi-metric, best-subset selectable) | no single-metric ranking |
 | M5.6 | SPI–SPEI divergence map + copy ("Rainfall alone does not decide India's drought future; demand does half the work.") | divergence computed from shipped products only |
-| M5.7 | Projection banner ("Projections from 24 CMIP6 models. Median shown with 25–75 % range. Model disagreement is the finding."); era labels; no-splice rules | banner present on every era C surface |
+| M5.7 | Projection banner (**honest ensemble n from best_subset — amendment X3: the memo's "24 models" copy is rejected**; median shown with 25–75 % range; model disagreement is the finding); era labels; no-splice rules | banner present on every era C surface |
 | M5.8 | **E14 future drought event analytics** (amendment 06 §2): frozen event machinery on validated era C; frequency/duration/severity per window vs 1981–2020 baseline; fourth view in `#projections`. Tier-1 entry gated on **OD9 (Owner confirmation)** | runs only on real era C data past the release gate |
 
 **Exit gate M5 (ship gate):** tab verified on **real Owner-produced era C data** after `08_validate_gcm.py` passes (CMIP6 release gate in register §6). Until then the tab may exist in `v2-dev` behind a flag with fixtures, never on the live site.
@@ -193,6 +194,7 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 | M6.5 | Historical-event anchoring: 1918, 1965, 1972, 1987, 2002 identifiable | events reproduce against Atlas documentation |
 | M6.6 | Cross-validation panel `#crossval`: era A vs era B, 1981–2020 overlap (r, bias, class agreement, event match rate, discrepancy map) | table + map render; discrepancies visible |
 | M6.7 | Era A tab initially district-level; tehsil layer (O01) only after boundary-source verification | boundary decision recorded |
+| M6.8 | **seam_uncertainty (X7):** per district, SD of (era A − era B) SPEI-12 over the 1981–2020 overlap, computed once at cross-validation, stored with the projections store, surfaced in projection tooltips as "±X SPEI units" | column present; tooltip copy matches computed value |
 
 **Exit gate M6:** Atlas era live with era labels; cross-validation published; known events identifiable.
 
@@ -201,7 +203,7 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 
 | Task | Content | Gate |
 |---|---|---|
-| M7.1 | Download portal: versioned Parquet + CSV bundles generated from catalog, schema docs, checksums | files identical to dashboard-served |
+| M7.1 | Download portal: versioned Parquet + CSV bundles generated from catalog, schema docs, checksums; **every bundle + export carries era/source/base_period/pet_method/seam_note headers (X6) with a regression check** | files identical to dashboard-served |
 | M7.2 | CITATION.cff update + Zenodo v2.0.0 deposit + DOI + citation line | DOI resolves |
 | M7.3 | Mobile + WCAG 2.1 AA pass; permalink hardening; Engine Lab polish | checklist in 04 §7 green |
 | M7.4 | Methodology page v2 complete; changelog; release notes; version-history panel updated | no leftover placeholders |
