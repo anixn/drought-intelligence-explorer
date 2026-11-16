@@ -1,0 +1,120 @@
+# DIE v2.0 — gcm-pipeline validation parameters (task M2.11, docs/v2/03 §3.8
+# + amendment M2.11 tail checks). Every tolerance, weight and threshold here
+# is a declared science parameter: printed VERBATIM into the validation
+# report so the gate is auditable. Never hard-code these in code.
+
+validation:
+  # shared analysis window: models are corrected-historical 1981-2014; the
+  # IMD-anchored reference (base 1981-2020, C2) is sliced to the same months
+  window: [1981, 2014]
+
+  # ------------------------------------------------------------------ basis --
+  # REMEDIATION ROUND 1 (2026-11-16, recorded in PROGRESS.md): the gate
+  # COMPARED THE WRONG QUANTITY first - the ensemble MEDIAN against the
+  # reference. A median of 22 free-running standardised models concentrates
+  # by construction (measured sd 0.288 vs reference 0.92-1.00, M2.10), so
+  # median-vs-observed distributional gates fail mathematically, not
+  # scientifically. The gate basis is therefore the POOLED MULTI-MODEL
+  # distribution (all corrected models' district-months pooled; events
+  # pooled across models) - this is what tests the QDM correction. The
+  # ensemble-median comparison is still COMPUTED and REPORTED (flagged
+  # "concentrated by construction") so nothing is hidden (R2/C5).
+  gate_basis: pooled_multi_model
+
+  # ---------------------------------------------------------------- regions --
+  # Regions = states/UTs of the 724-district registry (data/districts.csv
+  # state_name), plus the implicit "national" pool. Districts whose reference
+  # series is entirely NaN (IMD ocean mask: Nicobars, N&M Andaman, S Andaman,
+  # Lakshadweep) are EXCLUDED from pools and reported - never silently kept.
+
+  # ---------------------------------------------------------------- seasons --
+  # Verbatim from data/metadata.json "seasons" (v1.0 contract; do not alter).
+  seasons:
+    all:      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    cold:     [1, 2]
+    pre_monsoon:  [3, 4, 5]
+    sw_monsoon:   [6, 7, 8, 9]
+    post_monsoon: [10, 11, 12]
+
+  # ------------------------------------------- gate 1: consistency (means) --
+  # Pooled ensemble-median vs reference district-months per (region, season,
+  # indicator): mean difference on the z scale and sd ratio.
+  consistency:
+    mean_abs_tol: 0.25          # |mean_ens - mean_ref| <= 0.25 (register §6)
+    sd_ratio_range: [0.70, 1.40]
+    # national breach on ANY (iid, season) -> FAIL
+    national_breach_fails: true
+    # regional breach fraction across (region, iid, season) cells exceeding
+    # this -> FAIL (island/empty regions excluded from the denominator)
+    region_breach_frac_fail: 0.20
+
+  # ------------------------------- gate 2: drought statistics (v1.0 events) --
+  # Runs analysis reused verbatim (Yevjevich 1967; tau, min duration and
+  # censoring exactly as v1.0 - the same rules the UI serves). Ensemble
+  # MEDIAN series vs reference series; complete (non-censored) events.
+  events:
+    truncation: -1.0            # v1.0: upper bound of the moderate class
+    min_duration: 3             # months
+    freq_ratio_range: [0.5, 2.0]        # complete events per district-year
+    duration_ratio_range: [0.5, 2.0]    # mean duration of complete events
+    severity_ratio_range: [0.5, 2.0]    # mean severity (sum deficit) events
+    national_breach_fails: true
+    region_breach_frac_fail: 0.25
+
+  # ------------------------------------- gate 3: dry tails (amendment) --
+  # Amendment M2.11: Q-Q + p90/p95 drought tails by region/season; the gate
+  # FAILS on a declared tail breach. Tail = lower-tail z quantiles (the
+  # drought side): q10 = z at p10, q05 = z at p05 of the pooled distribution;
+  # ratio = |q_ens| / |q_ref| per (region, season, iid).
+  tails:
+    quantiles: [0.10, 0.05]     # lower-tail probabilities checked
+    ratio_range: [0.75, 1.33]
+    qq_levels: [0.01, 0.02, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50]  # stored Q-Q
+    national_breach_fails: true
+    region_breach_frac_fail: 0.25
+
+  # ------------------------- gate 4: SPI-SPEI divergence (reported, no gate) --
+  # mean(SPI z) - mean(SPEI z) pooled per (region, season), ensemble vs
+  # reference. This is the warming/PET fingerprint the UI must present
+  # (docs/v2/03 §3.8 check 4) - quantified and shipped, never gated away.
+  divergence:
+    reported_only: true
+
+  # ------------------------------------------------- per-model ranking (3) --
+  # Metrics per model per indicator vs the reference (pooled national;
+  # seasonal detail stored per metric). Composite = mean over indicators of
+  # the weighted sum of cross-model min-max-normalised goodness scores.
+  # No single-metric ranking (docs/v2/03 §3.8).
+  #
+  # WEIGHT RATIONALE (documented, auditable): the corrected-historical models
+  # are FREE-RUNNING - their month-to-month anomalies are not expected to
+  # synchronise with observed weather, so temporal-synchrony metrics
+  # (pearson_r, class_agreement) carry mostly noise (measured r ~ 0 for
+  # ACCESS-CM2, M2.8 verification). The composite therefore weights
+  # distributional + spatial fidelity (bias, RMSD, drought-statistic ratios,
+  # spatial drought-proneness pattern) - metrics that are meaningful under
+  # decorrelation - above temporal synchrony. All eight metrics are still
+  # computed and shipped in ranking.csv so any weighting can be re-audited.
+  ranking:
+    metrics:
+      pearson_r:        0.10    # temporal synchrony (decorrelation-caveated)
+      abs_bias:         0.15    # |mean_model - mean_ref| (z scale)
+      rmsd:             0.15    # pooled district-month RMSE (z scale)
+      class_agreement:  0.10    # same McKee 9-class fraction (caveated)
+      freq_ratio:       0.15    # drought frequency fidelity (event machinery)
+      duration_ratio:   0.10    # mean-duration fidelity
+      severity_ratio:   0.10    # mean-severity fidelity
+      spatial_r:        0.15    # per-district drought-month fraction pattern
+    # ratio metrics are mapped to closeness first:
+    #   closeness = max(0, 1 - |ln(ratio)| / ln(closeness_cap_ratio))
+    closeness_cap_ratio: 3.0
+    # subset size committed range 8-12 (docs/v2/03 §3.8); default 10
+    subset_size: 10
+    # seasonal detail stored for these seasons (all is the composite basis)
+    detail_seasons: [sw_monsoon]
+
+  # ------------------------------------------------------------- reporting --
+  report:
+    # clip counts / fit reports / missing-month tables are pulled from the
+    # step-05 manifest and the aggregate weights report into validation_report
+    include_fit_reports: true
