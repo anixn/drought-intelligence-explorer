@@ -51,6 +51,20 @@ reference:
   # method seam between eras is documented in methodology v2 — never bridged
   # silently (register resolution E).
 
+pet:
+  # Hargreaves–Samani (1985) as committed by C3 — parameters are science, they
+  # live here, never as hidden constants in code (AGENTS.md §8).
+  method: "hargreaves-samani-1985"
+  equation: "PET_mm_day = Ch * Ra * (Tmean + To) * sqrt(max(Tmax - Tmin, 0))"
+  coefficient_ch: 0.0023                 # Hargreaves–Samani empirical coefficient
+  coefficient_temp_offset: 17.8          # To (degC)
+  latent_heat_mj_per_kg: 2.45            # MJ/kg at ~20-30 degC (FAO-56 eq 1-2 range)
+  solar_constant_mj_m2_min: 0.0820       # FAO-56 Gsc
+  ra_mid_month_day_rule: "Ra evaluated at the mid-month day (day = round(days_in_month/2)) on the proleptic-Gregorian axis; monthly PET = daily estimate * days_in_month"
+  guards:
+    negative_pet: "clip at 0, count reported (possible only if Tmean < -17.8 degC)"
+    tmax_lt_tmin: "PET = NaN, count reported (physically invalid month; R10 absent, never imputed)"
+
 qa:
   bounds_era_c: [-5, 5]        # register resolution G/K — clip counts reported
   bounds_era_b: [-4, 4]        # released record — untouched
