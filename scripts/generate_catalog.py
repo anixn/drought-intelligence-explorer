@@ -108,6 +108,35 @@ def build() -> dict:
     return catalog
 
 
+def apply_projections(catalog: dict, info: dict) -> None:
+    """Fill the projections era block (step 09 publish, task M2.12).
+
+    info: {"label": str, "years": [y0, y1] or None,
+           "files": {scenario: {stat: {variable: [relative paths]}}}}
+    Catalog contract (docs/v2/03 s8.2): variable.files.projections =
+    {scenario: {stat: [paths]}} - a structured extension of the s8.2
+    example (scenario->path-list), provisional until the M5 era-C surfaces
+    consume it. Paths are repo-relative and exact (no globbing).
+    """
+    from collections import OrderedDict as _OD
+    era = catalog["eras"]["projections"]
+    era["label"] = info["label"]
+    era["available"] = True
+    if info.get("years"):
+        era["years"] = info["years"]
+    files_by_var: dict = {}
+    for scenario, stats in info["files"].items():
+        for stat, variables in stats.items():
+            for var_id, paths in variables.items():
+                files_by_var.setdefault(var_id, _OD()).setdefault(
+                    scenario, _OD())[stat] = paths
+    for var in catalog["variables"]:
+        if var["id"] in files_by_var:
+            var["files"]["projections"] = files_by_var[var["id"]]
+            if "projections" not in var["eras"]:
+                var["eras"].append("projections")
+
+
 def validate(catalog: dict) -> list[str]:
     """Paths the UI can query (available eras' files + national) must exist on
     disk. Unavailable eras expose no files, so their directory absence is fine."""

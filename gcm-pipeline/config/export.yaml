@@ -1,0 +1,88 @@
+# DIE v2.0 - gcm-pipeline step 09 export parameters (task M2.12, docs/v2/03
+# section 3.9). Every path layout, label and gate here is a declared
+# parameter: printed VERBATIM into the export manifest. Never hard-code in
+# code.
+#
+# X9 write-safety (docs/v2/06 section 5, binding): step 09 is the ONLY
+# gcm-pipeline step allowed to write outside work/ - it stages into
+# gcm-pipeline/out/ and (publish only) copies into data/parquet/projections/
+# - and publish is gated on a PASSING step-08 run in the same mode (X1:
+# cross-validation gates projections going live).
+
+export:
+
+  # ------------------------------------------------------------ layout ----
+  # Hive-style year partitions; every file must be <= max_file_bytes.
+  # Ensemble stats come from 07; per-model "members" from 06 (committed
+  # subset only, so the UI can show per-model spread alongside the median -
+  # X2/X3: never the median alone).
+  partition_layout: >-
+    projections/scenario=<scenario>/stat=<stat>/variable=<variable>[/model=<model>]/year=<yyyy>/part-0.parquet
+  partition_file: "part-0.parquet"
+
+  # ------------------------------------------------------------- schema ----
+  # Same contract as the era-B converter (docs/v2/03 s8.1): district_id
+  # dictionary<string>, year int16, month int8, value float32; missing cells
+  # are ABSENT rows (R10). model_id (string) only on per-model partitions.
+  # n_models is a count exported in the float32 value column for schema
+  # uniformity (documented; UI casts back).
+  row_group: single            # year partitions are small (724 x 12 rows)
+
+  # -------------------------------------------------------------- stats ----
+  # Key = stat name in partition paths; value = variable name inside the
+  # step-07 ensemble NC (or "members" = per-model step-06 files).
+  # dir_agreement_drier is PENDING: step 07 computes it but does not yet
+  # write it in ssp mode (base 1981-2020 vs window; needs the AS6 seam).
+  # It is declared here so the ssp-mode export fails LOUDLY, not silently,
+  # until 07 emits it.
+  stats:
+    median: "median"
+    p25: "p25"
+    p75: "p75"
+    agreement_moderate: "agreement_moderate"
+    agreement_severe: "agreement_severe"
+    n_models: "n_models"
+    # dir_agreement_drier: "dir_agreement_drier"   # uncomment when 07 emits it
+
+  per_model:
+    enabled: true
+    stat_name: "members"
+    models_source: best_subset     # work/validation/best_subset.yaml subset
+
+  # --------------------------------------------------------------- gates ----
+  max_file_bytes: 524288           # ~0.5 MB per partition file (spec 3.9)
+
+  publish:                         # ssp mode only (X1 gate)
+    requires_ssp_gate_pass: true   # work/validation/validation_report.json
+                                   # mode == ssp AND every gate .pass true
+    targets:
+      parquet: "data/parquet/projections"
+      catalog: "data/parquet/catalog.json"
+      pipeline_manifest: "data/pipeline_manifest.json"
+      metadata: "data/metadata.json"
+
+  # --------------------------------------------------- validation products ----
+  # historical-corrected mode copies these from work/validation/ into out/
+  # (checksummed). NO parquet is exported in this mode: the historical-
+  # corrected product is a VALIDATION-era product (QDM-corrected free-running
+  # models, E17) - never an era B observation, never an ssp projection, and
+  # never a UI surface (X1: UI shipping gated on the ssp-mode 08 PASS).
+  validation_products:
+    - validation_report.json
+    - best_subset.yaml
+    - ranking.csv
+    - validation_manifest.json
+
+  # --------------------------------------------------------- R2 labels ----
+  # Carried verbatim into export manifests and partition file metadata.
+  labels:
+    observed: "Observed 1981-2025 (v1.0.0 record; CHIRPS v2.0 / ERA5-Land / MODIS)"
+    historical_corrected: >-
+      VALIDATION era product - QDM-corrected free-running historical CMIP6
+      (1981-2014), IMD-calibrated. NOT observed data (era B), NOT a
+      projection. Internal validation use (E17); never shown as observed.
+    ssp: >-
+      PROJECTIONS (era C) - QDM-bias-corrected CMIP6, SSP2-4.5 / SSP5-8.5,
+      IMD-calibrated (reference 1981-2020). Simulations, never forecasts;
+      never spliced with observed data; presented with ensemble spread and
+      agreement (X2/X3), never the median alone.
