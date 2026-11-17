@@ -12,3 +12,9 @@ gcm-pipeline/out/*
 
 # PROJ/GDAL scratch (never commit generated rasters)
 *.tif.aux.xml
+
+# Era C projections store (8,064 files, 355.4 MB): hosted artifact, not a git
+# payload (AGENTS.md locked architecture: GitHub Pages start -> Cloudflare R2
+# at scale). catalog.json lists the exact paths; the store is provisioned
+# owner-local / on R2. Hosting decision recorded in PROGRESS.md.
+data/parquet/projections/

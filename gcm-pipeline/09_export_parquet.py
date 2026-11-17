@@ -475,7 +475,7 @@ def publish(work_root: Path, repo: Path, paths: dict, cfg: dict) -> int:
           f"({cat_path.stat().st_size / 1024:.0f} KB)")
 
     update_pipeline_manifest(repo / targets["pipeline_manifest"], dest, cfg)
-    update_metadata(repo / targets["metadata"], cfg)
+    update_metadata(repo / targets["metadata"], cfg, years=info["years"])
     print("  pipeline_manifest.json + metadata.json era-C blocks written")
     print("  NOTE: data/ changed - review the git diff; the regression "
           "baseline fingerprints catalog.json and must be re-blessed "
@@ -514,13 +514,24 @@ def update_pipeline_manifest(path: Path, dest: Path, cfg: dict) -> None:
                     encoding="utf-8")
 
 
-def update_metadata(path: Path, cfg: dict) -> None:
+def update_metadata(path: Path, cfg: dict, years: list[int] | None = None) -> None:
     md = json.loads(path.read_text(encoding="utf-8")) if path.exists() \
         else {}
     labels = cfg["export"]["labels"]
+    # R2/R3 era honesty: the label states the years ACTUALLY published
+    # (scanned from the staged tree), never an aspirational span. The
+    # 2015-2050 record is a deliberate truncation (2051-2100 inputs
+    # pending, documented in PROGRESS.md); a hard-coded "2026-2100"
+    # label would overstate the record.
+    if years:
+        label = f"Projections {years[0]}-{years[-1]}"
+        if (years[0], years[-1]) != (2026, 2100):
+            label += f" ({years[-1] + 1}-2100 inputs pending)"
+    else:
+        label = "Projections"
     md["era_c"] = OrderedDict([
         ("id", "projections"),
-        ("label", "Projections 2026-2100"),
+        ("label", label),
         ("banner", " ".join(labels["ssp"].split())),
         ("status", "bias-corrected CMIP6 simulations - never forecasts"),
         ("scenarios", ["ssp245", "ssp585"]),
@@ -803,12 +814,22 @@ def selftest() -> int:
     n_paths = sum(len(ps) for sc in proj.values() for ps in sc.values())
     all_exist = all((base / p).exists()
                     for sc in proj.values() for ps in sc.values() for p in ps)
+    # gc.validate(cat) must treat the NESTED projections block as
+    # {scenario: {stat: [paths]}} - if it iterates the scenario KEYS as
+    # paths it emits "variable path missing: ssp245" (the bug caught at the
+    # first real publish, 2026-11-17). Leaf paths always carry hive "="
+    # segments, and era-path problems are environment-dependent, so the
+    # assertion is: every "variable path missing" problem (if any) names a
+    # hive path, never a bare scenario key.
+    probs7 = [p for p in gc.validate(cat)
+              if p.startswith("variable path missing")]
     ok = (era["available"] is True and era["years"] == [2026, 2027]
           and n_paths == 32          # 6 stats x 2 scen x 2 yr + members 2x2x2
-          and all_exist and "projections" in var["eras"])
+          and all_exist and "projections" in var["eras"]
+          and all("scenario=" in p for p in probs7))
     print(f"T7 catalog: available={era['available']}, "
           f"years={era['years']}, {n_paths} paths (expect 32 for spi_03), "
-          f"all exist={all_exist}: {ok}")
+          f"all exist={all_exist}, validate problems={len(probs7)}: {ok}")
     if not ok:
         fails.append("T7 catalog block broken")
 

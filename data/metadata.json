@@ -1096,5 +1096,40 @@
     }
   ],
   "citation": "Deshmukh, A. (2026). Drought Intelligence Explorer: An Interactive Geospatial Platform for Drought Monitoring and Analysis in India [computer software]. https://ankitdeshmukh.com/",
-  "disclaimer": "Research build: values are derived from the cited public datasets and gridded sources, aggregated to administrative districts. They are model/reanalysis-based estimates, not official drought declarations, and must not be used as the sole basis for operational decisions."
+  "disclaimer": "Research build: values are derived from the cited public datasets and gridded sources, aggregated to administrative districts. They are model/reanalysis-based estimates, not official drought declarations, and must not be used as the sole basis for operational decisions.",
+  "era_c": {
+    "id": "projections",
+    "label": "Projections 2015-2050 (2051-2100 inputs pending)",
+    "banner": "PROJECTIONS (era C) - QDM-bias-corrected CMIP6, SSP2-4.5 / SSP5-8.5, IMD-calibrated (reference 1981-2020). Simulations, never forecasts; never spliced with observed data; presented with ensemble spread and agreement (X2/X3), never the median alone.",
+    "status": "bias-corrected CMIP6 simulations - never forecasts",
+    "scenarios": [
+      "ssp245",
+      "ssp585"
+    ],
+    "ensemble": {
+      "n": 8,
+      "subset": [
+        "CanESM5",
+        "MPI-ESM1-2-HR",
+        "BCC-CSM2-MR",
+        "EC-Earth3",
+        "ACCESS-ESM1-5",
+        "MPI-ESM1-2-LR",
+        "IPSL-CM6A-LR",
+        "NorESM2-MM"
+      ],
+      "criterion_rule": "core = largest inter-rank composite gap; extend to size_range[0] by reweighting-stability order (Dirichlet weight perturbations); cap at size_range[1] and candidate count (see config/validation.yaml ranking.subset_criterion)",
+      "core_size": 7,
+      "core_gap": 0.052702
+    },
+    "pet": {
+      "method": "Hargreaves-Samani (1985)",
+      "seam": "per-era PET (decision E): era B ERA5-Land PET frozen; era C Hargreaves applied identically to reference and model temperature"
+    },
+    "honesty": [
+      "never spliced with observed data (R2)",
+      "spread + agreement shown alongside the median (X2/X3)",
+      "ensemble n recorded, never assumed (X3)"
+    ]
+  }
 }

@@ -30,6 +30,7 @@ import json
 import sys
 from collections import OrderedDict
 from pathlib import Path
+from typing import Iterator
 
 import pyarrow.parquet as pq
 
@@ -137,6 +138,24 @@ def apply_projections(catalog: dict, info: dict) -> None:
                 var["eras"].append("projections")
 
 
+def _iter_era_paths(era_files) -> Iterator[str]:
+    """Yield every path string in an era files block.
+
+    Era blocks are either a flat list of repo-relative paths (observed,
+    atlas, ...) or a NESTED {scenario: {stat: [paths]}} dict (the step-09
+    projections contract, docs/v2/03 s8.2). Iterating a dict yields its
+    KEYS ("ssp245"), not its leaf paths - the bug behind the publish-time
+    "variable path missing: ssp245" failures; recurse instead.
+    """
+    if isinstance(era_files, dict):
+        for v in era_files.values():
+            yield from _iter_era_paths(v)
+    elif isinstance(era_files, (list, tuple)):
+        yield from era_files
+    elif era_files is not None:
+        yield era_files
+
+
 def validate(catalog: dict) -> list[str]:
     """Paths the UI can query (available eras' files + national) must exist on
     disk. Unavailable eras expose no files, so their directory absence is fine."""
@@ -146,7 +165,7 @@ def validate(catalog: dict) -> list[str]:
             problems.append(f"available era path missing: {era['path']}")
     for var in catalog["variables"]:
         for era_files in var["files"].values():
-            for f in era_files:
+            for f in _iter_era_paths(era_files):
                 if not (REPO / f).exists():
                     problems.append(f"variable path missing: {f}")
     if "national" in catalog and not (REPO / catalog["national"]).exists():
@@ -162,7 +181,7 @@ def check_urls(base: str, catalog: dict) -> int:
         paths.append(catalog["national"])
     for var in catalog["variables"]:
         for era_files in var["files"].values():
-            paths.extend(era_files)
+            paths.extend(_iter_era_paths(era_files))
     failures = 0
     for p in paths:
         url = base.rstrip("/") + "/" + p
