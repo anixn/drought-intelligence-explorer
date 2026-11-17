@@ -4,8 +4,11 @@
 # "frozen semantics" promise:
 #   1. data-pipeline/selftest.py      - 82 assertions, seed-deterministic
 #   2. scripts/regression_check.py    - shipped-data regression baseline
-# Later tasks extend this file with selftest_gcm.py (M2.14) and
-# selftest_atlas.py (M6) - run them alongside, never instead.
+#   3. gcm-pipeline/selftest_gcm.py   - step selftests 02-09 (M2.13;
+#       runs the data-pipeline harness first, then every gcm step's own
+#       --selftest suite; the synthetic end-to-end world joins in M2.13
+#       phase 2)
+# and selftest_atlas.py (M6) later - run them alongside, never instead.
 #
 # Note: the local Windows dev flow needs PROJ_LIB/GDAL_DATA overrides because
 # PostGIS sets global env vars; the rasterio manylinux wheels used here bundle
@@ -34,7 +37,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r data-pipeline/requirements.txt
-          pip install pyarrow
+          pip install pyarrow xarray cftime
 
       - name: Pipeline selftest (82 assertions)
         working-directory: data-pipeline
@@ -42,3 +45,6 @@ jobs:
 
       - name: Regression harness (shipped-data baseline)
         run: python scripts/regression_check.py
+
+      - name: GCM pipeline selftests (steps 02-09)
+        run: python gcm-pipeline/selftest_gcm.py
