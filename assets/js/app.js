@@ -767,7 +767,8 @@
     $('methCitation').textContent = DIE.meta.citation;
     $('methReferencePeriod').textContent = DIE.meta.reference_period;
     $('aboutCitation').textContent = DIE.meta.citation;
-    $('footerProvenance').textContent = DIE.meta.data_provenance;
+    // footer provenance is a COMPACT pointer; the full data_provenance text
+    // stays in data/metadata.json and renders live in Docs section B
     $('footerDisclaimer').textContent = DIE.meta.disclaimer;
     $('footerVersion').textContent = 'v' + DIE.meta.version + ' · methodology ' + DIE.meta.methodology_version +
       ' · ' + (demo ? 'demonstration build (synthetic data)' : 'historical research build (GEE-derived data)');
