@@ -61,6 +61,13 @@ import numpy as np
 import yaml
 
 HERE = Path(__file__).resolve().parent
+# Config-dir override (M2.13 phase 2): selftest_gcm.py points every step
+# at a test config dir via DIE_CONFIG_DIR; default = the real config dir
+# so production behaviour is untouched (documented in docs/v2/03 s3.11).
+import os as _os
+CONFIG_DIR = Path(_os.environ.get("DIE_CONFIG_DIR",
+                                        str(HERE / "config")))
+
 SEED = 20261103
 
 
@@ -138,7 +145,7 @@ def hargreaves_pet(tasmax: np.ndarray, tasmin: np.ndarray, lat_deg: np.ndarray,
 # ---------------------------------------------------------------- selftest ------
 def selftest() -> int:
     hr("SELFTEST — Hargreaves PET on synthetic worlds (seed 20261103)")
-    pet_cfg = load_yaml(HERE / "config" / "reference.yaml")["pet"]
+    pet_cfg = load_yaml(CONFIG_DIR / "reference.yaml")["pet"]
     gsc = float(pet_cfg["solar_constant_mj_m2_min"])
     fails = []
 
@@ -243,7 +250,7 @@ def compute_pet_stack(tasmax: np.ndarray, tasmin: np.ndarray, dates,
 
 def run_reference(work_root: Path) -> list:
     """IMD reference tmax/tmin -> IMD PET on the target grid."""
-    ref_cfg = load_yaml(HERE / "config" / "reference.yaml")
+    ref_cfg = load_yaml(CONFIG_DIR / "reference.yaml")
     pet_cfg = ref_cfg["pet"]
     r03 = _load_r03()
     import pandas as pd
@@ -285,7 +292,7 @@ def run_reference(work_root: Path) -> list:
 def run_model(model: str, mode: str, variables_unused, work_root: Path,
               experiments: list) -> list:
     """Model corrected tmax/tmin -> PET (one file per experiment tag)."""
-    ref_cfg = load_yaml(HERE / "config" / "reference.yaml")
+    ref_cfg = load_yaml(CONFIG_DIR / "reference.yaml")
     pet_cfg = ref_cfg["pet"]
     r03 = _load_r03()
     import pandas as pd
@@ -350,8 +357,8 @@ def main() -> int:
     if args.selftest:
         return selftest()
 
-    paths = load_yaml(HERE / "config" / "paths.yaml")
-    cfg = load_yaml(HERE / "config" / "models.yaml")
+    paths = load_yaml(CONFIG_DIR / "paths.yaml")
+    cfg = load_yaml(CONFIG_DIR / "models.yaml")
     work_root = (HERE / paths.get("work_root", "work")).resolve()
     work_root.mkdir(parents=True, exist_ok=True)
     man_path = work_root / "pet_manifest.json"

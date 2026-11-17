@@ -65,6 +65,13 @@ import numpy as np
 import yaml
 
 HERE = Path(__file__).resolve().parent
+# Config-dir override (M2.13 phase 2): selftest_gcm.py points every step
+# at a test config dir via DIE_CONFIG_DIR; default = the real config dir
+# so production behaviour is untouched (documented in docs/v2/03 s3.11).
+import os as _os
+CONFIG_DIR = Path(_os.environ.get("DIE_CONFIG_DIR",
+                                        str(HERE / "config")))
+
 SEED = 20261103
 
 
@@ -502,7 +509,7 @@ def aggregate_file(src: Path, iid: str, weights: dict, out_dir: Path,
 
 
 def write_flags(work_root: Path, weights: dict) -> Path:
-    agg = load_yaml(HERE / "config" / "aggregate.yaml")["district_aggregation"]
+    agg = load_yaml(CONFIG_DIR / "aggregate.yaml")["district_aggregation"]
     reg_path = (HERE / agg["registry_csv"]).resolve()
     registry = {}
     with open(reg_path, encoding="utf-8") as fh:
@@ -543,9 +550,9 @@ def main() -> int:
         return selftest()
 
     import netCDF4 as nc
-    paths = load_yaml(HERE / "config" / "paths.yaml")
-    cfg = load_yaml(HERE / "config" / "aggregate.yaml")
-    cfgm = load_yaml(HERE / "config" / "models.yaml")
+    paths = load_yaml(CONFIG_DIR / "paths.yaml")
+    cfg = load_yaml(CONFIG_DIR / "aggregate.yaml")
+    cfgm = load_yaml(CONFIG_DIR / "models.yaml")
     work_root = (HERE / paths.get("work_root", "work")).resolve()
     work_root.mkdir(parents=True, exist_ok=True)
     man_path = work_root / "aggregate_manifest.json"

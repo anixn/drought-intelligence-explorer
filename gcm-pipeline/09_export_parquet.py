@@ -66,6 +66,13 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 HERE = Path(__file__).resolve().parent
+# Config-dir override (M2.13 phase 2): selftest_gcm.py points every step
+# at a test config dir via DIE_CONFIG_DIR; default = the real config dir
+# so production behaviour is untouched (documented in docs/v2/03 s3.11).
+import os as _os
+CONFIG_DIR = Path(_os.environ.get("DIE_CONFIG_DIR",
+                                        str(HERE / "config")))
+
 REPO = HERE.parent
 SEED = 20261103          # project seed convention (AGENTS.md section 7)
 ZSTD_LEVEL = 19
@@ -561,8 +568,8 @@ def main() -> int:
     if args.selftest:
         return selftest()
 
-    cfg = load_yaml(HERE / "config" / "export.yaml")
-    paths = load_yaml(HERE / "config" / "paths.yaml")
+    cfg = load_yaml(CONFIG_DIR / "export.yaml")
+    paths = load_yaml(CONFIG_DIR / "paths.yaml")
     work_root = (HERE / paths.get("work_root", "work")).resolve()
     out_dir_name = (work_root / "test-output" / "out"
                     if args.dry_run else paths.get("out_root", "out"))
@@ -691,7 +698,7 @@ def selftest() -> int:
                     {"label": f"{model}/{scenario}"})
 
     # ---- run the exporter against the synthetic work tree ------------------
-    cfg = load_yaml(HERE / "config" / "export.yaml")
+    cfg = load_yaml(CONFIG_DIR / "export.yaml")
     man = export_ssp(world, staging, cfg, models)
 
     # ---- T1: partition set --------------------------------------------------

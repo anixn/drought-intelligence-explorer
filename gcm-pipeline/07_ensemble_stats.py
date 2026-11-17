@@ -51,6 +51,13 @@ import numpy as np
 import yaml
 
 HERE = Path(__file__).resolve().parent
+# Config-dir override (M2.13 phase 2): selftest_gcm.py points every step
+# at a test config dir via DIE_CONFIG_DIR; default = the real config dir
+# so production behaviour is untouched (documented in docs/v2/03 s3.11).
+import os as _os
+CONFIG_DIR = Path(_os.environ.get("DIE_CONFIG_DIR",
+                                        str(HERE / "config")))
+
 SEED = 20261103
 IIDS = ("spi_01", "spi_03", "spi_06", "spi_12",
         "spei_01", "spei_03", "spei_06", "spei_12")
@@ -73,7 +80,7 @@ def selftest() -> int:
     hr("SELFTEST - ensemble statistics on synthetic worlds (seed 20261103)")
     rng = np.random.default_rng(SEED)
     fails = []
-    cfg = load_yaml(HERE / "config" / "ensemble.yaml")["ensemble"]
+    cfg = load_yaml(CONFIG_DIR / "ensemble.yaml")["ensemble"]
     qm = cfg["quantile_method"]
     t_mod = float(cfg["agreement_moderate_threshold"])
     t_sev = float(cfg["agreement_severe_threshold"])
@@ -295,9 +302,9 @@ def main() -> int:
     if args.selftest:
         return selftest()
 
-    paths = load_yaml(HERE / "config" / "paths.yaml")
-    cfgm = load_yaml(HERE / "config" / "models.yaml")
-    cfg = load_yaml(HERE / "config" / "ensemble.yaml")["ensemble"]
+    paths = load_yaml(CONFIG_DIR / "paths.yaml")
+    cfgm = load_yaml(CONFIG_DIR / "models.yaml")
+    cfg = load_yaml(CONFIG_DIR / "ensemble.yaml")["ensemble"]
     work_root = (HERE / paths.get("work_root", "work")).resolve()
     work_root.mkdir(parents=True, exist_ok=True)
     man_path = work_root / "ensemble_manifest.json"

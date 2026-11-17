@@ -61,6 +61,13 @@ import numpy as np
 import yaml
 
 HERE = Path(__file__).resolve().parent
+# Config-dir override (M2.13 phase 2): selftest_gcm.py points every step
+# at a test config dir via DIE_CONFIG_DIR; default = the real config dir
+# so production behaviour is untouched (documented in docs/v2/03 s3.11).
+import os as _os
+CONFIG_DIR = Path(_os.environ.get("DIE_CONFIG_DIR",
+                                        str(HERE / "config")))
+
 SEED = 20261103
 PR_RANGE = (0.0, 4000.0)          # mm/month physical guard (v1.0 rule)
 TAS_RANGE = (-60.0, 60.0)         # degC sanity guard
@@ -267,7 +274,7 @@ def prepare_reference(work_root: Path, tgt: dict, variables, years) -> list:
     """IMD daily -> monthly on the target grid; pr totals reconstructed with
     days_in_month AFTER the conservative remap (identical rule to step 02 —
     one shared method for the model/reference water balance, C3)."""
-    ref_cfg = load_yaml(HERE / "config" / "reference.yaml")
+    ref_cfg = load_yaml(CONFIG_DIR / "reference.yaml")
     pr_root = Path(ref_cfg["reference"]["precipitation"]["primary"]["path"]).parent
     r02 = _load_r02()
     import pandas as pd
@@ -483,9 +490,9 @@ def main() -> int:
     if args.selftest:
         return selftest()
 
-    paths = load_yaml(HERE / "config" / "paths.yaml")
-    ref = load_yaml(HERE / "config" / "reference.yaml")
-    cfg = load_yaml(HERE / "config" / "models.yaml")
+    paths = load_yaml(CONFIG_DIR / "paths.yaml")
+    ref = load_yaml(CONFIG_DIR / "reference.yaml")
+    cfg = load_yaml(CONFIG_DIR / "models.yaml")
     work_root = (HERE / paths.get("work_root", "work")).resolve()
     work_root.mkdir(parents=True, exist_ok=True)
     r02 = _load_r02()

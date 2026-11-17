@@ -78,6 +78,13 @@ import numpy as np
 import yaml
 
 HERE = Path(__file__).resolve().parent
+# Config-dir override (M2.13 phase 2): selftest_gcm.py points every step
+# at a test config dir via DIE_CONFIG_DIR; default = the real config dir
+# so production behaviour is untouched (documented in docs/v2/03 s3.11).
+import os as _os
+CONFIG_DIR = Path(_os.environ.get("DIE_CONFIG_DIR",
+                                        str(HERE / "config")))
+
 KG_M2_S_TO_MM_DAY = 86400.0
 KELVIN_OFFSET = 273.15
 CONSERVATION_GATE = 1e-9
@@ -306,7 +313,7 @@ def bilinear_masked(src_lat: np.ndarray, src_lon: np.ndarray, field: np.ndarray,
 # --------------------------------------------------------------- self-tests ---
 def selftest() -> int:
     hr("SELFTEST — synthetic grids (deterministic; no real data)")
-    ref = load_yaml(HERE / "config" / "reference.yaml")
+    ref = load_yaml(CONFIG_DIR / "reference.yaml")
     tgt = target_grid(ref)
     fails = []
     rng = np.random.default_rng(20261103)
@@ -461,7 +468,7 @@ def _assert_ascending(lat: np.ndarray, lon: np.ndarray, model: str) -> None:
 
 def regrid_model_var(model: str, exp: str, var: str, raw_root: Path,
                      work_root: Path, tgt: dict, years: range) -> dict:
-    cfg = load_yaml(HERE / "config" / "models.yaml")
+    cfg = load_yaml(CONFIG_DIR / "models.yaml")
     row = next(r for r in cfg["models"] if r["source_id"] == model)
     variant, grid = row.get("variant"), row.get("grid_label")
     files = [raw_root / var / f"{var}_day_{model}_{exp}_{variant}_{grid}_{y}_v2.0.nc"
@@ -558,9 +565,9 @@ def main() -> int:
     if args.selftest:
         return selftest()
 
-    paths = load_yaml(HERE / "config" / "paths.yaml")
-    ref = load_yaml(HERE / "config" / "reference.yaml")
-    cfg = load_yaml(HERE / "config" / "models.yaml")
+    paths = load_yaml(CONFIG_DIR / "paths.yaml")
+    ref = load_yaml(CONFIG_DIR / "reference.yaml")
+    cfg = load_yaml(CONFIG_DIR / "models.yaml")
     raw_root = Path(paths["raw_root"])
     work_root = (HERE / paths.get("work_root", "work")).resolve()
     (work_root / "test-output").mkdir(parents=True, exist_ok=True)
