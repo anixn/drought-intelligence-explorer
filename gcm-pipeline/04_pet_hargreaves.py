@@ -300,12 +300,16 @@ def run_model(model: str, mode: str, variables_unused, work_root: Path,
     records = []
     for exp in experiments:
         tag = ("historical-corrected" if mode == "historical-corrected" else exp)
-        tx_path = work_root / "qdm" / model / tag / "tasmax_1981-2014.nc"
-        tn_path = work_root / "qdm" / model / tag / "tasmin_1981-2014.nc"
-        if not tx_path.exists() or not tn_path.exists():
-            print(f"  SKIP {model}/{tag}: corrected tasmax/tasmin missing "
-                  f"(run 03 first)")
+        # data-derived period (never hard-coded): each tag dir holds exactly
+        # one corrected file per variable; period = the record's own range
+        # (e.g. ssp 2015-2050 while the download is partial — honest, R3)
+        tx_all = sorted((work_root / "qdm" / model / tag).glob("tasmax_*.nc"))
+        tn_all = sorted((work_root / "qdm" / model / tag).glob("tasmin_*.nc"))
+        if len(tx_all) != 1 or len(tn_all) != 1:
+            print(f"  SKIP {model}/{tag}: corrected tasmax/tasmin missing or "
+                  f"ambiguous ({len(tx_all)}/{len(tn_all)} files) - run 03 first")
             continue
+        tx_path, tn_path = tx_all[0], tn_all[0]
         tx, dates, lat, lon = r03.load_monthly_nc(tx_path, "tasmax")
         tn, dates2, _, _ = r03.load_monthly_nc(tn_path, "tasmin")
         if len(dates) != len(dates2) or any(a.year != b.year or a.month != b.month

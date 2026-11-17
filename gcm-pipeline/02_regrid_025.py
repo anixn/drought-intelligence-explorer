@@ -569,6 +569,11 @@ def main() -> int:
     ref = load_yaml(CONFIG_DIR / "reference.yaml")
     cfg = load_yaml(CONFIG_DIR / "models.yaml")
     raw_root = Path(paths["raw_root"])
+    # ssp files live in a separate root (paths.raw_root_ssp, M2.13); routing
+    # is per experiment: historical -> raw_root, ssp* -> raw_root_ssp
+    # (falls back to raw_root when unset).
+    _ssp = paths.get("raw_root_ssp")
+    raw_root_ssp = Path(_ssp).resolve() if _ssp else raw_root
     work_root = (HERE / paths.get("work_root", "work")).resolve()
     (work_root / "test-output").mkdir(parents=True, exist_ok=True)
     tgt = target_grid(ref)
@@ -590,7 +595,8 @@ def main() -> int:
                     yrs = row.get(exp) or {}
                     have = sum(1 for y in range(int(yrs.get("start", 0)),
                                                 int(yrs.get("end", -1)) + 1)
-                               if (raw_root / var /
+                               if ((raw_root if exp == "historical"
+                                    else raw_root_ssp) / var /
                                    f"{var}_day_{model}_{exp}_{row.get('variant')}_"
                                    f"{row.get('grid_label')}_{y}_v2.0.nc").exists())
                     plan.append({"model": model, "exp": exp, "var": var,
@@ -627,7 +633,8 @@ def main() -> int:
                         n_skip += 1
                         continue
                 try:
-                    rec = regrid_model_var(model, exp, var, raw_root, work_root, tgt, years)
+                    root = raw_root if exp == "historical" else raw_root_ssp
+                    rec = regrid_model_var(model, exp, var, root, work_root, tgt, years)
                 except Exception as e:              # noqa: BLE001 — record & continue
                     print(f"  FAIL {model}/{exp}/{var}: {e}")
                     report.append({"model": model, "exp": exp, "var": var,

@@ -14,13 +14,19 @@
 # scripts parse (00 download, 01 inventory, 02 regrid, ...). New downloads
 # (phase 2 SSPs) must follow the SAME naming so the pipeline stays uniform.
 
-raw_root: "D:/Websites/die-data/cmip6/outdir"   # phase-1 store, already populated (2312 historical files)
-# Phase-2 SSP downloads (Owner-run, D:/die-download/download_cmip6.R):
-# 8-model committed subset, ssp245+ssp585 2015-2100, same per-variable flat
-# layout + naming. 00/01 will be extended to MERGE raw_root + raw_root_ssp
-# in ssp mode (historical stays sourced from raw_root); the key is
-# registered now so the download location is documented before the files
-# arrive (provisional).
-raw_root_ssp: "D:/die-download/data_raw/cmip6"
+raw_root: "D:/Websites/die-data/cmip6/Hist"    # phase-1 store — RELOCATED 2026-11-17 (Owner reorganisation: was outdir/, now Hist/; inventory identical: 24-model pr, 22-model tas, 1981-2014, complete)
+# Phase-2 SSP downloads (Owner): COMPLETE to 2050 as of 2026-11-17 —
+#   D:/Websites/die-data/cmip6/SSP/<var>/  8-model committed subset,
+#   ssp245 + ssp585, 2015-2050, 1,728 files, verified complete (no gaps,
+#   inventory run 2026-11-17). Same per-variable flat layout + naming as
+#   phase 1. 2051-2100 remain pending (models.yaml keeps the full 2015-2100
+#   contract; steps derive the actual record end from data and report
+#   coverage honestly — never pad, R3).
+#   NOTE: a full historical mirror also exists at D:/Websites/die-data/cmip6/Hist
+#   (24/22-model, 1981-2014) — kept as the Owner's copy; production historical
+#   continues to be sourced from raw_root (outdir).
+# Step routing (M2.13): step 02/01 select the raw root PER EXPERIMENT —
+# historical -> raw_root; ssp* -> raw_root_ssp (merge with raw_root fallback).
+raw_root_ssp: "D:/Websites/die-data/cmip6/SSP"
 work_root: "work"    # relative to gcm-pipeline/ — manifests, plans, intermediates; NEVER shipped
 out_root: "out"      # validated era-C products; only these ever reach data/parquet/projections/

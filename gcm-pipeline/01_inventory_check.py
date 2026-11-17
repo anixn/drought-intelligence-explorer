@@ -138,6 +138,25 @@ def main() -> int:
     strict_variant = bool(meta.get("strict_variant", False))
 
     groups, unparsed = scan_raw(raw_root)
+    # ssp files may live in a separate root (paths.raw_root_ssp, M2.13):
+    # merge them in; historical never overridden, same-key ssp records
+    # prefer the ssp root.
+    raw_root_ssp_cfg = paths.get("raw_root_ssp")
+    raw_root_ssp = Path(raw_root_ssp_cfg).resolve() if raw_root_ssp_cfg else None
+    if raw_root_ssp and raw_root_ssp != raw_root and raw_root_ssp.exists():
+        g_ssp, unparsed_ssp = scan_raw(raw_root_ssp)
+        for k, g in g_ssp.items():
+            if k[1] == "historical" and k in groups:
+                continue          # historical stays sourced from raw_root
+            merged = groups.setdefault(k, {"years": {}, "variants": set(),
+                                           "grids": set(), "versions": set()})
+            merged["years"].update(g["years"])
+            merged["variants"] |= g["variants"]
+            merged["grids"] |= g["grids"]
+            merged["versions"] |= g["versions"]
+        unparsed = unparsed + unparsed_ssp
+    else:
+        raw_root_ssp = None
     cfg_models = {row["source_id"]: row for row in doc["models"]}
 
     problems, notes = [], []
@@ -208,6 +227,29 @@ def main() -> int:
                         problems.append(
                             f"{model}/{exp}/{var}: {len(missing)} missing year(s) in "
                             f"{a}-{b}: {fmt_years(set(missing))}")
+                # ssp coverage gate (M2.13, real phase-2 data): the AS6
+                # calibration seam needs ssp 2015-2020 for every era-C model
+                # that runs the ssp chain; coverage past 2020 is reported,
+                # and a truncated record end (vs the models.yaml contract)
+                # is a NOTE, never silently accepted.
+                if exp.startswith("ssp"):
+                    missing_seam = [y for y in range(2015, 2021)
+                                    if y not in years]
+                    if missing_seam:
+                        problems.append(
+                            f"{model}/{exp}/{var}: {len(missing_seam)} missing "
+                            f"year(s) in the AS6 calibration seam 2015-2020: "
+                            f"{fmt_years(set(missing_seam))}")
+                    row_exp = row.get(exp) or {}
+                    end_cfg = int(row_exp.get("end", 2100))
+                    truncated = [y for y in range(max(years) + 1, end_cfg + 1)
+                                 if y not in years]
+                    if truncated:
+                        notes.append(
+                            f"{model}/{exp}/{var}: record ends {max(years)} "
+                            f"(config end {end_cfg}); {len(truncated)} pending "
+                            f"download year(s) - era-C record truncated "
+                            f"honestly at {max(years)} (R3)")
                 exprec["vars"][var] = vrec
             mrec["experiments"][exp] = exprec
         per_model[model] = mrec
@@ -235,10 +277,15 @@ def main() -> int:
               f"{cells[1]:>16s} {cells[2]:>16s}")
     print()
     for exp in ("ssp245", "ssp585"):
-        n = len({m for (m, e, v) in groups if e == exp})
-        print(f"{exp}: {n} model(s) on disk — phase 2, ranking-gated "
-              f"(downloads after 08_validate_gcm.py best_subset)" if n == 0 else
-              f"{exp}: {n} model(s) on disk")
+        yrs = sorted({y for (m, e, v), g in groups.items() if e == exp
+                      for y in g["years"]})
+        if yrs:
+            print(f"{exp}: {len({m for (m, e, v) in groups if e == exp})} "
+                  f"model(s) on disk, coverage {yrs[0]}-{yrs[-1]} "
+                  f"(ssp root: {raw_root_ssp or raw_root})")
+        else:
+            print(f"{exp}: 0 model(s) on disk — phase 2, ranking-gated "
+                  f"(downloads after 08_validate_gcm.py best_subset)")
     # calendar summary
     cals = sorted({c.get("calendar") for c in cal_cache.values()
                    if c and c.get("calendar")})
@@ -267,7 +314,9 @@ def main() -> int:
     out = work_root / "inventory.json"
     with open(out, "w", encoding="utf-8") as fh:
         json.dump({"schema": 1, "generated": t0.isoformat(timespec="seconds"),
-                   "raw_root": str(raw_root), "status": status,
+                   "raw_root": str(raw_root),
+                   "raw_root_ssp": str(raw_root_ssp) if raw_root_ssp else None,
+                   "status": status,
                    "required_historical": list(REQUIRED_HIST),
                    "unparsed": unparsed, "problems": problems, "notes": notes,
                    "models": per_model}, fh, indent=2, default=str)

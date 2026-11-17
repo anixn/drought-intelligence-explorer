@@ -398,15 +398,23 @@ def run_target_ssp(work_root: Path, model: str, exp: str,
     segment (period label = the ssp record's own year range)."""
     import pandas as pd
     import xarray as xr
-    qdm_h = work_root / "qdm" / model / "historical-corrected" / "pr_1981-2014.nc"
-    pet_h = work_root / "pet" / model / "historical-corrected" / "pet_1981-2014.nc"
-    qdm_s = work_root / "qdm" / model / exp / "pr_2015-2100.nc"
-    pet_s = work_root / "pet" / model / exp / "pet_2015-2100.nc"
-    missing = [p.name for p in (qdm_h, pet_h, qdm_s, pet_s) if not p.exists()]
-    if missing:
-        print(f"  SKIP {label}: missing stitched-fit inputs {missing} "
-              f"(run 03/04 in both modes first)")
+    qdm_h_all = sorted((work_root / "qdm" / model
+                        / "historical-corrected").glob("pr_*.nc"))
+    pet_h_all = sorted((work_root / "pet" / model
+                        / "historical-corrected").glob("pet_*.nc"))
+    qdm_s_all = sorted((work_root / "qdm" / model / exp).glob("pr_*.nc"))
+    pet_s_all = sorted((work_root / "pet" / model / exp).glob("pet_*.nc"))
+    # one corrected record per tag by construction; anything else is a
+    # fabric problem -> refuse loudly. Periods are derived from the data
+    # (e.g. ssp 2015-2050 while the download is partial) — never assumed.
+    if len(qdm_h_all) != 1 or len(pet_h_all) != 1 or \
+            len(qdm_s_all) != 1 or len(pet_s_all) != 1:
+        print(f"  SKIP {label}: missing or ambiguous stitched-fit inputs "
+              f"({len(qdm_h_all)}/{len(pet_h_all)}/{len(qdm_s_all)}/"
+              f"{len(pet_s_all)} files) - run 03/04 in both modes first")
         return []
+    qdm_h, pet_h = qdm_h_all[0], pet_h_all[0]
+    qdm_s, pet_s = qdm_s_all[0], pet_s_all[0]
     pr_h, pet_h2, months_h, lat, lon = load_pr_pet(qdm_h, pet_h)
     pr_s, pet_s2, months_s, _, _ = load_pr_pet(qdm_s, pet_s)
     pr, pet, months = stitch_hist_ssp(pr_h, pet_h2, months_h,
