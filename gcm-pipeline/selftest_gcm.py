@@ -45,7 +45,7 @@ SUITES = [
      "gcm-pipeline"),
     ("07 ensemble statistics (T1-T5)", "07_ensemble_stats.py",
      "gcm-pipeline"),
-    ("08 validation gate (T1-T7)", "08_validate_gcm.py", "gcm-pipeline"),
+    ("08 validation gate (T1-T8)", "08_validate_gcm.py", "gcm-pipeline"),
     ("09 export (T1-T9)", "09_export_parquet.py", "gcm-pipeline"),
 ]
 

@@ -72,3 +72,22 @@ Source: Owner-supplied external review memo (`suggestions.md`, DeepSeek strategi
 - QDM identity/trend-preservation tests, no-splice rules, fixture labelling, frozen era-B science, "agreement definitions in tooltips" — already binding (docs/v2/03 §3.5, R1–R3, M5.4); no amendment needed.
 - M6.5 historical-event anchoring (1918, 1965, 1972, 1987, 2002) — already a roadmap task verbatim; the memo's acceptance criterion is the same gate.
 - Wholesale M5/M6 renumbering — rejected in favour of the X1 sequencing constraint (same effect, no churn, task IDs stay stable).
+
+### Owner instruction 2026-11-17 — dashboard redesign permission (recorded, applies from M4)
+
+The Owner grants explicit permission to REDESIGN the dashboard layout for
+v2.0 — the v1.0 tab structure (Overview / Historical / Events / Propagation)
+need NOT be preserved verbatim: "keeping the 4 tabs intact is less
+flexibility for an overall better product". Scope and guardrails:
+
+- Applies to the v2.0 UI design work (M4 frontend spec evolution, M5
+  surfaces). It does NOT license changes to the v1.0.0 released site itself
+  (R1: v1.0.0 stays as published on master until the v2 release gate).
+- What remains binding: R2 era honesty, R8 stable hash routes (existing
+  routes keep resolving or redirect; new surfaces get new hashes), keyboard
+  operability + ARIA, R9 interpretation guardrails, X1 (crossval before
+  projections), X2 (agreement-first default), X3 (honest ensemble n).
+- Consequence for docs/v2/04: the "v1.0 shell extended, never rewritten"
+  framing is relaxed for v2 surfaces — the Owner prefers a better product
+  over strict tab continuity. Re-baseline docs/v2/04 at M4.1 with the
+  redesign mandate and record the new IA there (not here).

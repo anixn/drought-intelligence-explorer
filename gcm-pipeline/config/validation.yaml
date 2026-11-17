@@ -136,3 +136,18 @@ validation:
     # clip counts / fit reports / missing-month tables are pulled from the
     # step-05 manifest and the aggregate weights report into validation_report
     include_fit_reports: true
+
+  # --------------------------------------------------------------- ssp mode --
+  # SSP-MODE GATE (real phase-2 data, 2026-11-17): the corrected SSP record
+  # is validated over the OBSERVED OVERLAP only - the years where corrected
+  # projections and the IMD-anchored reference coexist (reference window
+  # ends 2020, C2). Months past the overlap have NO observed truth and are
+  # NEVER gated (R2/R3: projections are not forecasts). The committed
+  # subset (best_subset.yaml, from the historical-skill ranking) is NOT
+  # re-selected here - per-model overlap metrics are reported as evidence
+  # only. Gate semantics otherwise identical to the historical-corrected
+  # mode (pooled multi-model basis, same tolerances).
+  ssp:
+    overlap_window: [2015, 2020]      # corrected SSP x IMD reference overlap
+    scenarios: [ssp245, ssp585]       # both validated; ALL must pass
+    recompute_ranking: false          # subset is committed, never re-picked

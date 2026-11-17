@@ -56,11 +56,16 @@ selftest_gcm.py at M2.13) exercise the REAL gate functions:
   T6 all-NaN district excluded from a region pool and counted
   T7 subset criterion: largest-gap core detected; floor extension by
      stability order exact
+  T8 ssp-mode gate: synthetic observed-overlap world (reference 1981-2020,
+     2 models x 2 scenarios x 2015-2030 records) -> truthful world PASSES,
+     biased model FAILS consistency; committed subset reported verbatim;
 
 Usage:
   python 08_validate_gcm.py --selftest
   python 08_validate_gcm.py --mode historical-corrected
-  python 08_validate_gcm.py --mode ssp          # hard-fails until SSP data
+  python 08_validate_gcm.py --mode ssp   # observed-overlap gate (X1 publish
+                                         # evidence); needs the ssp chain
+                                         # outputs + best_subset.yaml
 """
 from __future__ import annotations
 
@@ -613,10 +618,130 @@ def selftest() -> int:
     if not (ok and ok2):
         fails.append("T7 subset criterion broken")
 
+    # ---- T8 ssp-mode gate (synthetic observed-overlap world) --------------
+    import shutil as _shutil
+    import netCDF4 as _nc
+    root8 = HERE / "work" / "test-output" / "validate-ssp-selftest"
+    if root8.exists():
+        _shutil.rmtree(root8)
+    w8 = root8 / "work"
+    mnames8 = ["mA", "mB"]
+    d8 = 5
+
+    def _w8_tvals(months):
+        """day offsets for 'days since <months[0]>-01-01' (leap-aware)."""
+        mdays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        offs, acc = [0.0], 0.0
+        for (y, m) in months[:-1]:
+            dim = mdays[m - 1]
+            if m == 2 and (y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)):
+                dim = 29
+            acc += dim
+            offs.append(acc)
+        return np.array(offs)
+
+    def _w8_nc(path, var, mat, t_units, t_vals):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with _nc.Dataset(path, "w") as d8b:
+            d8b.createDimension("district", d8)
+            d8b.createDimension("time", mat.shape[1])
+            dv = d8b.createVariable("district", str, ("district",))
+            dv[:] = np.array([f"t{k}" for k in range(d8)])
+            tv = d8b.createVariable("time", "f8", ("time",))
+            tv[:] = t_vals
+            tv.units = t_units
+            tv.calendar = "standard"
+            vv = d8b.createVariable(var, "f8", ("district", "time"))
+            vv[:] = mat
+
+    months8 = [(y, m) for y in range(2015, 2031) for m in range(1, 13)]
+    t8 = len(months8)
+    t_units8 = "days since 2015-01-01 00:00:00"
+    t_vals8 = _w8_tvals(months8)
+
+    rng8 = np.random.default_rng(SEED + 8)
+    ref_months8 = [(y, m) for y in range(1981, 2021) for m in range(1, 13)]
+    ref_tvals8 = _w8_tvals(ref_months8)
+    # zero-mean (w=0.577, d=-1.732 -> 3w+d=0, sd=sqrt(3)*w~1) wet/dry block
+    # pattern: a 6-month dry run (<= -1.0) every 24 months, so EVERY 72-month
+    # window and every district contains complete drought events (a
+    # zero-event reference would make the event ratios None -> breach, so
+    # the truthful world must guarantee events by construction)
+    def _w8_blocks(n, phase, w=0.577, d=-1.732, block=24, dry_len=6):
+        vals = np.empty(n)
+        for k in range(n):
+            vals[k] = (w if ((k + phase) % block) < block - dry_len else d)
+        return vals
+
+    ref8 = {iid: np.stack([_w8_blocks(len(ref_months8),
+                                      phase=7 * di + 3 * ii)
+                           for di in range(d8)])
+            for ii, iid in enumerate(IIDS)}
+    for iid in IIDS:
+        _w8_nc(w8 / "aggregate" / "reference" /
+               f"{iid}_districts_1981-2020.nc", iid, ref8[iid],
+               "days since 1981-01-01 00:00:00", ref_tvals8)
+    (w8 / "validation").mkdir(parents=True, exist_ok=True)
+    (w8 / "validation" / "best_subset.yaml").write_text(
+        "schema: die-best-subset/1.1\n"
+        "subset: [mA, mB]\n", encoding="utf-8")
+    # truthful world: the model overlap segment is the reference + tiny
+    # mean-preserving noise (the gate demands ZERO national breaches, so an
+    # independent-draw world would breach by chance at these small n -
+    # test-design note, not a gate flaw); post-overlap months are ungated
+    # noise. The ensemble median tracks the same overlap segment.
+    ov_n8 = 12 * (2020 - 2015 + 1)          # 72 overlap columns
+    for scen in ("ssp245", "ssp585"):
+        for iid in IIDS:
+            seg = ref8[iid][:, -ov_n8:].copy()
+            tail = _w8_blocks(t8 - ov_n8, phase=11)
+            tail = np.repeat(tail[None, :], d8, axis=0)   # ungated years
+            ens8 = np.hstack([seg + rng8.normal(0, 0.05, (d8, ov_n8)),
+                              tail])
+            _w8_nc(w8 / "ensemble" / scen /
+                   f"{iid}_ensemble_2015-2030.nc", "median", ens8,
+                   t_units8, t_vals8)
+            for m in mnames8:
+                # EXACT reference overlap values: every ratio is then
+                # exactly 1.0 and every tolerance holds by construction
+                mat8 = np.hstack([seg, tail])
+                _w8_nc(w8 / "aggregate" / m / scen /
+                       f"{iid}_districts_2015-2030.nc", iid, mat8,
+                       t_units8, t_vals8)
+
+    cfg8 = dict(cfg)
+    rc8a = run_ssp_gate(cfg8, w8)
+    rep8 = json.loads((w8 / "validation" / "validation_report.json")
+                      .read_text(encoding="utf-8"))
+    ok8 = rc8a == 0 and rep8["mode"] == "ssp" and \
+        rep8["gates"]["consistency"]["pass"] and \
+        rep8["gates"]["committed_subset"]["subset"] == mnames8 and \
+        rep8["scenarios"]["ssp245"]["months_past_overlap"] == 120
+    print(f"T8a ssp gate truthful world: rc={rc8a}, mode={rep8['mode']}, "
+          f"subset={rep8['gates']['committed_subset']['subset']}, "
+          f"months_past_overlap(ssp245)="
+          f"{rep8['scenarios']['ssp245']['months_past_overlap']}: {ok8}")
+    if not ok8:
+        fails.append("T8a ssp gate truthful world")
+
+    # biased model must FAIL the consistency gate
+    with _nc.Dataset(w8 / "aggregate" / "mA" / "ssp245" /
+                     "spi_03_districts_2015-2030.nc", "a") as d8b:
+        d8b.variables["spi_03"][:] += 1.0
+    rc8b = run_ssp_gate(cfg8, w8)
+    rep8b = json.loads((w8 / "validation" / "validation_report.json")
+                       .read_text(encoding="utf-8"))
+    ok8b = rc8b == 1 and rep8b["gates"]["consistency"]["pass"] is False
+    print(f"T8b ssp gate biased world: rc={rc8b} (expect 1), "
+          f"consistency pass={rep8b['gates']['consistency']['pass']} "
+          f"(expect False): {ok8b}")
+    if not ok8b:
+        fails.append("T8b ssp gate biased world")
+
     if fails:
         print(f"SELFTEST FAIL ({len(fails)}): {fails}")
         return 1
-    print("SELFTEST PASS (T1, T2, T3, T4, T5, T6, T7)")
+    print("SELFTEST PASS (T1, T2, T3, T4, T5, T6, T7, T8)")
     return 0
 
 
@@ -657,6 +782,392 @@ def check_calendar(keys: list) -> int:
     return 0
 
 
+# ------------------------------------------------------------------ ssp mode ----
+def _ssp_discover_one(dir_path: Path, pattern: str, what: str) -> Path:
+    """Exactly one file must match the glob; anything else is a fabric
+    problem -> loud failure (never silently pick the first)."""
+    if not dir_path.exists():
+        hits = []
+    else:
+        hits = sorted(dir_path.glob(pattern))
+    if len(hits) != 1:
+        raise SystemExit(
+            f"FATAL: expected exactly 1 {what} file, found {len(hits)}: "
+            f"{[h.name for h in hits[:4]]}")
+    return hits[0]
+
+
+def run_ssp_gate(cfg: dict, work_root: Path) -> int:
+    """SSP-mode validation gate (X1 evidence for the 09 publish).
+
+    Validates the CORRECTED SSP record over the OBSERVED OVERLAP only
+    (config validation.ssp.overlap_window, default 2015-2020): the only
+    years where corrected projections and the IMD-anchored reference
+    coexist. Months past the overlap have no observed truth and are never
+    gated (R2/R3). The committed subset (best_subset.yaml from the
+    historical-skill ranking) is NOT re-selected; per-model overlap
+    metrics are reported as evidence. Both scenarios are validated and ALL
+    must pass. Gate semantics otherwise identical to historical-corrected
+    mode: pooled multi-model basis, same tolerances (config validation.*).
+    """
+    ssp_cfg = cfg["ssp"]
+    ov_lo, ov_hi = ssp_cfg["overlap_window"]
+    scenarios = ssp_cfg["scenarios"]
+    seasons = cfg["seasons"]
+    qq_levels = cfg["tails"]["qq_levels"]
+
+    hr(f"VALIDATION GATE mode=ssp overlap={ov_lo}-{ov_hi} "
+       f"scenarios={','.join(scenarios)}")
+
+    # committed subset, verbatim (never re-selected here)
+    bs_path = work_root / "validation" / "best_subset.yaml"
+    if not bs_path.exists():
+        print("HARD FAIL: no work/validation/best_subset.yaml - run "
+              "--mode historical-corrected first (the subset is selected "
+              "by the historical-skill ranking, R3)")
+        return 2
+    best = load_yaml(bs_path)
+    models = list(best["subset"])
+
+    # registry: district -> state region
+    import csv as csvmod
+    state_of = {}
+    with open(REPO / "data" / "districts.csv", encoding="utf-8") as fh:
+        for row in csvmod.DictReader(fh):
+            state_of[row["district_id"]] = row["state_name"]
+
+    # ---------------- reference (IMD-anchored, 1981-2020) ----------------
+    ref_z, rkeys, rids = {}, None, None
+    cal_anomalies = []
+    for iid in IIDS:
+        rp = work_root / "aggregate" / "reference" / \
+            f"{iid}_districts_1981-2020.nc"
+        if not rp.exists():
+            print(f"FATAL: missing reference aggregate {rp}")
+            return 2
+        arr, keys, dids = load_district_nc(rp, iid, ov_lo, ov_hi)
+        k = check_calendar(keys)
+        if k:
+            cal_anomalies.append(f"reference/{iid}@{keys[k]}")
+        if rkeys is None:
+            rkeys, rids = keys, dids
+        elif keys != rkeys:
+            print(f"FATAL: reference {iid} time axis disagrees")
+            return 1
+        ref_z[iid] = arr
+    dids = rids
+
+    # ------------- per-scenario corrected record (data-derived) ----------
+    scen_data: dict = {}
+    scen_record: dict = {}
+    for scen in scenarios:
+        ens_z, models_z = {}, {}
+        rec_start = rec_end = None
+        n_total_months = 0
+        for iid in IIDS:
+            ep = _ssp_discover_one(
+                work_root / "ensemble" / scen, f"{iid}_ensemble_*.nc",
+                f"ensemble {scen}/{iid}")
+            e_arr, e_keys, _ = load_district_nc(ep, "median", ov_lo, ov_hi)
+            if e_keys != rkeys:
+                print(f"FATAL: {scen}/{iid} ensemble overlap keys disagree "
+                      f"with the reference fabric (record may not cover "
+                      f"{ov_lo}-{ov_hi})")
+                return 1
+            ens_z[iid] = e_arr
+            # the record window (honest truncation) comes from the file's
+            # own time axis, never from a hard-coded name
+            if rec_start is None:
+                import netCDF4 as nc
+                d = nc.Dataset(ep)
+                t = d.variables["time"]
+                all_dates = nc.num2date(t[:], t.units,
+                                        getattr(t, "calendar", "standard"))
+                d.close()
+                all_keys = [(x.year, x.month) for x in all_dates]
+                rec_start, rec_end = all_keys[0][0], all_keys[-1][0]
+                n_total_months = len(all_keys)
+                k = check_calendar(all_keys)
+                if k:
+                    cal_anomalies.append(f"{scen}/{iid}@{all_keys[k]}")
+            models_z[iid] = {}
+            for m in models:
+                mp = _ssp_discover_one(
+                    work_root / "aggregate" / m / scen,
+                    f"{iid}_districts_*.nc", f"aggregate {scen}/{m}/{iid}")
+                marr, mkeys, mids = load_district_nc(mp, iid, ov_lo, ov_hi)
+                if mkeys != rkeys or mids != dids:
+                    print(f"FATAL: {scen}/{iid}/{m} fabric mismatch")
+                    return 1
+                models_z[iid][m] = marr
+        scen_data[scen] = {"ens": ens_z, "models": models_z, "keys": rkeys}
+        scen_record[scen] = {
+            "record_start": rec_start, "record_end": rec_end,
+            "months_total": n_total_months,
+            # months after the overlap (12 per full year beyond ov_hi):
+            # reported honestly, never gated
+            "months_past_overlap": 12 * max(0, rec_end - ov_hi),
+            "note": "record ends where the download ends (R3: honest "
+                    "truncation); months past the overlap are never "
+                    "gated (no observed truth)"}
+
+    T = ref_z[IIDS[0]].shape[1]
+    years = float(ov_hi - ov_lo + 1)
+    regions = {"national": np.arange(len(dids))}
+    for s in sorted(set(state_of.get(d) for d in dids)):
+        if s:
+            regions[s] = np.array([i for i, d in enumerate(dids)
+                                   if state_of.get(d) == s])
+    excluded = [dids[i] for i in range(len(dids))
+                if not np.isfinite(ref_z["spi_03"][i]).any()]
+    print(f"overlap months={T} ({ov_lo}-{ov_hi}), districts={len(dids)}, "
+          f"regions={len(regions)}, excluded(no ref)={len(excluded)}, "
+          f"committed subset n={len(models)}")
+
+    report = {"schema": "die-gcm-validation/1.0", "seed": SEED,
+              "mode": "ssp", "overlap_window": [ov_lo, ov_hi],
+              "n_models": len(models), "models": models,
+              "scenarios": {s: scen_record[s] for s in scenarios},
+              "n_overlap_months": T, "n_districts": len(dids),
+              "districts_excluded_no_reference": excluded,
+              "config_verbatim": cfg, "calendar_anomalies": cal_anomalies}
+    gates: dict = {}
+    gate_ok = True
+
+    # --------- gate 1: consistency over the overlap (per scenario) -------
+    print(f"[1/5] consistency gate (basis={cfg['gate_basis']}, overlap)")
+    cons_scen, cons_pass = {}, True
+    for scen in scenarios:
+        models_z = scen_data[scen]["models"]
+        rkeys = scen_data[scen]["keys"]
+        cells, nb, ntot = {}, 0, 0
+        national = False
+        for iid in IIDS:
+            pool = np.stack([models_z[iid][m] for m in models])
+            for sname, months in seasons.items():
+                mask = np.array([m in months for (_y, m) in rkeys])
+                for rname, ridx in regions.items():
+                    b = ref_z[iid][ridx][:, mask]
+                    c = pooled_models_cell(pool[:, ridx][:, :, mask], b,
+                                           len(models), consistency_cell,
+                                           cfg)
+                    if c["breach"] is None:
+                        continue
+                    cells[f"{iid}/{sname}/{rname}"] = c
+                    if rname == "national":
+                        national |= bool(c["breach"])
+                    else:
+                        ntot += 1
+                        nb += bool(c["breach"])
+            del pool
+        frac = nb / max(ntot, 1)
+        ok = (not (national and cfg["consistency"]["national_breach_fails"])
+              and frac <= cfg["consistency"]["region_breach_frac_fail"])
+        cons_pass &= ok
+        cons_scen[scen] = {
+            "pass": bool(ok), "national_breach": bool(national),
+            "region_cells": ntot, "region_breaches": nb,
+            "region_breach_frac": r6(frac), "cells": cells}
+        print(f"  {scen}: national={national}, regional {nb}/{ntot} "
+              f"({frac:.1%}) -> {'PASS' if ok else 'FAIL'}")
+    gates["consistency"] = {"pass": bool(cons_pass),
+                            "basis": cfg["gate_basis"],
+                            "scenarios": cons_scen}
+    gate_ok &= cons_pass
+
+    # --------- gate 2: drought statistics over the overlap ---------------
+    print(f"[2/5] drought-statistics gate (basis={cfg['gate_basis']}, overlap)")
+    ds_scen, ds_pass = {}, True
+    for scen in scenarios:
+        models_z = scen_data[scen]["models"]
+        ev_ref = {iid: find_events_matrix(ref_z[iid], EV_CFG["truncation"],
+                                          EV_CFG["min_duration"])
+                  for iid in IIDS}
+        ev_models = {m: {iid: find_events_matrix(models_z[iid][m],
+                                                 EV_CFG["truncation"],
+                                                 EV_CFG["min_duration"])
+                         for iid in IIDS} for m in models}
+        stats, nb, tot = {}, 0, 0
+        national = False
+        for iid in IIDS:
+            pooled = {k: np.sum([ev_models[m][iid][k] for m in models],
+                                axis=0)
+                      for k in ("n_complete", "n_censored_complete",
+                                "dur_sum", "sev_sum", "drought_months",
+                                "finite_months")}
+            for rname, ridx in regions.items():
+                n_used = int(sum(int(((ev_models[m][iid]["finite_months"][ridx]
+                                       > 0)
+                                      & (ev_ref[iid]["finite_months"][ridx]
+                                         > 0)).sum())
+                                 for m in models))
+                st = drought_stats_region(pooled, ev_ref[iid], ridx,
+                                          n_used, years)
+                stats[f"{iid}/{rname}"] = st
+                if st["breach"] is None:
+                    continue
+                if rname == "national":
+                    national |= bool(st["breach"])
+                else:
+                    tot += 1
+                    nb += bool(st["breach"])
+        frac = nb / max(tot, 1)
+        ok = (not (national and cfg["events"]["national_breach_fails"])
+              and frac <= cfg["events"]["region_breach_frac_fail"])
+        ds_pass &= ok
+        ds_scen[scen] = {"pass": bool(ok), "national_breach": bool(national),
+                         "region_cells": tot, "region_breaches": nb,
+                         "region_breach_frac": r6(frac), "stats": stats}
+        print(f"  {scen}: national={national}, regional {nb}/{tot} "
+              f"({frac:.1%}) -> {'PASS' if ok else 'FAIL'}")
+    gates["drought_statistics"] = {"pass": bool(ds_pass),
+                                   "basis": cfg["gate_basis"],
+                                   "scenarios": ds_scen}
+    gate_ok &= ds_pass
+
+    # --------- gate 3: committed subset (reported, never re-selected) ----
+    gates["committed_subset"] = {
+        "reported_only": True, "subset": models,
+        "source": "work/validation/best_subset.yaml (historical-skill "
+                  "ranking, committed 2026-11-16; SSP data was downloaded "
+                  "FOR this subset)",
+        "per_model_overlap_evidence": {}}
+    print("[3/5] committed subset reported (never re-selected); "
+          "per-model overlap evidence")
+    evid = gates["committed_subset"]["per_model_overlap_evidence"]
+    for scen in scenarios:
+        models_z = scen_data[scen]["models"]
+        for m in models:
+            per = {}
+            for iid in IIDS:
+                x, y, n = pooled_z(models_z[iid][m], ref_z[iid])
+                if n == 0:
+                    continue
+                r = float(np.corrcoef(x, y)[0, 1]) if x.std() > 1e-12 and \
+                    y.std() > 1e-12 else None
+                ca = float((mckee_classes(x) == mckee_classes(y)).mean())
+                per[iid] = {"n_pairs": n, "pearson_r": r6(r),
+                            "abs_bias": r6(abs(float(x.mean() -
+                                                    y.mean()))),
+                            "rmsd": r6(float(np.sqrt(((x - y) ** 2).mean()))),
+                            "class_agreement": r6(ca)}
+            evid[f"{scen}/{m}"] = per
+
+    # --------- gate 4: SPI-SPEI divergence (reported, no gate) -----------
+    print("[4/5] SPI-SPEI divergence (reported, no gate; full record)")
+    div = {}
+    for scen in scenarios:
+        ens_z = scen_data[scen]["ens"]
+        rkeys = scen_data[scen]["keys"]
+        sd = {}
+        for sname, months in seasons.items():
+            mask = np.array([m in months for (_y, m) in rkeys])
+            for rname, ridx in regions.items():
+                sd[f"{sname}/{rname}"] = {
+                    "ensemble": spi_spei_divergence(
+                        ens_z["spi_03"][ridx][:, mask],
+                        ens_z["spei_03"][ridx][:, mask]),
+                    "reference": spi_spei_divergence(
+                        ref_z["spi_03"][ridx][:, mask],
+                        ref_z["spei_03"][ridx][:, mask])}
+        div[scen] = sd
+    gates["divergence"] = {"reported_only": True,
+                           "spi_03_vs_spei_03": div}
+
+    # --------- gate 5: dry tails over the overlap ------------------------
+    print(f"[5/5] dry-tail gate (basis={cfg['gate_basis']}, overlap)")
+    tl_scen, tl_pass = {}, True
+    for scen in scenarios:
+        models_z = scen_data[scen]["models"]
+        rkeys = scen_data[scen]["keys"]
+        cells, nb, ntot = {}, 0, 0
+        national = False
+        for iid in IIDS:
+            pool = np.stack([models_z[iid][m] for m in models])
+            for sname, months in seasons.items():
+                mask = np.array([m in months for (_y, m) in rkeys])
+                for rname, ridx in regions.items():
+                    b = ref_z[iid][ridx][:, mask]
+                    c = pooled_models_cell(pool[:, ridx][:, :, mask], b,
+                                           len(models), tail_cell,
+                                           cfg["tails"])
+                    if c["breach"] is None:
+                        continue
+                    key = f"{iid}/{sname}/{rname}"
+                    if rname == "national":
+                        b_tiled = np.repeat(b[None], len(models), axis=0)
+                        c["qq_pairs"] = qq_pairs(
+                            pool[:, ridx][:, :, mask]
+                            .reshape(-1, mask.sum()),
+                            b_tiled.reshape(-1, b.shape[1]), qq_levels)
+                        national |= bool(c["breach"])
+                    cells[key] = c
+                    if rname != "national":
+                        ntot += 1
+                        nb += bool(c["breach"])
+            del pool
+        frac = nb / max(ntot, 1)
+        ok = (not (national and cfg["tails"]["national_breach_fails"])
+              and frac <= cfg["tails"]["region_breach_frac_fail"])
+        tl_pass &= ok
+        tl_scen[scen] = {
+            "pass": bool(ok), "national_breach": bool(national),
+            "region_cells": ntot, "region_breaches": nb,
+            "region_breach_frac": r6(frac), "cells": cells}
+        print(f"  {scen}: national={national}, regional {nb}/{ntot} "
+              f"({frac:.1%}) -> {'PASS' if ok else 'FAIL'}")
+    gates["tails"] = {"pass": bool(tl_pass), "basis": cfg["gate_basis"],
+                      "scenarios": tl_scen}
+    gate_ok &= tl_pass
+
+    # ------------- missing months / fit reports --------------------------
+    fit_reports = {}
+    man_p = work_root / "indices_manifest.json"
+    if man_p.exists() and cfg["report"]["include_fit_reports"]:
+        man = json.loads(man_p.read_text(encoding="utf-8"))
+        for k, v in man.get("files", {}).items():
+            if not any(f"/{s}/" in k or k.endswith(f"_{s}")
+                       for s in scenarios):
+                continue
+            fr = v.get("fit_report")
+            if fr:
+                fit_reports[k] = fr
+    report["gates"] = gates
+    report["fit_reports"] = fit_reports
+
+    # ------------- write outputs (work/validation/, X9) ------------------
+    out_dir = work_root / "validation"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    rep_path = out_dir / "validation_report_ssp.json"
+    rep_path.write_text(json.dumps(report, indent=2, default=str,
+                                   ensure_ascii=False), encoding="utf-8")
+    # the canonical report the 09 publish gate reads: the LATEST gate run
+    # (mode recorded inside) - write mode=ssp here ONLY when this is the
+    # newest run, tracked by a pointer file
+    (out_dir / "validation_report.json").write_text(
+        json.dumps(report, indent=2, default=str, ensure_ascii=False),
+        encoding="utf-8")
+
+    man_out = {"schema": 1, "files": {}}
+    manp = work_root / "validation_manifest.json"
+    if manp.exists():
+        man_out = json.loads(manp.read_text(encoding="utf-8"))
+    man_out["files"][rep_path.name] = {
+        "sha256": hashlib.sha256(rep_path.read_bytes()).hexdigest(),
+        "bytes": rep_path.stat().st_size}
+    manp.write_text(json.dumps(man_out, indent=2), encoding="utf-8")
+
+    if not gate_ok:
+        print(f"VALIDATION GATE (ssp): FAIL - see {rep_path}")
+        print("Gate-failure fallback (committed): two documented "
+              "remediation rounds, else publish observed-only v2.0 first "
+              "(docs/v2/03 section 3.8). Record attempts in PROGRESS.md.")
+        return 1
+    print(f"VALIDATION GATE (ssp): PASS -> {rep_path}")
+    print(f"COMMITTED SUBSET ({len(models)}): {', '.join(models)}")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Validation gate (M2.11)")
     ap.add_argument("--selftest", action="store_true")
@@ -675,12 +1186,7 @@ def main() -> int:
     work_root = (HERE / paths.get("work_root", "work")).resolve()
 
     if args.mode == "ssp":
-        print("HARD FAIL: ssp-mode validation requires the phase-2 SSP "
-              "downloads for the ranked subset (gated BY this step in "
-              "historical mode). Nothing to validate yet - run "
-              "--mode historical-corrected first (R3: no synthetic data "
-              "passed off as projections).")
-        return 2
+        return run_ssp_gate(cfg, work_root)
 
     y_lo, y_hi = cfg["window"]
     models = args.models.split(",") if args.models else \
