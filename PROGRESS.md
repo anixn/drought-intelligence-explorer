@@ -129,6 +129,7 @@ tracker (F2); open items are recorded in section 8.
 | IMD data acquisition (rainfall; temperature product choice OD3) | M4.1 | ⏳ pending |
 | Atlas v2 verification: DOI 10.5281/zenodo.20368514, licence, variables (OD4) | M6.1 | ⏳ pending |
 | Era C start-year confirmation (OD2: default 2026–2100) | M2.2 | ⏳ default adopted |
+| **Era-C store hosting (NEW, Owner decision 2026-11-17): keep the 8,064-file projections store (355.4 MB) LOCAL, not committed/pushed, until the Owner is satisfied with internal testing, layout and working — i.e. until the full and final v2.0 release.** The store is gitignored; committed catalog/manifest/metadata era-C blocks are the standing contract. At release: commit to the repo OR host on Cloudflare R2 (+ Zenodo archival deposit per D5). Nothing to un-do — publish already ran locally; CI and the live site are unaffected. | M5 (era-C surfaces) / release gate | ✅ Owner-decided (local-until-final) |
 | Locate `work/die-2.0/` prototype (AS2) — reuse or rebuild | M1.6 | ⏳ to check at M1.6 |
 
 **Open technical questions:** none beyond the register's OD1–OD8 (docs/v2/05 §5).
