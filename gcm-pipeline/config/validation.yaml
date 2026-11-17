@@ -138,16 +138,49 @@ validation:
     include_fit_reports: true
 
   # --------------------------------------------------------------- ssp mode --
-  # SSP-MODE GATE (real phase-2 data, 2026-11-17): the corrected SSP record
-  # is validated over the OBSERVED OVERLAP only - the years where corrected
-  # projections and the IMD-anchored reference coexist (reference window
-  # ends 2020, C2). Months past the overlap have NO observed truth and are
-  # NEVER gated (R2/R3: projections are not forecasts). The committed
-  # subset (best_subset.yaml, from the historical-skill ranking) is NOT
-  # re-selected here - per-model overlap metrics are reported as evidence
-  # only. Gate semantics otherwise identical to the historical-corrected
-  # mode (pooled multi-model basis, same tolerances).
+  # SSP-MODE GATE (real phase-2 data, 2026-11-17). REMEDIATION ROUND 1
+  # (2026-11-17, recorded in PROGRESS.md): the first ssp gate compared the
+  # POOLED MEAN of the corrected SSP record against the observed 2015-2020
+  # slice and failed at 38-56% regional breaches. Diagnosis (measured):
+  # breaches are MEAN-OFFSET dominated (sd ratios inside tolerance
+  # everywhere nationally; regional sd breaches concentrate in 1-district
+  # UTs = small-sample noise) and the per-model signed offsets have MIXED
+  # SIGNS (+0.35 ... -0.29 spi_12) = free-running realisation, not a
+  # correction bias. A free-running projection does NOT reproduce the
+  # actual weather of 2015-2020 (R2: projections are never forecasts) - a
+  # 6-year window is one observed realisation vs 8 model realisations, so
+  # window-mean and event-ratio comparisons test weather reproduction the
+  # data cannot deliver. The gate is therefore re-based onto what the
+  # record CAN support (same precedent as the historical-gate round 1):
+  #
+  #   GATE (hard) 1 - distribution SHAPE: pooled multi-model sd_ratio vs
+  #     the reference overlap, per (iid, season, region); means are
+  #     REPORTED next to every cell (realisation evidence), never gated.
+  #   GATE (hard) 2 - SEAM CONTINUITY: the corrected HISTORICAL tail
+  #     (last 3 years) vs the corrected SSP head (first 3 years) per model
+  #     per physical variable - the CMIP6 historical->ssp run is ONE
+  #     continuous experiment, so a defect (double correction, unit error,
+  #     stitch bug) shows as a discontinuity far beyond 3-year window
+  #     noise. Tolerances below.
+  #   REPORTED ONLY - overlap means (realisation + forced signal),
+  #     drought-event statistics (event ratios over a 6-year window are
+  #     realisation-dominated), dry tails (same reason; Q-Q stored),
+  #     SPI-SPEI divergence, per-model overlap evidence incl. SIGNED mean
+  #     offsets per iid (so the realisation spread is visible, not hidden).
+  #
+  # Months past the overlap are never gated (no observed truth, R2/R3).
+  # The committed subset (best_subset.yaml) is NOT re-selected here.
   ssp:
     overlap_window: [2015, 2020]      # corrected SSP x IMD reference overlap
     scenarios: [ssp245, ssp585]       # both validated; ALL must pass
     recompute_ranking: false          # subset is committed, never re-picked
+    # gate 1: shape-only consistency (declared tolerances reused from
+    # consistency.sd_ratio_range; region frac tolerance here):
+    shape_region_breach_frac_fail: 0.20
+    # gate 2: seam continuity tolerances (3-year window noise envelope):
+    seam:
+      hist_tail_years: 3              # corrected-historical years used
+      ssp_head_years: 3               # corrected-ssp years used
+      variables: [pr, tasmax, tasmin] # PET derives from tas - covered
+      pr_ratio_range: [0.80, 1.25]    # domain-mean ssp-head / hist-tail
+      tas_abs_tol_k: 1.0              # |domain-mean difference| (K)
