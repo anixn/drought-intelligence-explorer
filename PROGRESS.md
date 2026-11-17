@@ -7,23 +7,34 @@
 ## 1. Status flag
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-| STATUS:        ACTIVE — M2 CRITICAL PATH · Next: M2.7 (04_pet_hargreaves)│
-│ PHASE:         M2 — GCM processing scripts 00–09 (Owner-executed)       │
-│ ROADMAP:       ███░░░░░░░  ~38%  (M0–M1 complete, M2.1–M2.6 done)        │
-│ LAST SESSION:  2026-11-16 (Sessions 12–13 — M2.3–M2.6 + memo triage)    │
-│ BLOCKERS:      none blocking M2; SSP phase-2 downloads are ranking-gated │
-│                (post-08_validate_gcm best_subset); owner sign-offs      │
-│                pending: OD1, OD9, OD10/OD11; M1.11 exit-gate review     │
-│ BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)              │
-└─────────────────────────────────────────────────────────────────────────┘
+| STATUS:        ACTIVE - M2 CRITICAL PATH A Next: M2.13 phase 2 (synthetic   |
+|                end-to-end world; phase-1 orchestrator + CI done)            |
+| PHASE:         M2 - GCM processing scripts 00-09 (Owner-executed)           |
+| ROADMAP:       M0-M1 complete; M2.1-M2.13 phase 1 done  ~48%                |
+| LAST SESSION:  2026-11-17 (sessions 14-15 - M2.8..M2.13p1, review triage    |
+|                F1-F10: F1 ssp-mode stitch FIX + T7, F4 gate evidence        |
+|                committed, F7 paired-finite fix; F2 tracker refresh)         |
+| BLOCKERS:      none blocking M2; SSP phase-2 downloads Owner-run IN         |
+|                PROGRESS (D:/die-download/data_raw/cmip6); owner sign-offs  |
+|                pending: OD1 (incl. genealogy, F3), OD9, OD10/OD11; M1.11    |
+| BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)                  |
 ```
 
-Milestone board: **M0 ✅ · M1 ⬜ (M1.1–M1.10 ✅, exit-gate review M1.11 pending) · M2 ⬜ (M2.1–M2.6 ✅) · M3 ⬜ · M4 ⬜ · M5 ⬜ · M6 ⬜ · M7 ⬜ · M8+ ⬜** (definitions: `docs/v2/02-roadmap-milestones.md`).
+Milestone board: **M0 ✅ · M1 ⬜ (M1.1–M1.10 ✅, exit-gate review M1.11 pending) · M2 ⬜ (M2.1–M2.13 phase 1 ✅; phase 2 + M2.14 next) · M3 ⬜ · M4 ⬜ · M5 ⬜ · M6 ⬜ · M7 ⬜ · M8+ ⬜** (definitions: `docs/v2/02-roadmap-milestones.md`).
 
 ## 2. Current phase
 
-**M0 is complete** (this documentation suite). The next phase is **M1 — Foundation: engine, era-B Parquet, regression harness** (tasks M1.1–M1.10, `docs/v2/02` §3). M2 (GCM framework handoff) is independent of most of M1 and is the critical path for the Owner's compute start — begin M2 as soon as M1.2 (repo skeleton) lands.
+**M2 is the current phase**: gcm-pipeline steps 00-09 are built and
+selftested end to end. The full 22-model **historical-corrected chain is
+complete and validated** (02 regrid -> 03 QDM -> 04 PET -> 05 indices ->
+06 districts -> 07 ensemble -> 08 validation gate PASS -> 09 exported;
+gate evidence committed under `gcm-pipeline/validation/`). Remaining in M2:
+**M2.13 phase 2** (synthetic end-to-end world per section 9) and **M2.14**
+(README runbook). SSP mode (real data) waits on the Owner's phase-2
+downloads, then: inventory -> subset chain 02-09 ssp -> ssp-mode 08 (X1)
+-> 09 --publish. The 2026-11-17 review triage (F1-F10) fixed the F1
+ssp-mode stitch bug, committed the gate evidence (F4) and refreshed this
+tracker (F2); open items are recorded in section 8.
 
 ## 3. Completed tasks
 
@@ -63,9 +74,22 @@ Milestone board: **M0 ✅ · M1 ⬜ (M1.1–M1.10 ✅, exit-gate review M1.11 pe
 - **Data root verified:** `D:\Websites\die-data\cmip6\{outdir,outdir_1,download.R,India_Shp,...}` (main historical download = outdir with pr/tasmax/tasmin subfolders; outdir_1 = 1981–1984 gap fill in progress) and `D:\Websites\die-data\imd\{pr,tmax,tmin}` — **pr = 125 files, 1901–2025** (`IMD_rain_YYYY.nc`), **tmax/tmin = 1951–2025** (`IMD_tmax/tmin_YYYY.nc`). The pr record starting 1901 is richer than the session-2 audit note (1951–2025); calibration 1981–2020 unaffected. Corrected facts written into `gcm-pipeline/config/paths.yaml`.
 - `server.py` verified: 206 byte-exact ranges, HEAD, 416 with `Content-Range`, 404, suffix/mid/open-end ranges, MIME overrides, keep-alive across request types — all pass on one session.
 
+| M2.3-M2.7 | 2026-11-14..15 | gcm-pipeline configs + steps 02-04 (`02_regrid_025.py`, `03_qdm_bias_correct.py`, `04_pet_hargreaves.py`) with own --selftest suites (see session log rows 10-13) |
+| M2.8 | 2026-11-16 | `05_spi_spei_compute.py`: SPI/SPEI 1/3/6/12 on 0.25 deg grids via the audited v1.0 indicators machinery (era-C bounds clip, fit gates, manifest) - session log row 14 |
+| M2.9 | 2026-11-16 | `06_district_aggregate.py`: area-overlap (Sutherland-Hodgman, LAEA) aggregation to 724 districts, buffer fallback, sub-pixel flags (M2.9 amendment) - session log row 15 |
+| M2.10 | 2026-11-16 | `07_ensemble_stats.py`: median/p25/p75/agreement/n_models, honest-ensemble n recorded - session log row 16 |
+| M2.11 | 2026-11-16 | `08_validate_gcm.py`: 5-gate validation (pooled multi-model basis), per-model ranking + committed subset criterion -> best_subset.yaml; PASS on the real 22-model record - session log rows 17-19 |
+| M2.12 | 2026-11-16 | `09_export_parquet.py` + `config/export.yaml`: hive parquet export (ssp), validation-products export (historical-corrected), X1-gated publish; catalog `apply_projections` - session log row 20 |
+| M2.13 p1 | 2026-11-17 | `selftest_gcm.py` orchestrator + CI step (O14); 9/9 suites PASS; CI run 43999908625 GREEN - session log row 21 |
+
 ## 4. In progress
 
-None (Session 0 ended after documentation).
+- **SSP phase-2 downloads (Owner-run, in progress)** - 4,128 files expected
+  into `D:/die-download/data_raw/cmip6` (8-model committed subset, ssp245+ssp585,
+  2015-2100). Inventory check + real ssp chain 02-09 once the Owner reports done.
+- **M2.13 phase 2** (next OpenCode task): synthetic end-to-end world - design
+  in section 9 (world must mirror production structure exactly: historical
+  1981-2014 + ssp245 2015-2100, so the hard-coded seam logic applies verbatim).
 
 ## 5. Pending (next up)
 
@@ -137,6 +161,58 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 - **Ranking-before-SSP strategy (Owner proposal, adopted):** with historical (24 models) + IMD (1951–2025) in hand, the M2 chain runs on historical only, `08_validate_gcm.py` ranks models vs observed 1981–2014 → `best_subset.yaml` (8–12). **Owner downloads SSPs (ssp245+ssp585, 2015–2100) only for the best subset.** Consequences registered: ensemble stats computed over the subset (n shown honestly, never "24"); historical skill ≠ future skill (documented limitation); agreement layers reflect the subset.
 - **Download gaps found (Owner action):** CESM2 + IITM-ESM lack tasmax/tasmin (120 files); all 24 models lack historical 1981–1984 (288 files). IMD pr/tmax/tmin 1951–2025 verified complete (75 files each).
 
+### Review-finding triage 2026-11-17 (F1-F10, user-reported)
+
+- **F1 (valid, HIGH - FIXED this session).** `05_spi_spei_compute.py` ssp mode
+  fitted indices on base window (1981, 2014) while loading ONLY the 2015-2100
+  file: zero base values per calendar month, the >= 20-value fit gate fails for
+  every month, and all-NaN index files exit 0. Latent because ssp mode had
+  never run (selftests never exercised a base outside the record). Fix per the
+  committed seam (reference.yaml `scenario_combo_note`, AS6): ssp mode now
+  loads historical-corrected 1981-2014 + ssp 2015-2100, stitches them
+  (seam-validated `stitch_hist_ssp`: Dec/Jan adjacency, year+1, loud
+  SystemExit), fits on the model baseline **1981-2020** (C2), and writes ONLY
+  the ssp segment (period label = the ssp record's own range). Bonus: ssp
+  SPI-12/SPEI-12 columns now have complete rolling windows instead of warm-up
+  NaNs. Regression test **T7** added to 05's selftest (seam rejections 2/2;
+  stitched fit standardised; the old ssp-only failure mode asserted = 0
+  finite). **Must re-verify on the real ssp run before any publish.**
+- **F2 (valid - FIXED).** Status flag / current-phase / completed-table were
+  stale (said "Next: M2.7, ~38%"). Refreshed this session; session log rows
+  14-21 remain the authoritative detailed record.
+- **F3 (valid, method - OPEN owner decision, linked to OD1).** The gate pools
+  all 22 models as if independent; CMIP6 genealogies are correlated (MPI x2,
+  EC-Earth x2, MIROC x2, ACCESS x2, ...), and `models.yaml genealogy:` is
+  still empty. Disposition: (a) fill the genealogy table at OD1 sign-off;
+  (b) 08 report should carry per-model gate-1 consistency flags (abs_bias /
+  rmsd already per-model in ranking.csv - add explicit per-model breach
+  counts) so one bad family cannot hide in the pool; (c) consider
+  family-clustered gate interpretation. NOT changed silently - gate semantics
+  changes need a documented scientific reason + re-run + Owner sign-off.
+- **F4 (valid - FIXED).** Gate evidence committed: `gcm-pipeline/validation/`
+  (validation_report.json, best_subset.yaml, ranking.csv + SHA256SUMS.txt,
+  checksums verified byte-identical to `out/export_manifest.json`) with a
+  provenance README + refresh procedure. The ssp-mode gate gets its own
+  snapshot when it runs (X1).
+- **F5 (valid at review time - ALREADY FIXED by 71341d6).** The 10 gcm
+  selftests now run in CI (selftest_gcm step); CI run 43999908625 GREEN.
+- **F6 (valid, low - DOC BACKLOG).** Min-max ranking normalisation + neutral
+  0.5 imputation caveat -> methodology-page item (M2.14 runbook / methodology
+  v2); mitigated by the Dirichlet stability audit + honest labelling.
+- **F7 (valid, low - FIXED).** `class_agreement` denominator counted
+  model-finite months only (NaN-reference months counted as disagreements).
+  Fixed to a paired-finite denominator (08); 08 selftest T1-T7 green.
+- **F8 (valid, low - DOC BACKLOG).** Model z fitted on 1981-2014 vs reference
+  z on 1981-2020: small standardisation offset absorbed by the declared
+  tolerances; note for the methodology page.
+- **F9 (valid, low - DOC BACKLOG).** Documented simplifications (Hargreaves
+  PET from monthly-mean extremes; monthly-scale QDM; mask-renormalised
+  conservative remap) must reach the methodology page (M2.14 / methodology v2).
+- **F10 (valid - REGISTERED).** `dir_agreement_drier` is declared in
+  `config/export.yaml` but commented out until 07 ssp mode writes it
+  (needs the AS6 base 1981-2020 on district aggregates - natural follow-up of
+  the F1 stitch pattern); OD1/O-06a provisional status already registered.
+
 ## 9. Next recommended task
 
 ### M2.13 - `selftest_gcm.py` - PHASE 2: synthetic end-to-end mini world (next task)
@@ -180,3 +256,4 @@ After that: M2.14 README runbook (PROJ/GDAL per-run fix, step commands, raw->wor
 | 19 | 2026-11-16 | **Subset-size amendment (Owner challenge accepted): the fixed top-10 was arbitrary and is retired.** Measured the ranking's structure: composite gaps show a 7-model core separated by the largest gap in the table (0.053 after IPSL-CM6A-LR), a statistically-tied plateau ranks 8-14 (pairwise diffs < 0.006) and a clearly-worse tail 15-22; reweighting-stability analysis (1,000 Dirichlet weight perturbations, seed 20261103, from the stored per-metric normalized scores) shows the core at 95-100% inclusion, plateau 3-71% (coin-flip), tail <= 6%. Committed criterion (config/validation.yaml ranking.subset_criterion + T7 selftest): core = largest-gap boundary; extended to the registered floor (docs/v2/03 3.8: 8-12) by stability order; capped at ceiling/candidate count. Owner arbitration via structured question: 8-model stability rule chosen over the 12-model ceiling variant. New subset (8): CanESM5, MPI-ESM1-2-HR, BCC-CSM2-MR, EC-Earth3, ACCESS-ESM1-5, MPI-ESM1-2-LR, IPSL-CM6A-LR, NorESM2-MM (the 8th = most stable plateau member at 33.4% vs HadGEM3 22.5% - an ensemble-SIZE decision, not a quality claim) | gcm-pipeline/08_validate_gcm.py (select_subset + stability analysis + T7), gcm-pipeline/config/validation.yaml (subset_criterion), work/validation/* regenerated (Owner-local) | selftests T1-T7 ALL PASS; gate re-run PASS (same breach counts); subset audit in report (core 7, gap 0.0527, inclusion freqs) | M2.12 |
 | 20 | 2026-11-16 | **M2.12: `09_export_parquet.py` + `config/export.yaml`** - the ONLY step allowed to write outside work/ (X9): historical-corrected mode copies the validation products (report/best_subset/ranking) into out/validation/ with SHA-256s + R2 labels and exports NO parquet (validation-era product, never era B, never ssp, never a UI surface - X1/X5); ssp mode builds the committed hive store projections/scenario=/stat=/variable=/[model=/]year= from 07 ensemble + 06 per-model (committed subset) with the era-B schema contract, absent-row rule (R10), size gate 0.5 MB, calendar anomaly refusal, honest hard-fails (no ssp products -> exit 1; no committed subset -> refusal); --publish is X1-gated on the ssp-mode 08 PASS and regenerates catalog (generate_catalog.py gains apply_projections, additive) + pipeline_manifest/metadata era-C blocks (additive, R1) | gcm-pipeline/09_export_parquet.py (new, ~840 lines), gcm-pipeline/config/export.yaml (new), scripts/generate_catalog.py (apply_projections added), out/* (Owner-local staging), PROGRESS.md | selftests T1-T9 ALL PASS (partition set 64/64, absent-row rule exact, members rows exact, 72-cell round-trip 0 bad, size gate, R2 label in file metadata, catalog block paths all resolve, X1 refusal, validation-export checksums); real run: historical-corrected export DONE (3 products -> out/, checksums verified), ssp mode honest exit 1; regression harness PASS (680); py_compile clean | M2.13 |
 | 21 | 2026-11-17 | **M2.13 phase 1: `selftest_gcm.py` orchestrator + CI (O14)** - deterministic runner for all 10 suites in fixed pipeline order (v1.0 82-assertion harness, then step selftests 02-09, ~60 assertions total); per-suite PASS requires exit 0 AND a PASS line; non-zero exit on any failure; machine-local PROJ_LIB/GDAL_DATA workaround applied from sys.prefix only when the dirs exist (no-op on CI); --only/--list flags. CI: selftest_gcm step added + xarray/cftime to the install list (07 needs xarray; 03 cftime) | gcm-pipeline/selftest_gcm.py (new), .github/workflows/ci.yml (extended), PROGRESS.md | 9/9 suites PASS locally (v1.0 harness PASS, 02: T1a-T3, 03: T1a-T5, 04: T1a-T5, 05: T1-T6, 06: T1-T6, 07: T1-T5, 08: T1-T7, 09: T1-T9); CI will confirm on next push | M2.13 phase 2 |
+| 22 | 2026-11-17 | **Review triage F1-F10 (user-reported) + fixes** - F1 FIXED (HIGH): 05 ssp mode now stitches historical-corrected 1981-2014 + ssp 2015-2100 and fits on the model baseline 1981-2020 (C2+AS6) instead of fitting the ssp record alone (which left zero base values per calendar month -> all-NaN indices, exit 0); seam-validated `stitch_hist_ssp` (Dec/Jan adjacency, loud SystemExit); ssp segment only written; regression test T7 added (seam rejections, stitched standardisation, old failure mode asserted = 0 finite). F4 FIXED: committed gate evidence gcm-pipeline/validation/ (3 products + SHA256SUMS.txt verified byte-identical to out/export_manifest.json) + provenance README. F7 FIXED: 08 class_agreement denominator -> paired-finite months. F2 FIXED: tracker refreshed (flag box, section 2, completed table M2.3-M2.13p1, in-progress/pending). F5 already fixed by 71341d6 (CI 43999908625 GREEN). F3 recorded as OD1-linked open decision (genealogy-correlated pooling); F6/F8/F9 recorded as methodology-page backlog; F10 already registered (export.yaml comment) | gcm-pipeline/05_spi_spei_compute.py (stitch_hist_ssp + run_target_ssp + main ssp branch + T7), gcm-pipeline/08_validate_gcm.py (paired-finite class_agreement), gcm-pipeline/validation/ (new, committed evidence), PROGRESS.md | 05 selftest T1-T7 PASS (T7: seam 2/2, ssp finite frac 1.000, base mean -0.008 sd 1.011, ssp-only finite=0); 08 selftest T1-T7 PASS; py_compile clean | M2.13 phase 2 |

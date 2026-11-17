@@ -65,6 +65,13 @@ import numpy as np
 import yaml
 
 HERE = Path(__file__).resolve().parent
+# Config-dir override (M2.13 phase 2): selftest_gcm.py points every step
+# at a test config dir via DIE_CONFIG_DIR; default = the real config dir
+# so production behaviour is untouched (documented in docs/v2/03 s3.11).
+import os as _os
+CONFIG_DIR = Path(_os.environ.get("DIE_CONFIG_DIR",
+                                        str(HERE / "config")))
+
 REPO = HERE.parent
 SEED = 20261103
 SCALES = (1, 3, 6, 12)
@@ -189,10 +196,67 @@ def selftest() -> int:
     if not ok:
         fails.append("T6 NaN window honesty broken")
 
+    # ---- T7 ssp stitch: baseline fitting on hist+ssp (F1 regression) ------
+    # Production shape: historical-corrected 1981-2014 + ssp 2015-2100.
+    # Review finding F1: fitting the ssp record alone passes (1981, 2014)
+    # as the base window - zero base values per calendar month - so the
+    # >= 20-value gate fails for EVERY calendar month and all-NaN index
+    # files would exit 0. The committed seam (AS6) is to stitch and fit on
+    # the model baseline 1981-2020.
+    months_h7 = [(y, m) for y in range(1981, 2015) for m in range(1, 13)]
+    months_s7 = [(y, m) for y in range(2015, 2101) for m in range(1, 13)]
+    n_h7, n_s7 = len(months_h7), len(months_s7)
+    rng7 = np.random.default_rng(SEED + 7)
+    # 3-D grid layout (time, lat, lon) as produced by load_pr_pet
+    pr_h7 = rng7.gamma(1.2, 40.0, (n_h7, 2, 4))
+    pr_s7 = rng7.gamma(1.2, 40.0, (n_s7, 2, 4))
+    pet_h7 = np.full((n_h7, 2, 4), 80.0) + rng7.normal(0, 5, (n_h7, 2, 4))
+    pet_s7 = np.full((n_s7, 2, 4), 80.0) + rng7.normal(0, 5, (n_s7, 2, 4))
+    # a) seam validation catches defects loudly
+    seam_errors = 0
+    for bad in ("gap", "month"):
+        try:
+            if bad == "gap":
+                stitch_hist_ssp(pr_h7, pet_h7, months_h7[:-1],
+                                pr_s7, pet_s7, months_s7)
+            else:
+                stitch_hist_ssp(pr_h7, pet_h7, months_h7,
+                                pr_s7, pet_s7, months_s7[1:])
+        except SystemExit:
+            seam_errors += 1
+    # b) the stitched fit produces finite ssp-segment values, base ~ N(0,1)
+    pr7, pet7, months7 = stitch_hist_ssp(pr_h7, pet_h7, months_h7,
+                                         pr_s7, pet_s7, months_s7)
+    res7 = compute_indices(pr7, pet7, months7, (1981, 2020), (-5.0, 5.0))
+    ssp_mask7 = np.array([y >= 2015 for (y, _m) in months7])
+    spi7 = res7["spi_03"][0][ssp_mask7]
+    finite_frac = float(np.isfinite(spi7).mean())
+    base7 = res7["spi_03"][0][~ssp_mask7]
+    mean_b, sd_b = float(np.nanmean(base7)), float(np.nanstd(base7))
+    # c) document the old failure mode: ssp-only series + base (1981, 2014)
+    # leaves zero base values per calendar month -> all-NaN output
+    rep_only = {}
+    pr_only = pr7[-n_s7:].transpose(1, 2, 0).reshape(8, n_s7)
+    only = indicators._apply_per_calendar(
+        indicators.rolling_sum(pr_only, 3), months_s7,
+        indicators._base_cols(months_s7, (1981, 2014)),
+        indicators._gamma_spi, 20, "spi_ssp_only", rep_only)
+    n_finite_only = int(np.isfinite(only).sum())
+    insuff = sum(1 for s in rep_only.get("insufficient_base_months", [])
+                 if "spi_ssp_only" in s)
+    ok7 = (seam_errors == 2 and finite_frac > 0.95 and n_finite_only == 0
+           and insuff == 12 and abs(mean_b) <= 0.2 and 0.7 <= sd_b <= 1.4)
+    print(f"T7 ssp stitch: seam rejections={seam_errors}/2, ssp finite "
+          f"frac={finite_frac:.3f}, base mean={mean_b:+.3f} sd={sd_b:.3f}; "
+          f"ssp-only fit (F1 failure mode) finite={n_finite_only} "
+          f"(must be 0), insufficient-month notes={insuff}/12")
+    if not ok7:
+        fails.append("T7 ssp stitch baseline broken")
+
     if fails:
         print(f"SELFTEST FAIL ({len(fails)}): {fails}")
         return 1
-    print("SELFTEST PASS (T1, T2, T3, T4, T5, T6)")
+    print("SELFTEST PASS (T1, T2, T3, T4, T5, T6, T7)")
     return 0
 
 
@@ -299,6 +363,87 @@ def run_target(pr_path: Path, pet_path: Path, out_dir: Path,
     return records
 
 
+def stitch_hist_ssp(pr_h, pet_h, months_h, pr_s, pet_s, months_s):
+    """Seam-validated stitch of the historical-corrected record (1981-2014)
+    and an ssp record (2015-2100) into ONE continuous (pr, pet, months)
+    series, so indices can be fitted on the model baseline 1981-2020
+    (C2 + AS6: reference.yaml scenario_combo_note - "model baseline
+    1981-2020 = historical 1981-2014 combined with ssp 2015-2020").
+
+    WHY THIS EXISTS (review finding F1, 2026-11-17): fitting the ssp record
+    alone leaves ZERO base values per calendar month (the baseline years
+    live in the historical file, not the ssp file) - every calendar month
+    then fails the >= 20-value fit gate in indicators._apply_per_calendar
+    and step 05 emitted all-NaN index files with exit 0. Stitching also
+    gives the ssp SPI-12/SPEI-12 columns complete rolling windows instead
+    of warm-up NaNs. Fails loudly (SystemExit) on any seam defect."""
+    if not months_h or not months_s:
+        sys.exit("FATAL: stitch called with an empty record")
+    if (months_h[-1][1], months_s[0][1]) != (12, 1):
+        sys.exit(f"FATAL: stitch seam expects historical ending Dec and ssp "
+                 f"starting Jan (got hist {months_h[-1]}, ssp {months_s[0]})")
+    if months_s[0][0] != months_h[-1][0] + 1:
+        sys.exit(f"FATAL: stitch gap/overlap: hist ends {months_h[-1]}, "
+                 f"ssp starts {months_s[0]}")
+    pr = np.concatenate([pr_h, pr_s], axis=0)
+    pet = np.concatenate([pet_h, pet_s], axis=0)
+    return pr, pet, months_h + months_s
+
+
+def run_target_ssp(work_root: Path, model: str, exp: str,
+                   base: tuple, bounds: tuple, label: str) -> list:
+    """ssp-mode indices per (model, experiment): load the QDM-corrected
+    historical (1981-2014) and ssp (2015-2100) files, STITCH them (AS6),
+    fit on the fixed model baseline 1981-2020 (C2), and write ONLY the ssp
+    segment (period label = the ssp record's own year range)."""
+    import pandas as pd
+    import xarray as xr
+    qdm_h = work_root / "qdm" / model / "historical-corrected" / "pr_1981-2014.nc"
+    pet_h = work_root / "pet" / model / "historical-corrected" / "pet_1981-2014.nc"
+    qdm_s = work_root / "qdm" / model / exp / "pr_2015-2100.nc"
+    pet_s = work_root / "pet" / model / exp / "pet_2015-2100.nc"
+    missing = [p.name for p in (qdm_h, pet_h, qdm_s, pet_s) if not p.exists()]
+    if missing:
+        print(f"  SKIP {label}: missing stitched-fit inputs {missing} "
+              f"(run 03/04 in both modes first)")
+        return []
+    pr_h, pet_h2, months_h, lat, lon = load_pr_pet(qdm_h, pet_h)
+    pr_s, pet_s2, months_s, _, _ = load_pr_pet(qdm_s, pet_s)
+    pr, pet, months = stitch_hist_ssp(pr_h, pet_h2, months_h,
+                                      pr_s, pet_s2, months_s)
+    period = f"{months_s[0][0]}-{months_s[-1][0]}"
+    hr(f"INDICES {label} (ssp, stitched) — {len(months)} months "
+       f"{months[0][0]}-{months[-1][0]}, base {base[0]}-{base[1]} (C2+AS6)")
+    results = compute_indices(pr, pet, months, base, bounds)
+    ssp_from = months_s[0][0]
+    ssp_mask = np.array([y >= ssp_from for (y, _m) in months])
+    months_out = [mm for mm, keep in zip(months, ssp_mask) if keep]
+    meta_base = {
+        "label": label,
+        "base_period": f"{base[0]}-{base[1]} (stitched model baseline: "
+                       "historical 1981-2014 + "
+                       f"{exp} {ssp_from}-{base[1]}; C2+AS6)",
+        "era_c_bounds": f"[{bounds[0]}, {bounds[1]}]",
+        "spi_method": "gamma MLE (loc=0) + mixed zeros (McKee 1993 convention)",
+        "spei_method": "log-logistic L-moments (Vicente-Serrano 2010); "
+                       "Gringorten empirical fallback",
+        "fit_gate": ">= 20 base values per cell-calendar-month",
+        "source_note": "IMD 0.25deg reference / QDM-corrected model "
+                       "(step 03) + Hargreaves PET (step 04); ssp segment "
+                       "of a continuous stitched series",
+    }
+    out_dir = work_root / "indices" / model / exp
+    records = []
+    for iid, (mat, rep) in results.items():
+        meta = {**meta_base, "fit_report": json.dumps(rep)}
+        rec = write_indices(out_dir, iid, period, mat[ssp_mask], months_out,
+                            lat, lon, meta)
+        rec.update({"label": label, "iid": iid, "period": period,
+                    "fit_report": rep, "status": "ok"})
+        records.append(rec)
+    return records
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="SPI/SPEI on grids (M2.8)")
     ap.add_argument("--selftest", action="store_true")
@@ -313,9 +458,9 @@ def main() -> int:
     if args.selftest:
         return selftest()
 
-    paths = load_yaml(HERE / "config" / "paths.yaml")
-    ref_cfg = load_yaml(HERE / "config" / "reference.yaml")
-    cfg = load_yaml(HERE / "config" / "models.yaml")
+    paths = load_yaml(CONFIG_DIR / "paths.yaml")
+    ref_cfg = load_yaml(CONFIG_DIR / "reference.yaml")
+    cfg = load_yaml(CONFIG_DIR / "models.yaml")
     work_root = (HERE / paths.get("work_root", "work")).resolve()
     work_root.mkdir(parents=True, exist_ok=True)
     bounds = tuple(ref_cfg["qa"]["bounds_era_c"])
@@ -339,23 +484,32 @@ def main() -> int:
                         else ["ssp245", "ssp585"]))
         hr(f"INDICES — mode={args.mode} models={len(models)} "
            f"bounds={bounds}")
-        for model in models:
-            tags = ["historical-corrected"] if args.mode == "historical-corrected" \
-                else experiments
-            for tag in tags:
-                pr_path = work_root / "qdm" / model / tag / "pr_1981-2014.nc" \
-                    if args.mode == "historical-corrected" else \
-                    work_root / "qdm" / model / tag / f"pr_2015-2100.nc"
-                pet_path = work_root / "pet" / model / tag / "pet_1981-2014.nc" \
-                    if args.mode == "historical-corrected" else \
-                    work_root / "pet" / model / tag / f"pet_2015-2100.nc"
+        if args.mode == "historical-corrected":
+            for model in models:
+                pr_path = (work_root / "qdm" / model
+                           / "historical-corrected" / "pr_1981-2014.nc")
+                pet_path = (work_root / "pet" / model
+                            / "historical-corrected" / "pet_1981-2014.nc")
                 if not pr_path.exists() or not pet_path.exists():
-                    print(f"  SKIP {model}/{tag}: pr/pet inputs missing")
+                    print(f"  SKIP {model}: pr/pet inputs missing")
                     continue
                 recs = run_target(pr_path, pet_path,
-                                  work_root / "indices" / model / tag,
-                                  (1981, 2014), bounds, f"{model}/{tag}")
+                                  work_root / "indices" / model
+                                  / "historical-corrected",
+                                  (1981, 2014), bounds,
+                                  f"{model}/historical-corrected")
                 all_recs.extend(recs)
+        else:
+            # ssp mode: fit on the STITCHED model baseline 1981-2020
+            # (C2 + AS6) - never on the ssp record alone (finding F1:
+            # that leaves zero base values per calendar month, the fit
+            # gate fails silently, and all-NaN indices exit 0).
+            base = tuple(ref_cfg.get("calibration_window", [1981, 2020]))
+            for model in models:
+                for exp in experiments:
+                    all_recs.extend(
+                        run_target_ssp(work_root, model, exp, base,
+                                       bounds, f"{model}/{exp}"))
 
     for r in all_recs:
         key = (f"reference/{r['iid']}" if r["label"] == "reference IMD"

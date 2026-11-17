@@ -1,0 +1,131 @@
+schema: die-best-subset/1.1
+seed: 20261103
+window:
+- 1981
+- 2014
+n_candidates: 22
+criterion:
+  size_range:
+  - 8
+  - 12
+  stability_draws: 1000
+  dirichlet_concentration: 40.0
+  stability_seed: 20261103
+criterion_rule: core = largest inter-rank composite gap; extend to size_range[0] by
+  reweighting-stability order (Dirichlet weight perturbations); cap at size_range[1]
+  and candidate count (see config/validation.yaml ranking.subset_criterion)
+core_size: 7
+core_gap: 0.052702
+inclusion_freq_at_floor:
+  ACCESS-CM2: 0.0
+  ACCESS-ESM1-5: 1.0
+  BCC-CSM2-MR: 0.999
+  CanESM5: 1.0
+  MRI-ESM2-0: 0.089
+  CMCC-ESM2: 0.129
+  CNRM-CM6-1: 0.0
+  EC-Earth3: 1.0
+  EC-Earth3-Veg-LR: 0.0
+  FGOALS-g3: 0.0
+  GFDL-ESM4: 0.0
+  GISS-E2-1-G: 0.0
+  HadGEM3-GC31-MM: 0.225
+  INM-CM4-8: 0.0
+  INM-CM5-0: 0.081
+  IPSL-CM6A-LR: 0.955
+  MIROC-ES2L: 0.032
+  MIROC6: 0.0
+  MPI-ESM1-2-HR: 1.0
+  MPI-ESM1-2-LR: 0.982
+  NorESM2-MM: 0.334
+  TaiESM1: 0.174
+weights_verbatim:
+  pearson_r: 0.1
+  abs_bias: 0.15
+  rmsd: 0.15
+  class_agreement: 0.1
+  freq_ratio: 0.15
+  duration_ratio: 0.1
+  severity_ratio: 0.1
+  spatial_r: 0.15
+closeness_cap_ratio: 3.0
+method: composite rank (8 metrics, min-max normalised across models per indicator,
+  mean over indicators); free-running decorrelation caveat documented in config/validation.yaml;
+  subset size = committed stability criterion (largest-gap core extended to the registered
+  floor), NOT a fixed count
+subset:
+- CanESM5
+- MPI-ESM1-2-HR
+- BCC-CSM2-MR
+- EC-Earth3
+- ACCESS-ESM1-5
+- MPI-ESM1-2-LR
+- IPSL-CM6A-LR
+- NorESM2-MM
+ranking:
+- rank: 1
+  model: CanESM5
+  composite: 0.698364
+- rank: 2
+  model: MPI-ESM1-2-HR
+  composite: 0.664517
+- rank: 3
+  model: BCC-CSM2-MR
+  composite: 0.640222
+- rank: 4
+  model: EC-Earth3
+  composite: 0.621983
+- rank: 5
+  model: ACCESS-ESM1-5
+  composite: 0.604365
+- rank: 6
+  model: MPI-ESM1-2-LR
+  composite: 0.598228
+- rank: 7
+  model: IPSL-CM6A-LR
+  composite: 0.591801
+- rank: 8
+  model: NorESM2-MM
+  composite: 0.5391
+- rank: 9
+  model: MIROC-ES2L
+  composite: 0.53506
+- rank: 10
+  model: HadGEM3-GC31-MM
+  composite: 0.534306
+- rank: 11
+  model: TaiESM1
+  composite: 0.529469
+- rank: 12
+  model: CMCC-ESM2
+  composite: 0.527515
+- rank: 13
+  model: MRI-ESM2-0
+  composite: 0.521906
+- rank: 14
+  model: INM-CM5-0
+  composite: 0.519637
+- rank: 15
+  model: GFDL-ESM4
+  composite: 0.488018
+- rank: 16
+  model: EC-Earth3-Veg-LR
+  composite: 0.475093
+- rank: 17
+  model: INM-CM4-8
+  composite: 0.465036
+- rank: 18
+  model: CNRM-CM6-1
+  composite: 0.439272
+- rank: 19
+  model: GISS-E2-1-G
+  composite: 0.409438
+- rank: 20
+  model: ACCESS-CM2
+  composite: 0.391584
+- rank: 21
+  model: MIROC6
+  composite: 0.37801
+- rank: 22
+  model: FGOALS-g3
+  composite: 0.350887

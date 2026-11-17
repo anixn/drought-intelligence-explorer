@@ -1,0 +1,6 @@
+# SHA-256 checksums of the committed validation snapshot (finding F4).
+# Verify: python -c check or certutil; source = gcm-pipeline/work/validation/ (owner-local).
+
+1e06baec4d5e8064093e8f037388f7369320728eb7006562a9930f032b039589  validation_report.json
+752203063faf86391a3cda5835127ed01d120be6908507c6adac3793bad98905  best_subset.yaml
+1e92af38c6ac86f06fdadc11441d5a47dcf29ecfb44af1c98f1b883ccd381485  ranking.csv

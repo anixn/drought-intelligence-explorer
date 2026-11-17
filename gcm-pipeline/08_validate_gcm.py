@@ -74,6 +74,13 @@ import numpy as np
 import yaml
 
 HERE = Path(__file__).resolve().parent
+# Config-dir override (M2.13 phase 2): selftest_gcm.py points every step
+# at a test config dir via DIE_CONFIG_DIR; default = the real config dir
+# so production behaviour is untouched (documented in docs/v2/03 s3.11).
+import os as _os
+CONFIG_DIR = Path(_os.environ.get("DIE_CONFIG_DIR",
+                                        str(HERE / "config")))
+
 REPO = HERE.parent
 SEED = 20261103
 IIDS = ("spi_01", "spi_03", "spi_06", "spi_12",
@@ -389,10 +396,12 @@ def rank_models(models_z: dict, ref_z: dict, iids, ev_cfg: dict,
                 x.std() > 1e-12 and y.std() > 1e-12 else None
             bias = float(x.mean() - y.mean())
             rmsd = float(np.sqrt(((x - y) ** 2).mean()))
-            cls = (mckee_classes(x) == mckee_classes(y)) & \
-                (mckee_classes(x) >= 0)
-            ca = float(cls.sum() / mckee_classes(x).__ge__(0).sum()) \
-                if (mckee_classes(x) >= 0).any() else None
+            xcls, ycls = mckee_classes(x), mckee_classes(y)
+            # paired-finite denominator (F7): months where the reference is
+            # undefined must not count as disagreements
+            pair = (xcls >= 0) & (ycls >= 0)
+            cls = (xcls == ycls) & pair
+            ca = float(cls.sum() / pair.sum()) if pair.any() else None
             fr = (ev_m["n_complete"].sum() / max(ev_ref["n_complete"].sum(), 1)
                   ) if ev_ref["n_complete"].sum() > 0 else None
             dur_m = float(np.nanmean(ev_m["mean_duration"])) \
@@ -493,7 +502,7 @@ def selftest() -> int:
     hr("SELFTEST - validation gate on synthetic worlds (seed 20261103)")
     rng = np.random.default_rng(SEED)
     fails = []
-    cfg = load_yaml(HERE / "config" / "validation.yaml")["validation"]
+    cfg = load_yaml(CONFIG_DIR / "validation.yaml")["validation"]
     EV_CFG = cfg["events"]
     T = 408
     years = 34.0
@@ -659,10 +668,10 @@ def main() -> int:
         return selftest()
 
     global EV_CFG
-    cfg = load_yaml(HERE / "config" / "validation.yaml")["validation"]
+    cfg = load_yaml(CONFIG_DIR / "validation.yaml")["validation"]
     EV_CFG = cfg["events"]
-    paths = load_yaml(HERE / "config" / "paths.yaml")
-    cfgm = load_yaml(HERE / "config" / "models.yaml")
+    paths = load_yaml(CONFIG_DIR / "paths.yaml")
+    cfgm = load_yaml(CONFIG_DIR / "models.yaml")
     work_root = (HERE / paths.get("work_root", "work")).resolve()
 
     if args.mode == "ssp":
