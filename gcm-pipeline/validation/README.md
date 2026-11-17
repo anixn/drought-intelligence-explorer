@@ -21,8 +21,8 @@ evidence is auditable from the branch.
   (`out/validation/*`, checksums cross-verified against
   `out/export_manifest.json`).
 - Mode label: this is the **historical-corrected (validation-era) gate** —
-  the ssp-mode gate (X1, required before any projections publish) does NOT
-  exist yet and will produce its own committed snapshot when it runs.
+  the ssp-mode gate (X1, required before any projections publish) has its
+  OWN committed snapshot under `ssp/` — see `ssp/README.md`.
 
 ## Refresh procedure
 
@@ -33,3 +33,14 @@ evidence is auditable from the branch.
 3. Copy the new products here, regenerate `SHA256SUMS.txt`, and record the
    re-run in `PROGRESS.md` (what changed and why — e.g. a monthly refresh or
    a model-list amendment).
+
+## ssp-mode snapshot (`ssp/`)
+
+`ssp/` holds the committed evidence of the ssp-mode gate
+(`08_validate_gcm.py --mode ssp`): the corrected SSP record validated over
+the OBSERVED OVERLAP 2015–2020 only — months past the overlap are never
+gated (no observed truth, R2/R3; projections are not forecasts). It is a
+separate snapshot, never mixed with the historical-corrected evidence above
+(era honesty, R2): the two gates answer different questions (skill of the
+correction vs overlap consistency of the projections). Refresh it only with
+the same review discipline as this snapshot.

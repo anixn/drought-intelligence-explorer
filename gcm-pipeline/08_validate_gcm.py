@@ -1054,7 +1054,7 @@ def run_ssp_gate(cfg: dict, work_root: Path) -> int:
             evid[f"{scen}/{m}"] = per
 
     # --------- gate 4: SPI-SPEI divergence (reported, no gate) -----------
-    print("[4/5] SPI-SPEI divergence (reported, no gate; full record)")
+    print("[4/5] SPI-SPEI divergence (reported, no gate; overlap window)")
     div = {}
     for scen in scenarios:
         ens_z = scen_data[scen]["ens"]

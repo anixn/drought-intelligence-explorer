@@ -1828,19 +1828,19 @@ td .sparse-tag {
   background: var(--navy);
   color: #b7c4d2;
   border-radius: var(--radius) var(--radius) 0 0;
-  padding: 22px 22px 14px;
+  padding: 14px 22px 10px;
 }
 .footer-grid {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
-  gap: 26px;
+  gap: 14px 26px;
 }
 .footer-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.02em;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 .footer-title-sm {
   font-size: 10px;
@@ -1848,17 +1848,18 @@ td .sparse-tag {
   letter-spacing: 0.11em;
   text-transform: uppercase;
   color: #8fa3ba;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 .footer-text {
   font-size: 12px;
-  margin: 0 0 8px;
+  margin: 0 0 5px;
 }
 .footer-author {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: #e6edf4;
-  margin: 0 0 8px;
+  margin: 0 0 5px;
+  line-height: 1.45;
 }
 .footer-role {
   font-weight: 400;
@@ -1868,7 +1869,7 @@ td .sparse-tag {
 .footer-domains {
   font-size: 11px;
   color: #8fa3ba;
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   letter-spacing: 0.02em;
 }
 .footer-links {
@@ -1887,8 +1888,8 @@ td .sparse-tag {
   border-bottom-color: #9fc2d6;
 }
 .footer-disclaimer {
-  font-size: 11px;
-  line-height: 1.55;
+  font-size: 10.5px;
+  line-height: 1.5;
   color: #9daec0;
   margin: 0;
 }
@@ -1897,8 +1898,8 @@ td .sparse-tag {
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 18px;
-  padding-top: 12px;
+  margin-top: 12px;
+  padding-top: 8px;
   border-top: 1px solid var(--navy-line);
   font-family: var(--mono);
   font-size: 10px;
@@ -2737,9 +2738,29 @@ kbd {
   .tabs button {
     padding: 9px 11px;
   }
+  .app-footer {
+    padding: 10px 12px 8px;
+  }
+  .footer-grid {
+    gap: 8px;
+  }
+  .footer-title {
+    margin-bottom: 3px;
+  }
+  .footer-author,
+  .footer-domains,
+  .footer-text {
+    margin-bottom: 3px;
+  }
+  .footer-disclaimer {
+    font-size: 9.5px;
+    line-height: 1.45;
+  }
   .footer-bottom {
     flex-direction: column;
     gap: 3px;
+    margin-top: 7px;
+    padding-top: 6px;
   }
 }
 @media print {
@@ -2928,14 +2949,19 @@ details.acc-panel > summary.panel-head:focus-visible {
 /* ---------------------------------------------------------------- footer */
 .footer-more {
   display: flex;
-  flex-direction: column;
-  gap: 7px;
-  margin: 0 0 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+}
+.footer-more .footer-title-sm {
+  margin-bottom: 0;
+  white-space: nowrap;
 }
 .footer-more-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px 16px;
+  gap: 4px 14px;
 }
 .footer-more-links a {
   color: #9fc2d6;
@@ -3882,42 +3908,42 @@ body[data-tab="engine"] {
 }
 
 /* ------------------------------------- 3. compact footer ----------------- */
+/* (kept as the single tuned source: values mirror the compacted base above) */
 .app-footer {
   margin-top: 2px;
-  padding: 14px 18px 10px;
+  padding: 12px 18px 8px;
 }
 .footer-grid {
-  gap: 18px;
+  gap: 10px 18px;
 }
 .footer-title {
   font-size: 12.5px;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 .footer-title-sm {
   font-size: 9.5px;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 .footer-text {
   font-size: 11px;
-  margin: 0 0 5px;
+  margin: 0 0 4px;
 }
 .footer-author {
   font-size: 12px;
-  margin: 0 0 5px;
+  margin: 0 0 4px;
 }
 .footer-role {
   font-size: 10.5px;
 }
 .footer-domains {
   font-size: 10px;
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 .footer-more {
-  gap: 5px;
-  margin: 0 0 10px;
+  gap: 3px 10px;
 }
 .footer-more-links {
-  gap: 4px 14px;
+  gap: 3px 12px;
 }
 .footer-more-links a,
 .footer-links a {
@@ -3927,8 +3953,8 @@ body[data-tab="engine"] {
   font-size: 10px;
 }
 .footer-bottom {
-  margin-top: 10px;
-  padding-top: 8px;
+  margin-top: 8px;
+  padding-top: 7px;
 }
 
 /* ===========================================================================
