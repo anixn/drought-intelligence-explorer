@@ -1,6 +1,16 @@
 # SHA-256 checksums of the committed validation snapshot (finding F4).
-# Verify: python -c check or certutil; source = gcm-pipeline/work/validation/ (owner-local).
+# 'lf'  = the committed files as checked out on every platform
+#        (repo .gitattributes policy: * text=auto eol=lf).
+# 'orig'= the files as produced by step 08 / staged by step 09
+#        (out/export_manifest.json source_sha256, CRLF working copies).
+# Content is identical modulo line endings.
 
+[lf - committed content]
+896adae93c94738484bcde60e18335d98ed695931a34634662007cef0fe9ae5d  validation_report.json
+133f0840f40abbc88661daecc62979b23f51b30dcc3a33c38c3cd24d76cd2cc0  best_subset.yaml
+4f10022089b634a972308528b42e2c0c875dfc903243602864cfe1fa8fa36756  ranking.csv
+
+[orig - as-produced (out/export_manifest.json source_sha256)]
 1e06baec4d5e8064093e8f037388f7369320728eb7006562a9930f032b039589  validation_report.json
 752203063faf86391a3cda5835127ed01d120be6908507c6adac3793bad98905  best_subset.yaml
 1e92af38c6ac86f06fdadc11441d5a47dcf29ecfb44af1c98f1b883ccd381485  ranking.csv

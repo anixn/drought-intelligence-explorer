@@ -40,7 +40,7 @@ SUITES = [
     ("02 regrid (T1a-T1e, T2, T3)", "02_regrid_025.py", "gcm-pipeline"),
     ("03 QDM (T1a-T5)", "03_qdm_bias_correct.py", "gcm-pipeline"),
     ("04 PET Hargreaves (T1a-T5)", "04_pet_hargreaves.py", "gcm-pipeline"),
-    ("05 SPI/SPEI (T1-T6)", "05_spi_spei_compute.py", "gcm-pipeline"),
+    ("05 SPI/SPEI (T1-T7)", "05_spi_spei_compute.py", "gcm-pipeline"),
     ("06 district aggregation (T1-T6)", "06_district_aggregate.py",
      "gcm-pipeline"),
     ("07 ensemble statistics (T1-T5)", "07_ensemble_stats.py",

@@ -11,7 +11,7 @@ evidence is auditable from the branch.
 | `validation_report.json` | Full step-08 gate report (`die-gcm-validation/1.0`): all 5 gate sections, per-region/season cells, Q-Q tables, config verbatim. The top-level `gates` block records the PASS/FAIL per gate. |
 | `best_subset.yaml` | The committed era-C subset selected by the registered criterion (largest-gap core extended to the registered floor by reweighting-stability order — never a fixed count). |
 | `ranking.csv` | Per-model ranking metrics (8 metrics × indicators) behind the subset decision. |
-| `SHA256SUMS.txt` | SHA-256 of each snapshot file — verified against the export manifest (`out/export_manifest.json`) at commit time. |
+| `SHA256SUMS.txt` | SHA-256 of each snapshot file in two forms: the committed LF content (repo `.gitattributes` policy: `* text=auto eol=lf` — every platform checks out identical bytes) and the original as-produced CRLF copies recorded in `out/export_manifest.json` (`source_sha256`). Content identical modulo line endings. |
 
 ## Provenance
 
