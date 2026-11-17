@@ -8,3 +8,11 @@ main.synctex.gz
 main.xdv
 *.bbl
 *.blg
+main_v2.aux
+main_v2.log
+main_v2.out
+main_v2.fls
+main_v2.fdb_latexmk
+main_v2.synctex.gz
+*.bbl
+*.blg
