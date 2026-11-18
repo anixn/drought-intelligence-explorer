@@ -66,10 +66,10 @@ The four planning inputs (build specification, implementation specification, wor
 
 | ID | Decision | Default until resolved |
 |---|---|---|
-| OD1 | Final 24-model list (`gcm-pipeline/config/models.yaml`) | Selection criteria + inventory checker shipped; nothing runs until filled |
+| OD1 | Final 24-model list (`gcm-pipeline/config/models.yaml`) | **RESOLVED 2026-11-18:** the Owner's genealogy memo (`Geneology.md`) enumerates the full 24-model set and confirms the lineage groupings; `genealogy:` filled (5 families × 2 + 14 singletons, sources cited), `meta.status: owner-confirmed-2026-11-18`. Gate-pooling semantics (review F3) remain an open methodology decision — genealogy is display/report metadata until a documented gate re-basing is signed off |
 | OD2 | Era C start year (2026 vs 2022) | 2026 |
 | OD3 | IMD temperature product (resolution/version) for the QDM reference | Verify current IMD product at M4.1; regrid to 0.25° regardless |
-| OD4 | Atlas v2 release verification (licence, variables, timescales, units) | Blocked until verified; era A tab cannot ship before |
+| OD4 | Atlas v2 release verification (licence, variables, timescales, units) | **DOI VERIFIED 2026-11-18 by the Owner:** https://zenodo.org/records/20368514 is the correct Atlas v2 record; the Owner is downloading the ~3 GB dataset. Remaining: variable/timescale/unit/licence check against the landed files (first step of M6.1) — era A cannot ship before that passes |
 | OD5 | Tehsil geometry source + licence | Tehsil layer stays Tier 2/gated |
 | OD6 | Hosting at scale (GitHub Pages vs Cloudflare R2) | GitHub Pages until payload/traffic forces R2 |
 | OD7 | CMIP6 download route (ESGF vs Google/Pangeo cloud) | **Resolved 2026-11-13: Route A — raw CMIP6 + own QDM** (PROGRESS.md §8, session-2 additions) |

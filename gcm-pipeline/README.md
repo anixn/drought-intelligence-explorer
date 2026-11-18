@@ -113,7 +113,7 @@ honestly (R3). Current reality: ssp245+ssp585 end 2050 (2051–2100 pending);
 | File | Contents |
 |---|---|
 | `config/paths.yaml` | data roots (raw_root, raw_root_ssp), work/out roots |
-| `config/models.yaml` | the 24-model list, per-model variant/grid_label (from on-disk inventory — authoritative), experiment windows, era-C ensemble flags, genealogy (OD1) |
+| `config/models.yaml` | the 24-model list, per-model variant/grid_label (from on-disk inventory — authoritative), experiment windows, era-C ensemble flags, genealogy (OD1 closed 2026-11-18: 5 families + singletons; names referenced, never an aggregation) |
 | `config/reference.yaml` | IMD-primary reference, 0.25° target grid, calibration 1981–2020, PET seam (C3), per-era z bounds |
 | `config/aggregate.yaml` | boundaries geojson + district registry paths |
 | `config/ensemble.yaml` | agreement thresholds, base/windows for dir_agreement |

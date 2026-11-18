@@ -28,8 +28,9 @@
 #   (never labelled "24 models").
 
 meta:
-  status: provisional-owner-review      # Owner confirms at OD1 gate (M2.1)
+  status: owner-confirmed-2026-11-18   # OD1 closed: 24-model list + genealogy confirmed by the Owner (Geneology.md)
   list_source: "download.R (Owner R cmip6 route), 2026-10-30"
+  genealogy_status: "owner-confirmed 2026-11-18 (Geneology.md: 5 families + 14 singletons/2 excluded)"
   era_c_route: A                        # raw CMIP6 + own QDM vs IMD (OD7 resolved, register §1)
   scenarios_full_record: [historical, ssp245, ssp585]
   phase1_experiments: [historical]
@@ -47,10 +48,59 @@ meta:
 # Amendment (docs/v2/06 §2, M2.1): per-model genealogy (CMIP6 parent /
 # institution family) so agreement fractions can be reported family-collapsed
 # (24 models are NOT 24 independent models). Ranking stays model-level; the
-# genealogy view is display-only. Fill at OD1 confirmation:
-#   genealogy:
-#     "ACCESS-CM2": {family: "ACCESS", institution: "CSIRO-ARCCSS"}
-genealogy: {}
+# genealogy view is display-only.
+#
+# FILLED 2026-11-18 from the Owner's memo (Geneology.md, "CMIP6 Model
+# Genealogy and Validation Gate"); OD1 genealogy item. Five documented
+# lineages are grouped; every other model carries its own source_id as its
+# family so the gate counts it as one sample:
+#   ACCESS    — shared UM7.1/MOM5 core, ACCESS-ESM1-5 adds the carbon cycle
+#               (Bi et al. 2020)
+#   MPI       — same model at different resolution (Müller et al. 2017)
+#   EC-Earth  — identical atmosphere/ocean/sea-ice; Veg adds LPJ-GUESS
+#   MIROC     — MIROC-ES2L is the Earth-system extension of MIROC6
+#               (Hajima et al. 2020)
+#   INM       — INM-CM5-0 is the successor generation (Volodin et al. 2017)
+# Shared components ACROSS families (e.g. UM atmosphere in ACCESS + HadGEM,
+# NEMO/MOM oceans) are noted in the memo as approximate-independence caveats;
+# they do not create YAML groupings (over-grouping would reduce diversity).
+genealogy:
+  # -- ACCESS family ---------------------------------------------------------
+  ACCESS-CM2:        {family: "ACCESS",   institution: "CSIRO-ARCCSS"}
+  ACCESS-ESM1-5:     {family: "ACCESS",   institution: "CSIRO"}
+  # -- MPI family ------------------------------------------------------------
+  MPI-ESM1-2-HR:     {family: "MPI",      institution: "MPI-M"}
+  MPI-ESM1-2-LR:     {family: "MPI",      institution: "MPI-M"}
+  # -- EC-Earth family -------------------------------------------------------
+  EC-Earth3:         {family: "EC-Earth", institution: "EC-Earth-Consortium"}
+  EC-Earth3-Veg-LR:  {family: "EC-Earth", institution: "EC-Earth-Consortium"}
+  # -- MIROC family ----------------------------------------------------------
+  MIROC6:            {family: "MIROC",    institution: "MIROC"}
+  MIROC-ES2L:        {family: "MIROC",    institution: "MIROC"}
+  # -- INM family ------------------------------------------------------------
+  INM-CM4-8:         {family: "INM",      institution: "INM"}
+  INM-CM5-0:         {family: "INM",      institution: "INM"}
+  # -- singletons (no direct lineage: family = own source_id) ----------------
+  BCC-CSM2-MR:       {family: "BCC-CSM2-MR",    institution: "BCC"}
+  CanESM5:           {family: "CanESM5",        institution: "CCCma"}
+  CESM2:             {family: "CESM2",          institution: "NCAR"}
+  MRI-ESM2-0:        {family: "MRI-ESM2-0",     institution: "MRI"}
+  CMCC-ESM2:         {family: "CMCC-ESM2",      institution: "CMCC"}
+  CNRM-CM6-1:        {family: "CNRM-CM6-1",     institution: "CNRM-CERFACS"}
+  FGOALS-g3:         {family: "FGOALS-g3",      institution: "CAS"}
+  GFDL-ESM4:         {family: "GFDL-ESM4",      institution: "NOAA-GFDL"}
+  GISS-E2-1-G:       {family: "GISS-E2-1-G",    institution: "NASA-GISS"}
+  HadGEM3-GC31-MM:   {family: "HadGEM3-GC31-MM", institution: "MOHC"}
+  IITM-ESM:          {family: "IITM-ESM",       institution: "IITM"}
+  IPSL-CM6A-LR:      {family: "IPSL-CM6A-LR",   institution: "IPSL"}
+  NorESM2-MM:        {family: "NorESM2-MM",     institution: "NCC"}
+  TaiESM1:           {family: "TaiESM1",        institution: "AS-RCEC"}
+
+# Gate-pooling note (review finding F3): 08_validate_gcm.py currently pools
+# all models as if independent. The genealogy above is the input for the
+# family-aware interpretation, but changing gate SEMANTICS requires a
+# documented decision + re-run + Owner sign-off (AGENTS.md — never silently).
+# Until then this block is display/report metadata only.
 
 models:
   - {source_id: "ACCESS-CM2",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}

@@ -12,11 +12,11 @@
 |                Next: M6 (Atlas era A, gated on OD4) or M3/M4           |
 | PHASE:         M5 complete; M2 complete; M3/M4/M6 queueable            |
 | ROADMAP:       M0-M2 complete. M5.2-M5.8 done 2026-11-18               |
-| LAST SESSION:  2026-11-18 (row 30 - M5.4-M5.8 batch)                   |
-| BLOCKERS:      none technical. Pending Owner: manuscript review, era-C |
-|                store hosting (at release), SSP 2051-2100 download,     |
-|                step-07 dir_agreement_drier emission, OD1, OD4          |
-|                (Atlas verification), OD10/OD11                         |
+| LAST SESSION:  2026-11-18 (row 31 - OD1 genealogy + OD4 DOI)             |
+| BLOCKERS:      none technical. Pending Owner: Atlas file download (in   |
+|                progress), manuscript review, era-C store hosting (at    |
+|                release), SSP 2051-2100 download, step-07 dir_agreement  |
+|                emission, OD10/OD11                                      |
 | BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)             |
 ```
 
@@ -92,6 +92,7 @@ tracker (F2); open items are recorded in section 8.
 | M5.6 | 2026-11-18 | SPI–SPEI divergence map (fixed SPI-3 vs SPEI-3 medians, same 8 models, same scenario/month): d = SPI−SPEI, 5 bins (strong/mild demand-driven → balanced → mild/strong rainfall-driven), lazy second choropleth + function tooltips (per-district SPI/SPEI/d), legend with bin counts + index-construction caveat (R9) + the exact quote "Rainfall alone does not decide India's drought future; demand does half the work."; own state divYear/divMonth - session log row 30 |
 | M5.7 | 2026-11-18 | Projection banner refinement (M5.7/X3): 4 lines — honest ensemble n from best_subset with the criterion rule, "median never shown alone / disagreement is a finding" (X2), era labels + never-spliced rule; band and map metas prefixed "era C · " - session log row 30 |
 | M5.8 | 2026-11-18 | **E14 future drought event analytics (OD9 resolved — Owner confirmed via the session instruction "complete m5.4 to m5.8", recorded §6 + register §5):** `scripts/build_events_baseline.py` → `data/events/baseline_1981_2020.json` (1,188,366 bytes, sha256 2c87f62a24ed69fd; 8 SPI/SPEI variables, 5,788 district records; frozen runs analysis on the era-B parquet, threshold −1.0, min 3 months, censoring flagged; sanity: Ahmedabad spi_03 = 8 events/40 yr, national mean 9.99); era-C side computed live client-side via `DIE.Analytics.findEvents` (same frozen machinery); events panel (9 columns, sort by frequency/duration/severity, top 15, national medians, censoring count, "median-based, not a forecast" + agreement column X2) - session log row 30 |
+| OD1 | 2026-11-18 | **Genealogy filled from the Owner memo** (`D:\OneDrive\Desktop\Geneology.md`, "CMIP6 Model Genealogy and Validation Gate"): 5 documented lineages grouped — ACCESS (ACCESS-CM2 + ACCESS-ESM1-5, shared UM7.1/MOM5 core, Bi et al. 2020), MPI (HR/LR, same model at different resolution, Müller et al. 2017), EC-Earth (EC-Earth3 + EC-Earth3-Veg-LR, identical atmosphere/ocean/sea-ice), MIROC (MIROC6 + MIROC-ES2L, Earth-system extension, Hajima et al. 2020), INM (INM-CM4-8 + INM-CM5-0, successive generations, Volodin et al. 2017); 14 singletons carry their own source_id as `family`; cross-family shared components (UM, NEMO/MOM) recorded as approximate-independence caveats, not YAML groupings; `meta.status: owner-confirmed-2026-11-18`; gate-pooling semantics unchanged (F3 open methodology decision — genealogy is display/report metadata) - session log row 31 |
 
 ## 4. In progress
 
@@ -115,10 +116,10 @@ tracker (F2); open items are recorded in section 8.
 | Item | Gates | Status |
 |---|---|---|
 | Install this suite into the repo (AGENTS.md + PROGRESS.md → root; docs → `docs/v2/`) | M1.1 | ⏳ pending |
-| Fill `gcm-pipeline/config/models.yaml` with the final 24 models (OD1) | M2.1 | ⏳ pending (template delivered at M2.1) |
+| Fill `gcm-pipeline/config/models.yaml` with the final 24 models (OD1) + genealogy | M2.1 | ✅ **RESOLVED 2026-11-18** — Owner memo `Geneology.md` confirms the 24-model set + lineage groupings; `genealogy:` filled (5 families × 2 + 14 singletons), `meta.status: owner-confirmed-2026-11-18`; gate-pooling semantics (F3) stay a separate open methodology decision |
 | CMIP6 downloads (historical phase: **COMPLETE + verified 2026-11-14** — 24 models x 34 years, 2312 files; SSP downloads deferred to post-ranking per best-subset strategy) | M2 handoff -> ongoing | PROGRESS.md |
 | IMD data acquisition (rainfall; temperature product choice OD3) | M4.1 | ⏳ pending |
-| Atlas v2 verification: DOI 10.5281/zenodo.20368514, licence, variables (OD4) | M6.1 | ⏳ pending |
+| Atlas v2 verification: DOI 10.5281/zenodo.20368514, licence, variables (OD4) | M6.1 | ◐ **DOI CONFIRMED 2026-11-18** by the Owner (https://zenodo.org/records/20368514). Owner is downloading the ~3 GB Atlas file; when it lands: verify variables/timescale/units/licence against the files, then M6.1 ingestion |
 | Era C start-year confirmation (OD2: default 2026–2100) | M2.2 | ⏳ default adopted |
 | **Era-C store hosting (NEW, Owner decision 2026-11-17): keep the 8,064-file projections store (355.4 MB) LOCAL, not committed/pushed, until the Owner is satisfied with internal testing, layout and working — i.e. until the full and final v2.0 release.** The store is gitignored; committed catalog/manifest/metadata era-C blocks are the standing contract. At release: commit to the repo OR host on Cloudflare R2 (+ Zenodo archival deposit per D5). Nothing to un-do — publish already ran locally; CI and the live site are unaffected. | M5 (era-C surfaces) / release gate | ✅ Owner-decided (local-until-final) |
 | Locate `work/die-2.0/` prototype (AS2) — reuse or rebuild | M1.6 | ⏳ to check at M1.6 |
@@ -163,6 +164,22 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 - **OD7 resolved — Route A (raw CMIP6 + own QDM) is the committed era C route.** NEX-GDDP-CMIP6 v2 (BCSD vs GMFD, CC0, 35 models, S3 + NCCS THREDDS) was evaluated per Owner request and is documented as a **known alternative only** — not used in production, because (a) it abandons the IMD-primary QDM reference (decisions D/C1), and (b) BCSD does not preserve the precipitation change signal the way QDM does. If bandwidth/compute becomes a blocker, reopening Route B requires a register entry. Verified facts: pr = kg m⁻² s⁻¹ (×86400 → mm/day), tas = K, fill 1e20, model-varying time references/calendars, v2 files only (v1.x pr compromised in dry areas), 0.25° grid offset ~0.125° from IMD.
 - **Ranking-before-SSP strategy (Owner proposal, adopted):** with historical (24 models) + IMD (1951–2025) in hand, the M2 chain runs on historical only, `08_validate_gcm.py` ranks models vs observed 1981–2014 → `best_subset.yaml` (8–12). **Owner downloads SSPs (ssp245+ssp585, 2015–2100) only for the best subset.** Consequences registered: ensemble stats computed over the subset (n shown honestly, never "24"); historical skill ≠ future skill (documented limitation); agreement layers reflect the subset.
 - **Download gaps found (Owner action):** CESM2 + IITM-ESM lack tasmax/tasmin (120 files); all 24 models lack historical 1981–1984 (288 files). IMD pr/tmax/tmin 1951–2025 verified complete (75 files each).
+
+### Session-30 additions (2026-11-18)
+
+- **OD1 closed — genealogy confirmed (Owner memo `Geneology.md`).** Five
+  lineages grouped (ACCESS, MPI, EC-Earth, MIROC, INM); all other models are
+  singletons (`family` = own source_id). Recorded in
+  `gcm-pipeline/config/models.yaml`. **Gate semantics unchanged:** the
+  validation gate still pools models as independent (review F3); a
+  family-aware gate interpretation needs a documented decision + re-run +
+  Owner sign-off. The memo's cross-family shared-component caveats (UM
+  atmosphere in ACCESS/HadGEM; NEMO/MOM oceans) are recorded as approximate
+  independence, not new groupings.
+- **OD4 partially closed.** The Owner confirmed
+  https://zenodo.org/records/20368514 as the correct Atlas v2 record and is
+  downloading the ~3 GB dataset. Variables/timescale/units/licence remain to
+  be verified against the landed files before M6.1 ingestion.
 
 ### Review-finding triage 2026-11-17 (F1-F10, user-reported)
 
@@ -218,16 +235,23 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-### M6.1 — Atlas era A verification (next task; GATED on OD4)
+### M6.1 — Atlas era A ingestion (next task; waiting on the Atlas file)
 
-M5 is COMPLETE (M5.2–M5.8, session log row 30). The next roadmap item is M6
-(Atlas era A), which is gated on the Owner verifying the Atlas v2 dataset
-(OD4: DOI 10.5281/zenodo.20368514, licence, variables). Until OD4 lands:
+**Updated 2026-11-18:** the Owner verified the DOI —
+https://zenodo.org/records/20368514 is the correct Atlas v2 record — and is
+downloading the ~3 GB dataset. OD1 (genealogy) is closed.
 
-- If the Owner clears OD4, start M6.1 (atlas-pipeline ingestion per
-  docs/v2/03 §2; tehsil-native source served at district level first).
-- Otherwise pick a queueable M3/M4 task (freshness/status surface; IMD
-  validation framework scripts — the acquisition itself is Owner-side).
+When the file lands, M6.1 starts with the verification gate (then ingestion):
+
+1. Inspect the archive: variables (SPEI timescales? any SPI/SMA?), temporal
+   coverage (1901–2025?), native resolution (tehsil), units, fill values,
+   calendar, licence/attribution terms.
+2. Record the verified facts in `atlas-pipeline/config` (never hard-coded) and
+   update the register OD4 row with the outcome.
+3. Only then build ingestion per docs/v2/03 §2 — tehsil-native source served
+   at district level first; era labels enforced; never spliced with era B.
+
+Tell OpenCode the path where the Atlas file lands (and the file name) to begin.
 
 Standing M5 follow-ups (Owner compute, honest pending states already shipped):
 
@@ -301,3 +325,5 @@ X1 refusal. WORLD SELFTEST PASS.
 | 29 | 2026-11-18 | **M5.3: ensemble band chart + choropleth on `#projections` (first era-C engine-consuming views).** (a) `ducklab.js ensemble()` rewritten for the published per-stat partition schema (stat whitelist median/p25/p75/agreement_moderate/agreement_severe with `bad-stat` guard, district now OPTIONAL, year-range pruning at the FILE level before SQL build, single `value` column read); `toRows` widened int64->Number (era-C year/month are int64; BigInt broke arithmetic). (b) New views in `projections.js`: Ensemble band panel (median line `#b25c3d` + 25-75 % tonexty band `rgba(178,92,61,0.20)`, moderate-drought dashed tau line per family -1.0 z / -15 % SMA / 30 % VCI, x-unified hover, scope = geography selector: district slice OR state/national via client-side v1.0 area-weighting (registry area_km2 weights renormalised over finite districts per month, n reported 720-720 / 33-33), Plotly lazy-loaded via DIE_LIBS); Map panel (lazy `DIE.MapView.createChoropleth` with tooltip:false, one (year, month) frame per stat, DEFAULT agreement-first X2 with 5 fraction bins + 'x of 8 models' honest-n legend, median/band maps the median via `DIE.classify` McKee palette, function-tooltips bound ONCE evaluating live frame values, legend builder reusing .legend-row/.legend-swatch, fitRegion follows state/district selection, map click selects the district for the chart and flips geography); era honesty notes on every view (era C projection, not a forecast; months rendered never imputed; agreement = count of models, not a probability); period selects populated from catalog years (36) x 12 months; stale-render race guards (bandSeq/mapSeq) after the slow national render overwrote a fast district render; empty-option assignment guard on selects (era C publishes SPI/SPEI only - SMA/VCI correctly absent, '' assignment no longer poisons state); app.js switchTab projections hook -> `DIE.Projections.invalidate()` (engine query cache makes re-queries ~free) + resize hook -> `mapSize()`; read-only `snapshot()` test hook. (c) `scripts/engine-smoke.html` updated from the outdated era-C-rejection guard to REAL ensemble gates. CSS: .proj-chart 300px / .proj-map 400px + mobile 240/300 at the app-wide 760px breakpoint, .proj-legend flex row. ASSET_VERSION 2026-11-18f | assets/js/ducklab.js, assets/js/projections.js, assets/js/app.js, index.html, assets/css/style.css, scripts/engine-smoke.html | engine-smoke ALL GATES PASS: init 443 ms, cold slice 79 ms, repeat 0 KB, era-C band slice 98 ms < 150 ms GATE, p25 <= median <= p75 on all 180 months PASS, map frame 15 ms (720/724 districts, all values in [0,1]), bad-stat + injection guards PASS, no-district ensemble 8640 rows; live UI: national/state/district band renders correct (Rajasthan 33 districts, Nagpur, national), all 724 choropleth layers match expected colors exactly for BOTH agreement bins and median classification, tooltips verified for both modes ('0 of 8 models in drought', '0.25 z-score - Near normal'), map click -> picker sync verified, zero console errors over full tab cycle, no horizontal overflow, keyboard focusable selects, regression PASS 681, selftest PASS | M5.4 |
 
 | 30 | 2026-11-18 | **M5.4-M5.8 batch (M5 COMPLETE).** M5.4 agreement hardening: tooltips 'N of 8 subset models <= -1.0/-1.5 (count, not a probability)' (R9), stat-aware legend heads with the exact threshold, map note states the exact definition + honest pending for per-district seam_uncertainty (X7 -> M6.8, never fabricated - R3), dir_agreement_drier DISABLED statistic option + STAT_LABEL entry (declared in config/export.yaml; step-07 ssp emission pending). M5.5: scripts/build_ranking_data.py reads Owner-local step-08 outputs -> data/ranking.json (9,439 B, sha256 25d44936a25a17dd), cell-level round-trip verified (22 rows x 10 fields, subset n=8, --check PASS); full 22-row ranking panel (composite + all 8 metrics, .rk-subset/.rk-badge highlight), weights verbatim + criterion rule + 'historical skill is not future skill'; never single-metric. M5.6: SPI-SPEI divergence map (fixed SPI-3 vs SPEI-3 ensemble medians, same 8 models), d = SPI-SPEI with 5 bins (>=+0.5 strong demand-driven #A63B34 ... <=-0.5 strong rainfall-driven #33608A, balanced +/-0.25 #E7E2D8), lazy second choropleth (divApi) + function tooltips (per-district SPI/SPEI/d + bin label), own state (divYear 2040/divMonth 7), legend + note with bin counts, index-construction caveat (R9) and the exact quote 'Rainfall alone does not decide India''s drought future; demand does half the work.' M5.7: banner refinement to 4 lines - honest ensemble n (subset list + criterion rule), 'median never shown alone / disagreement is a finding' (X2), era labels + never-spliced; band + map metas prefixed 'era C - '. M5.8 (E14, OD9 RESOLVED via the session instruction 'complete m5.4 to m5.8', recorded section 6 + register section 5): scripts/build_events_baseline.py -> data/events/baseline_1981_2020.json (1,188,366 B, sha256 2c87f62a24ed69fd; 8 SPI/SPEI vars, 5,788 district records; frozen runs analysis on era-B parquet: threshold -1.0, min 3 months, NaN breaks runs, censoring flagged never dropped; sanity: Ahmedabad spi_03 = 8 events/40 yr mean dur 3.75, national mean 9.99); era-C side live via DIE.Analytics.findEvents (same frozen machinery both sides); events panel (9 columns: district, base ev/yr, era-C ev/yr, freq ratio, mean dur base->era C, max dur, sev ratio, mean agreement x/8, valid months; sort by freq/duration/severity, top 15, national medians summary, censoring count, 'median-based, not a forecast' note + baseline source). Roadmap panel rewritten to 'Pending compute & next steps' (SSP 2051-2100, 07->09 dir_agreement, M6.8 seam_uncertainty, O14, M7 hosting). Wiring: scenario -> +divergence+events; variable/window -> +events; div year/month + events sort listeners; init Promise.allSettled +ranking+divergence+events; invalidate/mapSize cover divApi; snapshot exposes divApi/divValues; index.html new panels (projRankingPanel/projDivPanel/projEventsPanel), disabled dir option, control note extended; CSS .rk-subset/.rk-badge; ASSET_VERSION 2026-11-18g | assets/js/projections.js, index.html, assets/css/style.css, scripts/build_ranking_data.py (new), scripts/build_events_baseline.py (new), data/ranking.json (new, shipped artifact), data/events/baseline_1981_2020.json (new, shipped artifact), PROGRESS.md, docs/v2/05-decision-register.md (OD9 row) | Browser battery (cache-busted reload): ranking 22 rows + 8 subset badges/highlights, divergence 724 layers colored exactly per bin (SSP2-4.5 Jul: 711 balanced / 8 rainfall-driven / 1 mild demand / 4 no-data ocean mask = honest null districts; SSP5-8.5 Oct: 713 balanced / 7 mild demand), events 15 rows with valid months 180 = 15 yr x 12 (near window), sort switch reorders, scenario + month switches re-render all four surfaces with 'era C - ' metas, banner 4 lines, roadmap panel retitle; R7 numeric round-trip: Birbhum spi_03 2026-2040 recomputed independently in Python from the era-C partitions -> n_events 1, ev/yr 0.0667, mean dur 3.0, freq ratio 0.381 = EXACT match to the UI (0.07/3.0/0.38); events note wording fixed ('sorted by frequency ratio'); engine-smoke ALL GATES PASS (init 450 ms, cold slice 60 ms, repeat 0 KB, era-C band 89 ms < 150 ms, p25<=median<=p75 180 months, map frame 15 ms, bad-stat + injection guards, SMOKE DONE no uncaught errors); zero console errors over full 7-tab cycle; regression PASS 681; data-pipeline selftest PASS; new panels reuse .table-scroll (overflow-x auto) + .proj-map responsive classes (no new layout risk) | M6.1 (gated OD4) or M3/M4 |
+
+| 31 | 2026-11-18 | **OD1 closed (genealogy) + OD4 DOI confirmed (Owner inputs).** Owner memo `D:\OneDrive\Desktop\Geneology.md` (CMIP6 Model Genealogy and Validation Gate) integrated into `gcm-pipeline/config/models.yaml`: 5 documented lineages grouped - ACCESS (ACCESS-CM2 + ACCESS-ESM1-5, shared UM7.1/MOM5 core + carbon cycle, Bi et al. 2020), MPI (HR/LR same model at different resolution, Muller et al. 2017), EC-Earth (EC-Earth3 + EC-Earth3-Veg-LR, identical atmosphere/ocean/sea-ice; Veg adds LPJ-GUESS), MIROC (MIROC6 + MIROC-ES2L Earth-system extension, Hajima et al. 2020), INM (INM-CM4-8 + INM-CM5-0 successive generations, Volodin et al. 2017); 14 singletons carry their own source_id as family; memo cross-family component caveats (UM atmosphere ACCESS/HadGEM, NEMO/MOM oceans) recorded as approximate-independence notes, NOT additional groupings (modest grouping per the memo); `meta.status: owner-confirmed-2026-11-18` + genealogy_status; gate-pooling semantics deliberately unchanged (review F3 = open methodology decision; genealogy is display/report metadata until a documented gate re-basing is signed off). OD4: Owner verified the DOI (https://zenodo.org/records/20368514 correct) and is downloading the ~3 GB Atlas v2 file. Tracker + register updated (OD1 resolved, OD4 partially closed), section 9 rewritten for M6.1 (verification checklist for when the file lands) | gcm-pipeline/config/models.yaml, docs/v2/05-decision-register.md (OD1, OD4), PROGRESS.md | YAML re-parse: 24 models, 24 genealogy entries, 0 missing/extra, families ACCESS/MPI/EC-Earth/MIROC/INM = 2 each, 14 singletons; diff scoped to the genealogy block + meta lines only (59 changed lines, no model rows touched); selftest_gcm world builder overrides genealogy with {} so no suite impact | M6.1 (waiting on Atlas file) |
