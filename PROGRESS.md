@@ -7,39 +7,39 @@
 ## 1. Status flag
 
 ```
-| STATUS:        ACTIVE - M5 COMPLETE: all #projections views LIVE        |
-|                (M5.2 skeleton, M5.3 band+map, M5.4-M5.8 batch done;      |
-|                F10 dir_agreement coded 2026-11-18 - awaiting Owner       |
-|                re-run of 07 ssp + 09 --publish to light it up).         |
-|                Next: M6 (Atlas era A, gated on the Atlas file) or M3/M4 |
-| PHASE:         M5 complete; M2 complete; M3/M4/M6 queueable            |
-| ROADMAP:       M0-M2 complete. M5.2-M5.8 done 2026-11-18               |
-| LAST SESSION:  2026-11-18 (row 32 - F10 step-07/09 dir_agreement + UI)   |
-| BLOCKERS:      none technical. Pending Owner: Atlas file download (in   |
-|                progress), manuscript review, era-C store hosting (at    |
-|                release), SSP 2051-2100 download, step-07/09 dir_agreement|
-|                re-run (commands in section 9), OD10/OD11                 |
-| BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)             |
+| STATUS:        ACTIVE - M6 STARTED: M6.1 Atlas source gate PASS         |
+|                (30 checks / 9 notes, 2026-11-18). Archive measured       |
+|                6,375.8 MB; ingestion route = geometric grid -> 724       |
+|                districts (OD4 default); NOTHING deleted yet.             |
+|                Next: M6.2 (crosswalk + district aggregation + ingest).   |
+| PHASE:         M6 in progress (M6.1 done); M5 complete; M2 complete      |
+| ROADMAP:       M0-M2 complete. M5.2-M5.8 done 2026-11-18. M6.1 done      |
+| LAST SESSION:  2026-11-18 (row 33 - M6.1 Atlas verification gate +       |
+|                trim policy + #summary registered as E19/M9)              |
+| BLOCKERS:      none technical. Pending Owner: confirm the era-A ingest   |
+|                route + trim policy before ANY archive deletion; F10      |
+|                step-07/09 re-run; SSP 2051-2100 download; era-C store    |
+|                hosting (at release); manuscript review; OD10/OD11        |
+| BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)               |
 ```
 
-Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ⬜ · M4 ⬜ · M5 ✅ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2–M5.8 all ✅; M5.8/E14 OD9 resolved 2026-11-18) · M6 ⬜ · M7 ⬜ · M8+ ⬜** (definitions: `docs/v2/02-roadmap-milestones.md`).
+Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ⬜ · M4 ⬜ · M5 ✅ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2–M5.8 all ✅; M5.8/E14 OD9 resolved 2026-11-18) · M6 ◐ (M6.1 ✅ 2026-11-18 — source gate PASS; M6.2+ next) · M7 ⬜ · M8+ ⬜ · M9 ⬜ (E19 `#summary`, registered)** (definitions: `docs/v2/02-roadmap-milestones.md`).
 
 ## 2. Current phase
 
-**M2 is the current phase**: gcm-pipeline steps 00-09 are built and
-selftested end to end. The full 22-model **historical-corrected chain is
-complete and validated** (02 regrid -> 03 QDM -> 04 PET -> 05 indices ->
-06 districts -> 07 ensemble -> 08 validation gate PASS -> 09 exported;
-gate evidence committed under `gcm-pipeline/validation/`). **M2.13 is
-DONE (both phases)**: phase-1 orchestrator + CI, and the phase-2
-synthetic end-to-end world (session log row 23) — the whole 02->09 chain
-runs on a seeded 3-model world mirroring the real record shape
-(ssp 2015-2050) with W1-W8 assertions PASS. Remaining in M2: **M2.14**
-(README runbook) and the **real ssp-mode chain 02-09** on the Owner's
-arrived 2015-2050 data, then ssp-mode 08 (X1) and 09 `--publish` with
-Owner sign-off. The 2026-11-17 review triage (F1-F10) fixed the F1
-ssp-mode stitch bug, committed the gate evidence (F4) and refreshed this
-tracker (F2); open items are recorded in section 8.
+**M6 (Atlas era A) is the current phase.** M6.1 is DONE
+(session 33, 2026-11-18): the Owner's landed archive
+`D:/Websites/die-data/DroughtAtlas_v2` passed the source verification gate
+`atlas-pipeline/00_verify_atlas.py` (30 checks / 9 notes) against
+`atlas-pipeline/config/atlas.yaml`; verified facts and the ingestion-route
+default are recorded in register OD4 and docs/v2/03 §2.1–2.2. Next task:
+**M6.2** — build the grid→724-district crosswalk + area-weighted
+aggregation + era-A Parquet ingest (route: geometric aggregation from the
+0.05° grid; the Atlas's own district/taluka series are QA/cross-check only).
+**No archive data may be deleted** until the ingest product exists and
+verifies (trim policy in `atlas-pipeline/config/atlas.yaml`). M5 (#projections)
+is complete and live on real locally-published era-C data; the F10
+dir_agreement UI path waits on the Owner's 07+09 re-run (section 9).
 
 ## 3. Completed tasks
 
@@ -96,18 +96,20 @@ tracker (F2); open items are recorded in section 8.
 | M5.8 | 2026-11-18 | **E14 future drought event analytics (OD9 resolved — Owner confirmed via the session instruction "complete m5.4 to m5.8", recorded §6 + register §5):** `scripts/build_events_baseline.py` → `data/events/baseline_1981_2020.json` (1,188,366 bytes, sha256 2c87f62a24ed69fd; 8 SPI/SPEI variables, 5,788 district records; frozen runs analysis on the era-B parquet, threshold −1.0, min 3 months, censoring flagged; sanity: Ahmedabad spi_03 = 8 events/40 yr, national mean 9.99); era-C side computed live client-side via `DIE.Analytics.findEvents` (same frozen machinery); events panel (9 columns, sort by frequency/duration/severity, top 15, national medians, censoring count, "median-based, not a forecast" + agreement column X2) - session log row 30 |
 | OD1 | 2026-11-18 | **Genealogy filled from the Owner memo** (`D:\OneDrive\Desktop\Geneology.md`, "CMIP6 Model Genealogy and Validation Gate"): 5 documented lineages grouped — ACCESS (ACCESS-CM2 + ACCESS-ESM1-5, shared UM7.1/MOM5 core, Bi et al. 2020), MPI (HR/LR, same model at different resolution, Müller et al. 2017), EC-Earth (EC-Earth3 + EC-Earth3-Veg-LR, identical atmosphere/ocean/sea-ice), MIROC (MIROC6 + MIROC-ES2L, Earth-system extension, Hajima et al. 2020), INM (INM-CM4-8 + INM-CM5-0, successive generations, Volodin et al. 2017); 14 singletons carry their own source_id as `family`; cross-family shared components (UM, NEMO/MOM) recorded as approximate-independence caveats, not YAML groupings; `meta.status: owner-confirmed-2026-11-18`; gate-pooling semantics unchanged (F3 open methodology decision — genealogy is display/report metadata) - session log row 31 |
 | F10 / M5.4b | 2026-11-18 | **`dir_agreement_drier` end-to-end (F10 closed in code; Owner re-run pending):** step 07 ssp mode now stitches each model's historical-corrected record to the ssp record (AS6 seam validated: Dec→Jan, year+1, identical district/time fabric across models — a defect is a loud FATAL, never a mixed base), takes the per-model 1981–2020 base mean from the stitched series, derives the **effective window** by the declared two-step rule (overlap of the configured 2081–2100 with the record when ≥ `dir_agreement_min_window_years: 10` distinct years, else the LATEST 10 years available — today 2041–2050, automatic once 2051–2100 lands), and emits `dir_agreement_drier` (fraction of models drier, paired-finite denominator) + `dir_agreement_n` (exact denominator, int16 −999 fill) as **window-constant** panels (repeated inside the window, absent outside). NC attrs carry base/base_years/window_configured/window_effective/window_note/min_window_years verbatim; ensemble manifest gains `dir_agreement[tag]`. Step 09 exports both stats, skips year partitions with no finite values (no empty window-only files), carries the block into `export_manifest.json` and (publish) `metadata.json → era_c.dir_agreement`, and its honesty list now states "direction agreement is a model COUNT, never a probability". UI: the option enables itself dynamically only when catalog partitions exist (label 「awaiting published partitions」 otherwise), dir map has its own 5-bin tan/brown share palette + legend head + tooltip "N of M subset models drier than their 1981–2020 base (window …) — count, not a probability", selection-check row reports the statistic's own span as "window-constant", and the window comes from catalog years with metadata fallback. Selftests: 07 T1–T7 (T4 exact fraction + denominator, T6 window rule incl. partial overlap + short-record null, T7 AS6 seam), 09 T1–T10 (T10 manifest→metadata window block), world W9 (window 2041-2050, exact/constant/absent-outside, n == 3) - session log row 32 |
+| M6.1 | 2026-11-18 | **Atlas v2 source verification gate PASS (era A unblocked).** Landed archive `D:/Websites/die-data/DroughtAtlas_v2` (6,375.8 MB / 120,833 files) verified by the new `atlas-pipeline/00_verify_atlas.py` (V1 structure, V2 series, V3 boundaries, V4 grid, V5 provenance, V6 sizes; dependency-free DBF/SHP reading — no shapefile package in the env) against the new `atlas-pipeline/config/atlas.yaml`. Verified facts: DOI 10.5281/zenodo.20368514, v2, CC-BY-4.0 (Zenodo page only — no LICENCE file ships); SPEI-1/4/12 only (no 3/6); 1901-01..2025-12 (1,500 months, monotonic, 5 columns, NaN in place); 0.05° grid split across TWO disjoint sibling `Gridded_SPEI` folders (50,278 + 65,116 files, 0 shared names, union 115,394 cells, uniform lattice lat 8.125–37.075 × lon 68.225–97.375); fabric 742 district polygons / 732 district series / 731 distinct non-empty LGD codes + 11 DISPUTED no-code polygons (MP inter-district + Muzaffarabad/Mirpur), 4,723 taluka polygons / 4,639 series, 40 state polygons / 36 series; 237 of 742 district names corrupted (`>` for A/E). Discoveries: the .shp header length field is not a record count (gate now reads .shx); LGD is not an id bijection (ids 397/398 empty-LGD but with series; 232/238 with LGD but no series) → the era-A crosswalk must be geometric, never name/code-based (recorded in OD4 + docs/v2/03 §2.2). Trim policy committed in config (keep grids + district/taluka boundaries; delete Z-score/, STATE/country shapefiles, latlon csv AFTER ingest verifies; ~243.9 + small MB reclaim, grids 5,901.7 MB are the important data). `#summary` tab registered as E19 + new milestone M9 (roadmap §2.4/§3) per the Owner's request. NOTHING deleted from the archive | atlas-pipeline/config/atlas.yaml (new), atlas-pipeline/00_verify_atlas.py (new), atlas-pipeline/work/atlas_source_report.json (new, Owner-local work dir), docs/v2/05-decision-register.md (OD4), docs/v2/03-scientific-pipelines.md (§2.2 route), docs/v2/02-roadmap-milestones.md (E19 + M9), PROGRESS.md | selftest T1–T4 PASS (clean accepted; missing-series / duplicate-grid-cell / truncated-grid all rejected); real gate PASS 30 checks / 9 notes; report written to atlas-pipeline/work/atlas_source_report.json | M6.2 (Owner: confirm route + trim policy) |
 
 ## 4. In progress
 
-- (none — M5 complete)
+- (none — M6.1 complete; M6.2 queued)
 
 ## 5. Pending (next up)
 
 | Order | Task | Milestone | Depends on | Notes |
 |---|---|---|---|---|
-| **1** | **M6 — Atlas era A ingestion (start M6.1: Atlas v2 dataset verification, DOI/licence/variables)** | M6 | **OD4 — Owner verification of Atlas v2 (pending)** | gated on Owner; M6.8 (era A↔B cross-validation → `seam_uncertainty` X7) later in the milestone |
-| 2 | M3 freshness/status (M3.x) · M4 IMD validation framework (M4.1 acquisition is Owner-side) | M3/M4 | — | queueable while OD4 pending |
+| **1** | **M6.2 — Atlas ingestion: grid→724-district crosswalk + area-weighted aggregation + era-A Parquet (per-year tiles)** | M6 | M6.1 ✅; Owner confirmation of the OD4 route default (geometric aggregation) | trim policy: NOTHING deleted from the archive until the ingest product verifies (delete list + measured MB in `atlas-pipeline/config/atlas.yaml`) |
+| 2 | M3 freshness/status (M3.x) · M4 IMD validation framework (M4.1 acquisition is Owner-side) | M3/M4 | — | queueable anytime |
 | 3 | M7 release (era-C hosting decision resolves here: commit vs R2 + Zenodo) | M7 | M3–M6 | — |
+| — | **E19 / M9 — `#summary` tab** (drought change now→2100: shift vs 1981–2020 baseline, share-of-models drying, area share, per-state table, scenario toggle) | M9 | era C 2051–2100 download (Owner, in progress); E14 event machinery ✅; M6.6 `#crossval` live first (X1) | REGISTERED 2026-11-18 (roadmap §2.4 + §3 M9); build only on validated era C products past the register §6 gate |
 | — | Owner-compute dependencies that unlock #projections UI: SSP 2051–2100 download (late-century window → the direction statistic's effective window becomes 2081–2100 automatically), the step-07 ssp re-run + step-09 `--publish` that lights up `dir_agreement_drier`/`dir_agreement_n` (code + selftests done, session 32), M6.8 `seam_uncertainty` (tooltips) | M5/M6 | Owner | honest disabled/pending states shipped in M5.4–M5.8; the direction option enables itself from the catalog as soon as the partitions exist |
 
 (Full task tables per milestone: `docs/v2/02-roadmap-milestones.md` §3.)
@@ -122,7 +124,7 @@ tracker (F2); open items are recorded in section 8.
 | Fill `gcm-pipeline/config/models.yaml` with the final 24 models (OD1) + genealogy | M2.1 | ✅ **RESOLVED 2026-11-18** — Owner memo `Geneology.md` confirms the 24-model set + lineage groupings; `genealogy:` filled (5 families × 2 + 14 singletons), `meta.status: owner-confirmed-2026-11-18`; gate-pooling semantics (F3) stay a separate open methodology decision |
 | CMIP6 downloads (historical phase: **COMPLETE + verified 2026-11-14** — 24 models x 34 years, 2312 files; SSP downloads deferred to post-ranking per best-subset strategy) | M2 handoff -> ongoing | PROGRESS.md |
 | IMD data acquisition (rainfall; temperature product choice OD3) | M4.1 | ⏳ pending |
-| Atlas v2 verification: DOI 10.5281/zenodo.20368514, licence, variables (OD4) | M6.1 | ◐ **DOI CONFIRMED 2026-11-18** by the Owner (https://zenodo.org/records/20368514). Owner is downloading the ~3 GB Atlas file; when it lands: verify variables/timescale/units/licence against the files, then M6.1 ingestion |
+| Atlas v2 verification: DOI 10.5281/zenodo.20368514, licence, variables (OD4) | M6.1 | ✅ **RESOLVED 2026-11-18 — M6.1 source gate PASS** (30 checks / 9 notes; `atlas-pipeline/00_verify_atlas.py`). Verified: SPEI-1/4/12 only (no 3/6), 0.05° grid split across TWO disjoint `Gridded_SPEI` folders (115,394 cells, both needed), 1901-01..2025-12, CC-BY-4.0 (Zenodo page only — no LICENCE file), 742 district polygons / 732 series / 11 DISPUTED no-LGD polygons, readme stale. **Remaining Owner action: confirm the OD4 route default (geometric grid→724-district aggregation) and the trim policy BEFORE anything is deleted from the archive** |
 | Era C start-year confirmation (OD2: default 2026–2100) | M2.2 | ⏳ default adopted |
 | **Era-C store hosting (NEW, Owner decision 2026-11-17): keep the 8,064-file projections store (355.4 MB) LOCAL, not committed/pushed, until the Owner is satisfied with internal testing, layout and working — i.e. until the full and final v2.0 release.** The store is gitignored; committed catalog/manifest/metadata era-C blocks are the standing contract. At release: commit to the repo OR host on Cloudflare R2 (+ Zenodo archival deposit per D5). Nothing to un-do — publish already ran locally; CI and the live site are unaffected. | M5 (era-C surfaces) / release gate | ✅ Owner-decided (local-until-final) |
 | Locate `work/die-2.0/` prototype (AS2) — reuse or rebuild | M1.6 | ⏳ to check at M1.6 |
@@ -146,6 +148,17 @@ tracker (F2); open items are recorded in section 8.
 | `docs/v2/05-decision-register.md` | D1–D5, C1–C7, conflict resolutions A–M, open decisions, CMIP6 release gate, safeguards, assumptions |
 
 *(Repo-side file changes are appended per session below, with task IDs.)*
+
+**Session 33 (2026-11-18, M6.1):**
+
+| File | Change |
+|---|---|
+| `atlas-pipeline/config/atlas.yaml` (new) | Era-A source contract: verified release facts (DOI/v2/CC-BY-4.0/creators), series/grid/boundary paths + patterns, data contract (period 1901–2025, 1,500 months, SPEI-1/4/12, 0.05°), measured fabric counts + anomalies, and the keep / delete-after-ingest / delete-now trim policy |
+| `atlas-pipeline/00_verify_atlas.py` (new) | M6.1 source verification gate (V1 structure, V2 series, V3 boundaries via dependency-free DBF/SHP readers, V4 grid incl. disjoint-roots + lattice checks, V5 provenance, V6 sizes/checksums) + `--selftest` synthetic mini-archive (T1–T4); writes `atlas-pipeline/work/atlas_source_report.json`; never writes into the archive |
+| `docs/v2/05-decision-register.md` | OD4 → RESOLVED (verified facts + route default: geometric grid→724-district aggregation; Atlas series = QA/cross-check only) |
+| `docs/v2/03-scientific-pipelines.md` | §2.2: verified-facts paragraph + route decision replaces the "ingest released tables" alternative |
+| `docs/v2/02-roadmap-milestones.md` | E19 `#summary` tab registered in the amendment backlog + new milestone M9 (M9.1–M9.4 + exit gate) + feature→milestone map row |
+| `PROGRESS.md` | Status flag, phase 2, M6.1 completed row, pending table (M6.2 #1, E19/M9 row), OD4 dependency resolved, session log row 33 |
 
 ## 8. Scientific decisions and assumptions (new this phase)
 
@@ -184,6 +197,33 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
   https://zenodo.org/records/20368514 as the correct Atlas v2 record and is
   downloading the ~3 GB dataset. Variables/timescale/units/licence remain to
   be verified against the landed files before M6.1 ingestion.
+
+### Session-33 additions (2026-11-18)
+
+- **Era-A route (OD4 default, provisional until the Owner confirms).**
+  Era A is built by **geometric area-weighted aggregation of the Atlas
+  0.05° grid onto the 724-district v1.0 fabric** (same zonal semantics as
+  era B step 06 — Sutherland-Hodgman LAEA overlap weights). The Atlas's own
+  district/taluka/state series are used ONLY as QA/cross-check. Reasons,
+  all measured: name fields are corrupted (237/742 with `>`), `DISTRICT_L`
+  is not an id bijection (11 DISPUTED polygons carry no code; ids 397/398
+  empty-LGD but with series, 232/238 with LGD but no series), and era A
+  must land on the platform's 724-district fabric (R1) — the released
+  tables cannot provide that mapping.
+- **Trim policy (nothing deleted yet).** KEEP: both `Gridded_SPEI` roots
+  (5,901.7 MB — the actual scientific source), district + taluka boundary
+  shapefiles, readme. DELETE-ONLY-AFTER the ingest product verifies:
+  `Z-score/` (243.9 MB convenience averages), `STATE_BOUNDARY.*` +
+  `India_Country_Boundary.*`, `latlon_India_0.05degree.csv` (reproducible
+  from filenames). The PNG atlas advertised by the readme does not exist
+  in this download.
+- **E19 `#summary` tab registered** (Owner request "people want to see how
+  much drought increases or changes from now to 2100"): drought
+  frequency/duration/severity shift vs the observed 1981–2020 baseline,
+  share-of-models-drying agreement strip, area share in drought, per-state
+  table, scenario toggle; new hash `#summary` (R8); ships only after
+  `#crossval` (M6.6) is live and only on validated era C data (X1/R3);
+  new milestone M9 in the roadmap.
 
 ### Session-32 additions (2026-11-18)
 
@@ -276,30 +316,39 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-### M6.1 — Atlas era A ingestion (next task; waiting on the Atlas file)
+### M6.2 — Atlas ingestion (next task; M6.1 gate PASSED 2026-11-18)
 
-**Updated 2026-11-18:** the Owner verified the DOI —
-https://zenodo.org/records/20368514 is the correct Atlas v2 record — and is
-downloading the ~3 GB dataset. OD1 (genealogy) is closed.
+**Updated 2026-11-18 (session 33):** the source gate is GREEN
+(`atlas-pipeline/00_verify_atlas.py`: 30 checks / 9 notes PASS;
+report in `atlas-pipeline/work/atlas_source_report.json`). Verified facts
+and the route default are in register OD4 + docs/v2/03 §2.2. Next steps,
+in order:
 
-When the file lands, M6.1 starts with the verification gate (then ingestion):
+1. **Owner confirmation (one line is enough):** adopt the OD4 route default
+   — geometric area-weighted aggregation of the 0.05° grid onto the
+   724-district fabric, Atlas series as QA/cross-check only — and the trim
+   policy (nothing deleted until the ingest verifies).
+2. `atlas-pipeline/01_crosswalk.py`: build district→grid-cell weights from
+   the v1.0 boundary GeoJSON (724 districts) × Atlas lattice
+   (Sutherland-Hodgman LAEA overlap weights, era-B 06 semantics); emit
+   weight tables + per-district cell counts to `atlas-pipeline/work/`.
+3. `atlas-pipeline/02_atlas_to_district.py`: stream both `Gridded_SPEI`
+   roots → weighted aggregation → era-A long Parquet
+   (`data/parquet/atlas/variable=<id>/year=<yyyy>/`), era-labelled,
+   never spliced with era B; per-district valid-cell counts carried (R10).
+4. Round-trip spot checks + `selftest_atlas.py` (synthetic mini-world).
+5. Only after the ingest verifies: run the trim list (Owner-executed
+   deletion, with before/after sizes recorded).
 
-1. Inspect the archive: variables (SPEI timescales? any SPI/SMA?), temporal
-   coverage (1901–2025?), native resolution (tehsil), units, fill values,
-   calendar, licence/attribution terms.
-2. Record the verified facts in `atlas-pipeline/config` (never hard-coded) and
-   update the register OD4 row with the outcome.
-3. Only then build ingestion per docs/v2/03 §2 — tehsil-native source served
-   at district level first; era labels enforced; never spliced with era B.
-
-Tell OpenCode the path where the Atlas file lands (and the file name) to begin.
+Tell OpenCode when step 1 is confirmed (or just say "go with the default").
 
 Standing M5 follow-ups (Owner compute, honest pending states already shipped):
 
 1. SSP 2051–2100 subset download → unlocks the late-century window
    (2081–2100) and the full record to 2100. The direction statistic's
    effective window moves from 2041–2050 to 2081–2100 automatically on the
-   next 07+09 run.
+   next 07+09 run; this download is also the data gate for the newly
+   registered E19 `#summary` tab (M9).
 2. **F10 re-run (code + selftests done in session 32)** — from the repo root,
    canonical Python:
    `python gcm-pipeline/07_ensemble_stats.py --mode ssp --experiments ssp245,ssp585`
@@ -377,3 +426,4 @@ X1 refusal. WORLD SELFTEST PASS.
 
 | 31 | 2026-11-18 | **OD1 closed (genealogy) + OD4 DOI confirmed (Owner inputs).** Owner memo `D:\OneDrive\Desktop\Geneology.md` (CMIP6 Model Genealogy and Validation Gate) integrated into `gcm-pipeline/config/models.yaml`: 5 documented lineages grouped - ACCESS (ACCESS-CM2 + ACCESS-ESM1-5, shared UM7.1/MOM5 core + carbon cycle, Bi et al. 2020), MPI (HR/LR same model at different resolution, Muller et al. 2017), EC-Earth (EC-Earth3 + EC-Earth3-Veg-LR, identical atmosphere/ocean/sea-ice; Veg adds LPJ-GUESS), MIROC (MIROC6 + MIROC-ES2L Earth-system extension, Hajima et al. 2020), INM (INM-CM4-8 + INM-CM5-0 successive generations, Volodin et al. 2017); 14 singletons carry their own source_id as family; memo cross-family component caveats (UM atmosphere ACCESS/HadGEM, NEMO/MOM oceans) recorded as approximate-independence notes, NOT additional groupings (modest grouping per the memo); `meta.status: owner-confirmed-2026-11-18` + genealogy_status; gate-pooling semantics deliberately unchanged (review F3 = open methodology decision; genealogy is display/report metadata until a documented gate re-basing is signed off). OD4: Owner verified the DOI (https://zenodo.org/records/20368514 correct) and is downloading the ~3 GB Atlas v2 file. Tracker + register updated (OD1 resolved, OD4 partially closed), section 9 rewritten for M6.1 (verification checklist for when the file lands) | gcm-pipeline/config/models.yaml, docs/v2/05-decision-register.md (OD1, OD4), PROGRESS.md | YAML re-parse: 24 models, 24 genealogy entries, 0 missing/extra, families ACCESS/MPI/EC-Earth/MIROC/INM = 2 each, 14 singletons; diff scoped to the genealogy block + meta lines only (59 changed lines, no model rows touched); selftest_gcm world builder overrides genealogy with {} so no suite impact | M6.1 (waiting on Atlas file) |
 | 32 | 2026-11-18 | **F10 / M5.4b: `dir_agreement_drier` end-to-end (step 07 ssp emission → step 09 export → UI), Owner re-run pending.** (a) step 07: ssp mode now loads each model's historical-corrected aggregates, validates the AS6 seam (hist ends Dec → ssp starts Jan, year+1) and the identical stitched district/time fabric across models (loud FATAL, never a mixed base), concatenates into one per-model series, takes the base mean over `[1981,2020]` (the C2 baseline, now reachable because the stitch supplies 2015–2020), derives the effective window by the declared two-step rule (`dir_agreement_min_window_years: 10`: overlap of the configured 2081–2100 when it holds ≥ 10 years, else the LATEST 10 years available → 2041–2050 today, 2081–2100 automatically once 2051–2100 lands; short record → honest null, no stub) and emits `dir_agreement_drier` + `dir_agreement_n` (paired-finite denominator, int16 −999) as window-constant panels (repeated inside the window, absent outside). NC attrs record base/base_years/configured/effective/note/min-10 verbatim; ensemble manifest gains `dir_agreement[tag]`. 07 selftests T1–T7 (T4 exact fraction 3/5 with the NaN-window model excluded from BOTH numerator and n; T6 window rule short/full/partial/tiny; T7 seam accept/reject). (b) step 09: `dir_agreement_drier` + `dir_agreement_n` un-commented in `config/export.yaml`; `load_nc_panel` is mask/int-fill safe; a year slice with no finite values writes NO partition (prevents empty window-only files; applied to ensemble stats and members); the export manifest gains a `dir_agreement` block read from the NC attrs, publish carries it into `metadata.json → era_c.dir_agreement`, and the honesty list now states the direction statistic is a model COUNT over a recorded window. 09 selftests T1–T10 (T1 72 partitions with 0 dir-2026 rows and 4 dir-2027 files; T7 36 catalog paths; T10 manifest→metadata window block). (c) `selftest_gcm.py`: int-safe NC panel loaders, W7 count 2,752 (6 stats × 36 yr + 2 dir stats × 10 yr + members), new W9 (window `2041-2050`, configured `2081-2100`, exact per-district fraction recomputed from the stitched aggregates, constant inside / masked outside, n == 3). (d) UI: `ducklab.ensemble` STAT_KEYS whitelist extended; `projections.js` gains the dir partition map, `DIR_COLORS`/`DIR_BINS` tan→brown share palette, dir legend head + 5 bins, dir tooltip "N of M subset models drier … (window) — count, not a probability", dir map note (window-constant + the pipeline note), dir branch in the selection check (own span, "window-constant"), `syncStatisticOptions()` enabling the option ONLY when catalog partitions exist (label 「awaiting published partitions」 otherwise), window from catalog years with `metadata.era_c.dir_agreement` fallback, snapshot exposes `dirN`; `index.html` option enabled, roadmap item reworded, `ASSET_VERSION` 2026-11-18h | `gcm-pipeline/07_ensemble_stats.py`, `gcm-pipeline/09_export_parquet.py`, `gcm-pipeline/selftest_gcm.py`, `gcm-pipeline/config/ensemble.yaml`, `gcm-pipeline/config/export.yaml`, `assets/js/ducklab.js`, `assets/js/projections.js`, `index.html`, `docs/v2/05-decision-register.md` (C5 note), `PROGRESS.md` | 07 `--selftest` PASS (T1-T7); 09 `--selftest` PASS (T1-T10, 72 partitions); `selftest_gcm.py --only "07,09"` 2/2 PASS; `selftest_gcm.py --world` W1–W9 (chain 02→09, X1 refusal intact); `scripts/regression_check.py` PASS (681 values); `data-pipeline/selftest.py` PASS; browser: full 7-hash cycle with 0 console errors, dir option correctly DISABLED + honest label against the real catalog, and a fake-catalog + synthetic-engine injection exercised the enabled path — check row "30 files / 10 years / 2041–2050 (window-constant)", legend head + 5 bins, tooltip "5 of 8 subset models drier … — count, not a probability", fill colour `#A57344` for 0.625 (51–75 % bin); reload restored the honest state | Owner: re-run 07 ssp + 09 `--publish` (§9 command block), then `regression_check.py --bless` |
+| 33 | 2026-11-18 | **M6.1: Atlas v2 source verification gate PASS + trim policy + `#summary` registered (E19/M9).** (a) Owner's landed archive `D:/Websites/die-data/DroughtAtlas_v2` measured (6,375.8 MB / 120,833 files: Gridded_SPEI 2,571.3 MB/50,278 files + DroughtAtlas_v2/Gridded_SPEI 3,330.4 MB/65,116 files — TWO DISJOINT grid roots, 0 shared names, union 115,394 cells; Z-score 243.9 MB (India 1 / States 36 / Districts 732 / Talukas 4,639); boundaries 228.7 MB) and verified by the new `atlas-pipeline/00_verify_atlas.py` against the new `atlas-pipeline/config/atlas.yaml`: V1–V6 gate, 30 checks / 9 notes ALL PASS. Verified: DOI 10.5281/zenodo.20368514 v2, CC-BY-4.0 (Zenodo page only — no LICENCE file), SPEI-1/4/12 ONLY (no 3/6), 1901-01..2025-12 (1,500 months, monotonic, NaN in place), 0.05° uniform lattice (lat 8.125–37.075 × lon 68.225–97.375); readme STALE (claims 1901–2020 + PNG atlas; no PNGs exist). (b) Fabric findings: 742 district polygons / 732 series (10 polygons without series: 13,19,185,232,238,243,290,705,706,707); 4,723 taluka polygons / 4,639 series; 40/36 states; 237/742 names corrupted (`>`); `DISTRICT_L` NOT a bijection — 731 distinct non-empty codes, 11 DISPUTED no-LGD polygons (MP inter-district disputes + Muzaffarabad/Mirpur), ids 397/398 empty-LGD-but-with-series vs 232/238 with-LGD-but-no-series → crosswalk must be GEOMETRIC, never name/code-based (register OD4 + docs/v2/03 §2.2 updated; route default = area-weighted grid→724-district aggregation, Atlas series = QA only). (c) Gate bugs found+fixed on the way: .shp header length ≠ record count (gate now reads .shx: (bytes−100)/8), id-continuity check replaced by sorted-unique ids ending at the polygon count with gap notes, selftest fixture DBF descriptor padding + 12-month period alignment — selftest T1–T4 PASS (clean accepted, missing-series / duplicate-grid / truncated-grid all rejected). (d) TRIM POLICY committed in atlas.yaml (NOTHING deleted): KEEP both grid roots + district/taluka boundaries + readme; delete-AFTER-ingest-verifies: Z-score/ (243.9 MB), STATE/country shapefiles, latlon csv; PNG folder absent. (e) Owner request registered: **E19 `#summary` tab** ("how drought changes now→2100") as roadmap §2.4 entry + new milestone M9 (M9.1 change map vs 1981–2020 baseline, M9.2 agreement strip using `dir_agreement_drier`, M9.3 per-state table + area share, M9.4 caveat copy; gate: only validated era C data past register §6, after M6.6 `#crossval` is live, X1/X2/X3/R2/R3 binding; R8: new hash) | atlas-pipeline/config/atlas.yaml (new), atlas-pipeline/00_verify_atlas.py (new), atlas-pipeline/work/atlas_source_report.json, docs/v2/05-decision-register.md (OD4), docs/v2/03-scientific-pipelines.md (§2.2), docs/v2/02-roadmap-milestones.md (E19+M9), PROGRESS.md | `00_verify_atlas.py --selftest` PASS (T1–T4); real gate PASS (30 checks / 9 notes); report JSON written; NO changes to any other pipeline (gcm/era-B untouched) | M6.2 (Owner: confirm route + trim policy) |

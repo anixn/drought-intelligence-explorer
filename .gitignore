@@ -10,6 +10,11 @@ gcm-pipeline/out/*
 !gcm-pipeline/work/.gitkeep
 !gcm-pipeline/out/.gitkeep
 
+# atlas-pipeline run outputs (era A verification reports, crosswalk weights,
+# ingest staging — X9-style write safety: never shipped, never in git)
+atlas-pipeline/work/*
+!atlas-pipeline/work/.gitkeep
+
 # PROJ/GDAL scratch (never commit generated rasters)
 *.tif.aux.xml
 

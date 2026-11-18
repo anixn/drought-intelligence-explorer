@@ -84,6 +84,7 @@ Added by the Owner's amendments memo; tracked with the same one-task-per-session
 | O13 | Alternate-reference QDM sensitivity product: QDM chain with CHIRPS/ERA5-Land reference (register D) alongside IMD-primary; divergence as downloadable sensitivity product + methodology paragraph | 2 **[Owner: compute]** | 3 | M (Owner) | M2 chain | Schema unchanged; `reference_id` column or parallel partition root |
 | O14 | Standardisation-baseline sensitivity for era C: fixed 1981–2020 (C2) vs rolling/era-specific baseline on a subset — separates climate signal from baseline-definition effect | 3 | 3 | S | E14 optional | One memo section; not a UI default |
 | O15 | ENSO/IOD conditioning panels (existing O07 promoted): ONI + DMI association with district drought frequency; association only, never causal; JJAS-conditioned composites | 2 | 3 | M | index data verified | Keep out of any projection claim |
+| E19 | **`#summary` tab (Owner request 2026-11-18): "how drought changes from now to 2100"** — ensemble-vs-observed shift per district on a near-term baseline: drought-frequency/duration/severity change (era C windows vs observed 1981–2020 baseline), share of models agreeing on drying (`dir_agreement_drier`), area share in moderate-or-worse drought, per-state summary table, scenario toggle (SSP2-4.5 / SSP5-8.5) | 1 (candidate) | 5 | M | era C 2051–2100 download (Owner, in progress); E14 event machinery; M5.4 agreement layer | New hash `#summary` (R8); era labels + honest ensemble n (X3); agreement-first default (X2); numbers only from validated era C products past the §6 release gate — never fixtures (R3). Proposed in M8 below |
 
 **Promotions within the existing backlog (amendment memo §1):**
 
@@ -214,6 +215,18 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 ### M8+ — Tier 2 / Tier 3 rollout (post-release)
 Work Tier 2 (O01–O12) in worth order; Tier 3 items only when their data/licence gates are satisfied. Each item still follows one-task-per-session with tracker updates.
 
+### M9 — `#summary` tab: drought change now → 2100 (E19, Owner request 2026-11-18)
+*Suggested: after M5.8 + the Owner's 2051–2100 SSP download lands. Depends on: validated era C past the register §6 gate; E14 event machinery.*
+
+| Task | Content | Gate |
+|---|---|---|
+| M9.1 | Change layer: per district, era C window drought-frequency/duration/severity vs observed 1981–2020 baseline (reuses E14 outputs), rendered as the primary `#summary` map | only validated products (R3); era labels + honest n (X3) |
+| M9.2 | Agreement strip: `dir_agreement_drier` share-of-models map + "X of N models agree" copy (agreement-first, X2); scenario toggle SSP2-4.5/SSP5-8.5 | definitions verbatim from `config/ensemble.yaml` |
+| M9.3 | Per-state summary table + national area-share-in-drought figure (LAEA areas); downloadable CSV with reproducibility headers (X6) | state table sums to national; n reported per row (R10) |
+| M9.4 | Caveat copy block: projections are simulations not forecasts (R2), seam_uncertainty ±X (X7), PET-method sensitivity pointer (OD10) | copy review vs register |
+
+**Exit gate M9:** `#summary` live on real era C data with the same ship gate as M5 (register §6), after `#crossval` (M6.6) is live (build-order constraint X1).
+
 ## 4. Feature → milestone map
 
 | Milestone | Features delivered |
@@ -226,6 +239,7 @@ Work Tier 2 (O01–O12) in worth order; Tier 3 items only when their data/licenc
 | M6 | E06, E07 |
 | M7 | E09, E10, E11, E12 |
 | M8+ | O01–O12, O13–O15 (amendment backlog, docs/v2/06), then Tier 3 |
+| M9 | E19 (`#summary`) |
 
 ## 5. Owner-executed compute register (what OpenCode must never assume is done)
 
