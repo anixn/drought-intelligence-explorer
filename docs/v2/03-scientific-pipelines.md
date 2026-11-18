@@ -203,7 +203,7 @@ The explicit design goal — preserving the model's *change signal* while correc
 | `median` / `p25` / `p75` | quantiles over the n available models (n recorded; never assume 24) |
 | `agreement_moderate` | fraction of models with value ≤ −1.0 that month |
 | `agreement_severe` | fraction of models with value ≤ −1.5 that month |
-| `dir_agreement_drier` | fraction of models whose window mean (e.g. 2081–2100) is drier than their 1981–2020 mean (per window; used for change maps) |
+| `dir_agreement_drier` | fraction of models whose window mean (e.g. 2081–2100) is drier than their **1981–2014** mean — the GCM-native historical window, register D6 (per window; used for change maps) |
 | `n_models` | contributing model count |
 
 Definitions are fixed in code, printed into the manifest, and rendered verbatim in UI tooltips (docs/v2/04 §4.2). Per-model district series are retained in `work/` (and optionally shipped as per-model partitions) so individual models stay inspectable — never hide disagreement behind the ensemble mean.
@@ -282,11 +282,11 @@ Deliverables: `validation_report.json` + a validation memo (Markdown) + the Meth
 
 ## 6. Era A ↔ Era B cross-validation (`validation-studies/crossval/`)
 
-Standing panel at the 1981–2020 overlap (task M6.6):
+Standing panel at the **1981–2014 primary window (register D6 — the GCM-native historical window; the full 1981–2025 overlap is the sensitivity variant)** (task M6.6):
 
 - Input: era A SPEI (Atlas) vs era B SPEI (v1.0), matched district-months, matched timescale (the Atlas timescales govern; if the Atlas provides SPEI-12 only at matching definition, compare that; document all mismatches).
 - Metrics: r, bias, RMSD, class agreement, event match rate, severity-class match; per-district discrepancy map (`era_b − era_a` diverging ramp).
-- Output: `data/parquet/cross_validation/overlap_1981_2020.parquet` (schema: `district_id, date, era_a_value, era_b_value, diff, event_match, class_match`).
+- Output: `data/parquet/cross_validation/overlap_1981_2014.parquet` (schema: `district_id, date, era_a_value, era_b_value, diff, event_match, class_match`).
 - Interpretation guardrail: differences are expected and *are the content* — different P/PET chains (Atlas vs CHIRPS/ERA5-Land), different PET methods (§3.5), different fitting windows. The panel documents them; it does not average them away. Era A and era B are never spliced into one series.
 
 ## 7. QA and validation standards (global)

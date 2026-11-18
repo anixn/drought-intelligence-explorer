@@ -82,7 +82,7 @@
   let divValues = null;     // Map district_id -> {spi, spei, d} current frame
   let divSeq = 0;           // stale-render guard for the divergence map
   let rankingData = null;   // parsed data/ranking.json (M5.5)
-  let baselineEvents = null; // parsed data/events/baseline_1981_2020.json (M5.8)
+  let baselineEvents = null; // parsed data/events/baseline_1981_2014.json (M5.8, window per register D6)
 
   const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -358,9 +358,10 @@
   }
 
   // direction-of-change colours: share of subset models whose effective-window
-  // mean is drier (lower z) than their own 1981-2020 base mean. Five share
-  // bins; the exact "N of M" count comes from the companion dir_agreement_n
-  // partition and is stated in the tooltip (a count, never a probability).
+  // mean is drier (lower z) than their own 1981-2014 base mean (register D6).
+  // Five share bins; the exact "N of M" count comes from the companion
+  // dir_agreement_n partition and is stated in the tooltip (a count, never a
+  // probability).
   const DIR_COLORS = ["#F7F3EC", "#E3D2BA", "#C9A97F", "#A57344", "#6E4523"];
   const DIR_BINS = [
     { test: (f) => f <= 0, label: "0 % of models drier", range: "0" },
@@ -742,7 +743,7 @@
       head.className = "legend-head";
       const win = dirWindowLabel();
       head.textContent = "Share of subset models whose window mean is drier " +
-        "than their own 1981–2020 base" + (win ? " — window " + win : "");
+        "than their own 1981–2014 base" + (win ? " — window " + win : "");
       el.appendChild(head);
       DIR_BINS.forEach((b, i) =>
         row(DIR_COLORS[i], b.label, b.range));
@@ -798,7 +799,7 @@
           } else {
             const count = Math.round(Math.min(1, Math.max(0, v)) * m);
             line2 = count + " of " + m + " subset models drier than their " +
-              "1981–2020 base" + (win ? " (window " + win + ")" : "") +
+              "1981–2014 base" + (win ? " (window " + win + ")" : "") +
               " — count, not a probability";
           }
         } else if (statKey && statKey.indexOf("agreement") === 0) {
@@ -925,7 +926,7 @@
         const win = dirWindowLabel();
         noteText +=
           "Direction of change = share of the honest 8-model subset whose " +
-          "window mean is drier (lower z) than their own 1981–2020 base mean" +
+          "window mean is drier (lower z) than their own 1981–2014 base mean" +
           (win ? " — window " + win : "") +
           ". Window-constant per district: repeated across the months inside " +
           "the window, absent outside it. A count of models, never a " +
@@ -1196,8 +1197,9 @@
   /* -- future drought events (M5.8 / E14) ------------------------------------- */
   /* Frozen v1.0 runs analysis (DIE.Analytics.findEvents: runs ≤ threshold,
    * min 3 months, severity Σ(τ−x), NaN breaks runs) on era-C ensemble-median
-   * series, compared against the observed 1981–2020 baseline built by
-   * scripts/build_events_baseline.py. Agreement reported alongside (X2);
+   * series, compared against the observed 1981–2014 baseline built by
+   * scripts/build_events_baseline.py (window = register D6, the GCM-native
+   * historical window). Agreement reported alongside (X2);
    * windows are median-based and labelled as such. */
 
   const EVENTS_ROW_LIMIT = 15;
@@ -1225,7 +1227,7 @@
 
   async function ensureBaseline() {
     if (baselineEvents) return baselineEvents;
-    baselineEvents = await fetchJSON("data/events/baseline_1981_2020.json");
+    baselineEvents = await fetchJSON("data/events/baseline_1981_2014.json");
     return baselineEvents;
   }
 
@@ -1347,7 +1349,7 @@
         "). <strong>National median:</strong> frequency ratio " +
         fmt(medFreq, 2) + " ×, duration change " + fmt(medDur, 1) +
         " months, severity ratio " + fmt(medSev, 2) +
-        " × vs the observed 1981–2020 baseline (same frozen machinery, " +
+        " × vs the observed 1981–2014 baseline (same frozen machinery, " +
         "threshold −1.0, min 3 months, no imputation; " + censored +
         " era-C events touch window edges — flagged censored, not dropped). " +
         "Computed on the <strong>ensemble median</strong> — not a single " +

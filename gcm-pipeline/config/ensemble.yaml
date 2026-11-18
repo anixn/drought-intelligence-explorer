@@ -15,8 +15,15 @@ ensemble:
   agreement_severe_threshold: -1.5      # fraction of models <= -1.5 (severe)
   # direction-of-change agreement (per window; ssp mode only):
   dir_agreement_window: [2081, 2100]    # future window mean
-  dir_agreement_base: [1981, 2020]      # vs base-period mean (per model's own
-                                        # base record in historical mode)
+  dir_agreement_base: [1981, 2014]      # vs base-period mean (per model's own
+                                        # base record). CHANGED 2026-11-18 from
+                                        # [1981, 2020] per register D6: the base
+                                        # is the GCM-native historical window -
+                                        # ssp-segment years 2015-2020 are
+                                        # projections and never sit inside a
+                                        # model baseline. Landed BEFORE the
+                                        # pending step-07/09 re-run, so the
+                                        # Owner's next run picks it up.
   # The configured window is a NOMINAL target. The effective window follows a
   # declared two-step rule (printed verbatim into the NC attrs, the ensemble
   # manifest and the export manifest, and stated in the UI):

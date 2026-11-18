@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""build_events_baseline.py — observed 1981-2020 drought-event baseline (M5.8 / E14).
+"""build_events_baseline.py — observed 1981-2014 drought-event baseline (M5.8 / E14, window per register D6).
 
 Computes, per district and per standardised variable, the frozen v1.0 event
 machinery (runs analysis, Yevjevich 1967) over the OBSERVED era-B record
-(data/parquet/observed, committed) for the 1981-2020 baseline window. The
-output (`data/events/baseline_1981_2020.json`) is the comparison baseline the
+(data/parquet/observed, committed) for the 1981-2014 baseline window — the
+GCM-native historical window (register D6: the canonical inter-era comparison
+window; was 1981-2020, changed 2026-11-18 so the observed baseline matches the
+models' historical-corrected calibration window and no window dangles). The
+output (`data/events/baseline_1981_2014.json`) is the comparison baseline the
 #projections events panel evaluates era-C ensemble-median events against.
 
 Frozen methodology (identical to the v1.0 events engine / analytics.js
@@ -38,11 +41,11 @@ import pyarrow.parquet as pq
 
 REPO = pathlib.Path(__file__).resolve().parents[1]
 OBSERVED_DIR = REPO / "data" / "parquet" / "observed"
-OUT_JSON = REPO / "data" / "events" / "baseline_1981_2020.json"
+OUT_JSON = REPO / "data" / "events" / "baseline_1981_2014.json"
 
 VARIABLES = ["spi_01", "spi_03", "spi_06", "spi_12",
              "spei_01", "spei_03", "spei_06", "spei_12"]
-WINDOW = (1981, 2020)
+WINDOW = (1981, 2014)
 THRESHOLD = -1.0
 MIN_DURATION = 3
 

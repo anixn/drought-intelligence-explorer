@@ -808,9 +808,11 @@ def world_selftest() -> int:
           "[chain] line above")
 
     # W9: dir_agreement_drier exactness/constancy on the world -----------------
-    # Base 1981-2020 from the AS6 stitch, effective window from the record
-    # (WORLD_SSP ends 2050 -> latest-10 fallback 2041-2050), window-constant
-    # per district, absent outside the window, denominator recorded exactly.
+    # Base 1981-2014 (register D6: the GCM-native historical window, from
+    # ensemble.yaml dir_agreement_base copied verbatim into the world config),
+    # effective window from the record (WORLD_SSP ends 2050 -> latest-10
+    # fallback 2041-2050), window-constant per district, absent outside the
+    # window, denominator recorded exactly.
     with nc.Dataset(ens_path) as d9:
         attrs9 = {a: d9.getncattr(a) for a in d9.ncattrs()}
         frac9 = _w_panel_float(d9, "dir_agreement_drier")
@@ -827,7 +829,7 @@ def world_selftest() -> int:
         sa, sm = _w_load_monthly(sp, "spi_03")
         full = _np.concatenate([ha, sa], axis=1)
         months = hm + sm
-        b_i = [i for i, mm in enumerate(months) if 1981 <= mm[0] <= 2020]
+        b_i = [i for i, mm in enumerate(months) if 1981 <= mm[0] <= 2014]
         w_i = [i for i, mm in enumerate(months) if lo9 <= mm[0] <= hi9]
         b_means.append(_np.nanmean(full[:, b_i], axis=1))
         w_means.append(_np.nanmean(full[:, w_i], axis=1))
@@ -837,7 +839,7 @@ def world_selftest() -> int:
     in_win9 = _np.array([lo9 <= mm[0] <= hi9 for mm in ens_months])
     out9 = ~in_win9
     ok = (eff9 == "2041-2050"
-          and str(attrs9.get("dir_agreement_base")) == "1981-2020"
+          and str(attrs9.get("dir_agreement_base")) == "1981-2014"
           and str(attrs9.get("dir_agreement_window_configured")) == "2081-2100"
           and frac9.shape == n9.shape
           and bool(_np.all(_np.isfinite(frac9[:, in_win9])))

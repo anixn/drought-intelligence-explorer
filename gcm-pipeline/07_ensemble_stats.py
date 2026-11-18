@@ -318,9 +318,10 @@ def run_tag(work_root: Path, tag_dir_name: str, models: list,
     """Ensemble over work/aggregate/<model>/<tag_dir_name>/ for one mode.
 
     ssp mode additionally stitches each model's historical-corrected record
-    (AS6 seam, the same rule as 05) to reach the 1981-2020 base, derives the
-    EFFECTIVE future window, and emits the window-constant
-    dir_agreement_drier / dir_agreement_n panels."""
+    (AS6 seam, the same rule as 05) so the configured base window
+    (ensemble.yaml dir_agreement_base, [1981, 2014] - register D6) is
+    reachable, derives the EFFECTIVE future window, and emits the
+    window-constant dir_agreement_drier / dir_agreement_n panels."""
     import netCDF4 as nc
     import pandas as pd
     import xarray as xr
