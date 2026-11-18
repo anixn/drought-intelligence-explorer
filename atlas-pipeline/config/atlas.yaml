@@ -106,6 +106,7 @@ atlas:
     - "SPEI-4 exists, SPEI-3 and SPEI-6 do NOT - era A timescales are 1/4/12"
     - "DISTRICT_BOUNDARY.dbf name fields are partially corrupted (A and E render as '>'); the numeric DISTRICT_L column carries the LGD district code but is NOT a strict id bijection: 11 DISPUTED polygons carry no DISTRICT_L at all (MP inter-district disputes + Muzaffarabad/Mirpur), and disputed polygons may share a district's series - the era-A crosswalk must be geometric (polygon -> grid cells), never name- or code-based"
     - "10 district series, 84 subdistrict series and 4 state series are absent although their polygons exist"
+    - "the 0.05-degree shipped cell set (115,394 files) omits all six island districts entirely - Nicobars, North/Middle Andaman, South Andaman, Diu, Lakshadweep and Mahe have NO Atlas grid cells (crosswalk: outside_domain, mode no_shipped_cells): era A honestly carries no data for them (era B covers the Andamans; the crossval panel will show the gap)"
     - "the archive ships no LICENCE file; the licence is stated only on the Zenodo record page"
 
   # ------------------------------------------------------------ trim policy ---
@@ -125,3 +126,44 @@ atlas:
     - "latlon_India_0.05degree.csv"           # grid index; reproducible from the file names
   delete_now_if_present:
     - "DroughtAtlas_v2/*.png"                 # readme's PNG atlas - NOT present in this download
+
+  # ----------------------------------------------------------- the crosswalk ---
+  # Era A lands on the platform's 724-district fabric (OD4, Owner-delegated
+  # 2026-11-18). Weights REUSE the proven gcm-pipeline/06 machinery by import
+  # (exact Sutherland-Hodgman clip of district rings against the 0.05-degree
+  # cell rectangles in the v1.0 LAEA projection) - imported, never copied, so
+  # one source of truth. The Atlas's own 742-polygon fabric is QA-only.
+  crosswalk:
+    boundaries_geojson: "data/boundaries/india_districts.geojson"   # 724 features (v1.0 fabric, R1)
+    registry_csv: "data/districts.csv"                             # ids + LAEA registry areas + centroids
+    area_proj4: "+proj=laea +lat_0=22.5 +lon_0=79.5 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+    sub_pixel_flag_threshold: 2          # n_cells <= 2 -> flagged (amendment M2.9 rule)
+    buffer_fallback_max_km: 50           # nearest-centre capture ceiling (v1.0 buffer-fallback semantics)
+    # The Atlas lattice, verified by the M6.1 gate (V4) - asserted, never re-derived.
+    lattice:
+      lat_start: 8.125
+      lat_end: 37.075
+      lon_start: 68.225
+      lon_end: 97.375
+      step: 0.05
+      n_lats: 580
+      n_lons: 584
+    area_tolerance_frac: 0.02            # coverage-ratio warning threshold (diagnostic only)
+
+  # ---------------------------------------------------------------- ingest ---
+  ingest:
+    staging_root: "work/atlas_store"     # prototype output (X9-style): promoted to
+                                         # data/parquet/atlas ONLY after verification
+    partition_layout: "atlas/variable=<id>/year=<yyyy>/part-0.parquet"
+    # column index (0-based) of each SPEI scale inside the grid files,
+    # whose columns are: SNo Year Month SPEI-1 SPEI-4 SPEI-12
+    variables:
+      spei_01: 3
+      spei_04: 4
+      spei_12: 5
+    year_start: 1901
+    # Output schema mirrors the era-B observed store EXACTLY so ducklab.js
+    # reads era A with the same code path (R1 continuity).
+    schema: "district_id dictionary<string,int32>, year int16, month int8, value float32"
+    national_qa: true                    # grid-weighted national series vs the Atlas India file
+    qa_roundtrip_cells: 5                # single-contributor cells re-verified cell-level (R7)

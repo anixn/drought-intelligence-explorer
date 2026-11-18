@@ -68,18 +68,19 @@ Candidate: *Drought Atlas of India, 1901–2025* (Version 2), Zenodo DOI 10.5281
 
 ```
 atlas-pipeline/
-├── config/atlas.yaml          # release DOI, file paths, variables, units, grid
-├── 00_verify_atlas.py         # structural checks: grid, calendar, coverage, licence file
-├── 01_atlas_to_district.py    # aggregate Atlas grids → 724 districts (or ingest released district tables if provided)
-├── 02_atlas_parquet.py        # era A long Parquet, per-year tiles per variable
-├── 03_atlas_composites.py     # seasonal composites: JJAS, ONDJ, water year, calendar year
-├── selftest_atlas.py          # synthetic mini-Atlas end-to-end
-└── README.md                  # Owner runbook (download, verify, ingest)
+├── config/atlas.yaml          # verified release facts, crosswalk + ingest parameters, trim policy
+├── 00_verify_atlas.py         # M6.1 source gate: structure, series, boundaries, grid, provenance (V1–V6)
+├── 01_crosswalk.py            # grid→724-district area weights (imports the proven gcm-pipeline/06 clipping machinery)
+├── 02_atlas_to_district.py    # stream both grid roots → weighted aggregation → era-A Parquet + QA
+├── 03_atlas_promote.py        # (after verification) staging → data/parquet/atlas + catalog/metadata era-A block
+├── 04_atlas_composites.py     # seasonal composites: JJAS, ONDJ, water year, calendar year
+├── selftest_atlas.py          # end-to-end synthetic mini-Atlas (to add when step 03/04 land)
+└── README.md                  # runbook (workflow table, locked facts, trim policy)
 ```
 
 - **District-first** (724 v1.0 fabric, area-weighted LAEA, same zonal semantics as v1.0 — buffer fallback for sub-pixel units). Tehsil layer (O01) is gated on a verified, licensed tehsil geometry source; the v1.0 manuscript deliberately deferred sub-district units until such a source is defensible — keep that gate.
 - **Verified release facts (M6.1 gate PASS 2026-11-18, `00_verify_atlas.py` + `config/atlas.yaml`):** DOI 10.5281/zenodo.20368514 (v2, published 2024-01-02), CC-BY-4.0 (stated only on the Zenodo page — no LICENCE file ships), SPEI-**1/4/12 only** (no 3/6), 0.05° grid, 1901-01..2025-12 (1,500 months), NaN tokens in place (R10). The grid is split across TWO disjoint sibling `Gridded_SPEI` folders (115,394 cells; both required). Atlas fabric ≠ platform fabric: 742 district polygons / 732 series / 731 coded LGD codes + 11 DISPUTED no-code polygons; 4,723 taluka polygons / 4,639 series; 4,723→4,639 and 742→732 gaps are release properties, recorded in the gate notes. The readme is stale (claims 1901–2020 + a PNG atlas; the files run to 2025-12 and contain no PNGs).
-- **Route decision (OD4, default until the Owner overrides):** aggregate the 0.05° grid geometrically onto the 724-district fabric — the Atlas's own district/taluka/state series are QA/cross-check only. Rationale: the name fields are corrupted (`>` for A/E), `DISTRICT_L` is not a strict id bijection (11 DISPUTED polygons carry no code; disputed polygons share district series), and era A must land on the platform's 724-district fabric (R1) — the released tables cannot provide that mapping.
+- **Route decision (OD4, Owner-delegated 2026-11-18):** aggregate the 0.05° grid geometrically onto the 724-district fabric — the Atlas's own district/taluka/state series are QA/cross-check only. Rationale: the name fields are corrupted (`>` for A/E), `DISTRICT_L` is not a strict id bijection (11 DISPUTED polygons carry no code; disputed polygons share district series), and era A must land on the platform's 724-district fabric (R1) — the released tables cannot provide that mapping. The weights import the PROVEN `gcm-pipeline/06` clipping machinery (never copied); the prototype crosswalk conservation check measured median Σ-overlap/polygon-area = 1.000000203 (max 1.0005) and median Σ-overlap/registry-area = 1.000001 (max 1.0019), with one expected flag: Nicobars' polygon extends south of the lattice (Great Nicobar < 8.125°N), so its era-A series covers the northern portion only — honest partial support, recorded in `config/atlas.yaml`.
 - Output partitioning: `data/parquet/atlas/variable=<id>/year=<yyyy>/part-0.parquet`, per-year tiles (~10 KB each on prototype measurements), so the Atlas scrubber fetches only the touched year.
 - Composites land in `data/parquet/atlas/composites/variable=<id>/season=<jjas|ondj|wy|cy>/stat=<mean|min|share_below_truncation>/…` (exact keys fixed when era A ships).
 - **Labels:** era A values are Atlas *reconstructions* (SPEI from the Atlas's own P/PET chain) — never merged with era B values; the cross-validation panel (§6) is the only sanctioned comparison surface.
