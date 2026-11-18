@@ -36,6 +36,7 @@
     { id: 'events', btn: 'tabEvents', view: 'viewEvents' },
     { id: 'propagation', btn: 'tabPropagation', view: 'viewPropagation' },
     { id: 'engine', btn: 'tabEngine', view: 'viewEngine' },
+    { id: 'projections', btn: 'tabProjections', view: 'viewProjections' },
     { id: 'data', btn: 'tabData', view: 'viewData' }
   ];
   const TAB_LABELS = {
@@ -44,12 +45,13 @@
     events: 'Events',
     propagation: 'Propagation',
     engine: 'Engine Lab',
+    projections: 'Projections',
     data: 'Documentation'
   };
   let currentTab = 'overview';
   // Tabs are marked dirty on state changes while hidden and re-render only
   // when entered. This avoids updating 5 workspaces on every slider tick.
-  const DIRTY = { overview: true, historical: true, events: true, propagation: true, engine: true, data: true };
+  const DIRTY = { overview: true, historical: true, events: true, propagation: true, engine: true, projections: true, data: true };
   const markDirty = (tab) => { DIRTY[tab] = true; };
 
   /** Run work when the browser is idle (never blocks interaction). */
@@ -267,7 +269,7 @@
       const titles = {
         overview: 'Map PNG', historical: 'Ranking CSV',
         events: 'Events CSV', propagation: 'Downloads', engine: 'Results CSV',
-        data: 'Downloads'
+        projections: 'Downloads', data: 'Downloads'
       };
       lbl.textContent = titles[tabId] || 'Export';
     }
@@ -2427,6 +2429,7 @@
     events() { EventsView.ready ? EventsView.refresh() : EventsView.init(); },
     propagation() { Propagation.ready ? Propagation.refresh() : Propagation.init(); },
     engine() { DIE.EngineLab.init(); },
+    projections() { DIE.Projections.init(); },
     data() { DataView.init(); }
   };
 

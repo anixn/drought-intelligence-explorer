@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-15a" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-18a" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -581,6 +581,31 @@
               <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
             </svg>
             Engine Lab
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tabProjections"
+            aria-selected="false"
+            aria-controls="viewProjections"
+            tabindex="-1"
+          >
+            <svg
+              class="tab-ic"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+              <polyline points="16 7 22 7 22 13" />
+            </svg>
+            Future Projections
           </button>
         </div>
 
@@ -1874,7 +1899,190 @@
           </section>
         </div>
 
-        <!-- ============ VIEW 6: DATA, METHODOLOGY & DOWNLOADS ============ -->
+        <!-- ============ VIEW 6: FUTURE PROJECTIONS (v2.0, M5.2) ============
+             Era C surface (docs/v2/04 §4.2). Skeleton (M5.2): controls wired
+             against the committed catalog — scenario switch, variable +
+             timescale, statistic, time window, geography — plus the
+             projection banner and era seam notes. Charts, maps and the
+             agreement layer land in M5.3–M5.8; nothing here renders
+             synthetic data (R3). Simulations are labelled, never forecasts
+             (R2); the honest ensemble n is shown (X3). -->
+        <div id="viewProjections" role="tabpanel" aria-labelledby="tabProjections" hidden>
+          <div class="view-intro is-compact" id="introProjections" aria-label="Workspace introduction">
+            <span class="vi-step">6</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                Future Projections <span class="vi-tag">v2.0</span>
+                <span class="vi-hint"
+                  >Climate-model drought futures &mdash; simulations, never
+                  forecasts.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-banner" id="projBanner" role="note"></div>
+
+          <div class="panel-grid">
+            <section class="panel" id="projStatusPanel" aria-label="Projection store status">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Store status</h2>
+                  <span class="panel-meta" id="projStatusMeta">loading catalog…</span>
+                </div>
+                <div class="panel-actions">
+                  <button type="button" class="btn btn-ghost" id="projReloadBtn" hidden>
+                    Retry
+                  </button>
+                </div>
+              </div>
+              <dl class="el-status" id="projStatusList">
+                <div><dt>Status</dt><dd id="projStatusEra">—</dd></div>
+                <div><dt>Scenarios</dt><dd id="projStatusScenarios">—</dd></div>
+                <div><dt>Years published</dt><dd id="projStatusYears">—</dd></div>
+                <div><dt>Ensemble</dt><dd id="projStatusEnsemble">—</dd></div>
+                <div><dt>PET</dt><dd id="projStatusPet">—</dd></div>
+              </dl>
+              <p class="table-help" id="projSeamNote">
+                Observed record (era B): 1981-01 → 2025-12 · Projections (era
+                C): from 2015 · <b>The two are never spliced</b> — the
+                2015–2025 overlap holds free-running model realisations, not
+                observations.
+              </p>
+            </section>
+
+            <section class="panel" id="projControlPanel" aria-label="Selection controls">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Selection</h2>
+                  <span class="panel-meta">validated era C products only</span>
+                </div>
+              </div>
+              <div class="proj-controls">
+                <fieldset class="proj-field proj-scenario">
+                  <legend>Scenario</legend>
+                  <label
+                    ><input type="radio" name="projScenario" value="ssp245" checked />
+                    SSP2-4.5</label
+                  >
+                  <label
+                    ><input type="radio" name="projScenario" value="ssp585" />
+                    SSP5-8.5</label
+                  >
+                </fieldset>
+                <div class="proj-field">
+                  <label class="proj-label" for="projVariable"
+                    >Indicator &amp; timescale</label
+                  >
+                  <select id="projVariable" class="panel-ctl" aria-label="Indicator and timescale"></select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="projStatistic">Statistic</label>
+                  <select id="projStatistic" class="panel-ctl" aria-label="Ensemble statistic">
+                    <option value="agreement_moderate" selected>
+                      Agreement — moderate (&le; &minus;1.0)
+                    </option>
+                    <option value="agreement_severe">
+                      Agreement — severe (&le; &minus;1.5)
+                    </option>
+                    <option value="median">Ensemble median</option>
+                    <option value="band">Median + 25–75 % band</option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="projWindow">Time window</label>
+                  <select id="projWindow" class="panel-ctl" aria-label="Time window">
+                    <option value="near" selected>Near term (2026–2040)</option>
+                    <option value="mid">Mid century (2041–2060)</option>
+                    <option value="late" disabled>
+                      Late century (2081–2100) — 2051–2100 inputs pending
+                    </option>
+                    <option value="custom">Custom range</option>
+                  </select>
+                  <span class="proj-custom-years" id="projCustomYears" hidden>
+                    <input
+                      type="number"
+                      id="projFromYear"
+                      min="2015"
+                      max="2050"
+                      value="2026"
+                      aria-label="Custom window from year"
+                    />
+                    <span aria-hidden="true">–</span>
+                    <input
+                      type="number"
+                      id="projToYear"
+                      min="2015"
+                      max="2050"
+                      value="2040"
+                      aria-label="Custom window to year"
+                    />
+                  </span>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="projGeography">Geography</label>
+                  <select id="projGeography" class="panel-ctl" aria-label="Geography">
+                    <option value="national" selected>National</option>
+                    <option value="state">State</option>
+                    <option value="district">District</option>
+                  </select>
+                </div>
+              </div>
+              <p class="table-help" id="projControlNote">
+                Charts and maps activate as tasks M5.3–M5.8 land; the selection
+                below is already verified against the committed catalog.
+              </p>
+            </section>
+          </div>
+
+          <section class="panel" id="projCheckPanel" aria-label="Selection check">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">Selection check</h2>
+                <span class="panel-meta" id="projCheckMeta"
+                  >catalog.json — no engine required</span
+                >
+              </div>
+            </div>
+            <div class="table-scroll" id="projCheckWrap">
+              <table class="comp-table" id="projCheckTable">
+                <thead>
+                  <tr>
+                    <th scope="col">Partition group</th>
+                    <th scope="col" class="num">Files</th>
+                    <th scope="col" class="num">Years in window</th>
+                    <th scope="col">Coverage</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="table-help" id="projCheckNote"></p>
+          </section>
+
+          <section class="panel" id="projRoadmapPanel" aria-label="Planned views">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">Planned views</h2>
+                <span class="panel-meta">roadmap tasks — not yet rendered</span>
+              </div>
+            </div>
+            <ul class="proj-roadmap">
+              <li><span class="proj-ms">M5.3</span> Ensemble band chart (median + 25–75 %), district time-series, choropleth — agreement-first default (X2)</li>
+              <li><span class="proj-ms">M5.4</span> Agreement layer with exact definitions + per-district seam uncertainty in tooltips</li>
+              <li><span class="proj-ms">M5.5</span> Model ranking panel (multi-metric composite; no single-metric ranking)</li>
+              <li><span class="proj-ms">M5.6</span> SPI vs SPEI divergence map — "Rainfall alone does not decide India's drought future; demand does half the work."</li>
+              <li><span class="proj-ms">M5.7</span> Projection banner refinement (honest ensemble n, era labels, no-splice rules)</li>
+              <li><span class="proj-ms">M5.8</span> Future drought event analytics (E14) — gated on Owner confirmation (OD9)</li>
+            </ul>
+            <p class="table-help">
+              Until each task lands, this surface shows only committed catalog
+              facts — no synthetic placeholders (R3).
+            </p>
+          </section>
+        </div>
+
+        <!-- ============ VIEW 7: DATA, METHODOLOGY & DOWNLOADS ============ -->
         <div id="viewData" role="tabpanel" aria-label="Documentation and Resources" hidden>
           <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step" aria-hidden="true">
@@ -3224,7 +3432,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-15a";
+        var ASSET_VERSION = "2026-11-18a";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
@@ -3256,6 +3464,7 @@
           "ducklab",
           "engine-data",
           "engine-lab",
+          "projections",
         ];
         var inflight = {};
 

@@ -3509,6 +3509,15 @@ body[data-tab="engine"] {
   --ws-soft-dark: rgba(79, 143, 102, 0.28);
   --ws-line-dark: rgba(124, 186, 147, 0.55);
 }
+body[data-tab="projections"] {
+  --ws: #b25c3d;
+  --ws-ink: #8a452e;
+  --ws-soft: rgba(178, 92, 61, 0.12);
+  --ws-line: rgba(178, 92, 61, 0.45);
+  --ws-bright: #d98d6d;
+  --ws-soft-dark: rgba(178, 92, 61, 0.28);
+  --ws-line-dark: rgba(217, 141, 109, 0.55);
+}
 
 /* ------------------------------------------------- primary tab identity -- *
  * Icons join the labels; the active tab takes the workspace accent for its
@@ -3814,6 +3823,16 @@ body[data-tab="engine"] {
   --rail-check-line: #4d7461;
   --rail-thumb: #2a4034;
   --rail-div: rgba(124, 186, 147, 0.16);
+}
+body[data-tab="projections"] {
+  --rail: #2a1a13;
+  --rail-ctl: #3d281d;
+  --rail-line: #5c3f2f;
+  --rail-strong: #7a5741;
+  --rail-check: #452d21;
+  --rail-check-line: #7a5741;
+  --rail-thumb: #3f2b20;
+  --rail-div: rgba(217, 141, 109, 0.16);
 }
 
 /* ------------------------------------- 1b. rail surfaces ----------------- */
@@ -4210,5 +4229,141 @@ body[data-tab="engine"] {
   }
   .el-status dt {
     flex-basis: 96px;
+  }
+}
+
+/* ===========================================================================
+   Future Projections (#projections, v2.0 task M5.2; docs/v2/04 §4.2)
+   appended 2026-11-18 — controls + banner + check strip. The workspace
+   accent (terracotta, era C) is defined with the other body[data-tab] blocks.
+   =========================================================================== */
+
+/* The global sidebar sections (Geography / Indicator / Period) drive the
+ * era-B CSV workspaces; this tab carries its own era-C controls, so the
+ * era-B filters would be misleading here. Visibility is pure CSS, exactly
+ * like the other body[data-tab] sidebar rules. */
+body[data-tab="projections"] .side-sec[data-side="global"] {
+  display: none;
+}
+
+.proj-banner {
+  border: 1px solid var(--ws-line);
+  border-left: 4px solid var(--ws);
+  background: var(--ws-soft);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink, inherit);
+  margin-bottom: 14px;
+}
+.proj-banner b {
+  color: var(--ws-ink);
+}
+
+.proj-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+  align-items: flex-start;
+}
+.proj-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 170px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.proj-field legend {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ws-ink);
+  padding: 0;
+  margin-bottom: 6px;
+}
+.proj-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ws-ink);
+}
+.proj-scenario {
+  flex-direction: row;
+  gap: 8px;
+}
+.proj-scenario label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid var(--ws-line);
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 44px; /* touch target ≥ 44 px (docs/v2/04 §7) */
+}
+.proj-scenario input {
+  accent-color: var(--ws);
+}
+.proj-scenario label:has(input:checked) {
+  background: var(--ws-soft);
+  border-color: var(--ws);
+  font-weight: 600;
+}
+.proj-custom-years {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.proj-custom-years input {
+  width: 84px;
+  padding: 6px 8px;
+  border: 1px solid var(--ws-line);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+}
+
+.proj-roadmap {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.proj-roadmap li {
+  font-size: 13px;
+  line-height: 1.5;
+  padding-left: 4px;
+}
+.proj-ms {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ws-ink);
+  border: 1px solid var(--ws-line);
+  border-radius: 5px;
+  padding: 1px 7px;
+  margin-right: 8px;
+  background: var(--ws-soft);
+}
+
+@media (max-width: 760px) {
+  .proj-controls {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .proj-field {
+    min-width: 0;
+    width: 100%;
+  }
+  .proj-scenario label {
+    flex: 1 1 auto;
   }
 }

@@ -7,23 +7,19 @@
 ## 1. Status flag
 
 ```
-| STATUS:        ACTIVE - M2 CRITICAL PATH A era-C PUBLISH COMPLETE (X1:      |
-|                ssp 08 PASS + Owner sign-off + regression --bless).        |
-|                Manuscript v2 drafted (main_v2.tex). Next: Owner review of |
-|                manuscript + hosting decision for the era-C store          |
-| PHASE:         M2 complete (00-09 + publish); M3/M4 next (docs suite,      |
-|                #projections surface)                                      |
-| ROADMAP:       M0-M2 complete. M1.11 exit gate PASSED; M2.1-M2.14 done;    |
-|                era-C record published 2026-11-17                          |
-| LAST SESSION:  2026-11-17 (row 27 - publish + 2 bug fixes + re-bless +    |
-|                manuscript v2)                                              |
-| BLOCKERS:      none technical. Pending Owner: manuscript review, era-C    |
-|                store hosting (gitignored pending decision), #projections  |
-|                surface (M4/M5), OD1, OD9, OD10/OD11                       |
-| BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)                  |
+| STATUS:        ACTIVE - M5 STARTED: #projections tab skeleton (M5.2)       |
+|                DONE and verified live. Era-C store local-only (Owner     |
+|                decision). Next: M5.3 ensemble band chart + choropleth    |
+| PHASE:         M5 (projections surface); M2 complete; M3/M4 queueable    |
+| ROADMAP:       M0-M2 complete. M5.2 done 2026-11-18                      |
+| LAST SESSION:  2026-11-18 (row 28 - M5.2 skeleton)                       |
+| BLOCKERS:      none technical. Pending Owner: manuscript review, era-C   |
+|                store hosting (at release), SSP 2051-2100 download, OD1,  |
+|                OD9, OD10/OD11                                            |
+| BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)               |
 ```
 
-Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ⬜ (M2.1–M2.13 ✅, M2.14 ✅; real ssp chain running) · M3 ⬜ · M4 ⬜ · M5 ⬜ · M6 ⬜ · M7 ⬜ · M8+ ⬜** (definitions: `docs/v2/02-roadmap-milestones.md`).
+Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ⬜ · M4 ⬜ · M5 ◻ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2 ✅) · M6 ⬜ · M7 ⬜ · M8+ ⬜** (definitions: `docs/v2/02-roadmap-milestones.md`).
 
 ## 2. Current phase
 
@@ -88,32 +84,22 @@ tracker (F2); open items are recorded in section 8.
 | M2.12 | 2026-11-16 | `09_export_parquet.py` + `config/export.yaml`: hive parquet export (ssp), validation-products export (historical-corrected), X1-gated publish; catalog `apply_projections` - session log row 20 |
 | M2.13 p1 | 2026-11-17 | `selftest_gcm.py` orchestrator + CI step (O14); 9/9 suites PASS; CI run 43999908625 GREEN - session log row 21 |
 | M2.13 p2 | 2026-11-17 | Synthetic end-to-end world (`selftest_gcm.py --world`): 3-model world mirroring the real record shape (hist 1981-2014 + ssp245 2015-2050), full 02->09 chain via subprocesses + DIE_CONFIG_DIR; WORLD SELFTEST PASS (W1-W8) - session log row 23 |
+| M5.2 | 2026-11-18 | `#projections` tab skeleton (era toggle wiring = era labels/banner/seam notes, scenario switch, variable/timescale selector, statistic, time window, geography) + honest projection banner + store-status panel + catalog-driven selection check + planned-views roadmap panel - session log row 28 |
 
 ## 4. In progress
 
-- **Real ssp-mode chain 02-09 (Owner data, next OpenCode session)** - data
-  arrived: `D:/Websites/die-data/cmip6/SSP` (8-model committed subset,
-  ssp245+ssp585, 2015-2050, 1,728 files, verified complete; 2051-2100 pending
-  download — steps derive the record end from data and report truncation
-  honestly). Inventory gate PASS (root merge + AS6 seam gate committed
-  `36886eb`). Chain now world-verified end to end (W1-W8).
-- **M2.14** README runbook (PROJ/GDAL per-run fix, step commands, data-flow
-  map, measured sizes, DIE_CONFIG_DIR/world selftest documentation).
+- (none — M5.2 complete; next session starts M5.3)
 
 ## 5. Pending (next up)
 
 | Order | Task | Milestone | Depends on | Notes |
 |---|---|---|---|---|
-| 1 | ~~M1.1–M1.5~~ · ~~M2.1–M2.2~~ · ~~AM-1~~ ✅ (see §3) | — | — | — |
-| 2 | ~~M1.6~~ ✅ `assets/js/ducklab.js` engine service (gates ALL PASS — see §3 M1.6) | M1 | M1.5 ✅ | — |
-| 3 | ~~M1.7~~ ✅ Engine Lab `#engine` tab (see §3 M1.7) | M1 | M1.6 ✅ | — |
-| 4 | ~~M1.8~~ ✅ Historical behind `?engine=1` (7/7 spot checks exact — see §3 M1.8) | M1 | M1.7 ✅ | — |
-| 5 | ~~M1.9~~ ✅ regression harness + CI (baseline green, 619 values — see §3 M1.9) | M1 | M1.8 ✅ | — |
-| 6 | ~~M1.10~~ ✅ `_national_monthly.parquet` pre-aggregate (5,135 rows, fsum-verified 0.0 diff — see §3 M1.10). **M1 COMPLETE pending exit-gate review (M1.11).** | M1 | M1.9 ✅ | — |
-| 7 | ~~M2.13 phase 2~~ ✅ (world W1-W8 PASS — see §3 M2.13 p2) · **M2.14** README runbook | M2 | M2.3-M2.12 all done | Next task |
-| 7b | Real ssp-mode chain 02-09 on the arrived data -> ssp-mode 08 gate (X1) -> 09 `--publish` (Owner sign-off + regression --bless on catalog) | M2 | M2.13 p2 ✅; ssp data arrived (2015-2050) | after M2.14 |
-| 8 | ~~M1.11~~ ✅ M1 exit-gate review (2026-11-17, this session): script gates (catalog 11/11 URL PASS, regression 680 PASS incl. M1.10 anchors) + browser battery (5 workspaces incl. Engine Lab, zero console errors; engine Q1/Q2/Q3 re-measured live: cold slice 18.7 ms < 100 ms, repeat 0.3 ms with 0 new bytes/0 new requests; engine-vs-CSV exactness 3/3; keyboard roving-tabindex + Arrow-key nav verified; skip link target exists) + mobile pass Owner-confirmed (Pixel 7a / Chrome dev tools). **M1 COMPLETE.** | M1 | M1.10 ✅ | done — see session row 25 |
-| 9 | SSP phase-2 downloads (Owner) — **ranking-gated**: only after `08_validate_gcm.py` → `best_subset.yaml` | M2 handoff | M2.8 ✅ script | Owner compute |
+| **1** | **M5.3 — ensemble band chart (median + 25–75 %), district time-series, choropleth of the ensemble stat per month/year — choropleth DEFAULT = agreement fraction (X2); median is the secondary toggle** | M5 | M5.2 ✅ | First engine-consuming task on `#projections`. **Known prerequisite flagged in row 28:** `ducklab.js ensemble()` still assumes wide columns (median/p25/p75 in one read) that do not match the published per-stat partitions (each partition holds `value`) — fix + live-verify as the task's first step |
+| 2 | M5.4 agreement layer (definitions in tooltips, seam_uncertainty X7) · M5.5 model ranking panel · M5.6 SPI–SPEI divergence · M5.7 banner refinement | M5 | M5.3 | per docs/v2/02 §3 |
+| 3 | M5.8 E14 future drought event analytics — **gated on OD9 (Owner confirmation)** | M5 | M5.3–M5.7, OD9 | — |
+| 4 | M3 freshness/status (M3.x) · M4 IMD validation framework | M3/M4 | — | queueable alongside M5 |
+| 5 | M6 Atlas era A — **blocked on Owner verification of Atlas v2 (OD4)** | M6 | Owner | — |
+| 6 | M7 release (era-C hosting decision resolves here: commit vs R2 + Zenodo) | M7 | M3–M6 | — |
 
 (Full task tables per milestone: `docs/v2/02-roadmap-milestones.md` §3.)
 
@@ -226,24 +212,29 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-### M2.14 - README runbook + real ssp-mode chain (next task)
+### M5.3 - Ensemble band chart + choropleth (next task)
 
-M2.13 is DONE (phase 1 + phase 2; see session log row 23). Two remaining M2
-items, in order:
+**Do this first:** `ducklab.js ensemble()` (M1.6) predates the published
+store layout and is WRONG for it — it filters files by `stat=` but then
+SELECTs `median, p25, p75, agreement_moderate` columns, while the published
+partitions each hold a single `value` column (schema verified live in row
+28). Fix the builder to read the per-stat partitions (`stat=median`,
+`stat=p25`, `stat=p75`, `stat=agreement_*`), verify against
+`scripts/engine-smoke.html` + the live tab, THEN build:
 
-1. **Real ssp-mode chain 02-09** on the Owner's arrived data
-   (`D:/Websites/die-data/cmip6/{Hist,SSP}` — see section 4). The chain is
-   world-verified end to end (W1-W8), including the F1 stitch seam and the
-   2050-truncation honesty path. Expected counts per step (8 models, not 22):
-   02 = 8x3x2 = 48 regrid records; 05 ssp = 8 models x 8 iids; staging
-   partitions = (8 iids x 6 stats x 36 y) + (8 models x 8 x 36 y). Then
-   ssp-mode 08 gate (X1 evidence snapshot under `gcm-pipeline/validation/`,
-   separate from the historical-corrected snapshot) and 09 `--publish`
-   (needs Owner sign-off + regression `--bless` on catalog.json fingerprints).
-2. **M2.14** README runbook for `gcm-pipeline/`: PROJ/GDAL per-run fix, step
-   commands (incl. `--mode ssp`), raw->work->out data-flow map, measured
-   sizes, DIE_CONFIG_DIR + `selftest_gcm.py --world` documentation, and the
-   methodology-page backlog (F6/F8/F9) flagged for methodology v2.
+1. Ensemble band chart (median + shaded 25–75 %) per district time-series —
+   era boundary marker + seam note if a user extends 2025→2026 (R2).
+2. Choropleth of the selected statistic for the selected month/year —
+   DEFAULT = agreement fraction (X2); median is the secondary toggle.
+3. Query budget: < 150 ms cold per docs/v2/04 §7.
+4. Controls already exist (M5.2): scenario/variable/statistic/window/
+   geography in `assets/js/projections.js` + `#projCheckPanel` — the chart
+   consumes `DIE.Projections.state`.
+
+Data note: the local store covers 2015–2050 (36 years × 2 scenarios ×
+6 stats × 8 vars + members); windows beyond 2050 stay disabled with the
+pending note. The store is LOCAL/gitignored — dev server on this machine
+serves it; the live site (master) is unaffected.
 
 ### M2.13 phase 2 record (DONE 2026-11-17 - do not re-derive)
 
@@ -300,3 +291,5 @@ X1 refusal. WORLD SELFTEST PASS.
 | 25 | 2026-11-17 | **Corrupt file re-downloaded + chain resumed + M1.11 exit gate PASSED + footer condensed (Owner-reported).** Owner re-downloaded the single corrupt raw file (new size 8,757,021 B; opens cleanly, 365 days on the 365_day calendar, full 122x118 grid). Chain re-run: step 02 now **1 ok / 115 verified-skips / 0 failed** (41s) - ALL 16 ssp regrid records + 22 historical records complete; steps 03 (QDM ssp) and 04 (PET) PASS; 05-07 running (log `work/ssp_chain_log.txt`). M1.11 exit-gate review DONE: script gates (generate_catalog --check 11/11 HTTP 200 + Accept-Ranges; regression_check 680 values PASS incl. M1.10 area-weighted anchors) + browser battery on the dev server (all four v1.0 workspaces + docs centre + Engine Lab cycled, ZERO console errors; engine Q1/Q2/Q3 re-measured live on real data: engine ready DuckDB-WASM 1.32.0, cold district slice 18.7 ms < 100 ms gate, repeat slice 0.3 ms with deltaBytes=0 and deltaRequests=0 - byte interceptor verified; M1.8 exactness 3/3 spot checks engine==CSV: spi_03 Ahmednagar 1981-03/04/05 = 1.94/0.47/-0.21, sma Jaipur 2025-12 = 18, spi_12 Thiruvananthapuram 2002-07 = -0.74; keyboard operability: workspace tablist roving tabindex [-1,-1,-1,-1,0] + ArrowRight moves focus+selection incl. wrap-around, selection-follows-focus; skip link #workspace target exists; 7 responsive breakpoints incl. 640px) + mobile pass Owner-confirmed (Pixel 7a, Chrome dev tools). FOOTER CONDENSED (Owner request from the mobile check): merged the "Developed as..." line into the author paragraph, domains to one line, "More from" links inline (row) instead of stacked, tightened paddings/margins in base + compact-override blocks + a new 640px mobile tightening block; all content preserved (author/affiliation/domains/4 links/provenance/disclaimer - disclaimer stays because the docs centre references it); ids footerProvenance/footerDisclaimer/footerVersion untouched (JS hooks). Second pass (Owner: "strip what is not necessary"): the FULL provenance paragraph is stripped from the footer (duplicated - Docs centre section B renders data/metadata.json live, the single source of truth) and replaced by a one-line source pointer + link to #data; the "Static client-side application · no backend, no API keys" note is stripped from the bottom bar; the DISCLAIMER is KEPT (necessary: R9 interpretation guardrail, referenced from the docs centre, text injected from metadata.json contract unchanged). Desktop footer 267px -> 185px, zero console errors after both passes | index.html (footer markup), assets/css/style.css (footer base + compact override + 640px block), assets/js/app.js (provenance injection removed), PROGRESS.md; validation/README.md (ssp/ snapshot section) | catalog + regression PASS; browser battery zero errors; footer verified visually via screenshot; engine gates re-measured PASS; commits `cfa522b`, `1f22091` | ssp chain 05-07 -> 08 ssp gate (X1) -> 09 staging -> Owner sign-off + --publish |
 | 26 | 2026-11-17 | **Real ssp chain COMPLETE (02-07) + ssp-mode 08 gate: REMEDIATION ROUND 1 re-specification -> GATE PASS.** Chain: 02 regrid 1 ok/115 verified-skip/0 fail (all 16 ssp + 22 hist records done, consRel ~5e-16), 03 QDM 48 outputs (343s), 04 PET 16 (9s), 05 indices 128 stitched (2,773s), 06 aggregates 128 (34s), 07 ensembles 16 (729s) - zero failures. FIRST GATE RUN FAILED (38-56% regional breaches + national): diagnosis (measured, in-repo): breaches are MEAN-OFFSET dominated - sd ratios inside tolerance nationally everywhere; per-model signed spi_12 offsets MIXED SIGN (+0.35 ACCESS / +0.34 CanESM5 / +0.32 EC-Earth3 ... -0.29 NorESM2-MM) = free-running REALISATION, not correction bias; regional sd breaches concentrate in 1-district UTs (small-sample); seam in PHYSICAL variables continuous (tas -0.54..+0.47 K, pr ratios 0.98..1.17, mixed signs). CONCLUSION: the gate demanded weather reproduction over 2015-2020, which projections cannot deliver (R2: projections are never forecasts; a 6-year window is one observed realisation vs 8 model realisations). REMEDIATION ROUND 1 (documented in config/validation.yaml ssp block, same precedent as the historical-gate round 1): enforcing gates re-based to (1) distribution SHAPE = sd_ratio only, per (iid, season, region), means REPORTED next to every cell (never gated), (2) SEAM CONTINUITY = corrected hist tail (3y) vs corrected ssp head (3y) per model per physical variable (pr ratio 0.80-1.25, |dtas| <= 1.0 K) - catches stitch/calibration defects; reported-only with documented reasons: overlap means, drought-event statistics, dry tails (Q-Q stored), divergence, per-model SIGNED offsets. Selftest rework: T8 now builds qdm seam files in the world; T8a truthful PASSES shape+seam, T8b x2-spread FAILS shape (mean bias deliberately NOT a breach), T8c +5K seam break FAILS seam. REAL GATE (final code): shape ssp245 173/1360 (12.7%) + ssp585 156/1360 (11.5%) regional, 0 national -> PASS; seam 0/24 breaches BOTH scenarios -> PASS; evidence committed `gcm-pipeline/validation/ssp/{validation_report_ssp.json, README.md, SHA256SUMS.txt}` | gcm-pipeline/08_validate_gcm.py (sd_shape_cell + _qdm_window_mean + run_ssp_gate rework + T8a-c), gcm-pipeline/config/validation.yaml (ssp remediation block), gcm-pipeline/validation/ssp/ (new committed evidence), PROGRESS.md; work/ chain outputs (Owner-local) | 08 selftest T1-T8 PASS; real gate PASS both scenarios; seam 0/48 cells breached | 09 --mode ssp staging DONE (8,064 partition files, 355.4 MB, = 2 scenarios x [(8 iids x 6 stats x 36 y) + (8 models x 8 iids x 36 y)], size gate clean, staging-only per X9); full orchestrator 9/9 PASS; regression harness PASS (680). PUBLISH = Owner sign-off + regression --bless (catalog fingerprints change) + `09_export_parquet.py --mode ssp --publish` |
 | 27 | 2026-11-17 | **Era-C PUBLISH COMPLETE (Owner sign-off) + 2 publish-run bugs fixed + re-bless + MANUSCRIPT V2 DRAFTED (main_v2.tex, compiles 30 pages).** Owner sign-off received. FIRST publish run FAILED at catalog validation: "variable path missing: ssp245" x16 - generate_catalog validate()/check_urls() iterated the NESTED projections block {scenario:{stat:[paths]}} as a flat list, treating scenario KEYS as paths; FIX: _iter_era_paths recursion in both functions; T7 selftest extended (validator problems may never be bare scenario keys - bug signature regression-proofed). SECOND bug: 09 update_metadata hard-coded label "Projections 2026-2100" contradicting the honest 2015-2050 record (R2/R3); FIX: label derived from scanned years -> "Projections 2015-2050 (2051-2100 inputs pending)". Re-publish: 8,064 files -> data/parquet/projections (355.4 MB), catalog.json regenerated (991 KB; era projections available, years 2015-2050, spi_03 carries 1,008 paths = 2 scen x [6 stats x 36 y + 8 models x 36 y]), pipeline_manifest era_c = 8,064 sha256 entries, metadata era_c written (scenarios, subset n=8 verbatim, PET seam, honesty rules). data/parquet/projections/ GITIGNORED (355.4 MB hosted artifact per locked architecture Pages->R2; hosting flagged OPEN for Owner). Regression reviewed (drift = exactly 3 catalog-structural items: available_eras +projections, file_count 10->26, catalog sha256; all 680 numeric anchors + era-B file sha256s unchanged) -> --bless -> PASS (681 values). LIVE verification: app zero console errors; engine ready (DuckDB-WASM 1.32.0), preset query 538 rows x 3 cols in 181 ms / 586.5 KB network. MANUSCRIPT V2 (manuscript/main_v2.tex, built from main.tex v1.3 - cover page + ALL v1.0 results/choices preserved verbatim): title/pdftitle/running-head/abstract extended with era C + engine; keywords +3; Background v2 paragraph; Methods +4 subsections (three-era record + honesty rules; projections pipeline 00-09 + Table gcmpipeline; ensemble construction + model selection incl. 8-model composite scores; Table v2choices D1-D5/C1-C7 + Table v2gov governance incl. remediation protocol R-P); Data Records + era-C store block + Table recordsc; Technical Validation + "Version 2.0 validation" (9-suite selftest incl. W1-W8 world, historical-corrected gate: 0/1360 consistency + 41/272 (15.1%) + 28/1360 (2.1%) PASS after round 1 (median-of-standardised-concentrates diagnosis); ssp gate: first FAIL 38-56% + national -> measured diagnosis (mean-offset dominated, mixed-sign offsets +0.35..-0.29, seam continuous) -> remediation round 1 (shape + seam gates) -> PASS 12.7%/11.5% regional, 0 national, seam 0/24 both scenarios; publish-time contract checks incl. the validator bug); Usage Notes + Engine Lab subsection (18.7 ms cold / 0.3 ms repeat / 0 bytes); new section "Version 2.0 scope and status" (published vs pending incl. 2051-2100, dir_agreement_drier, #projections surface, era A); Limitations + era-C paragraph (single realisation r1i1p1f1, 8-of-22 ensemble, truncation, PET seam); Data/Code availability + era-C; 6 new refs (Cannon2015, Eyring2016, HargreavesSamani1985, ONeill2016, Riahi2017, Thrasher2012 - Riahi 'et al.' style to avoid reconstructing 30+ author list), bib counter 31->37, cite check 37/37 zero missing/unused; compiled with TinyTeX latexmk (tlmgr-installed titlesec, enumitem, fancyhdr, txfonts) -> main_v2.pdf 30 pages, 5,809,433 B, zero LaTeX errors, zero undefined refs. Cover_page_arxiv.svg untouched | manuscript/main_v2.tex + main_v2.pdf + .gitignore, scripts/generate_catalog.py, gcm-pipeline/09_export_parquet.py, data/parquet/{catalog.json}, data/pipeline_manifest.json, data/metadata.json, scripts/regression_baseline.json, .gitignore, PROGRESS.md; data/parquet/projections/ published owner-local (gitignored) | regression PASS 681; engine live query OK; cite check 37/37; latexmk clean; commits `8b198e7` (publish), manuscript commit this row | Owner: manuscript review; era-C store hosting decision (R2 vs repo vs Zenodo); #projections surface (M4/M5); 2051-2100 inputs |
+| 28 | 2026-11-18 | **M5.2: `#projections` tab skeleton (first M5 task; fixture stage M5.1 skipped - real era-C data published locally).** New 6th primary tab `Future Projections` (terracotta `--ws` accent, light + dark-rail token blocks; R8: new hash, all old hashes untouched): view markup with vi-step 6, projection banner rendered verbatim from metadata era_c (R2: simulations never forecasts; honest label 'Projections 2015-2050 (2051-2100 inputs pending)'), Store status panel (status/scenarios/years 2015-2050/ensemble n=8 best subset verbatim X3/PET Hargreaves seam note) + era seam note (era B 1981-01-2025-12 vs era C from 2015, never spliced, 2015-2025 overlap = free-running realisations), Selection panel (scenario radios SSP2-4.5/SSP5-8.5, variable+timescale select of the 8 published era-C variables, statistic select DEFAULTING to agreement moderate <= -1.0 per X2 with severe <= -1.5 / median / band options, time window near 2026-2040 / mid 2041-2060 / late 2081-2100 DISABLED with pending explanation (section 7 rule) / custom clamped 2015-2050, geography national/state/district), Selection check panel resolving the live selection against the COMMITTED catalog only (per-stat partition groups, files, years-in-window coverage: verified full 15/15 near-term, partial 10/20 mid-century with '2051-2100 inputs pending' note, band = 3 partition groups, ssp585 switch), Planned views panel (M5.3-M5.8 roadmap incl. E14 OD9 gate; R3: no synthetic placeholders). New assets/js/projections.js module (DIE.Projections; shared catalog promise via DIE.Engine.ensureCatalog, direct no-store fetch fallback; telemetry proj_control events; error state with Retry) wired into app.js (TABS/TAB_LABELS/DIRTY/Views/footExport 'Downloads') + MODULES loader chain; era-B global sidebar sections hidden on this tab (pure CSS body[data-tab] rule); ASSET_VERSION 2026-11-18a. KNOWN PREREQUISITE for M5.3 recorded in section 9: ducklab.js ensemble() (M1.6, never called yet) assumes wide columns (median/p25/p75 in one SELECT) that do not match the published per-stat partitions (each holds a single value column) - fix + live-verify as M5.3 step 0 | index.html (tab button, viewProjections panel, VIEW 6->7 comment renumber, MODULES, ASSET_VERSION), assets/js/projections.js (new), assets/js/app.js (TABS/TAB_LABELS/DIRTY/Views/footer), assets/css/style.css (accent blocks light+dark, .proj-* components, 44px touch targets, mobile column stack), PROGRESS.md | Browser battery: zero console errors across full 7-tab cycle (#overview/#historical/#events/#propagation/#engine/#projections/#data); all controls exercised live against the real store (scenario switch, band=3 groups, mid window 10/20 partial honest note, custom 2030-2035 6/6, late disabled); selection resolves: SSP2-4.5/SPI-3/agreement moderate/near = 15/15 full coverage; status fields sourced from metadata era_c contract; keyboard: all 7 controls reachable in tab order, radio focus + change verified; mobile pass at 390x844 (390px iframe): projections routes, era-B global sidebar hidden, controls stack column at 351px fields, 44px touch targets, check table renders; regression_check PASS (681 values, no re-bless needed - no data touched); data-pipeline/selftest.py PASS; screenshot captured for Owner | M5.3 |
+
