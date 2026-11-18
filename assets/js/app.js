@@ -244,6 +244,10 @@
         if (Propagation.mapB) Propagation.mapB.invalidateSize();
       } else if (tab.id === 'events' && DIE.MapView.evtDetailMap) {
         DIE.MapView.evtDetailMap.invalidateSize();
+      } else if (tab.id === 'projections' && DIE.Projections) {
+        // v2: the Plotly band chart and the Leaflet choropleth need a
+        // laid-out container; re-querying is near-free (engine query cache)
+        DIE.Projections.invalidate();
       }
     }, 60);
     document.body.dataset.tab = tab.id;
@@ -702,6 +706,7 @@
       });
       if (Propagation.mapA) Propagation.mapA.invalidateSize();
       if (Propagation.mapB) Propagation.mapB.invalidateSize();
+      if (DIE.Projections && DIE.Projections.mapSize) DIE.Projections.mapSize();
     }, 250));
   }
 

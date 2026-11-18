@@ -2029,8 +2029,10 @@
                 </div>
               </div>
               <p class="table-help" id="projControlNote">
-                Charts and maps activate as tasks M5.3–M5.8 land; the selection
-                below is already verified against the committed catalog.
+                The band chart and map below consume this selection; the
+                choropleth maps the chosen statistic (the band statistic maps
+                the median). Agreement — moderate is the default (X2:
+                agreement-first).
               </p>
             </section>
           </div>
@@ -2060,6 +2062,40 @@
             <p class="table-help" id="projCheckNote"></p>
           </section>
 
+          <div class="panel-grid" id="projViewsGrid">
+            <section class="panel" id="projBandPanel" aria-label="Ensemble band chart">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Ensemble band</h2>
+                  <span class="panel-meta" id="projBandMeta">era C · median + 25–75 %</span>
+                </div>
+                <div class="panel-actions">
+                  <select id="projState" class="panel-ctl" aria-label="State" hidden></select>
+                  <select id="projDistrict" class="panel-ctl" aria-label="District" hidden></select>
+                </div>
+              </div>
+              <div class="proj-chart" id="projBandChart" role="img"
+                aria-label="Ensemble median with 25 to 75 percent band over time"></div>
+              <p class="table-help" id="projBandNote"></p>
+            </section>
+
+            <section class="panel" id="projMapPanel" aria-label="Ensemble choropleth">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Map</h2>
+                  <span class="panel-meta" id="projMapMeta">—</span>
+                </div>
+                <div class="panel-actions">
+                  <select id="projMapYear" class="panel-ctl" aria-label="Map year"></select>
+                  <select id="projMapMonth" class="panel-ctl" aria-label="Map month"></select>
+                </div>
+              </div>
+              <div class="proj-map" id="projMap"></div>
+              <div class="proj-legend" id="projLegend"></div>
+              <p class="table-help" id="projMapNote"></p>
+            </section>
+          </div>
+
           <section class="panel" id="projRoadmapPanel" aria-label="Planned views">
             <div class="panel-head">
               <div class="panel-titles">
@@ -2068,7 +2104,6 @@
               </div>
             </div>
             <ul class="proj-roadmap">
-              <li><span class="proj-ms">M5.3</span> Ensemble band chart (median + 25–75 %), district time-series, choropleth — agreement-first default (X2)</li>
               <li><span class="proj-ms">M5.4</span> Agreement layer with exact definitions + per-district seam uncertainty in tooltips</li>
               <li><span class="proj-ms">M5.5</span> Model ranking panel (multi-metric composite; no single-metric ranking)</li>
               <li><span class="proj-ms">M5.6</span> SPI vs SPEI divergence map — "Rainfall alone does not decide India's drought future; demand does half the work."</li>
@@ -3432,7 +3467,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-18a";
+        var ASSET_VERSION = "2026-11-18f";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

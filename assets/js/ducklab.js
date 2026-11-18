@@ -277,10 +277,17 @@
     return n;
   }
 
-  // Arrow table → plain objects (the UI layer consumes rows, not Arrow)
+  // Arrow table → plain objects (the UI layer consumes rows, not Arrow).
+  // int64 columns (era-C year/month are int64) arrive as BigInt; the UI does
+  // plain arithmetic on them, so widen to Number centrally (>2^53 not used).
   function toRows(table) {
     if (!table) return [];
-    return table.toArray().map((r) => r.toJSON());
+    const widen = (v) => (typeof v === "bigint" ? Number(v) : v);
+    return table.toArray().map((r) => {
+      const o = r.toJSON();
+      for (const k in o) o[k] = widen(o[k]);
+      return o;
+    });
   }
 
   async function slice(opts) {
@@ -347,24 +354,50 @@
     }
     const scenario = opts.scenario === 'ssp585' ? 'ssp585' : 'ssp245';
     const v = catalogVariable(opts.variable);
-    const district = String(opts.district || '');
-    if (!DISTRICT_RE.test(district)) {
-      throw newEngineError('bad-district', 'district id rejected: ' + district);
-    }
+    // published stat partitions: scenario=<s>/stat=<st>/variable=<v>/year=<yyyy>/
+    // (each holds a single `value` column — PROGRESS.md row 27/28)
+    const STAT_KEYS = ['median', 'p25', 'p75', 'agreement_moderate', 'agreement_severe'];
     const statKey = opts.stat || 'median';
-    const files =
-      ((v.files && v.files.projections && v.files.projections[scenario]) || [])
-        .filter((f) => f.indexOf('stat=' + statKey + '/') !== -1);
+    if (STAT_KEYS.indexOf(statKey) === -1) {
+      throw newEngineError('bad-stat', 'stat must be one of ' + STAT_KEYS.join(', ') + ': ' + statKey);
+    }
+    let files =
+      ((v.files && v.files.projections && v.files.projections[scenario]) || {})[statKey] || [];
     if (!files.length) throw newEngineError('no-files', 'no ' + scenario + '/' + statKey + ' files for ' + v.id);
-    let where = "district_id = '" + district + "'";
+    // year pruning at the FILE level first: one file per year, so a window
+    // query never even opens the footers of out-of-window partitions
     if (opts.yearRange) {
       const [a, b] = opts.yearRange.map(intYear);
-      where += ' AND year BETWEEN ' + Math.min(a, b) + ' AND ' + Math.max(a, b);
+      const lo = Math.min(a, b), hi = Math.max(a, b);
+      files = files.filter((f) => {
+        const m = /year=(\d{4})\//.exec(f.replace(/\\/g, '/') + '/');
+        return m ? (+m[1] >= lo && +m[1] <= hi) : true;
+      });
+      if (!files.length) {
+        throw newEngineError('no-files',
+          'no ' + scenario + '/' + statKey + ' files for ' + v.id + ' in ' + lo + '-' + hi);
+      }
     }
+    let where = '';
+    if (opts.district) {
+      const district = String(opts.district);
+      if (!DISTRICT_RE.test(district)) {
+        throw newEngineError('bad-district', 'district id rejected: ' + district);
+      }
+      where = "district_id = '" + district + "'";
+    }
+    if (opts.yearRange) {
+      const [a, b] = opts.yearRange.map(intYear);
+      const yr = 'year BETWEEN ' + Math.min(a, b) + ' AND ' + Math.max(a, b);
+      where = where ? where + ' AND ' + yr : yr;
+    }
+    const clause = where ? ' WHERE ' + where : '';
+    // district_id is carried on every row so callers can aggregate state or
+    // national series with the v1.0 area-weighting rule (harmless for slices)
     return toRows(await query(
-      'SELECT year, month, median, p25, p75, agreement_moderate ' +
-      'FROM read_parquet([' + files.map((f) => "'" + absPath(f) + "'").join(', ') + ']) ' +
-      'WHERE ' + where + ' ORDER BY year, month'));
+      'SELECT district_id, year, month, value::DOUBLE AS value ' +
+      'FROM read_parquet([' + files.map((f) => "'" + absPath(f) + "'").join(', ') + '])' +
+      clause + ' ORDER BY year, month'));
   }
 
   /* ---- exports ----------------------------------------------------------- */

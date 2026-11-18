@@ -7,19 +7,18 @@
 ## 1. Status flag
 
 ```
-| STATUS:        ACTIVE - M5 STARTED: #projections tab skeleton (M5.2)       |
-|                DONE and verified live. Era-C store local-only (Owner     |
-|                decision). Next: M5.3 ensemble band chart + choropleth    |
+| STATUS:        ACTIVE - M5: #projections views LIVE (M5.3 band chart +   |
+|                choropleth, real era-C store). Next: M5.4 agreement layer |
 | PHASE:         M5 (projections surface); M2 complete; M3/M4 queueable    |
-| ROADMAP:       M0-M2 complete. M5.2 done 2026-11-18                      |
-| LAST SESSION:  2026-11-18 (row 28 - M5.2 skeleton)                       |
+| ROADMAP:       M0-M2 complete. M5.2-M5.3 done 2026-11-18                 |
+| LAST SESSION:  2026-11-18 (row 29 - M5.3 band + choropleth)              |
 | BLOCKERS:      none technical. Pending Owner: manuscript review, era-C   |
 |                store hosting (at release), SSP 2051-2100 download, OD1,  |
 |                OD9, OD10/OD11                                            |
 | BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)               |
 ```
 
-Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ⬜ · M4 ⬜ · M5 ◻ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2 ✅) · M6 ⬜ · M7 ⬜ · M8+ ⬜** (definitions: `docs/v2/02-roadmap-milestones.md`).
+Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ⬜ · M4 ⬜ · M5 ◻ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2 ✅; M5.3 ✅) · M6 ⬜ · M7 ⬜ · M8+ ⬜** (definitions: `docs/v2/02-roadmap-milestones.md`).
 
 ## 2. Current phase
 
@@ -85,17 +84,18 @@ tracker (F2); open items are recorded in section 8.
 | M2.13 p1 | 2026-11-17 | `selftest_gcm.py` orchestrator + CI step (O14); 9/9 suites PASS; CI run 43999908625 GREEN - session log row 21 |
 | M2.13 p2 | 2026-11-17 | Synthetic end-to-end world (`selftest_gcm.py --world`): 3-model world mirroring the real record shape (hist 1981-2014 + ssp245 2015-2050), full 02->09 chain via subprocesses + DIE_CONFIG_DIR; WORLD SELFTEST PASS (W1-W8) - session log row 23 |
 | M5.2 | 2026-11-18 | `#projections` tab skeleton (era toggle wiring = era labels/banner/seam notes, scenario switch, variable/timescale selector, statistic, time window, geography) + honest projection banner + store-status panel + catalog-driven selection check + planned-views roadmap panel - session log row 28 |
+| M5.3 | 2026-11-18 | `#projections` ensemble band chart (median + 25–75 % tonexty band, Plotly) + era-C choropleth (agreement-first X2 default, median/band secondary) for national/state/district scopes (v1.0 area-weighting rule, weights renormalised per month) + map-click → district selection; `ensemble()` rewritten for the published per-stat partitions + optional district + year pruning at file level; `toRows` int64 widening - session log row 29 |
 
 ## 4. In progress
 
-- (none — M5.2 complete; next session starts M5.3)
+- (none — M5.3 complete; next session starts M5.4)
 
 ## 5. Pending (next up)
 
 | Order | Task | Milestone | Depends on | Notes |
 |---|---|---|---|---|
-| **1** | **M5.3 — ensemble band chart (median + 25–75 %), district time-series, choropleth of the ensemble stat per month/year — choropleth DEFAULT = agreement fraction (X2); median is the secondary toggle** | M5 | M5.2 ✅ | First engine-consuming task on `#projections`. **Known prerequisite flagged in row 28:** `ducklab.js ensemble()` still assumes wide columns (median/p25/p75 in one read) that do not match the published per-stat partitions (each partition holds `value`) — fix + live-verify as the task's first step |
-| 2 | M5.4 agreement layer (definitions in tooltips, seam_uncertainty X7) · M5.5 model ranking panel · M5.6 SPI–SPEI divergence · M5.7 banner refinement | M5 | M5.3 | per docs/v2/02 §3 |
+| **1** | **M5.4 — agreement layer refinement: exact definitions + per-district seam uncertainty in tooltips (X7: seam_uncertainty), agreement legend hardening** | M5 | M5.3 ✅ | Map/legend/tooltips for agreement already live since M5.3 (5 fraction bins, "x of 8 models" honest-n legend); M5.4 adds the exact threshold definitions + seam uncertainty values |
+| 2 | M5.5 model ranking panel · M5.6 SPI–SPEI divergence · M5.7 banner refinement | M5 | M5.3 ✅ | per docs/v2/02 §3 |
 | 3 | M5.8 E14 future drought event analytics — **gated on OD9 (Owner confirmation)** | M5 | M5.3–M5.7, OD9 | — |
 | 4 | M3 freshness/status (M3.x) · M4 IMD validation framework | M3/M4 | — | queueable alongside M5 |
 | 5 | M6 Atlas era A — **blocked on Owner verification of Atlas v2 (OD4)** | M6 | Owner | — |
@@ -212,29 +212,31 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-### M5.3 - Ensemble band chart + choropleth (next task)
+### M5.4 - Agreement layer refinement (next task)
 
-**Do this first:** `ducklab.js ensemble()` (M1.6) predates the published
-store layout and is WRONG for it — it filters files by `stat=` but then
-SELECTs `median, p25, p75, agreement_moderate` columns, while the published
-partitions each hold a single `value` column (schema verified live in row
-28). Fix the builder to read the per-stat partitions (`stat=median`,
-`stat=p25`, `stat=p75`, `stat=agreement_*`), verify against
-`scripts/engine-smoke.html` + the live tab, THEN build:
+The agreement choropleth is LIVE since M5.3 (5 fraction bins of the honest
+8-model subset, "x of 8 models" legend + tooltips, X2 default statistic).
+M5.4 refines it per the register/roadmap:
 
-1. Ensemble band chart (median + shaded 25–75 %) per district time-series —
-   era boundary marker + seam note if a user extends 2025→2026 (R2).
-2. Choropleth of the selected statistic for the selected month/year —
-   DEFAULT = agreement fraction (X2); median is the secondary toggle.
-3. Query budget: < 150 ms cold per docs/v2/04 §7.
-4. Controls already exist (M5.2): scenario/variable/statistic/window/
-   geography in `assets/js/projections.js` + `#projCheckPanel` — the chart
-   consumes `DIE.Projections.state`.
+1. Exact definitions in the UI: agreement = share of subset models with
+   SPI/SPEI <= −1.0 (moderate) / <= −1.5 (severe) in that month — a count,
+   NOT a probability (already worded this way on the map note; carry it
+   into the legend head + tooltip fully).
+2. Per-district seam uncertainty in tooltips (X7 `seam_uncertainty`,
+   Owner-computed in the ssp chain publish) — if the column is absent from
+   the store, show the placeholder-free "pending publish" state instead
+   (R3: never fabricate).
+3. Legend/tooltip hardening: agreement_severe toggle check, no-data edge
+   cases (4 island districts have null agreement values — rendered grey).
 
-Data note: the local store covers 2015–2050 (36 years × 2 scenarios ×
-6 stats × 8 vars + members); windows beyond 2050 stay disabled with the
-pending note. The store is LOCAL/gitignored — dev server on this machine
-serves it; the live site (master) is unaffected.
+Follow-ups recorded: the 4 null-agreement districts (IMD-anchored ocean
+mask) are expected and honest; verify they render grey with the tooltip
+"no data" line.
+
+Data note: era-C store is LOCAL/gitignored (Owner decision) — dev server
+serves it; the live site is unaffected. Era C publishes SPI/SPEI only
+(SMA/VCI projections do not exist — the variable selector already lists
+only the 8 published variables).
 
 ### M2.13 phase 2 record (DONE 2026-11-17 - do not re-derive)
 
@@ -293,3 +295,4 @@ X1 refusal. WORLD SELFTEST PASS.
 | 27 | 2026-11-17 | **Era-C PUBLISH COMPLETE (Owner sign-off) + 2 publish-run bugs fixed + re-bless + MANUSCRIPT V2 DRAFTED (main_v2.tex, compiles 30 pages).** Owner sign-off received. FIRST publish run FAILED at catalog validation: "variable path missing: ssp245" x16 - generate_catalog validate()/check_urls() iterated the NESTED projections block {scenario:{stat:[paths]}} as a flat list, treating scenario KEYS as paths; FIX: _iter_era_paths recursion in both functions; T7 selftest extended (validator problems may never be bare scenario keys - bug signature regression-proofed). SECOND bug: 09 update_metadata hard-coded label "Projections 2026-2100" contradicting the honest 2015-2050 record (R2/R3); FIX: label derived from scanned years -> "Projections 2015-2050 (2051-2100 inputs pending)". Re-publish: 8,064 files -> data/parquet/projections (355.4 MB), catalog.json regenerated (991 KB; era projections available, years 2015-2050, spi_03 carries 1,008 paths = 2 scen x [6 stats x 36 y + 8 models x 36 y]), pipeline_manifest era_c = 8,064 sha256 entries, metadata era_c written (scenarios, subset n=8 verbatim, PET seam, honesty rules). data/parquet/projections/ GITIGNORED (355.4 MB hosted artifact per locked architecture Pages->R2; hosting flagged OPEN for Owner). Regression reviewed (drift = exactly 3 catalog-structural items: available_eras +projections, file_count 10->26, catalog sha256; all 680 numeric anchors + era-B file sha256s unchanged) -> --bless -> PASS (681 values). LIVE verification: app zero console errors; engine ready (DuckDB-WASM 1.32.0), preset query 538 rows x 3 cols in 181 ms / 586.5 KB network. MANUSCRIPT V2 (manuscript/main_v2.tex, built from main.tex v1.3 - cover page + ALL v1.0 results/choices preserved verbatim): title/pdftitle/running-head/abstract extended with era C + engine; keywords +3; Background v2 paragraph; Methods +4 subsections (three-era record + honesty rules; projections pipeline 00-09 + Table gcmpipeline; ensemble construction + model selection incl. 8-model composite scores; Table v2choices D1-D5/C1-C7 + Table v2gov governance incl. remediation protocol R-P); Data Records + era-C store block + Table recordsc; Technical Validation + "Version 2.0 validation" (9-suite selftest incl. W1-W8 world, historical-corrected gate: 0/1360 consistency + 41/272 (15.1%) + 28/1360 (2.1%) PASS after round 1 (median-of-standardised-concentrates diagnosis); ssp gate: first FAIL 38-56% + national -> measured diagnosis (mean-offset dominated, mixed-sign offsets +0.35..-0.29, seam continuous) -> remediation round 1 (shape + seam gates) -> PASS 12.7%/11.5% regional, 0 national, seam 0/24 both scenarios; publish-time contract checks incl. the validator bug); Usage Notes + Engine Lab subsection (18.7 ms cold / 0.3 ms repeat / 0 bytes); new section "Version 2.0 scope and status" (published vs pending incl. 2051-2100, dir_agreement_drier, #projections surface, era A); Limitations + era-C paragraph (single realisation r1i1p1f1, 8-of-22 ensemble, truncation, PET seam); Data/Code availability + era-C; 6 new refs (Cannon2015, Eyring2016, HargreavesSamani1985, ONeill2016, Riahi2017, Thrasher2012 - Riahi 'et al.' style to avoid reconstructing 30+ author list), bib counter 31->37, cite check 37/37 zero missing/unused; compiled with TinyTeX latexmk (tlmgr-installed titlesec, enumitem, fancyhdr, txfonts) -> main_v2.pdf 30 pages, 5,809,433 B, zero LaTeX errors, zero undefined refs. Cover_page_arxiv.svg untouched | manuscript/main_v2.tex + main_v2.pdf + .gitignore, scripts/generate_catalog.py, gcm-pipeline/09_export_parquet.py, data/parquet/{catalog.json}, data/pipeline_manifest.json, data/metadata.json, scripts/regression_baseline.json, .gitignore, PROGRESS.md; data/parquet/projections/ published owner-local (gitignored) | regression PASS 681; engine live query OK; cite check 37/37; latexmk clean; commits `8b198e7` (publish), manuscript commit this row | Owner: manuscript review; era-C store hosting decision (R2 vs repo vs Zenodo); #projections surface (M4/M5); 2051-2100 inputs |
 | 28 | 2026-11-18 | **M5.2: `#projections` tab skeleton (first M5 task; fixture stage M5.1 skipped - real era-C data published locally).** New 6th primary tab `Future Projections` (terracotta `--ws` accent, light + dark-rail token blocks; R8: new hash, all old hashes untouched): view markup with vi-step 6, projection banner rendered verbatim from metadata era_c (R2: simulations never forecasts; honest label 'Projections 2015-2050 (2051-2100 inputs pending)'), Store status panel (status/scenarios/years 2015-2050/ensemble n=8 best subset verbatim X3/PET Hargreaves seam note) + era seam note (era B 1981-01-2025-12 vs era C from 2015, never spliced, 2015-2025 overlap = free-running realisations), Selection panel (scenario radios SSP2-4.5/SSP5-8.5, variable+timescale select of the 8 published era-C variables, statistic select DEFAULTING to agreement moderate <= -1.0 per X2 with severe <= -1.5 / median / band options, time window near 2026-2040 / mid 2041-2060 / late 2081-2100 DISABLED with pending explanation (section 7 rule) / custom clamped 2015-2050, geography national/state/district), Selection check panel resolving the live selection against the COMMITTED catalog only (per-stat partition groups, files, years-in-window coverage: verified full 15/15 near-term, partial 10/20 mid-century with '2051-2100 inputs pending' note, band = 3 partition groups, ssp585 switch), Planned views panel (M5.3-M5.8 roadmap incl. E14 OD9 gate; R3: no synthetic placeholders). New assets/js/projections.js module (DIE.Projections; shared catalog promise via DIE.Engine.ensureCatalog, direct no-store fetch fallback; telemetry proj_control events; error state with Retry) wired into app.js (TABS/TAB_LABELS/DIRTY/Views/footExport 'Downloads') + MODULES loader chain; era-B global sidebar sections hidden on this tab (pure CSS body[data-tab] rule); ASSET_VERSION 2026-11-18a. KNOWN PREREQUISITE for M5.3 recorded in section 9: ducklab.js ensemble() (M1.6, never called yet) assumes wide columns (median/p25/p75 in one SELECT) that do not match the published per-stat partitions (each holds a single value column) - fix + live-verify as M5.3 step 0 | index.html (tab button, viewProjections panel, VIEW 6->7 comment renumber, MODULES, ASSET_VERSION), assets/js/projections.js (new), assets/js/app.js (TABS/TAB_LABELS/DIRTY/Views/footer), assets/css/style.css (accent blocks light+dark, .proj-* components, 44px touch targets, mobile column stack), PROGRESS.md | Browser battery: zero console errors across full 7-tab cycle (#overview/#historical/#events/#propagation/#engine/#projections/#data); all controls exercised live against the real store (scenario switch, band=3 groups, mid window 10/20 partial honest note, custom 2030-2035 6/6, late disabled); selection resolves: SSP2-4.5/SPI-3/agreement moderate/near = 15/15 full coverage; status fields sourced from metadata era_c contract; keyboard: all 7 controls reachable in tab order, radio focus + change verified; mobile pass at 390x844 (390px iframe): projections routes, era-B global sidebar hidden, controls stack column at 351px fields, 44px touch targets, check table renders; regression_check PASS (681 values, no re-bless needed - no data touched); data-pipeline/selftest.py PASS; screenshot captured for Owner | M5.3 |
 
+| 29 | 2026-11-18 | **M5.3: ensemble band chart + choropleth on `#projections` (first era-C engine-consuming views).** (a) `ducklab.js ensemble()` rewritten for the published per-stat partition schema (stat whitelist median/p25/p75/agreement_moderate/agreement_severe with `bad-stat` guard, district now OPTIONAL, year-range pruning at the FILE level before SQL build, single `value` column read); `toRows` widened int64->Number (era-C year/month are int64; BigInt broke arithmetic). (b) New views in `projections.js`: Ensemble band panel (median line `#b25c3d` + 25-75 % tonexty band `rgba(178,92,61,0.20)`, moderate-drought dashed tau line per family -1.0 z / -15 % SMA / 30 % VCI, x-unified hover, scope = geography selector: district slice OR state/national via client-side v1.0 area-weighting (registry area_km2 weights renormalised over finite districts per month, n reported 720-720 / 33-33), Plotly lazy-loaded via DIE_LIBS); Map panel (lazy `DIE.MapView.createChoropleth` with tooltip:false, one (year, month) frame per stat, DEFAULT agreement-first X2 with 5 fraction bins + 'x of 8 models' honest-n legend, median/band maps the median via `DIE.classify` McKee palette, function-tooltips bound ONCE evaluating live frame values, legend builder reusing .legend-row/.legend-swatch, fitRegion follows state/district selection, map click selects the district for the chart and flips geography); era honesty notes on every view (era C projection, not a forecast; months rendered never imputed; agreement = count of models, not a probability); period selects populated from catalog years (36) x 12 months; stale-render race guards (bandSeq/mapSeq) after the slow national render overwrote a fast district render; empty-option assignment guard on selects (era C publishes SPI/SPEI only - SMA/VCI correctly absent, '' assignment no longer poisons state); app.js switchTab projections hook -> `DIE.Projections.invalidate()` (engine query cache makes re-queries ~free) + resize hook -> `mapSize()`; read-only `snapshot()` test hook. (c) `scripts/engine-smoke.html` updated from the outdated era-C-rejection guard to REAL ensemble gates. CSS: .proj-chart 300px / .proj-map 400px + mobile 240/300 at the app-wide 760px breakpoint, .proj-legend flex row. ASSET_VERSION 2026-11-18f | assets/js/ducklab.js, assets/js/projections.js, assets/js/app.js, index.html, assets/css/style.css, scripts/engine-smoke.html | engine-smoke ALL GATES PASS: init 443 ms, cold slice 79 ms, repeat 0 KB, era-C band slice 98 ms < 150 ms GATE, p25 <= median <= p75 on all 180 months PASS, map frame 15 ms (720/724 districts, all values in [0,1]), bad-stat + injection guards PASS, no-district ensemble 8640 rows; live UI: national/state/district band renders correct (Rajasthan 33 districts, Nagpur, national), all 724 choropleth layers match expected colors exactly for BOTH agreement bins and median classification, tooltips verified for both modes ('0 of 8 models in drought', '0.25 z-score - Near normal'), map click -> picker sync verified, zero console errors over full tab cycle, no horizontal overflow, keyboard focusable selects, regression PASS 681, selftest PASS | M5.4 |

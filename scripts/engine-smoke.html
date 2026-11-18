@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- DEV ONLY — engine smoke test for task M1.6 verification.
+<!-- DEV ONLY — engine smoke test for tasks M1.6 + M5.3 verification.
      Not part of any shipped surface; lives in scripts/ alongside build tools.
      Serve the repo root with server.py, then open /scripts/engine-smoke.html -->
 <html lang="en">
@@ -15,7 +15,7 @@
 </style>
 </head>
 <body>
-<h1>DIE engine smoke test (dev only — M1.6 gates)</h1>
+<h1>DIE engine smoke test (dev only — M1.6 + M5.3 gates)</h1>
 <pre id="out">starting…</pre>
 <script src="../assets/js/ducklab.js?v=2"></script>
 <script>
@@ -60,8 +60,48 @@
       // guard checks (must reject cleanly, not hang)
       try { await DIE.Engine.slice({ variable: 'spi_03', district: "x' OR 1=1--" }); say('bad', 'GUARD FAIL: injection accepted'); }
       catch (e) { say('ok', 'GUARD injection rejected -> ' + e.kind); }
-      try { await DIE.Engine.ensemble({ scenario: 'ssp245', variable: 'spi_03', district: d }); say('bad', 'GUARD FAIL: era C accepted without data'); }
-      catch (e) { say('ok', 'GUARD era C rejected -> ' + e.kind); }
+
+      // ---- era C (real store, tasks M5.3+ gates) --------------------------
+      // The ensemble district slice: 3 stats is what the band chart runs.
+      const t2 = performance.now();
+      const [med, p25, p75] = await Promise.all([
+        DIE.Engine.ensemble({ scenario: 'ssp245', variable: 'spi_03', stat: 'median', district: d, yearRange: [2026, 2040] }),
+        DIE.Engine.ensemble({ scenario: 'ssp245', variable: 'spi_03', stat: 'p25', district: d, yearRange: [2026, 2040] }),
+        DIE.Engine.ensemble({ scenario: 'ssp245', variable: 'spi_03', stat: 'p75', district: d, yearRange: [2026, 2040] }),
+      ]);
+      const ensColdMs = Math.round(performance.now() - t2);
+      say(ensColdMs < 150 ? 'ok' : 'bad', 'GATE era-C band slice < 150 ms -> ' + ensColdMs + ' ms  ' + (ensColdMs < 150 ? 'PASS' : 'FAIL'));
+      say('dim', '        median rows=' + med.length + ' first=' + JSON.stringify(med[0]) + ' last=' + JSON.stringify(med[med.length - 1]));
+      // band sanity on a mid-window month: p25 <= median <= p75
+      const medMap = new Map(med.map(r => [r.year * 100 + r.month, r.value]));
+      const p25Map = new Map(p25.map(r => [r.year * 100 + r.month, r.value]));
+      const p75Map = new Map(p75.map(r => [r.year * 100 + r.month, r.value]));
+      let bandOk = true, bandChecked = 0;
+      for (const [k, mv] of medMap) {
+        const lo = p25Map.get(k), hi = p75Map.get(k);
+        if (mv === null || mv === undefined) continue;
+        if (lo == null || hi == null) continue;
+        bandChecked++;
+        if (!(lo <= mv && mv <= hi)) { bandOk = false; break; }
+      }
+      say(bandOk ? 'ok' : 'bad', 'CHECK p25 <= median <= p75 (n=' + bandChecked + ' months) -> ' + (bandOk ? 'PASS' : 'FAIL'));
+
+      // map frame: one stat, one year, all 724 districts
+      const t3 = performance.now();
+      const frame = await DIE.Engine.ensemble({ scenario: 'ssp245', variable: 'spi_03', stat: 'agreement_moderate', yearRange: [2040, 2040] });
+      const frameMs = Math.round(performance.now() - t3);
+      const districts = new Set(frame.map(r => r.district_id));
+      const vals = frame.map(r => r.value).filter(v => v !== null && v !== undefined);
+      const inRange = vals.every(v => v >= 0 && v <= 1);
+      say('ok', 'INFO map frame 2040 -> ' + frameMs + ' ms, districts=' + districts.size + ', values=' + vals.length + ', all in [0,1]=' + inRange);
+      say(frameMs < 500 ? 'ok' : 'bad', 'GATE era-C map frame < 500 ms -> ' + frameMs + ' ms  ' + (frameMs < 500 ? 'PASS' : 'FAIL'));
+
+      // bad-stat guard (per-stat partitions whitelist)
+      try { await DIE.Engine.ensemble({ scenario: 'ssp245', variable: 'spi_03', stat: 'nonsense', district: d }); say('bad', 'GUARD FAIL: bad stat accepted'); }
+      catch (e) { say('ok', 'GUARD bad stat rejected -> ' + e.kind); }
+      // no-district call must now succeed (district is OPTIONAL since M5.3)
+      const nat = await DIE.Engine.ensemble({ scenario: 'ssp245', variable: 'spi_03', stat: 'median', yearRange: [2040, 2040] });
+      say(nat.length ? 'ok' : 'bad', 'CHECK ensemble without district rows=' + nat.length + ' (724 x 12 = 8688 expected)');
 
       const fin = DIE.Engine.bytes();
       say('dim', 'FINAL bytes=' + fin.bytes + ' requests=' + fin.requests + ' lastMs=' + Math.round(fin.lastMs));

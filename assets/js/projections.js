@@ -34,6 +34,10 @@
     customFrom: 2026,
     customTo: 2040,
     geography: "national",
+    district: "gujarat-ahmedabad",     // known-good store id (M1.6 gate)
+    stateSid: "gujarat",
+    mapYear: 2040,
+    mapMonth: 7,
   };
 
   const WINDOWS = {
@@ -61,6 +65,15 @@
   const YEAR_RE = /year=(\d{4})\//;
 
   let catalog = null;       // shared catalog.json object (see getCatalog)
+  let mapApi = null;        // DIE.MapView.createChoropleth() instance (lazy)
+  let lastMapValues = null; // Map district_id -> value for the current map frame
+  let lastMapStat = null;   // stat key behind lastMapValues
+  let lastMapVar = null;    // variable id behind lastMapValues
+  let bandSeq = 0;          // stale-render guard: only the latest render paints
+  let mapSeq = 0;           // same for the choropleth
+
+  const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   function track(control, value) {
     if (DIE.Telemetry) {
@@ -244,6 +257,499 @@
           : "No published partitions cover this window — the corresponding view must stay disabled with an explanation (section 7).");
   }
 
+  /* ---- era C views (M5.3) ------------------------------------------------ */
+  /* Band chart: ensemble median + 25–75 % band (model spread), scope set by
+   * the geography selector. Choropleth: one (year, month) frame per stat.
+   * Both consume the REAL era-C store via the engine service — no fixtures
+   * (R3), no forecasts (R2), sample sizes reported (R10). */
+
+  // metadata indicator object for a store id (store "spi_03" ↔ meta "spi_3")
+  function metaIndicator(storeId) {
+    if (!DIE.indicatorById) return null;
+    return DIE.indicatorById.get(String(storeId).replace(/_0(\d)$/, "_$1")) || null;
+  }
+
+  // z-scores 2 dp; SMA/VCI percentages 1 dp
+  function fmtVal(storeId, v) {
+    if (!Number.isFinite(v)) return "no data";
+    return /_0?(1|3|6|12)$/.test(storeId) ? v.toFixed(2) : v.toFixed(1);
+  }
+
+  // truncation thresholds (same constants as the v1.0 events engine):
+  // McKee moderate −1.0 z, SMA −15 %, VCI 30 %
+  const THRESHOLDS = { spi: -1.0, spei: -1.0, sma: -15, vci: 30 };
+  function familyOf(storeId) {
+    if (storeId.indexOf("spi") === 0) return "spi";
+    if (storeId.indexOf("spei") === 0) return "spei";
+    if (storeId.indexOf("sma") === 0) return "sma";
+    if (storeId.indexOf("vci") === 0) return "vci";
+    return null;
+  }
+
+  // agreement stat colours: share of models agreeing on the drought class,
+  // 5 fraction bins; honest-n note ("x of 8 models") lives in the legend
+  const AGREEMENT_COLORS = ["#EDF2F7", "#C3D4E3", "#84A9C9", "#41729E", "#14263D"];
+  const AGREEMENT_BINS = [
+    { test: (f) => f <= 0, label: "0 of 8 models", range: "0" },
+    { test: (f) => f <= 0.25, label: "1–2 of 8 models", range: "(0, 0.25]" },
+    { test: (f) => f <= 0.5, label: "3–4 of 8 models", range: "(0.25, 0.5]" },
+    { test: (f) => f <= 0.75, label: "5–6 of 8 models", range: "(0.5, 0.75]" },
+    { test: () => true, label: "7–8 of 8 models", range: "> 0.75" },
+  ];
+  function agreementBin(v) {
+    if (!Number.isFinite(v)) return null;
+    const f = Math.min(1, Math.max(0, v));
+    return AGREEMENT_BINS.find((b) => b.test(f));
+  }
+  function effectiveStat() {
+    // the band statistic maps the median on the choropleth (explained in UI)
+    return state.statistic === "band" ? "median" : state.statistic;
+  }
+
+  /* -- geography pickers --------------------------------------------------- */
+
+  function renderGeoPickers() {
+    if (!DIE.registry) return;
+    const dSel = $("projDistrict"), sSel = $("projState");
+    if (!dSel.options.length) {
+      const frag = document.createDocumentFragment();
+      for (const [sid, list] of DIE.registry.byState) {
+        const s = DIE.registry.states.get(sid);
+        const og = document.createElement("optgroup");
+        og.label = s ? s.name : sid;
+        for (const d of list) {
+          const o = document.createElement("option");
+          o.value = d.id;
+          o.textContent = d.name;
+          og.appendChild(o);
+        }
+        frag.appendChild(og);
+      }
+      dSel.appendChild(frag);
+      dSel.value = state.district;
+      if (dSel.selectedIndex === -1) {
+        dSel.selectedIndex = 0;
+        state.district = dSel.value;
+      }
+    }
+    if (!sSel.options.length) {
+      const states = [...DIE.registry.states.entries()]
+        .sort((a, b) => a[1].name.localeCompare(b[1].name));
+      const frag = document.createDocumentFragment();
+      for (const [sid, s] of states) {
+        const o = document.createElement("option");
+        o.value = sid;
+        o.textContent = s.name;
+        frag.appendChild(o);
+      }
+      sSel.appendChild(frag);
+      sSel.value = state.stateSid;
+      if (sSel.selectedIndex === -1) {
+        sSel.selectedIndex = 0;
+        state.stateSid = sSel.value;
+      }
+    }
+    updateGeoVisibility();
+  }
+
+  function updateGeoVisibility() {
+    $("projDistrict").hidden = state.geography !== "district";
+    $("projState").hidden = state.geography !== "state";
+  }
+
+  function syncGeoControls() {
+    $("projGeography").value = state.geography;
+    updateGeoVisibility();
+    if (DIE.registry) {
+      const dSel = $("projDistrict");
+      if (DIE.registry.districts.has(state.district)) dSel.value = state.district;
+      const sSel = $("projState");
+      if (DIE.registry.states.has(state.stateSid)) sSel.value = state.stateSid;
+    }
+  }
+
+  /* -- aggregation (v1.0 area-weighting rule) ------------------------------ */
+
+  // weight = registry area_km2, renormalised over the districts with a finite
+  // value in that exact month (missing data drops the district for that month
+  // only — never imputed, R10). Never an unweighted mean (R9).
+  function aggregateWeighted(rows, filterFn) {
+    const groups = new Map(); // year*100+month -> {y, m, s, w, n}
+    for (const r of rows) {
+      if (filterFn && !filterFn(r.district_id)) continue;
+      if (!Number.isFinite(r.value)) continue;
+      const d = DIE.registry && DIE.registry.districts.get(r.district_id);
+      if (!d || !Number.isFinite(d.area) || d.area <= 0) continue;
+      const key = r.year * 100 + r.month;
+      let g = groups.get(key);
+      if (!g) groups.set(key, (g = { y: r.year, m: r.month, s: 0, w: 0, n: 0 }));
+      g.s += r.value * d.area;
+      g.w += d.area;
+      g.n += 1;
+    }
+    const out = [];
+    for (const g of groups.values()) {
+      out.push({ year: g.y, month: g.m, value: g.s / g.w, n: g.n });
+    }
+    out.sort((a, b) => a.year - b.year || a.month - b.month);
+    return out;
+  }
+
+  /* -- band chart ------------------------------------------------------------ */
+
+  function chartYearRange() {
+    const [from, to] = windowRange();
+    // published era-C years; clamping keeps custom windows from opening
+    // partitions that were never written (the check table reports the gap)
+    const a = Math.max(from, 2015), b = Math.min(to, 2050);
+    return a <= b ? [a, b] : [2015, 2015];
+  }
+
+  async function ensurePlotly() {
+    if (window.Plotly) return true;
+    if (window.DIE_LIBS && window.DIE_LIBS.ensure) {
+      const ok = await window.DIE_LIBS.ensure("Plotly");
+      if (ok && window.Plotly) return true;
+    }
+    return false;
+  }
+
+  async function drawBand() {
+    const seq = ++bandSeq;
+    const meta = $("projBandMeta"), note = $("projBandNote");
+    const chartEl = $("projBandChart");
+    if (!catalog || !eraC() || !eraC().available) return;
+    const ind = metaIndicator(state.variable);
+    if (!ind) return;
+    const [from, to] = chartYearRange();
+    const district = state.geography === "district" ? state.district : null;
+
+    const base = SCENARIO_LABEL[state.scenario] + " · " + ind.label +
+      " · " + from + "–" + to;
+    meta.textContent = base;
+    note.textContent = "querying the era-C store…";
+
+    try {
+      let medianRows, p25Rows, p75Rows, scopeLabel, nNote;
+      if (district) {
+        const opts = (stat) => ({
+          scenario: state.scenario, variable: state.variable,
+          stat, yearRange: [from, to], district,
+        });
+        [medianRows, p25Rows, p75Rows] = await Promise.all([
+          DIE.Engine.ensemble(opts("median")),
+          DIE.Engine.ensemble(opts("p25")),
+          DIE.Engine.ensemble(opts("p75")),
+        ]);
+        if (seq !== bandSeq) return;   // a newer selection superseded this render
+        const reg = DIE.registry && DIE.registry.districts.get(district);
+        scopeLabel = reg ? reg.name + " (" + reg.state + ")" : district;
+        nNote = "district-level slice";
+      } else {
+        const sid = state.stateSid;
+        const filterFn = state.geography === "state"
+          ? (id) => {
+              const d = DIE.registry && DIE.registry.districts.get(id);
+              return !!d && d.sid === sid;
+            }
+          : null;
+        const opts = (stat) => ({
+          scenario: state.scenario, variable: state.variable,
+          stat, yearRange: [from, to],
+        });
+        [medianRows, p25Rows, p75Rows] = await Promise.all([
+          DIE.Engine.ensemble(opts("median")),
+          DIE.Engine.ensemble(opts("p25")),
+          DIE.Engine.ensemble(opts("p75")),
+        ]);
+        if (seq !== bandSeq) return;   // a newer selection superseded this render
+        const agg = (rows) => aggregateWeighted(rows, filterFn);
+        medianRows = agg(medianRows);
+        p25Rows = agg(p25Rows);
+        p75Rows = agg(p75Rows);
+        const s = DIE.registry && DIE.registry.states.get(sid);
+        scopeLabel = state.geography === "state" && s
+          ? s.name + " (state)"
+          : "India (national, area-weighted)";
+        let nMin = Infinity, nMax = -Infinity;
+        for (const r of medianRows) {
+          if (r.n < nMin) nMin = r.n;
+          if (r.n > nMax) nMax = r.n;
+        }
+        nNote = Number.isFinite(nMin)
+          ? "area-weighted mean, " + nMin + "–" + nMax + " districts with data per month"
+          : "no districts with data";
+      }
+
+      // x spine from the median series; p25/p75 looked up per key (nulls kept)
+      const p25 = new Map(p25Rows.map((r) => [r.year * 100 + r.month, r.value]));
+      const p75 = new Map(p75Rows.map((r) => [r.year * 100 + r.month, r.value]));
+      const xs = [], med = [], lo = [], hi = [];
+      for (const r of medianRows) {
+        const key = r.year * 100 + r.month;
+        xs.push(r.year + "-" + String(r.month).padStart(2, "0") + "-01");
+        med.push(Number.isFinite(r.value) ? r.value : null);
+        lo.push(p25.has(key) && Number.isFinite(p25.get(key)) ? p25.get(key) : null);
+        hi.push(p75.has(key) && Number.isFinite(p75.get(key)) ? p75.get(key) : null);
+      }
+
+      const traces = [
+        {
+          x: xs, y: hi, type: "scatter", mode: "lines",
+          line: { width: 0 }, hoverinfo: "skip", showlegend: false,
+        },
+        {
+          x: xs, y: lo, type: "scatter", mode: "lines",
+          fill: "tonexty", fillcolor: "rgba(178,92,61,0.20)",
+          line: { width: 0 }, hoverinfo: "skip", showlegend: true,
+          name: "25–75 % of models",
+        },
+        {
+          x: xs, y: med, type: "scatter", mode: "lines",
+          line: { color: "#b25c3d", width: 2 }, showlegend: true,
+          name: "ensemble median",
+          hovertemplate: "%{x|%Y-%m}: %{y:.2f}<extra>" +
+            esc(scopeLabel) + "</extra>",
+        },
+      ];
+
+      const layout = {
+        font: { family: "Inter, IBM Plex Sans, sans-serif", size: 11, color: "#1F2937" },
+        margin: { l: 52, r: 16, t: 14, b: 34 },
+        hovermode: "x unified",
+        showlegend: true,
+        legend: { orientation: "h", y: 1.14, font: { size: 10 } },
+        shapes: [],
+        annotations: [],
+        xaxis: { gridcolor: "#F0F3F7", linecolor: "#CBD5E1", tickfont: { size: 9.5 } },
+        yaxis: {
+          title: { text: ind.label + " (" + ind.units + ")", font: { size: 10.5, color: "#687588" } },
+          gridcolor: "#F0F3F7", linecolor: "#CBD5E1", tickfont: { size: 10 },
+        },
+      };
+      const fam = familyOf(state.variable);
+      const th = fam ? THRESHOLDS[fam] : null;
+      if (th !== null && th !== undefined) {
+        layout.shapes.push({
+          type: "line", xref: "paper", x0: 0, x1: 1,
+          yref: "y", y0: th, y1: th,
+          line: { color: "#8F252F", width: 1, dash: "dash" },
+        });
+        layout.annotations.push({
+          xref: "paper", x: 1, yref: "y", y: th,
+          text: "moderate drought τ = " + th,
+          showarrow: false, xanchor: "right",
+          font: { size: 9, color: "#8F252F" }, yanchor: "bottom",
+        });
+      }
+
+      if (seq !== bandSeq) return;     // guard again after the (slow) aggregation
+      if (await ensurePlotly()) {
+        if (seq !== bandSeq) return;
+        await Plotly.react(chartEl, traces, layout, { displayModeBar: false, responsive: true });
+      } else {
+        chartEl.innerHTML =
+          '<p class="table-help" style="padding:14px">Plotly could not be loaded — the band chart is unavailable (data itself was served fine).</p>';
+      }
+
+      const missMed = med.filter((v) => v === null).length;
+      note.innerHTML =
+        esc(scopeLabel) + " · " + esc(nNote) +
+        " · median across the honest 8-model subset, band = model spread (p25–p75). " +
+        "Era C projection — <strong>not a forecast</strong>. Months rendered, not imputed" +
+        (missMed ? " (" + missMed + " of " + med.length + " months missing in this window)" : "") + ".";
+    } catch (err) {
+      console.warn("[projections] band chart failed:", err);
+      note.textContent = "Band chart unavailable: " + String(err && err.message || err);
+    }
+  }
+
+  /* -- choropleth -------------------------------------------------------------- */
+
+  function catalogYears(scenario, statKey) {
+    const v = projVariable(state.variable);
+    const files = ((v && v.files && v.files.projections &&
+      v.files.projections[scenario]) || {})[statKey] || [];
+    const years = new Set();
+    for (const f of files) {
+      const m = YEAR_RE.exec(f.replace(/\\/g, "/") + "/");
+      if (m) years.add(Number(m[1]));
+    }
+    return [...years].sort((a, b) => a - b);
+  }
+
+  function populateMapPeriods() {
+    const years = catalogYears(state.scenario, effectiveStat());
+    const ySel = $("projMapYear"), mSel = $("projMapMonth");
+    if (!mSel.options.length) {
+      for (let i = 1; i <= 12; i++) {
+        const o = document.createElement("option");
+        o.value = String(i);
+        o.textContent = MONTH_NAMES[i - 1];
+        mSel.appendChild(o);
+      }
+      mSel.value = String(state.mapMonth);
+    }
+    const wanted = String(state.mapYear);
+    ySel.innerHTML = "";
+    for (const y of years) {
+      const o = document.createElement("option");
+      o.value = String(y);
+      o.textContent = String(y);
+      ySel.appendChild(o);
+    }
+    ySel.value = years.includes(state.mapYear)
+      ? wanted
+      : String(years[Math.floor(years.length / 2)]);
+    state.mapYear = Number(ySel.value);
+  }
+
+  function renderLegend(statKey) {
+    const el = $("projLegend");
+    el.innerHTML = "";
+    const row = (color, label, range) => {
+      const div = document.createElement("div");
+      div.className = "legend-row";
+      div.innerHTML =
+        '<span class="legend-swatch" style="background:' + color + '"></span>' +
+        "<span>" + esc(label) + "</span>" +
+        '<span class="legend-range">' + esc(range) + "</span>";
+      el.appendChild(div);
+    };
+    if (statKey.indexOf("agreement") === 0) {
+      const head = document.createElement("div");
+      head.className = "legend-head";
+      head.textContent = "Share of the 8-model ensemble in drought (honest n)";
+      el.appendChild(head);
+      AGREEMENT_BINS.forEach((b, i) =>
+        row(AGREEMENT_COLORS[i], b.label, b.range));
+    } else {
+      const ind = metaIndicator(state.variable);
+      if (ind) {
+        const head = document.createElement("div");
+        head.className = "legend-head";
+        head.textContent = ind.label + " classes (" + ind.units + ")";
+        el.appendChild(head);
+        for (const c of ind.classes) row(c.color, c.label, classRange(c));
+      }
+    }
+    row("#D7DEE7", "No data", "missing month");
+  }
+
+  function classRange(c) {
+    const lo = c.min === null || c.min === undefined ? "−∞" : c.min;
+    const hi = c.max === null || c.max === undefined ? "+∞" : c.max;
+    return String(lo).replace("-", "−") + " … " + String(hi).replace("-", "−");
+  }
+
+  function bindMapTooltips() {
+    // bound ONCE with function tooltips: content re-evaluates against the
+    // latest lastMapValues on every hover, so frames never re-bind 724 layers
+    for (const [id, layer] of mapApi.layerById) {
+      layer.bindTooltip(() => {
+        const d = DIE.registry && DIE.registry.districts.get(id);
+        const v = lastMapValues ? lastMapValues.get(id) : undefined;
+        const statKey = lastMapStat;
+        const label = STAT_LABEL[statKey] || statKey;
+        if (!d) return esc(label) + ": " + esc(fmtVal(state.variable, v));
+        let line2;
+        if (statKey && statKey.indexOf("agreement") === 0) {
+          const models = Number.isFinite(v) ? Math.round(Math.min(1, Math.max(0, v)) * 8) : null;
+          line2 = models === null
+            ? "no data"
+            : models + " of 8 models in drought (" + (v * 100).toFixed(0) + " %)";
+        } else {
+          const ind = metaIndicator(lastMapVar);
+          const c = ind && Number.isFinite(v) ? DIE.classify(v, ind) : null;
+          line2 = Number.isFinite(v)
+            ? fmtVal(lastMapVar, v) + " " + (ind ? ind.units : "") +
+              (c ? " — " + c.label : "")
+            : "no data (rendered, never imputed)";
+        }
+        return "<strong>" + esc(d.name) + "</strong><br>" + esc(d.state) +
+          "<br>" + esc(label) + ": " + line2;
+      }, { sticky: true });
+    }
+  }
+
+  async function renderMap() {
+    const seq = ++mapSeq;
+    const mapEl = $("projMap");
+    const note = $("projMapNote"), meta = $("projMapMeta");
+    if (!catalog || !eraC() || !eraC().available || !DIE.MapView) return;
+    const statKey = effectiveStat();
+    try {
+      if (!mapApi) {
+        mapApi = DIE.MapView.createChoropleth(mapEl, {
+          tooltip: false,
+          onDistrictClick: (id) => {
+            // a map click selects the district for the band chart
+            state.district = id;
+            state.geography = "district";
+            syncGeoControls();
+            drawBand();
+          },
+        });
+        lastMapValues = new Map();
+        lastMapStat = statKey;
+        lastMapVar = state.variable;
+        bindMapTooltips();
+      }
+      populateMapPeriods();
+      meta.textContent = SCENARIO_LABEL[state.scenario] + " · " +
+        (STAT_LABEL[statKey] || statKey) + " · " + state.mapYear + "-" +
+        MONTH_NAMES[state.mapMonth - 1];
+      note.textContent = "querying the era-C store…";
+
+      const rows = await DIE.Engine.ensemble({
+        scenario: state.scenario,
+        variable: state.variable,
+        stat: statKey,
+        yearRange: [state.mapYear, state.mapYear],
+      });
+      if (seq !== mapSeq) return;      // a newer frame superseded this render
+      lastMapValues = new Map();
+      for (const r of rows) {
+        if (r.month === state.mapMonth && Number.isFinite(r.value)) {
+          lastMapValues.set(r.district_id, r.value);
+        }
+      }
+      lastMapStat = statKey;
+      lastMapVar = state.variable;
+
+      const selectedId = state.geography === "district" ? state.district : null;
+      let colorFn;
+      if (statKey.indexOf("agreement") === 0) {
+        colorFn = (id) => {
+          const b = agreementBin(lastMapValues.get(id));
+          return b ? AGREEMENT_COLORS[AGREEMENT_BINS.indexOf(b)] : "#D7DEE7";
+        };
+      } else {
+        const ind = metaIndicator(state.variable);
+        colorFn = (id) => {
+          const c = ind && Number.isFinite(lastMapValues.get(id))
+            ? DIE.classify(lastMapValues.get(id), ind)
+            : null;
+          return c ? c.color : "#D7DEE7";
+        };
+      }
+      mapApi.applyData(null, 0, null, selectedId,
+        (id) => lastMapValues.get(id), colorFn);
+      renderLegend(statKey);
+
+      const nWith = lastMapValues.size;
+      note.innerHTML =
+        "724 districts at " + state.mapYear + "-" + String(state.mapMonth).padStart(2, "0") +
+        " · " + nWith + " with values (missing rendered grey, never imputed). " +
+        (statKey.indexOf("agreement") === 0
+          ? "Agreement = share of the honest 8-model subset below the moderate (≤ −1.0) / severe (≤ −1.5) threshold — not a probability."
+          : "Median across the honest 8-model subset; era C projection, not a forecast.");
+    } catch (err) {
+      console.warn("[projections] map failed:", err);
+      note.textContent = "Choropleth unavailable: " + String(err && err.message || err);
+    }
+  }
+
   /* ---- wiring -------------------------------------------------------------- */
 
   function wire() {
@@ -252,23 +758,33 @@
         state.scenario = r.value;
         track("scenario", r.value);
         renderCheck();
+        drawBand();
+        renderMap();
       });
     });
     $("projVariable").addEventListener("change", (e) => {
+      // an assigned value with no matching option yields "" — keep the old
+      // selection rather than leaving the state with an empty id
+      if (!e.target.value) { e.target.value = state.variable; return; }
       state.variable = e.target.value;
       track("variable", e.target.value);
       renderCheck();
+      drawBand();
+      renderMap();
     });
     $("projStatistic").addEventListener("change", (e) => {
+      if (!e.target.value) { e.target.value = state.statistic; return; }
       state.statistic = e.target.value;
       track("statistic", e.target.value);
       renderCheck();
+      renderMap();   // the band chart always shows median + p25 + p75
     });
     $("projWindow").addEventListener("change", (e) => {
       state.window = e.target.value;
       track("window", e.target.value);
       $("projCustomYears").hidden = state.window !== "custom";
       renderCheck();
+      drawBand();
     });
     const custom = () => {
       state.customFrom = clampYear($("projFromYear").value);
@@ -277,14 +793,42 @@
       $("projToYear").value = state.customTo;
       track("window_custom", state.customFrom + "-" + state.customTo);
       renderCheck();
+      drawBand();
     };
     $("projFromYear").addEventListener("change", custom);
     $("projToYear").addEventListener("change", custom);
     $("projGeography").addEventListener("change", (e) => {
       state.geography = e.target.value;
       track("geography", e.target.value);
-      // geography shapes the M5.3+ chart scope; the file-level check is
-      // geography-independent (partitions cover all 724 districts)
+      updateGeoVisibility();
+      drawBand();
+      if (mapApi) {
+        if (state.geography === "state") mapApi.fitRegion("state", state.stateSid);
+        else if (state.geography === "district") mapApi.fitRegion("district", state.district);
+        else mapApi.fitRegion(null, null);
+      }
+    });
+    $("projDistrict").addEventListener("change", (e) => {
+      state.district = e.target.value;
+      track("district", e.target.value);
+      drawBand();
+      if (mapApi) mapApi.fitRegion("district", state.district);
+    });
+    $("projState").addEventListener("change", (e) => {
+      state.stateSid = e.target.value;
+      track("state", e.target.value);
+      drawBand();
+      if (mapApi) mapApi.fitRegion("state", state.stateSid);
+    });
+    $("projMapYear").addEventListener("change", (e) => {
+      state.mapYear = Number(e.target.value);
+      track("map_year", state.mapYear);
+      renderMap();
+    });
+    $("projMapMonth").addEventListener("change", (e) => {
+      state.mapMonth = Number(e.target.value);
+      track("map_month", state.mapMonth);
+      renderMap();
     });
     $("projReloadBtn").addEventListener("click", () => {
       if (DIE.Engine && DIE.Engine.reset) {
@@ -328,8 +872,34 @@
     }
     renderStatus();
     renderVariableOptions();
+    renderGeoPickers();
     renderCheck();
+    await Promise.allSettled([drawBand(), renderMap()]);
   }
 
-  DIE.Projections = { init, state };
+  /** Size hooks for app.js: recalc the Leaflet container after tab switches
+   *  or window resizes (re-querying is near-free via the engine query cache). */
+  function mapSize() {
+    if (mapApi) mapApi.invalidateSize();
+  }
+  function invalidate() {
+    if (!Proj.ready || !catalog) return;
+    renderGeoPickers();
+    mapSize();
+    drawBand();
+    renderMap();
+  }
+
+  /** Test hook (pattern: Engine.reset): read-only view of the live map frame
+   *  so verification can recompute expected colours without touching state. */
+  function snapshot() {
+    return {
+      mapApi,                       // choropleth api (map, layerById, …)
+      values: lastMapValues,        // Map district_id -> value (current frame)
+      stat: lastMapStat,
+      variable: lastMapVar,
+    };
+  }
+
+  DIE.Projections = { init, state, invalidate, mapSize, snapshot };
 })();
