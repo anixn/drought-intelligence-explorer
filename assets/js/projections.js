@@ -38,6 +38,8 @@
     stateSid: "gujarat",
     mapYear: 2040,
     mapMonth: 7,
+    divYear: 2040,
+    divMonth: 7,
   };
 
   const WINDOWS = {
@@ -60,6 +62,10 @@
     p75: "p75",
     agreement_moderate: "agreement (moderate)",
     agreement_severe: "agreement (severe)",
+    // declared in config/export.yaml but step 07 does not emit it yet — the
+    // option stays disabled in the UI until the partition exists (R3: no
+    // placeholders, section 7 rule)
+    dir_agreement_drier: "direction of change (models agreeing drier)",
   };
   const SCENARIO_LABEL = { ssp245: "SSP2-4.5", ssp585: "SSP5-8.5" };
   const YEAR_RE = /year=(\d{4})\//;
@@ -71,6 +77,11 @@
   let lastMapVar = null;    // variable id behind lastMapValues
   let bandSeq = 0;          // stale-render guard: only the latest render paints
   let mapSeq = 0;           // same for the choropleth
+  let divApi = null;        // SPI–SPEI divergence choropleth (lazy)
+  let divValues = null;     // Map district_id -> {spi, spei, d} current frame
+  let divSeq = 0;           // stale-render guard for the divergence map
+  let rankingData = null;   // parsed data/ranking.json (M5.5)
+  let baselineEvents = null; // parsed data/events/baseline_1981_2020.json (M5.8)
 
   const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -135,9 +146,30 @@
     const el = $("projBanner");
     const ec = DIE.meta && DIE.meta.era_c;
     if (!ec) { el.innerHTML = ""; return; }
+    // M5.7 refinement: honest ensemble n (X3), median always shown with its
+    // 25–75 % range, model disagreement framed as a finding (not noise),
+    // explicit era labels and the no-splice rule — verbatim where possible.
+    const en = ec.ensemble || null;
+    const nLine = en
+      ? "<b>Honest ensemble:</b> n = " + en.n +
+        " best-subset models (" + en.subset.join(", ") +
+        ") — selected by the committed stability criterion (largest-gap core " +
+        "extended by reweighting-stability order), never a rank cutoff."
+      : "";
+    const spreadLine =
+      "<b>The median is never shown alone:</b> every view pairs it with the " +
+      "25–75 % model range, and model disagreement is a <b>finding</b>, " +
+      "not noise to hide (agreement layers default first, X2).";
+    const eraLine =
+      "<b>Era labels:</b> era C (simulations, " + esc(ec.label) +
+      ") is never spliced with observed era B (1981–2025) — the two eras are " +
+      "presented side by side only, with the seam visible.";
     el.innerHTML =
       "<b>Projections, not forecasts.</b> " + esc(ec.banner) +
-      " Published as <b>" + esc(ec.label) + "</b>.";
+      " Published as <b>" + esc(ec.label) + "</b>." +
+      (nLine ? "<br>" + nLine : "") +
+      "<br>" + spreadLine +
+      "<br>" + eraLine;
   }
 
   function renderStatus() {
@@ -424,7 +456,7 @@
     const [from, to] = chartYearRange();
     const district = state.geography === "district" ? state.district : null;
 
-    const base = SCENARIO_LABEL[state.scenario] + " · " + ind.label +
+    const base = "era C · " + SCENARIO_LABEL[state.scenario] + " · " + ind.label +
       " · " + from + "–" + to;
     meta.textContent = base;
     note.textContent = "querying the era-C store…";
@@ -619,7 +651,11 @@
     if (statKey.indexOf("agreement") === 0) {
       const head = document.createElement("div");
       head.className = "legend-head";
-      head.textContent = "Share of the 8-model ensemble in drought (honest n)";
+      // exact definition (M5.4): count of subset models at/below the
+      // threshold in that month — a count, never a probability
+      head.textContent = statKey === "agreement_severe"
+        ? "Subset models ≤ −1.5 (severe) — count of the honest 8-model ensemble"
+        : "Subset models ≤ −1.0 (moderate) — count of the honest 8-model ensemble";
       el.appendChild(head);
       AGREEMENT_BINS.forEach((b, i) =>
         row(AGREEMENT_COLORS[i], b.label, b.range));
@@ -655,9 +691,13 @@
         let line2;
         if (statKey && statKey.indexOf("agreement") === 0) {
           const models = Number.isFinite(v) ? Math.round(Math.min(1, Math.max(0, v)) * 8) : null;
+          // exact definition (M5.4): a COUNT of subset models at or below the
+          // truncation threshold in this month — never a probability (R9)
+          const th = statKey.indexOf("severe") !== -1 ? "−1.5" : "−1.0";
           line2 = models === null
             ? "no data"
-            : models + " of 8 models in drought (" + (v * 100).toFixed(0) + " %)";
+            : models + " of 8 subset models ≤ " + th +
+              " (count, not a probability)";
         } else {
           const ind = metaIndicator(lastMapVar);
           const c = ind && Number.isFinite(v) ? DIE.classify(v, ind) : null;
@@ -696,7 +736,7 @@
         bindMapTooltips();
       }
       populateMapPeriods();
-      meta.textContent = SCENARIO_LABEL[state.scenario] + " · " +
+      meta.textContent = "era C · " + SCENARIO_LABEL[state.scenario] + " · " +
         (STAT_LABEL[statKey] || statKey) + " · " + state.mapYear + "-" +
         MONTH_NAMES[state.mapMonth - 1];
       note.textContent = "querying the era-C store…";
@@ -742,11 +782,426 @@
         "724 districts at " + state.mapYear + "-" + String(state.mapMonth).padStart(2, "0") +
         " · " + nWith + " with values (missing rendered grey, never imputed). " +
         (statKey.indexOf("agreement") === 0
-          ? "Agreement = share of the honest 8-model subset below the moderate (≤ −1.0) / severe (≤ −1.5) threshold — not a probability."
+          ? "Agreement = count of the honest 8-model subset with the index ≤ " +
+            (statKey === "agreement_severe" ? "−1.5 (severe)" : "−1.0 (moderate)") +
+            " in this month — a count, not a probability. " +
+            "Per-district seam uncertainty (X7) arrives with era A↔B cross-validation (M6.8); it is not fabricated here."
           : "Median across the honest 8-model subset; era C projection, not a forecast.");
     } catch (err) {
       console.warn("[projections] map failed:", err);
       note.textContent = "Choropleth unavailable: " + String(err && err.message || err);
+    }
+  }
+
+  /* -- ranking panel (M5.5) -------------------------------------------------- */
+  /* Multi-metric composite from step-08 validation outputs (via the build-time
+   * data/ranking.json). NEVER a single-metric ranking; the subset is the
+   * committed stability criterion, not a rank cutoff (R3/R9). */
+
+  async function fetchJSON(url) {
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error(url + " HTTP " + r.status);
+    return r.json();
+  }
+
+  function fmtMetric(v, dp) {
+    return Number.isFinite(v) ? v.toFixed(dp) : "—";
+  }
+
+  async function renderRanking() {
+    const note = $("projRankingNote");
+    const tbody = $("projRankingTable").querySelector("tbody");
+    if (!rankingData) {
+      try {
+        rankingData = await fetchJSON("data/ranking.json");
+      } catch (err) {
+        console.warn("[projections] ranking.json unavailable:", err);
+        tbody.innerHTML = "";
+        note.textContent = "Ranking artifact unavailable (" +
+          String(err && err.message || err) +
+          ") — run scripts/build_ranking_data.py after step 08. Nothing is fabricated here (R3).";
+        return;
+      }
+    }
+    const rows = rankingData.ranking || [];
+    tbody.innerHTML = rows.map((r) => {
+      const m = r.metrics || {};
+      return "<tr" + (r.in_subset ? ' class="rk-subset"' : "") + ">" +
+        '<td class="num">' + r.rank + "</td>" +
+        "<td>" + esc(r.model) + "</td>" +
+        "<td>" + (r.in_subset ? '<span class="rk-badge">subset</span>' : "—") +
+        "</td>" +
+        '<td class="num">' + r.composite.toFixed(4) + "</td>" +
+        '<td class="num">' + fmtMetric(m.pearson_r, 3) + "</td>" +
+        '<td class="num">' + fmtMetric(m.abs_bias, 3) + "</td>" +
+        '<td class="num">' + fmtMetric(m.rmsd, 3) + "</td>" +
+        '<td class="num">' + fmtMetric(m.class_agreement, 3) + "</td>" +
+        '<td class="num">' + fmtMetric(m.freq_ratio, 3) + "</td>" +
+        '<td class="num">' + fmtMetric(m.duration_ratio, 3) + "</td>" +
+        '<td class="num">' + fmtMetric(m.severity_ratio, 3) + "</td>" +
+        '<td class="num">' + fmtMetric(m.spatial_r, 3) + "</td>" +
+        "</tr>";
+    }).join("");
+
+    const w = rankingData.weights_verbatim || {};
+    const weightStr = Object.keys(w).map((k) => k + " " + w[k]).join(" · ");
+    const cr = rankingData.criterion || {};
+    note.innerHTML =
+      "Composite = weighted mean of 8 min–max-normalised skill metrics vs IMD " +
+      esc((rankingData.source && rankingData.source.window || []).join("–")) +
+      " (weights verbatim: " + esc(weightStr) + "). " +
+      "Subset n = " + rankingData.ensemble_n + " by the committed stability criterion " +
+      "(largest-gap core " + (cr.core_size || "—") + ", gap " +
+      (cr.core_gap !== undefined ? cr.core_gap.toFixed(4) : "—") +
+      ", " + (cr.stability_draws || "—") + " Dirichlet draws). " +
+      "<strong>Historical skill is not future skill</strong>; free-running " +
+      "model realisations are not correlated with observations. Where the 8 " +
+      "metrics disagree, that disagreement is information — this is why no " +
+      "single-metric ranking is shown (R9).";
+  }
+
+  /* -- SPI–SPEI divergence map (M5.6) ---------------------------------------- */
+  /* Divergence d = SPI-3 − SPEI-3 (both ensemble medians, same 8 models, same
+   * scenario/month): d > 0 means the demand (PET) term decouples the two
+   * indices — "rainfall alone does not decide India's drought future; demand
+   * does half the work." Computed from shipped products only. */
+
+  const DIV_BINS = [
+    { test: (d) => d >= 0.5, label: "strong demand-driven", range: "SPI−SPEI ≥ +0.5", color: "#A63B34" },
+    { test: (d) => d >= 0.25, label: "mild demand-driven", range: "+0.25 … +0.5", color: "#D08746" },
+    { test: (d) => d > -0.25, label: "balanced", range: "−0.25 … +0.25", color: "#E7E2D8" },
+    { test: (d) => d > -0.5, label: "mild rainfall-driven", range: "−0.5 … −0.25", color: "#7FA3C4" },
+    { test: () => true, label: "strong rainfall-driven", range: "≤ −0.5", color: "#33608A" },
+  ];
+  function divBin(d) {
+    if (!Number.isFinite(d)) return null;
+    return DIV_BINS.find((b) => b.test(d));
+  }
+
+  function divYearList() {
+    // published years for the spi_03 median partitions (same layout for spei)
+    return catalogYears("ssp245", "median").length
+      ? catalogYears(state.scenario, "median")
+      : [];
+  }
+
+  function populateDivPeriods() {
+    const years = divYearList();
+    const ySel = $("projDivYear"), mSel = $("projDivMonth");
+    if (!mSel.options.length) {
+      for (let i = 1; i <= 12; i++) {
+        const o = document.createElement("option");
+        o.value = String(i);
+        o.textContent = MONTH_NAMES[i - 1];
+        mSel.appendChild(o);
+      }
+      mSel.value = String(state.divMonth);
+    }
+    ySel.innerHTML = "";
+    for (const y of years) {
+      const o = document.createElement("option");
+      o.value = String(y);
+      o.textContent = String(y);
+      ySel.appendChild(o);
+    }
+    ySel.value = years.includes(state.divYear)
+      ? String(state.divYear)
+      : String(years[Math.floor(years.length / 2)]);
+    state.divYear = Number(ySel.value);
+  }
+
+  function bindDivTooltips() {
+    for (const [id, layer] of divApi.layerById) {
+      layer.bindTooltip(() => {
+        const d = DIE.registry && DIE.registry.districts.get(id);
+        const f = divValues ? divValues.get(id) : undefined;
+        if (!d) return "divergence: —";
+        if (!f || !Number.isFinite(f.d)) {
+          return "<strong>" + esc(d.name) + "</strong><br>" + esc(d.state) +
+            "<br>divergence: no data (rendered, never imputed)";
+        }
+        const bin = divBin(f.d);
+        return "<strong>" + esc(d.name) + "</strong><br>" + esc(d.state) +
+          "<br>SPI-3 " + (f.spi === null ? "—" : f.spi.toFixed(2)) +
+          " · SPEI-3 " + (f.spei === null ? "—" : f.spei.toFixed(2)) +
+          "<br>divergence " + (f.d >= 0 ? "+" : "−") +
+          Math.abs(f.d).toFixed(2) +
+          (bin ? " — " + esc(bin.label) : "");
+      }, { sticky: true });
+    }
+  }
+
+  function renderDivLegend() {
+    const el = $("projDivLegend");
+    el.innerHTML = "";
+    const head = document.createElement("div");
+    head.className = "legend-head";
+    head.textContent = "SPI-3 median − SPEI-3 median (same 8 models, same month)";
+    el.appendChild(head);
+    DIV_BINS.forEach((b) => {
+      const div = document.createElement("div");
+      div.className = "legend-row";
+      div.innerHTML =
+        '<span class="legend-swatch" style="background:' + b.color + '"></span>' +
+        "<span>" + esc(b.label) + "</span>" +
+        '<span class="legend-range">' + esc(b.range) + "</span>";
+      el.appendChild(div);
+    });
+    const nd = document.createElement("div");
+    nd.className = "legend-row";
+    nd.innerHTML =
+      '<span class="legend-swatch" style="background:#D7DEE7"></span>' +
+      "<span>No data</span>" +
+      '<span class="legend-range">missing month</span>';
+    el.appendChild(nd);
+  }
+
+  async function renderDivergence() {
+    const note = $("projDivNote"), meta = $("projDivMeta");
+    const mapEl = $("projDivMap");
+    if (!catalog || !eraC() || !eraC().available || !DIE.MapView) return;
+    const seq = ++divSeq;
+    try {
+      if (!divApi) {
+        divApi = DIE.MapView.createChoropleth(mapEl, {
+          tooltip: false,
+          onDistrictClick: (id) => {
+            state.district = id;
+            state.geography = "district";
+            syncGeoControls();
+            drawBand();
+          },
+        });
+        divValues = new Map();
+        bindDivTooltips();
+      }
+      populateDivPeriods();
+      meta.textContent = "era C · " + SCENARIO_LABEL[state.scenario] +
+        " · " + state.divYear + "-" + MONTH_NAMES[state.divMonth - 1];
+      note.textContent = "querying the era-C store…";
+
+      const opts = (variable) => ({
+        scenario: state.scenario, variable, stat: "median",
+        yearRange: [state.divYear, state.divYear],
+      });
+      const [spiRows, speiRows] = await Promise.all([
+        DIE.Engine.ensemble(opts("spi_03")),
+        DIE.Engine.ensemble(opts("spei_03")),
+      ]);
+      if (seq !== divSeq) return;   // a newer frame superseded this render
+      const spei = new Map(speiRows
+        .filter((r) => r.month === state.divMonth)
+        .map((r) => [r.district_id, r.value]));
+      divValues = new Map();
+      for (const r of spiRows) {
+        if (r.month !== state.divMonth) continue;
+        const sv = Number.isFinite(r.value) ? r.value : null;
+        const ev = spei.get(r.district_id);
+        const e2 = Number.isFinite(ev) ? ev : null;
+        divValues.set(r.district_id, {
+          spi: sv, spei: e2,
+          d: (sv !== null && e2 !== null) ? sv - e2 : null,
+        });
+      }
+      divApi.applyData(null, 0, null, null, (id) => {
+        const f = divValues.get(id);
+        return f ? f.d : null;
+      }, (id) => {
+        const f = divValues.get(id);
+        const bin = f && divBin(f.d);
+        return bin ? bin.color : "#D7DEE7";
+      });
+      renderDivLegend();
+
+      const nWith = [...divValues.values()].filter((f) => Number.isFinite(f.d));
+      const strongDemand = nWith.filter((f) => f.d >= 0.5).length;
+      const mildDemand = nWith.filter((f) => f.d >= 0.25 && f.d < 0.5).length;
+      const balanced = nWith.filter((f) => f.d > -0.25 && f.d < 0.25).length;
+      const rainfallDriven = nWith.filter((f) => f.d <= -0.25).length;
+      note.innerHTML =
+        "724 districts at " + state.divYear + "-" +
+        String(state.divMonth).padStart(2, "0") + " · " + nWith.length +
+        " with both indices · strong demand-driven " + strongDemand +
+        " · mild demand-driven " + mildDemand + " · balanced " + balanced +
+        " · rainfall-driven " + rainfallDriven +
+        ". Both indices are ensemble medians of the SAME 8 models — the " +
+        "divergence shows where the Hargreaves PET (demand) term decouples " +
+        "SPEI from precipitation-only SPI. It is a property of index " +
+        "construction, not a causal attribution (R9). " +
+        "<em>Rainfall alone does not decide India's drought future; demand " +
+        "does half the work.</em>";
+    } catch (err) {
+      console.warn("[projections] divergence failed:", err);
+      note.textContent = "Divergence map unavailable: " + String(err && err.message || err);
+    }
+  }
+
+  /* -- future drought events (M5.8 / E14) ------------------------------------- */
+  /* Frozen v1.0 runs analysis (DIE.Analytics.findEvents: runs ≤ threshold,
+   * min 3 months, severity Σ(τ−x), NaN breaks runs) on era-C ensemble-median
+   * series, compared against the observed 1981–2020 baseline built by
+   * scripts/build_events_baseline.py. Agreement reported alongside (X2);
+   * windows are median-based and labelled as such. */
+
+  const EVENTS_ROW_LIMIT = 15;
+
+  function findEventMetrics(values, years) {
+    // values: ordered monthly array (null -> NaN); runs on continuous series
+    // threshold: the frozen McKee moderate bound (−1.0 z for SPI/SPEI — era C
+    // publishes these two families only)
+    const events = DIE.Analytics.findEvents(
+      values, values.map((_, i) => String(i)),
+      THRESHOLDS[familyOf(state.variable)], 3);
+    const dur = events.map((e) => e.duration);
+    const n = events.length;
+    return {
+      n_events: n,
+      events_per_year: years > 0 ? n / years : null,
+      mean_duration: n ? dur.reduce((a, b) => a + b, 0) / n : null,
+      max_duration: n ? Math.max(...dur) : 0,
+      total_severity: events.reduce((s, e) => s + e.severity, 0),
+      n_censored: events.filter(
+        (e) => e.startIdx === 0 || e.endIdx === values.length - 1).length,
+      valid_months: values.filter(Number.isFinite).length,
+    };
+  }
+
+  async function ensureBaseline() {
+    if (baselineEvents) return baselineEvents;
+    baselineEvents = await fetchJSON("data/events/baseline_1981_2020.json");
+    return baselineEvents;
+  }
+
+  async function renderEvents() {
+    const note = $("projEventsNote"), meta = $("projEventsMeta");
+    const tbody = $("projEventsTable").querySelector("tbody");
+    if (!catalog || !eraC() || !eraC().available) return;
+    const ind = metaIndicator(state.variable);
+    const th = THRESHOLDS[familyOf(state.variable)];
+    if (!ind || !Number.isFinite(th) || !DIE.Analytics ||
+      !DIE.Analytics.findEvents) return;
+    const [from, to] = chartYearRange();
+    const years = to - from + 1;
+    meta.textContent = "era C · " + SCENARIO_LABEL[state.scenario] + " · " +
+      ind.label + " · " + from + "–" + to + " · median-based, agreement alongside";
+    note.textContent = "computing events (frozen runs analysis)…";
+    try {
+      const [medianRows, agreeRows] = await Promise.all([
+        DIE.Engine.ensemble({
+          scenario: state.scenario, variable: state.variable,
+          stat: "median", yearRange: [from, to],
+        }),
+        DIE.Engine.ensemble({
+          scenario: state.scenario, variable: state.variable,
+          stat: "agreement_moderate", yearRange: [from, to],
+        }),
+      ]);
+      // group median rows per district, ordered by (year, month)
+      const byDistrict = new Map();
+      for (const r of medianRows) {
+        let list = byDistrict.get(r.district_id);
+        if (!list) byDistrict.set(r.district_id, (list = []));
+        list.push(r);
+      }
+      const agreeSum = new Map();
+      const agreeN = new Map();
+      for (const r of agreeRows) {
+        if (!Number.isFinite(r.value)) continue;
+        agreeSum.set(r.district_id,
+          (agreeSum.get(r.district_id) || 0) + r.value);
+        agreeN.set(r.district_id, (agreeN.get(r.district_id) || 0) + 1);
+      }
+      const base = await ensureBaseline();
+      const baseVar = base.variables && base.variables[state.variable];
+      const rows = [];
+      for (const [id, list] of byDistrict) {
+        list.sort((a, b) => a.year - b.year || a.month - b.month);
+        const values = list.map((r) => (Number.isFinite(r.value) ? r.value : NaN));
+        const met = findEventMetrics(values, years);
+        if (!met.valid_months) continue;
+        const b = baseVar && baseVar.districts && baseVar.districts[id];
+        const agreeMean = agreeN.get(id) ? agreeSum.get(id) / agreeN.get(id) : null;
+        rows.push({
+          id, met, b, agreeMean,
+          baseName: (DIE.registry && DIE.registry.districts.get(id)) || null,
+        });
+      }
+      const sortKey = $("projEventsMetric").value;
+      for (const r of rows) {
+        r.freqRatio = r.b && r.b.n_events > 0
+          ? (r.met.events_per_year || 0) / r.b.events_per_year
+          : null;
+        r.durChange = r.b && r.b.mean_duration !== null &&
+          r.met.mean_duration !== null
+          ? r.met.mean_duration - r.b.mean_duration
+          : null;
+        r.sevRatio = r.b && r.b.total_severity > 0
+          ? (r.met.total_severity / years) / (r.b.total_severity / 40)
+          : null;
+      }
+      const sorters = {
+        freq: (a, b2) => (b2.freqRatio || -1) - (a.freqRatio || -1),
+        duration: (a, b2) => (b2.durChange || -99) - (a.durChange || -99),
+        severity: (a, b2) => (b2.sevRatio || -1) - (a.sevRatio || -1),
+      };
+      rows.sort(sorters[sortKey] || sorters.freq);
+
+      const fmt = (v, dp) => (Number.isFinite(v) ? v.toFixed(dp) : "—");
+      tbody.innerHTML = rows.slice(0, EVENTS_ROW_LIMIT).map((r) => {
+        const name = r.baseName ? r.baseName.name +
+          " (" + r.baseName.state + ")" : r.id;
+        return "<tr>" +
+          "<td>" + esc(name) + "</td>" +
+          '<td class="num">' +
+          (r.b ? r.b.events_per_year.toFixed(2) : "—") + "</td>" +
+          '<td class="num">' + fmt(r.met.events_per_year || 0, 2) + "</td>" +
+          '<td class="num">' + fmt(r.freqRatio, 2) + "</td>" +
+          '<td class="num">' +
+          (r.b && r.b.mean_duration !== null ? r.b.mean_duration.toFixed(1) : "—") +
+          " &#8594; " + fmt(r.met.mean_duration, 1) + "</td>" +
+          '<td class="num">' + r.met.max_duration + "</td>" +
+          '<td class="num">' + fmt(r.sevRatio, 2) + "</td>" +
+          '<td class="num">' +
+          (r.agreeMean === null ? "—" :
+            Math.round(r.agreeMean * 8 * 10) / 10 + "/8") + "</td>" +
+          '<td class="num">' + r.met.valid_months + "</td>" +
+          "</tr>";
+      }).join("");
+
+      // national summary: medians across districts with data (robust, R10)
+      const withFreq = rows.filter((r) => r.freqRatio !== null);
+      const med = (arr) => {
+        if (!arr.length) return null;
+        const s = arr.slice().sort((a, b2) => a - b2);
+        return s.length % 2 ? s[(s.length - 1) / 2]
+          : (s[s.length / 2 - 1] + s[s.length / 2]) / 2;
+      };
+      const medFreq = med(withFreq.map((r) => r.freqRatio));
+      const medDur = med(rows.filter((r) => r.durChange !== null)
+        .map((r) => r.durChange));
+      const medSev = med(rows.filter((r) => r.sevRatio !== null)
+        .map((r) => r.sevRatio));
+      const censored = rows.reduce((s, r) => s + r.met.n_censored, 0);
+      note.innerHTML =
+        "Top " + Math.min(EVENTS_ROW_LIMIT, rows.length) + " of " +
+        rows.length + " districts with data (sorted by " +
+        esc($("projEventsMetric").selectedOptions[0].textContent
+          .replace(/^Sort by /i, "").toLowerCase()) +
+        "). <strong>National median:</strong> frequency ratio " +
+        fmt(medFreq, 2) + " ×, duration change " + fmt(medDur, 1) +
+        " months, severity ratio " + fmt(medSev, 2) +
+        " × vs the observed 1981–2020 baseline (same frozen machinery, " +
+        "threshold −1.0, min 3 months, no imputation; " + censored +
+        " era-C events touch window edges — flagged censored, not dropped). " +
+        "Computed on the <strong>ensemble median</strong> — not a single " +
+        "realisation; the agreement column (mean models ≤ −1.0 across the " +
+        "window) is the honest spread companion (X2). " +
+        "A ratio is a comparison to the observed baseline, <strong>not a " +
+        "forecast</strong>. Baseline: " + esc(base.source) + ".";
+    } catch (err) {
+      console.warn("[projections] events failed:", err);
+      tbody.innerHTML = "";
+      note.textContent = "Events view unavailable: " + String(err && err.message || err);
     }
   }
 
@@ -760,6 +1215,8 @@
         renderCheck();
         drawBand();
         renderMap();
+        renderDivergence();
+        renderEvents();
       });
     });
     $("projVariable").addEventListener("change", (e) => {
@@ -771,6 +1228,7 @@
       renderCheck();
       drawBand();
       renderMap();
+      renderEvents();
     });
     $("projStatistic").addEventListener("change", (e) => {
       if (!e.target.value) { e.target.value = state.statistic; return; }
@@ -785,6 +1243,7 @@
       $("projCustomYears").hidden = state.window !== "custom";
       renderCheck();
       drawBand();
+      renderEvents();
     });
     const custom = () => {
       state.customFrom = clampYear($("projFromYear").value);
@@ -794,6 +1253,7 @@
       track("window_custom", state.customFrom + "-" + state.customTo);
       renderCheck();
       drawBand();
+      renderEvents();
     };
     $("projFromYear").addEventListener("change", custom);
     $("projToYear").addEventListener("change", custom);
@@ -829,6 +1289,21 @@
       state.mapMonth = Number(e.target.value);
       track("map_month", state.mapMonth);
       renderMap();
+    });
+    $("projDivYear").addEventListener("change", (e) => {
+      state.divYear = Number(e.target.value);
+      track("div_year", state.divYear);
+      renderDivergence();
+    });
+    $("projDivMonth").addEventListener("change", (e) => {
+      state.divMonth = Number(e.target.value);
+      track("div_month", state.divMonth);
+      renderDivergence();
+    });
+    $("projEventsMetric").addEventListener("change", (e) => {
+      track("events_sort", e.target.value);
+      // sorting is client-side over already-fetched rows — re-render cheaply
+      renderEvents();
     });
     $("projReloadBtn").addEventListener("click", () => {
       if (DIE.Engine && DIE.Engine.reset) {
@@ -874,13 +1349,17 @@
     renderVariableOptions();
     renderGeoPickers();
     renderCheck();
-    await Promise.allSettled([drawBand(), renderMap()]);
+    await Promise.allSettled([
+      drawBand(), renderMap(), renderRanking(),
+      renderDivergence(), renderEvents(),
+    ]);
   }
 
   /** Size hooks for app.js: recalc the Leaflet container after tab switches
    *  or window resizes (re-querying is near-free via the engine query cache). */
   function mapSize() {
     if (mapApi) mapApi.invalidateSize();
+    if (divApi) divApi.invalidateSize();
   }
   function invalidate() {
     if (!Proj.ready || !catalog) return;
@@ -888,6 +1367,8 @@
     mapSize();
     drawBand();
     renderMap();
+    renderDivergence();
+    renderEvents();
   }
 
   /** Test hook (pattern: Engine.reset): read-only view of the live map frame
@@ -898,6 +1379,8 @@
       values: lastMapValues,        // Map district_id -> value (current frame)
       stat: lastMapStat,
       variable: lastMapVar,
+      divApi,                       // divergence choropleth api
+      divValues,                    // Map district_id -> {spi, spei, d}
     };
   }
 

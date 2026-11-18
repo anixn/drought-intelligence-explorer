@@ -1,0 +1,408 @@
+{
+ "schema": "die-era-c-ranking/1.0",
+ "source": {
+  "pipeline": "gcm-pipeline 08_validate_gcm.py",
+  "files": [
+   "gcm-pipeline/work/validation/best_subset.yaml",
+   "gcm-pipeline/work/validation/ranking.csv"
+  ],
+  "window": [
+   1981,
+   2014
+  ],
+  "n_candidates": 22
+ },
+ "method": "composite rank (8 metrics, min-max normalised across models per indicator, mean over indicators); free-running decorrelation caveat documented in config/validation.yaml; subset size = committed stability criterion (largest-gap core extended to the registered floor), NOT a fixed count",
+ "criterion": {
+  "rule": "core = largest inter-rank composite gap; extend to size_range[0] by reweighting-stability order (Dirichlet weight perturbations); cap at size_range[1] and candidate count (see config/validation.yaml ranking.subset_criterion)",
+  "size_range": [
+   8,
+   12
+  ],
+  "stability_draws": 1000,
+  "stability_seed": 20261103,
+  "core_size": 7,
+  "core_gap": 0.052702
+ },
+ "weights_verbatim": {
+  "pearson_r": 0.1,
+  "abs_bias": 0.15,
+  "rmsd": 0.15,
+  "class_agreement": 0.1,
+  "freq_ratio": 0.15,
+  "duration_ratio": 0.1,
+  "severity_ratio": 0.1,
+  "spatial_r": 0.15
+ },
+ "ensemble_n": 8,
+ "subset": [
+  "CanESM5",
+  "MPI-ESM1-2-HR",
+  "BCC-CSM2-MR",
+  "EC-Earth3",
+  "ACCESS-ESM1-5",
+  "MPI-ESM1-2-LR",
+  "IPSL-CM6A-LR",
+  "NorESM2-MM"
+ ],
+ "ranking": [
+  {
+   "rank": 1,
+   "model": "CanESM5",
+   "composite": 0.698364,
+   "in_subset": true,
+   "metrics": {
+    "pearson_r": 0.997005,
+    "abs_bias": 0.516357,
+    "rmsd": 0.970392,
+    "class_agreement": 0.73203,
+    "freq_ratio": 0.458877,
+    "duration_ratio": 0.764021,
+    "severity_ratio": 0.640936,
+    "spatial_r": 0.620804
+   }
+  },
+  {
+   "rank": 2,
+   "model": "MPI-ESM1-2-HR",
+   "composite": 0.664517,
+   "in_subset": true,
+   "metrics": {
+    "pearson_r": 0.427056,
+    "abs_bias": 0.47175,
+    "rmsd": 0.53135,
+    "class_agreement": 0.826604,
+    "freq_ratio": 0.667575,
+    "duration_ratio": 0.726882,
+    "severity_ratio": 0.849836,
+    "spatial_r": 0.872518
+   }
+  },
+  {
+   "rank": 3,
+   "model": "BCC-CSM2-MR",
+   "composite": 0.640222,
+   "in_subset": true,
+   "metrics": {
+    "pearson_r": 0.719538,
+    "abs_bias": 0.425975,
+    "rmsd": 0.766556,
+    "class_agreement": 0.740106,
+    "freq_ratio": 0.719674,
+    "duration_ratio": 0.47809,
+    "severity_ratio": 0.70368,
+    "spatial_r": 0.595002
+   }
+  },
+  {
+   "rank": 4,
+   "model": "EC-Earth3",
+   "composite": 0.621983,
+   "in_subset": true,
+   "metrics": {
+    "pearson_r": 0.534058,
+    "abs_bias": 0.531323,
+    "rmsd": 0.591654,
+    "class_agreement": 0.702989,
+    "freq_ratio": 0.729284,
+    "duration_ratio": 0.441607,
+    "severity_ratio": 0.621225,
+    "spatial_r": 0.76104
+   }
+  },
+  {
+   "rank": 5,
+   "model": "ACCESS-ESM1-5",
+   "composite": 0.604365,
+   "in_subset": true,
+   "metrics": {
+    "pearson_r": 0.550518,
+    "abs_bias": 0.510257,
+    "rmsd": 0.557038,
+    "class_agreement": 0.721381,
+    "freq_ratio": 0.643229,
+    "duration_ratio": 0.840336,
+    "severity_ratio": 0.714363,
+    "spatial_r": 0.43418
+   }
+  },
+  {
+   "rank": 6,
+   "model": "MPI-ESM1-2-LR",
+   "composite": 0.598228,
+   "in_subset": true,
+   "metrics": {
+    "pearson_r": 0.482596,
+    "abs_bias": 0.582993,
+    "rmsd": 0.485912,
+    "class_agreement": 0.575465,
+    "freq_ratio": 0.622498,
+    "duration_ratio": 0.474504,
+    "severity_ratio": 0.716931,
+    "spatial_r": 0.797119
+   }
+  },
+  {
+   "rank": 7,
+   "model": "IPSL-CM6A-LR",
+   "composite": 0.591801,
+   "in_subset": true,
+   "metrics": {
+    "pearson_r": 0.593969,
+    "abs_bias": 0.517615,
+    "rmsd": 0.614637,
+    "class_agreement": 0.754268,
+    "freq_ratio": 0.749305,
+    "duration_ratio": 0.292027,
+    "severity_ratio": 0.687349,
+    "spatial_r": 0.512045
+   }
+  },
+  {
+   "rank": 8,
+   "model": "NorESM2-MM",
+   "composite": 0.5391,
+   "in_subset": true,
+   "metrics": {
+    "pearson_r": 0.606785,
+    "abs_bias": 0.370904,
+    "rmsd": 0.587867,
+    "class_agreement": 0.387966,
+    "freq_ratio": 0.332452,
+    "duration_ratio": 0.923458,
+    "severity_ratio": 0.671502,
+    "spatial_r": 0.576303
+   }
+  },
+  {
+   "rank": 9,
+   "model": "MIROC-ES2L",
+   "composite": 0.53506,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.495014,
+    "abs_bias": 0.353087,
+    "rmsd": 0.469025,
+    "class_agreement": 0.567687,
+    "freq_ratio": 0.584928,
+    "duration_ratio": 0.614684,
+    "severity_ratio": 0.68342,
+    "spatial_r": 0.586159
+   }
+  },
+  {
+   "rank": 10,
+   "model": "HadGEM3-GC31-MM",
+   "composite": 0.534306,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.377634,
+    "abs_bias": 0.462706,
+    "rmsd": 0.493932,
+    "class_agreement": 0.788074,
+    "freq_ratio": 0.646755,
+    "duration_ratio": 0.259168,
+    "severity_ratio": 0.595454,
+    "spatial_r": 0.61176
+   }
+  },
+  {
+   "rank": 11,
+   "model": "TaiESM1",
+   "composite": 0.529469,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.39405,
+    "abs_bias": 0.342569,
+    "rmsd": 0.394705,
+    "class_agreement": 0.675397,
+    "freq_ratio": 0.887841,
+    "duration_ratio": 0.753351,
+    "severity_ratio": 0.600478,
+    "spatial_r": 0.289158
+   }
+  },
+  {
+   "rank": 12,
+   "model": "CMCC-ESM2",
+   "composite": 0.527515,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.380747,
+    "abs_bias": 0.499372,
+    "rmsd": 0.360291,
+    "class_agreement": 0.445637,
+    "freq_ratio": 0.812477,
+    "duration_ratio": 0.752222,
+    "severity_ratio": 0.706905,
+    "spatial_r": 0.320951
+   }
+  },
+  {
+   "rank": 13,
+   "model": "MRI-ESM2-0",
+   "composite": 0.521906,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.621807,
+    "abs_bias": 0.430631,
+    "rmsd": 0.635959,
+    "class_agreement": 0.753061,
+    "freq_ratio": 0.269771,
+    "duration_ratio": 0.4099,
+    "severity_ratio": 0.53383,
+    "spatial_r": 0.597282
+   }
+  },
+  {
+   "rank": 14,
+   "model": "INM-CM5-0",
+   "composite": 0.519637,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.530002,
+    "abs_bias": 0.491384,
+    "rmsd": 0.530674,
+    "class_agreement": 0.732278,
+    "freq_ratio": 0.733368,
+    "duration_ratio": 0.410689,
+    "severity_ratio": 0.664144,
+    "spatial_r": 0.150747
+   }
+  },
+  {
+   "rank": 15,
+   "model": "GFDL-ESM4",
+   "composite": 0.488018,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.281527,
+    "abs_bias": 0.405043,
+    "rmsd": 0.27925,
+    "class_agreement": 0.528301,
+    "freq_ratio": 0.594271,
+    "duration_ratio": 0.526766,
+    "severity_ratio": 0.727952,
+    "spatial_r": 0.598528
+   }
+  },
+  {
+   "rank": 16,
+   "model": "EC-Earth3-Veg-LR",
+   "composite": 0.475093,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.373921,
+    "abs_bias": 0.426214,
+    "rmsd": 0.408595,
+    "class_agreement": 0.476102,
+    "freq_ratio": 0.623426,
+    "duration_ratio": 0.348769,
+    "severity_ratio": 0.628884,
+    "spatial_r": 0.4906
+   }
+  },
+  {
+   "rank": 17,
+   "model": "INM-CM4-8",
+   "composite": 0.465036,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.250164,
+    "abs_bias": 0.592695,
+    "rmsd": 0.256567,
+    "class_agreement": 0.339804,
+    "freq_ratio": 0.643501,
+    "duration_ratio": 0.67037,
+    "severity_ratio": 0.680314,
+    "spatial_r": 0.313709
+   }
+  },
+  {
+   "rank": 18,
+   "model": "CNRM-CM6-1",
+   "composite": 0.439272,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.392413,
+    "abs_bias": 0.453921,
+    "rmsd": 0.392746,
+    "class_agreement": 0.37613,
+    "freq_ratio": 0.324747,
+    "duration_ratio": 0.243277,
+    "severity_ratio": 0.563389,
+    "spatial_r": 0.706928
+   }
+  },
+  {
+   "rank": 19,
+   "model": "GISS-E2-1-G",
+   "composite": 0.409438,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.404884,
+    "abs_bias": 0.602329,
+    "rmsd": 0.377657,
+    "class_agreement": 0.265548,
+    "freq_ratio": 0.388566,
+    "duration_ratio": 0.204015,
+    "severity_ratio": 0.172265,
+    "spatial_r": 0.663225
+   }
+  },
+  {
+   "rank": 20,
+   "model": "ACCESS-CM2",
+   "composite": 0.391584,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.068171,
+    "abs_bias": 0.451063,
+    "rmsd": 0.07966,
+    "class_agreement": 0.452646,
+    "freq_ratio": 0.646306,
+    "duration_ratio": 0.250729,
+    "severity_ratio": 0.630131,
+    "spatial_r": 0.49908
+   }
+  },
+  {
+   "rank": 21,
+   "model": "MIROC6",
+   "composite": 0.37801,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.13273,
+    "abs_bias": 0.422084,
+    "rmsd": 0.129258,
+    "class_agreement": 0.313123,
+    "freq_ratio": 0.488954,
+    "duration_ratio": 0.505711,
+    "severity_ratio": 0.77167,
+    "spatial_r": 0.330947
+   }
+  },
+  {
+   "rank": 22,
+   "model": "FGOALS-g3",
+   "composite": 0.350887,
+   "in_subset": false,
+   "metrics": {
+    "pearson_r": 0.373247,
+    "abs_bias": 0.698173,
+    "rmsd": 0.35893,
+    "class_agreement": 0.223324,
+    "freq_ratio": 0.233719,
+    "duration_ratio": 0.189844,
+    "severity_ratio": 0.147888,
+    "spatial_r": 0.425559
+   }
+  }
+ ],
+ "honesty": [
+  "multi-metric composite of 8 skill metrics vs IMD (1981-2014); never a single-metric ranking",
+  "subset = committed stability criterion (largest-gap core + reweighting-stability order), not a rank cutoff",
+  "historical skill is not future skill; free-running model realisations are not correlated with observations (documented caveat in gcm-pipeline config/validation.yaml)",
+  "composite is shown with all component metrics — disagreement between metrics is information, not noise"
+ ]
+}

@@ -7,18 +7,20 @@
 ## 1. Status flag
 
 ```
-| STATUS:        ACTIVE - M5: #projections views LIVE (M5.3 band chart +   |
-|                choropleth, real era-C store). Next: M5.4 agreement layer |
-| PHASE:         M5 (projections surface); M2 complete; M3/M4 queueable    |
-| ROADMAP:       M0-M2 complete. M5.2-M5.3 done 2026-11-18                 |
-| LAST SESSION:  2026-11-18 (row 29 - M5.3 band + choropleth)              |
-| BLOCKERS:      none technical. Pending Owner: manuscript review, era-C   |
-|                store hosting (at release), SSP 2051-2100 download, OD1,  |
-|                OD9, OD10/OD11                                            |
-| BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)               |
+| STATUS:        ACTIVE - M5 COMPLETE: all #projections views LIVE        |
+|                (M5.2 skeleton, M5.3 band+map, M5.4-M5.8 batch done).    |
+|                Next: M6 (Atlas era A, gated on OD4) or M3/M4           |
+| PHASE:         M5 complete; M2 complete; M3/M4/M6 queueable            |
+| ROADMAP:       M0-M2 complete. M5.2-M5.8 done 2026-11-18               |
+| LAST SESSION:  2026-11-18 (row 30 - M5.4-M5.8 batch)                   |
+| BLOCKERS:      none technical. Pending Owner: manuscript review, era-C |
+|                store hosting (at release), SSP 2051-2100 download,     |
+|                step-07 dir_agreement_drier emission, OD1, OD4          |
+|                (Atlas verification), OD10/OD11                         |
+| BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)             |
 ```
 
-Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ⬜ · M4 ⬜ · M5 ◻ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2 ✅; M5.3 ✅) · M6 ⬜ · M7 ⬜ · M8+ ⬜** (definitions: `docs/v2/02-roadmap-milestones.md`).
+Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ⬜ · M4 ⬜ · M5 ✅ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2–M5.8 all ✅; M5.8/E14 OD9 resolved 2026-11-18) · M6 ⬜ · M7 ⬜ · M8+ ⬜** (definitions: `docs/v2/02-roadmap-milestones.md`).
 
 ## 2. Current phase
 
@@ -85,21 +87,24 @@ tracker (F2); open items are recorded in section 8.
 | M2.13 p2 | 2026-11-17 | Synthetic end-to-end world (`selftest_gcm.py --world`): 3-model world mirroring the real record shape (hist 1981-2014 + ssp245 2015-2050), full 02->09 chain via subprocesses + DIE_CONFIG_DIR; WORLD SELFTEST PASS (W1-W8) - session log row 23 |
 | M5.2 | 2026-11-18 | `#projections` tab skeleton (era toggle wiring = era labels/banner/seam notes, scenario switch, variable/timescale selector, statistic, time window, geography) + honest projection banner + store-status panel + catalog-driven selection check + planned-views roadmap panel - session log row 28 |
 | M5.3 | 2026-11-18 | `#projections` ensemble band chart (median + 25–75 % tonexty band, Plotly) + era-C choropleth (agreement-first X2 default, median/band secondary) for national/state/district scopes (v1.0 area-weighting rule, weights renormalised per month) + map-click → district selection; `ensemble()` rewritten for the published per-stat partitions + optional district + year pruning at file level; `toRows` int64 widening - session log row 29 |
+| M5.4 | 2026-11-18 | Agreement layer hardening (exact definitions): tooltips "N of 8 subset models ≤ −1.0/−1.5 (count, not a probability)" (R9), stat-aware legend heads with the exact threshold, map note states the exact definition + the honest pending state for per-district seam uncertainty (X7 → M6.8, not fabricated — R3); `dir_agreement_drier` added as a DISABLED statistic option + STAT_LABEL entry (declared in config/export.yaml, step-07 ssp emission pending) - session log row 30 |
+| M5.5 | 2026-11-18 | Model ranking panel: `scripts/build_ranking_data.py` → `data/ranking.json` (9,439 bytes, sha256 25d44936a25a17dd) from Owner-local step-08 outputs (best_subset.yaml + ranking.csv), round-trip verified cell-level (22 rows × 10 fields, subset n=8, `--check` PASS); full 22-row table (composite + all 8 metrics, subset badge/highlight), weights verbatim + committed criterion rule + "historical skill ≠ future skill" note; NEVER single-metric - session log row 30 |
+| M5.6 | 2026-11-18 | SPI–SPEI divergence map (fixed SPI-3 vs SPEI-3 medians, same 8 models, same scenario/month): d = SPI−SPEI, 5 bins (strong/mild demand-driven → balanced → mild/strong rainfall-driven), lazy second choropleth + function tooltips (per-district SPI/SPEI/d), legend with bin counts + index-construction caveat (R9) + the exact quote "Rainfall alone does not decide India's drought future; demand does half the work."; own state divYear/divMonth - session log row 30 |
+| M5.7 | 2026-11-18 | Projection banner refinement (M5.7/X3): 4 lines — honest ensemble n from best_subset with the criterion rule, "median never shown alone / disagreement is a finding" (X2), era labels + never-spliced rule; band and map metas prefixed "era C · " - session log row 30 |
+| M5.8 | 2026-11-18 | **E14 future drought event analytics (OD9 resolved — Owner confirmed via the session instruction "complete m5.4 to m5.8", recorded §6 + register §5):** `scripts/build_events_baseline.py` → `data/events/baseline_1981_2020.json` (1,188,366 bytes, sha256 2c87f62a24ed69fd; 8 SPI/SPEI variables, 5,788 district records; frozen runs analysis on the era-B parquet, threshold −1.0, min 3 months, censoring flagged; sanity: Ahmedabad spi_03 = 8 events/40 yr, national mean 9.99); era-C side computed live client-side via `DIE.Analytics.findEvents` (same frozen machinery); events panel (9 columns, sort by frequency/duration/severity, top 15, national medians, censoring count, "median-based, not a forecast" + agreement column X2) - session log row 30 |
 
 ## 4. In progress
 
-- (none — M5.3 complete; next session starts M5.4)
+- (none — M5 complete)
 
 ## 5. Pending (next up)
 
 | Order | Task | Milestone | Depends on | Notes |
 |---|---|---|---|---|
-| **1** | **M5.4 — agreement layer refinement: exact definitions + per-district seam uncertainty in tooltips (X7: seam_uncertainty), agreement legend hardening** | M5 | M5.3 ✅ | Map/legend/tooltips for agreement already live since M5.3 (5 fraction bins, "x of 8 models" honest-n legend); M5.4 adds the exact threshold definitions + seam uncertainty values |
-| 2 | M5.5 model ranking panel · M5.6 SPI–SPEI divergence · M5.7 banner refinement | M5 | M5.3 ✅ | per docs/v2/02 §3 |
-| 3 | M5.8 E14 future drought event analytics — **gated on OD9 (Owner confirmation)** | M5 | M5.3–M5.7, OD9 | — |
-| 4 | M3 freshness/status (M3.x) · M4 IMD validation framework | M3/M4 | — | queueable alongside M5 |
-| 5 | M6 Atlas era A — **blocked on Owner verification of Atlas v2 (OD4)** | M6 | Owner | — |
-| 6 | M7 release (era-C hosting decision resolves here: commit vs R2 + Zenodo) | M7 | M3–M6 | — |
+| **1** | **M6 — Atlas era A ingestion (start M6.1: Atlas v2 dataset verification, DOI/licence/variables)** | M6 | **OD4 — Owner verification of Atlas v2 (pending)** | gated on Owner; M6.8 (era A↔B cross-validation → `seam_uncertainty` X7) later in the milestone |
+| 2 | M3 freshness/status (M3.x) · M4 IMD validation framework (M4.1 acquisition is Owner-side) | M3/M4 | — | queueable while OD4 pending |
+| 3 | M7 release (era-C hosting decision resolves here: commit vs R2 + Zenodo) | M7 | M3–M6 | — |
+| — | Owner-compute dependencies that unlock #projections UI: SSP 2051–2100 download (late-century window), step-07 `dir_agreement_drier` ssp emission (statistic option), M6.8 `seam_uncertainty` (tooltips) | M5/M6 | Owner | honest disabled/pending states shipped in M5.4–M5.8 |
 
 (Full task tables per milestone: `docs/v2/02-roadmap-milestones.md` §3.)
 
@@ -117,6 +122,7 @@ tracker (F2); open items are recorded in section 8.
 | Era C start-year confirmation (OD2: default 2026–2100) | M2.2 | ⏳ default adopted |
 | **Era-C store hosting (NEW, Owner decision 2026-11-17): keep the 8,064-file projections store (355.4 MB) LOCAL, not committed/pushed, until the Owner is satisfied with internal testing, layout and working — i.e. until the full and final v2.0 release.** The store is gitignored; committed catalog/manifest/metadata era-C blocks are the standing contract. At release: commit to the repo OR host on Cloudflare R2 (+ Zenodo archival deposit per D5). Nothing to un-do — publish already ran locally; CI and the live site are unaffected. | M5 (era-C surfaces) / release gate | ✅ Owner-decided (local-until-final) |
 | Locate `work/die-2.0/` prototype (AS2) — reuse or rebuild | M1.6 | ⏳ to check at M1.6 |
+| **OD9 — E14 Tier-1 confirmation: RESOLVED 2026-11-18.** The Owner's session instruction "complete m5.4 to m5.8" is recorded as the explicit confirmation; M5.8 shipped the same session (docs/v2/05-decision-register.md §5 updated). | M5.8 | ✅ Owner-confirmed |
 
 **Open technical questions:** none beyond the register's OD1–OD8 (docs/v2/05 §5).
 
@@ -212,31 +218,28 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-### M5.4 - Agreement layer refinement (next task)
+### M6.1 — Atlas era A verification (next task; GATED on OD4)
 
-The agreement choropleth is LIVE since M5.3 (5 fraction bins of the honest
-8-model subset, "x of 8 models" legend + tooltips, X2 default statistic).
-M5.4 refines it per the register/roadmap:
+M5 is COMPLETE (M5.2–M5.8, session log row 30). The next roadmap item is M6
+(Atlas era A), which is gated on the Owner verifying the Atlas v2 dataset
+(OD4: DOI 10.5281/zenodo.20368514, licence, variables). Until OD4 lands:
 
-1. Exact definitions in the UI: agreement = share of subset models with
-   SPI/SPEI <= −1.0 (moderate) / <= −1.5 (severe) in that month — a count,
-   NOT a probability (already worded this way on the map note; carry it
-   into the legend head + tooltip fully).
-2. Per-district seam uncertainty in tooltips (X7 `seam_uncertainty`,
-   Owner-computed in the ssp chain publish) — if the column is absent from
-   the store, show the placeholder-free "pending publish" state instead
-   (R3: never fabricate).
-3. Legend/tooltip hardening: agreement_severe toggle check, no-data edge
-   cases (4 island districts have null agreement values — rendered grey).
+- If the Owner clears OD4, start M6.1 (atlas-pipeline ingestion per
+  docs/v2/03 §2; tehsil-native source served at district level first).
+- Otherwise pick a queueable M3/M4 task (freshness/status surface; IMD
+  validation framework scripts — the acquisition itself is Owner-side).
 
-Follow-ups recorded: the 4 null-agreement districts (IMD-anchored ocean
-mask) are expected and honest; verify they render grey with the tooltip
-"no data" line.
+Standing M5 follow-ups (Owner compute, honest pending states already shipped):
 
-Data note: era-C store is LOCAL/gitignored (Owner decision) — dev server
-serves it; the live site is unaffected. Era C publishes SPI/SPEI only
-(SMA/VCI projections do not exist — the variable selector already lists
-only the 8 published variables).
+1. SSP 2051–2100 subset download → unlocks the late-century window
+   (2081–2100) and the full record to 2100.
+2. Step-07 ssp-mode emission of `dir_agreement_drier` → enables the
+   disabled statistic option (declared in config/export.yaml; UI shows it
+   disabled with an explanatory label — R3).
+3. M6.8 era A↔B cross-validation → per-district `seam_uncertainty` in
+   projection tooltips (X7).
+4. O14 optional standardisation-baseline sensitivity (memo section, not a
+   UI default).
 
 ### M2.13 phase 2 record (DONE 2026-11-17 - do not re-derive)
 
@@ -296,3 +299,5 @@ X1 refusal. WORLD SELFTEST PASS.
 | 28 | 2026-11-18 | **M5.2: `#projections` tab skeleton (first M5 task; fixture stage M5.1 skipped - real era-C data published locally).** New 6th primary tab `Future Projections` (terracotta `--ws` accent, light + dark-rail token blocks; R8: new hash, all old hashes untouched): view markup with vi-step 6, projection banner rendered verbatim from metadata era_c (R2: simulations never forecasts; honest label 'Projections 2015-2050 (2051-2100 inputs pending)'), Store status panel (status/scenarios/years 2015-2050/ensemble n=8 best subset verbatim X3/PET Hargreaves seam note) + era seam note (era B 1981-01-2025-12 vs era C from 2015, never spliced, 2015-2025 overlap = free-running realisations), Selection panel (scenario radios SSP2-4.5/SSP5-8.5, variable+timescale select of the 8 published era-C variables, statistic select DEFAULTING to agreement moderate <= -1.0 per X2 with severe <= -1.5 / median / band options, time window near 2026-2040 / mid 2041-2060 / late 2081-2100 DISABLED with pending explanation (section 7 rule) / custom clamped 2015-2050, geography national/state/district), Selection check panel resolving the live selection against the COMMITTED catalog only (per-stat partition groups, files, years-in-window coverage: verified full 15/15 near-term, partial 10/20 mid-century with '2051-2100 inputs pending' note, band = 3 partition groups, ssp585 switch), Planned views panel (M5.3-M5.8 roadmap incl. E14 OD9 gate; R3: no synthetic placeholders). New assets/js/projections.js module (DIE.Projections; shared catalog promise via DIE.Engine.ensureCatalog, direct no-store fetch fallback; telemetry proj_control events; error state with Retry) wired into app.js (TABS/TAB_LABELS/DIRTY/Views/footExport 'Downloads') + MODULES loader chain; era-B global sidebar sections hidden on this tab (pure CSS body[data-tab] rule); ASSET_VERSION 2026-11-18a. KNOWN PREREQUISITE for M5.3 recorded in section 9: ducklab.js ensemble() (M1.6, never called yet) assumes wide columns (median/p25/p75 in one SELECT) that do not match the published per-stat partitions (each holds a single value column) - fix + live-verify as M5.3 step 0 | index.html (tab button, viewProjections panel, VIEW 6->7 comment renumber, MODULES, ASSET_VERSION), assets/js/projections.js (new), assets/js/app.js (TABS/TAB_LABELS/DIRTY/Views/footer), assets/css/style.css (accent blocks light+dark, .proj-* components, 44px touch targets, mobile column stack), PROGRESS.md | Browser battery: zero console errors across full 7-tab cycle (#overview/#historical/#events/#propagation/#engine/#projections/#data); all controls exercised live against the real store (scenario switch, band=3 groups, mid window 10/20 partial honest note, custom 2030-2035 6/6, late disabled); selection resolves: SSP2-4.5/SPI-3/agreement moderate/near = 15/15 full coverage; status fields sourced from metadata era_c contract; keyboard: all 7 controls reachable in tab order, radio focus + change verified; mobile pass at 390x844 (390px iframe): projections routes, era-B global sidebar hidden, controls stack column at 351px fields, 44px touch targets, check table renders; regression_check PASS (681 values, no re-bless needed - no data touched); data-pipeline/selftest.py PASS; screenshot captured for Owner | M5.3 |
 
 | 29 | 2026-11-18 | **M5.3: ensemble band chart + choropleth on `#projections` (first era-C engine-consuming views).** (a) `ducklab.js ensemble()` rewritten for the published per-stat partition schema (stat whitelist median/p25/p75/agreement_moderate/agreement_severe with `bad-stat` guard, district now OPTIONAL, year-range pruning at the FILE level before SQL build, single `value` column read); `toRows` widened int64->Number (era-C year/month are int64; BigInt broke arithmetic). (b) New views in `projections.js`: Ensemble band panel (median line `#b25c3d` + 25-75 % tonexty band `rgba(178,92,61,0.20)`, moderate-drought dashed tau line per family -1.0 z / -15 % SMA / 30 % VCI, x-unified hover, scope = geography selector: district slice OR state/national via client-side v1.0 area-weighting (registry area_km2 weights renormalised over finite districts per month, n reported 720-720 / 33-33), Plotly lazy-loaded via DIE_LIBS); Map panel (lazy `DIE.MapView.createChoropleth` with tooltip:false, one (year, month) frame per stat, DEFAULT agreement-first X2 with 5 fraction bins + 'x of 8 models' honest-n legend, median/band maps the median via `DIE.classify` McKee palette, function-tooltips bound ONCE evaluating live frame values, legend builder reusing .legend-row/.legend-swatch, fitRegion follows state/district selection, map click selects the district for the chart and flips geography); era honesty notes on every view (era C projection, not a forecast; months rendered never imputed; agreement = count of models, not a probability); period selects populated from catalog years (36) x 12 months; stale-render race guards (bandSeq/mapSeq) after the slow national render overwrote a fast district render; empty-option assignment guard on selects (era C publishes SPI/SPEI only - SMA/VCI correctly absent, '' assignment no longer poisons state); app.js switchTab projections hook -> `DIE.Projections.invalidate()` (engine query cache makes re-queries ~free) + resize hook -> `mapSize()`; read-only `snapshot()` test hook. (c) `scripts/engine-smoke.html` updated from the outdated era-C-rejection guard to REAL ensemble gates. CSS: .proj-chart 300px / .proj-map 400px + mobile 240/300 at the app-wide 760px breakpoint, .proj-legend flex row. ASSET_VERSION 2026-11-18f | assets/js/ducklab.js, assets/js/projections.js, assets/js/app.js, index.html, assets/css/style.css, scripts/engine-smoke.html | engine-smoke ALL GATES PASS: init 443 ms, cold slice 79 ms, repeat 0 KB, era-C band slice 98 ms < 150 ms GATE, p25 <= median <= p75 on all 180 months PASS, map frame 15 ms (720/724 districts, all values in [0,1]), bad-stat + injection guards PASS, no-district ensemble 8640 rows; live UI: national/state/district band renders correct (Rajasthan 33 districts, Nagpur, national), all 724 choropleth layers match expected colors exactly for BOTH agreement bins and median classification, tooltips verified for both modes ('0 of 8 models in drought', '0.25 z-score - Near normal'), map click -> picker sync verified, zero console errors over full tab cycle, no horizontal overflow, keyboard focusable selects, regression PASS 681, selftest PASS | M5.4 |
+
+| 30 | 2026-11-18 | **M5.4-M5.8 batch (M5 COMPLETE).** M5.4 agreement hardening: tooltips 'N of 8 subset models <= -1.0/-1.5 (count, not a probability)' (R9), stat-aware legend heads with the exact threshold, map note states the exact definition + honest pending for per-district seam_uncertainty (X7 -> M6.8, never fabricated - R3), dir_agreement_drier DISABLED statistic option + STAT_LABEL entry (declared in config/export.yaml; step-07 ssp emission pending). M5.5: scripts/build_ranking_data.py reads Owner-local step-08 outputs -> data/ranking.json (9,439 B, sha256 25d44936a25a17dd), cell-level round-trip verified (22 rows x 10 fields, subset n=8, --check PASS); full 22-row ranking panel (composite + all 8 metrics, .rk-subset/.rk-badge highlight), weights verbatim + criterion rule + 'historical skill is not future skill'; never single-metric. M5.6: SPI-SPEI divergence map (fixed SPI-3 vs SPEI-3 ensemble medians, same 8 models), d = SPI-SPEI with 5 bins (>=+0.5 strong demand-driven #A63B34 ... <=-0.5 strong rainfall-driven #33608A, balanced +/-0.25 #E7E2D8), lazy second choropleth (divApi) + function tooltips (per-district SPI/SPEI/d + bin label), own state (divYear 2040/divMonth 7), legend + note with bin counts, index-construction caveat (R9) and the exact quote 'Rainfall alone does not decide India''s drought future; demand does half the work.' M5.7: banner refinement to 4 lines - honest ensemble n (subset list + criterion rule), 'median never shown alone / disagreement is a finding' (X2), era labels + never-spliced; band + map metas prefixed 'era C - '. M5.8 (E14, OD9 RESOLVED via the session instruction 'complete m5.4 to m5.8', recorded section 6 + register section 5): scripts/build_events_baseline.py -> data/events/baseline_1981_2020.json (1,188,366 B, sha256 2c87f62a24ed69fd; 8 SPI/SPEI vars, 5,788 district records; frozen runs analysis on era-B parquet: threshold -1.0, min 3 months, NaN breaks runs, censoring flagged never dropped; sanity: Ahmedabad spi_03 = 8 events/40 yr mean dur 3.75, national mean 9.99); era-C side live via DIE.Analytics.findEvents (same frozen machinery both sides); events panel (9 columns: district, base ev/yr, era-C ev/yr, freq ratio, mean dur base->era C, max dur, sev ratio, mean agreement x/8, valid months; sort by freq/duration/severity, top 15, national medians summary, censoring count, 'median-based, not a forecast' note + baseline source). Roadmap panel rewritten to 'Pending compute & next steps' (SSP 2051-2100, 07->09 dir_agreement, M6.8 seam_uncertainty, O14, M7 hosting). Wiring: scenario -> +divergence+events; variable/window -> +events; div year/month + events sort listeners; init Promise.allSettled +ranking+divergence+events; invalidate/mapSize cover divApi; snapshot exposes divApi/divValues; index.html new panels (projRankingPanel/projDivPanel/projEventsPanel), disabled dir option, control note extended; CSS .rk-subset/.rk-badge; ASSET_VERSION 2026-11-18g | assets/js/projections.js, index.html, assets/css/style.css, scripts/build_ranking_data.py (new), scripts/build_events_baseline.py (new), data/ranking.json (new, shipped artifact), data/events/baseline_1981_2020.json (new, shipped artifact), PROGRESS.md, docs/v2/05-decision-register.md (OD9 row) | Browser battery (cache-busted reload): ranking 22 rows + 8 subset badges/highlights, divergence 724 layers colored exactly per bin (SSP2-4.5 Jul: 711 balanced / 8 rainfall-driven / 1 mild demand / 4 no-data ocean mask = honest null districts; SSP5-8.5 Oct: 713 balanced / 7 mild demand), events 15 rows with valid months 180 = 15 yr x 12 (near window), sort switch reorders, scenario + month switches re-render all four surfaces with 'era C - ' metas, banner 4 lines, roadmap panel retitle; R7 numeric round-trip: Birbhum spi_03 2026-2040 recomputed independently in Python from the era-C partitions -> n_events 1, ev/yr 0.0667, mean dur 3.0, freq ratio 0.381 = EXACT match to the UI (0.07/3.0/0.38); events note wording fixed ('sorted by frequency ratio'); engine-smoke ALL GATES PASS (init 450 ms, cold slice 60 ms, repeat 0 KB, era-C band 89 ms < 150 ms, p25<=median<=p75 180 months, map frame 15 ms, bad-stat + injection guards, SMOKE DONE no uncaught errors); zero console errors over full 7-tab cycle; regression PASS 681; data-pipeline selftest PASS; new panels reuse .table-scroll (overflow-x auto) + .proj-map responsive classes (no new layout risk) | M6.1 (gated OD4) or M3/M4 |

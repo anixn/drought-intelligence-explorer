@@ -1987,6 +1987,10 @@
                     </option>
                     <option value="median">Ensemble median</option>
                     <option value="band">Median + 25–75 % band</option>
+                    <option value="dir_agreement_drier" disabled>
+                      Direction of change — models agreeing drier (stat pending
+                      step-07 emission; enabled when published)
+                    </option>
                   </select>
                 </div>
                 <div class="proj-field">
@@ -2032,7 +2036,8 @@
                 The band chart and map below consume this selection; the
                 choropleth maps the chosen statistic (the band statistic maps
                 the median). Agreement — moderate is the default (X2:
-                agreement-first).
+                agreement-first). The events panel reuses the scenario,
+                indicator and window chosen here.
               </p>
             </section>
           </div>
@@ -2096,22 +2101,108 @@
             </section>
           </div>
 
-          <section class="panel" id="projRoadmapPanel" aria-label="Planned views">
+          <section class="panel" id="projRankingPanel" aria-label="Model ranking">
             <div class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title">Planned views</h2>
-                <span class="panel-meta">roadmap tasks — not yet rendered</span>
+                <h2 class="panel-title">Model ranking</h2>
+                <span class="panel-meta" id="projRankingMeta"
+                  >8 skill metrics vs IMD 1981–2014 · composite, never single-metric</span
+                >
+              </div>
+            </div>
+            <div class="table-scroll" id="projRankingWrap">
+              <table class="comp-table" id="projRankingTable">
+                <thead>
+                  <tr>
+                    <th scope="col" class="num">Rank</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Subset</th>
+                    <th scope="col" class="num">Composite</th>
+                    <th scope="col" class="num">Pearson r</th>
+                    <th scope="col" class="num">|Bias|</th>
+                    <th scope="col" class="num">RMSD</th>
+                    <th scope="col" class="num">Class agr.</th>
+                    <th scope="col" class="num">Freq ratio</th>
+                    <th scope="col" class="num">Dur. ratio</th>
+                    <th scope="col" class="num">Sev. ratio</th>
+                    <th scope="col" class="num">Spatial r</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="table-help" id="projRankingNote"></p>
+          </section>
+
+          <section class="panel" id="projDivPanel" aria-label="SPI-SPEI divergence map">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">SPI&#8211;SPEI divergence</h2>
+                <span class="panel-meta" id="projDivMeta">&#8212;</span>
+              </div>
+              <div class="panel-actions">
+                <select id="projDivYear" class="panel-ctl" aria-label="Divergence year"></select>
+                <select id="projDivMonth" class="panel-ctl" aria-label="Divergence month"></select>
+              </div>
+            </div>
+            <div class="proj-map" id="projDivMap"></div>
+            <div class="proj-legend" id="projDivLegend"></div>
+            <p class="table-help" id="projDivNote"></p>
+          </section>
+
+          <section class="panel" id="projEventsPanel" aria-label="Future drought events">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">Future drought events</h2>
+                <span class="panel-meta" id="projEventsMeta"
+                  >frozen runs analysis on era-C medians vs observed 1981&#8211;2020 baseline</span
+                >
+              </div>
+              <div class="panel-actions">
+                <select id="projEventsMetric" class="panel-ctl" aria-label="Ranking metric">
+                  <option value="freq" selected>Sort by frequency ratio</option>
+                  <option value="duration">Sort by duration change</option>
+                  <option value="severity">Sort by severity ratio</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-scroll" id="projEventsWrap">
+              <table class="comp-table" id="projEventsTable">
+                <thead>
+                  <tr>
+                    <th scope="col">District</th>
+                    <th scope="col" class="num">Base ev/yr</th>
+                    <th scope="col" class="num">Era-C ev/yr</th>
+                    <th scope="col" class="num">Freq ratio</th>
+                    <th scope="col" class="num">Mean dur (base &#8594; era C)</th>
+                    <th scope="col" class="num">Max dur era C</th>
+                    <th scope="col" class="num">Sev ratio</th>
+                    <th scope="col" class="num">Mean agr. (of 8)</th>
+                    <th scope="col" class="num">Valid months</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="table-help" id="projEventsNote"></p>
+          </section>
+
+          <section class="panel" id="projRoadmapPanel" aria-label="Pending compute">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">Pending compute &amp; next steps</h2>
+                <span class="panel-meta">Owner compute pending — not yet rendered</span>
               </div>
             </div>
             <ul class="proj-roadmap">
-              <li><span class="proj-ms">M5.4</span> Agreement layer with exact definitions + per-district seam uncertainty in tooltips</li>
-              <li><span class="proj-ms">M5.5</span> Model ranking panel (multi-metric composite; no single-metric ranking)</li>
-              <li><span class="proj-ms">M5.6</span> SPI vs SPEI divergence map — "Rainfall alone does not decide India's drought future; demand does half the work."</li>
-              <li><span class="proj-ms">M5.7</span> Projection banner refinement (honest ensemble n, era labels, no-splice rules)</li>
-              <li><span class="proj-ms">M5.8</span> Future drought event analytics (E14) — gated on Owner confirmation (OD9)</li>
+              <li><span class="proj-ms">SSP</span> 2051–2100 subset download unlocks the late-century window (2081–2100) and the full record to 2100</li>
+              <li><span class="proj-ms">07→09</span> step-07 emission of <code>dir_agreement_drier</code> enables the disabled "Direction of change" statistic (M5.4)</li>
+              <li><span class="proj-ms">M6.8</span> era A↔B cross-validation delivers per-district <code>seam_uncertainty</code> for tooltips (X7)</li>
+              <li><span class="proj-ms">O14</span> optional standardisation-baseline sensitivity (fixed 1981–2020 vs rolling) — memo section, not a UI default</li>
+              <li><span class="proj-ms">M7</span> release: era-C store hosting decision (commit vs R2 + Zenodo)</li>
             </ul>
             <p class="table-help">
-              Until each task lands, this surface shows only committed catalog
+              Until each item lands, this surface shows only committed catalog
               facts — no synthetic placeholders (R3).
             </p>
           </section>
@@ -3467,7 +3558,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-18f";
+        var ASSET_VERSION = "2026-11-18g";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

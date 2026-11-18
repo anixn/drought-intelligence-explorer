@@ -74,7 +74,7 @@ The four planning inputs (build specification, implementation specification, wor
 | OD6 | Hosting at scale (GitHub Pages vs Cloudflare R2) | GitHub Pages until payload/traffic forces R2 |
 | OD7 | CMIP6 download route (ESGF vs Google/Pangeo cloud) | **Resolved 2026-11-13: Route A — raw CMIP6 + own QDM** (PROGRESS.md §8, session-2 additions) |
 | OD8 | v2.0 release timing | Data-gated, not date-gated |
-| OD9 | **E14 Tier-1 confirmation** (owner amendment 06 §1): future drought event analytics as the fourth `#projections` view | Tier 1 *candidate*; M5.8 scheduled but gated on Owner sign-off |
+| OD9 | **E14 Tier-1 confirmation** (owner amendment 06 §1): future drought event analytics as the fourth `#projections` view | **RESOLVED 2026-11-18:** Owner confirmed via the session instruction "complete m5.4 to m5.8" (recorded PROGRESS.md §6); M5.8 shipped on validated era-C medians vs the observed 1981–2020 baseline — never fixtures (R3) |
 | OD10 | **E16 Penman–Monteith variant definition** (inputs `huss`/`rlds`/`sfcWind`): exact formulation + which models supply them | Availability-checked in 01_inventory_check.py; runs only where supplied; committed default (C3 Hargreaves) unchanged |
 | OD11 | **E18 flash-drought definition** (Ford/Otkin-style rapid-intensification rate) and compound drought–heat joint-extreme definition | One definition picked and registered before any map ships; absorbs F08 |
 

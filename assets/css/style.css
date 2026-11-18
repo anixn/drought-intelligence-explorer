@@ -4406,6 +4406,26 @@ body[data-tab="projections"] .side-sec[data-side="global"] {
   margin-left: 6px; /* inline layout: no push-to-edge auto margin */
 }
 
+/* -- M5.5 ranking table: subset highlight + badge --------------------------- */
+.comp-table tr.rk-subset {
+  background: #eef4f8;
+  box-shadow: inset 3px 0 0 var(--navy);
+}
+.comp-table tr.rk-subset:hover {
+  background: #e4eef5;
+}
+.rk-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 9px;
+  background: var(--navy);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 @media (max-width: 760px) {
   .proj-controls {
     flex-direction: column;
