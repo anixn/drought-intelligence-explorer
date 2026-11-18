@@ -687,6 +687,15 @@ input[type="range"] {
 .tabs {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  /* the active tab's 2px border (with its -1px margin trick) overflows the
+   * 34px bar by 1px — with overflow-y defaulted to auto that rendered as a
+   * needless vertical scrollbar; hidden, and the horizontal scrollbar is
+   * styled away too (the bar stays scrollable via wheel/drag/keyboard) */
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 .tabs button {
   white-space: nowrap;
@@ -1825,7 +1834,9 @@ td .sparse-tag {
 /* footer */
 .app-footer {
   margin-top: 4px;
-  background: var(--navy);
+  /* follows the workspace rail so sidebar and footer always match (the
+   * per-tab --rail is defined for every data-tab; --navy is the fallback) */
+  background: var(--rail, var(--navy));
   color: #b7c4d2;
   border-radius: var(--radius) var(--radius) 0 0;
   padding: 14px 22px 10px;
@@ -4143,6 +4154,10 @@ body[data-tab="projections"] {
 }
 .el-status {
   margin: 0;
+  /* inset to the panel content line (panel-head/table-help use 14px) — the
+   * list used to sit flush at the panel edge, 14px outdented from its own
+   * heading */
+  padding: 4px 14px 6px;
   font-size: 13px;
 }
 .el-status div {
@@ -4266,6 +4281,7 @@ body[data-tab="projections"] .side-sec[data-side="global"] {
   flex-wrap: wrap;
   gap: 12px 22px;
   align-items: flex-start;
+  padding: 14px 14px 6px;
 }
 .proj-field {
   display: flex;
@@ -4332,7 +4348,7 @@ body[data-tab="projections"] .side-sec[data-side="global"] {
 .proj-roadmap {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 4px 14px 2px;
   display: grid;
   gap: 8px;
 }
