@@ -31,10 +31,11 @@ export:
   # -------------------------------------------------------------- stats ----
   # Key = stat name in partition paths; value = variable name inside the
   # step-07 ensemble NC (or "members" = per-model step-06 files).
-  # dir_agreement_drier is PENDING: step 07 computes it but does not yet
-  # write it in ssp mode (base 1981-2020 vs window; needs the AS6 seam).
-  # It is declared here so the ssp-mode export fails LOUDLY, not silently,
-  # until 07 emits it.
+  # dir_agreement_drier / dir_agreement_n are emitted by step 07 in ssp mode
+  # ONLY inside the effective direction window (default: latest 10 years
+  # available until the configured 2081-2100 window lands), so their year
+  # partitions legitimately cover a shorter span than the monthly stats; the
+  # window is recorded in the NC attrs and the export manifest.
   stats:
     median: "median"
     p25: "p25"
@@ -42,7 +43,8 @@ export:
     agreement_moderate: "agreement_moderate"
     agreement_severe: "agreement_severe"
     n_models: "n_models"
-    # dir_agreement_drier: "dir_agreement_drier"   # uncomment when 07 emits it
+    dir_agreement_drier: "dir_agreement_drier"
+    dir_agreement_n: "dir_agreement_n"
 
   per_model:
     enabled: true

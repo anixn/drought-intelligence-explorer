@@ -43,10 +43,10 @@ SUITES = [
     ("05 SPI/SPEI (T1-T7)", "05_spi_spei_compute.py", "gcm-pipeline"),
     ("06 district aggregation (T1-T6)", "06_district_aggregate.py",
      "gcm-pipeline"),
-    ("07 ensemble statistics (T1-T5)", "07_ensemble_stats.py",
+    ("07 ensemble statistics (T1-T7)", "07_ensemble_stats.py",
      "gcm-pipeline"),
     ("08 validation gate (T1-T8)", "08_validate_gcm.py", "gcm-pipeline"),
-    ("09 export (T1-T9)", "09_export_parquet.py", "gcm-pipeline"),
+    ("09 export (T1-T10)", "09_export_parquet.py", "gcm-pipeline"),
 ]
 
 
@@ -531,11 +531,33 @@ def _w_run_step(label, script, args, cfg_dir, expect_rc=0):
     return ok, out
 
 
+def _w_nc_float(v):
+    """Masked netCDF variable -> float array with NaN for absent cells.
+
+    Int variables (n_models / dir_agreement_n) map both the netCDF mask and
+    the declared _FillValue sentinel to NaN - np.ma.filled(np.nan) cannot be
+    cast to an integer dtype."""
+    raw = v[:]
+    if raw.dtype.kind == "f":
+        return _np.asarray(_np.ma.filled(raw, _np.nan), float)
+    arr = _np.asarray(_np.ma.filled(raw, 0), float)
+    if _np.ma.isMaskedArray(raw):
+        arr[_np.ma.getmaskarray(raw)] = _np.nan
+    if "_FillValue" in v.ncattrs():
+        arr[arr == float(v.getncattr("_FillValue"))] = _np.nan
+    return arr
+
+
+def _w_panel_float(ds, var):
+    """One variable of an open netCDF Dataset as a float array (NaN = absent)."""
+    return _w_nc_float(ds.variables[var])
+
+
 def _w_load_monthly(path, var):
     """(time, lat, lon) monthly field + [(y, m)] axis from an NC file."""
     import netCDF4 as nc
     d = nc.Dataset(path)
-    arr = _np.asarray(_np.ma.filled(d.variables[var][:], _np.nan), float)
+    arr = _w_nc_float(d.variables[var])
     t = d.variables["time"]
     import cftime
     dates = cftime.num2date(t[:], t.units,
@@ -545,7 +567,7 @@ def _w_load_monthly(path, var):
 
 
 def world_selftest() -> int:
-    """Build the world, run the 02->09 chain, assert W1-W8."""
+    """Build the world, run the 02->09 chain, assert W1-W9."""
     print("=" * 78)
     print("GCM-PIPELINE WORLD SELFTEST (M2.13 phase 2, seed "
           f"{WORLD_SEED})")
@@ -726,10 +748,20 @@ def world_selftest() -> int:
     # W7: staging round-trip (12 random partitions vs source NCs)
     stag = out / "projections"
     parts = sorted(stag.rglob("*.parquet"))
-    n_expected = (8 * 6 * 36) + (3 * 8 * 36)     # ensemble + members
+    # ensemble stats: 8 vars x 6 monthly stats x 36 record years; the two
+    # window-constant direction stats exist ONLY inside the effective window;
+    # members: 3 models x 8 vars x 36 years
+    with nc.Dataset(ens_path) as d9:
+        _eff = d9.getncattr("dir_agreement_window_effective")
+    _d_lo, _d_hi = (int(x) for x in _eff.split("-"))
+    n_dir_years = _d_hi - _d_lo + 1
+    n_years_ssp = WORLD_SSP[1] - WORLD_SSP[0] + 1
+    n_expected = ((8 * 6 * n_years_ssp) + (8 * 2 * n_dir_years) +
+                  (3 * 8 * n_years_ssp))     # ensemble + dir + members
     ok = len(parts) == n_expected
     print(f"W7 staging: {len(parts)} parquet partitions "
-          f"(expect {n_expected}): {ok}")
+          f"(expect {n_expected}: 6 stats x {n_years_ssp} yrs + 2 dir stats "
+          f"x {n_dir_years} yrs + members): {ok}")
     if ok:
         rng7 = _np.random.default_rng(WORLD_SEED + 77)
         for p in rng7.choice(parts, size=min(12, len(parts)), replace=False):
@@ -775,10 +807,58 @@ def world_selftest() -> int:
     print("W8 X1 publish refusal: enforced by chain (exit 3 expected) - see "
           "[chain] line above")
 
+    # W9: dir_agreement_drier exactness/constancy on the world -----------------
+    # Base 1981-2020 from the AS6 stitch, effective window from the record
+    # (WORLD_SSP ends 2050 -> latest-10 fallback 2041-2050), window-constant
+    # per district, absent outside the window, denominator recorded exactly.
+    with nc.Dataset(ens_path) as d9:
+        attrs9 = {a: d9.getncattr(a) for a in d9.ncattrs()}
+        frac9 = _w_panel_float(d9, "dir_agreement_drier")
+        n9 = _w_panel_float(d9, "dir_agreement_n")   # int16 + _FillValue -999
+    eff9 = str(attrs9.get("dir_agreement_window_effective", ""))
+    lo9, hi9 = (int(x) for x in eff9.split("-")) if "-" in eff9 else (0, -1)
+    b_means, w_means = [], []
+    for m in WORLD_MODELS:
+        hp = next((work / "aggregate" / m / "historical-corrected")
+                  .glob("spi_03_districts_*.nc"))
+        ha, hm = _w_load_monthly(hp, "spi_03")
+        sp = next((work / "aggregate" / m / "ssp245")
+                  .glob("spi_03_districts_*.nc"))
+        sa, sm = _w_load_monthly(sp, "spi_03")
+        full = _np.concatenate([ha, sa], axis=1)
+        months = hm + sm
+        b_i = [i for i, mm in enumerate(months) if 1981 <= mm[0] <= 2020]
+        w_i = [i for i, mm in enumerate(months) if lo9 <= mm[0] <= hi9]
+        b_means.append(_np.nanmean(full[:, b_i], axis=1))
+        w_means.append(_np.nanmean(full[:, w_i], axis=1))
+    b9 = _np.stack(b_means)
+    w9 = _np.stack(w_means)
+    expect9 = (w9 < b9).mean(axis=0)
+    in_win9 = _np.array([lo9 <= mm[0] <= hi9 for mm in ens_months])
+    out9 = ~in_win9
+    ok = (eff9 == "2041-2050"
+          and str(attrs9.get("dir_agreement_base")) == "1981-2020"
+          and str(attrs9.get("dir_agreement_window_configured")) == "2081-2100"
+          and frac9.shape == n9.shape
+          and bool(_np.all(_np.isfinite(frac9[:, in_win9])))
+          and (not out9.any()
+               or bool(_np.all(~_np.isfinite(frac9[:, out9]))))
+          and bool(_np.allclose(frac9[:, in_win9], expect9[:, None]))
+          and bool(_np.all(n9[:, in_win9] == len(WORLD_MODELS)))
+          # outside the window the panel is masked (the declared _FillValue
+          # reads back as NaN through netCDF4), never a stub number
+          and (not out9.any()
+               or bool(_np.all(~_np.isfinite(n9[:, out9])))))
+    print(f"W9 dir_agreement: window={eff9} (configured 2081-2100), "
+          f"exact/constant/absent-outside={ok}, example "
+          f"{expect9[0]:.2f} n={int(n9[0, in_win9][0]) if in_win9.any() else 'n/a'}")
+    if not ok:
+        fails.append("W9 dir_agreement exactness/window")
+
     if fails:
         print(f"WORLD SELFTEST FAIL ({len(fails)}): {fails}")
         return 1
-    print("WORLD SELFTEST PASS (W1-W8)")
+    print("WORLD SELFTEST PASS (W1-W9)")
     return 0
 
 

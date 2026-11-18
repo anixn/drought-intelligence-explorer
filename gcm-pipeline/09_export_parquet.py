@@ -48,6 +48,9 @@ Contract (docs/v2/03 sections 3.9/8.1/8.2)
   * catalog projections block: files.projections = {scenario: {stat: [paths]}}
     (structured extension of the section 8.2 example - provisional until the
     era-C UI surfaces in M5 consume it; recorded in the export manifest)
+  * export manifest dir_agreement block: base period + configured/effective
+    direction window, carried verbatim from the step-07 NC attributes into
+    the manifest and (publish) metadata.json - never re-derived here
 """
 
 from __future__ import annotations
@@ -114,6 +117,11 @@ def sha256_of(path: Path) -> str:
     return h.hexdigest()
 
 
+def _py(v):
+    """NetCDF attribute value -> JSON-serialisable Python scalar."""
+    return v.item() if hasattr(v, "item") else v
+
+
 # --------------------------------------------------------------------------
 # NC panel reader (same robust semantics as 08 load_district_nc, extended to
 # several variables per file - the ensemble NCs carry 6 stat variables).
@@ -132,8 +140,22 @@ def load_nc_panel(path: Path, wanted: list):
         missing = [w for w in wanted if w not in d.variables]
         if missing:
             raise ValueError(f"{path.name}: missing variables {missing}")
-        panels = {w: np.asarray(np.ma.filled(d.variables[w][:], np.nan), float)
-                  for w in wanted}
+        panels = {}
+        for w in wanted:
+            var = d.variables[w]
+            raw = var[:]
+            if raw.dtype.kind == "f":
+                arr = np.asarray(np.ma.filled(raw, np.nan), float)
+            else:
+                # int panels (n_models, dir_agreement_n): the NaN cast would
+                # fail on an int masked array, so map both the netCDF mask and
+                # the declared _FillValue sentinel to NaN explicitly
+                arr = np.asarray(np.ma.filled(raw, 0), float)
+                if np.ma.isMaskedArray(raw):
+                    arr[np.ma.getmaskarray(raw)] = np.nan
+                if "_FillValue" in var.ncattrs():
+                    arr[arr == float(var.getncattr("_FillValue"))] = np.nan
+            panels[w] = arr
         t = d.variables["time"]
         dates = nc.num2date(t[:], t.units, getattr(t, "calendar", "standard"))
         dids = [str(x) for x in d.variables["district"][:]]
@@ -235,6 +257,8 @@ def export_ssp(work_root: Path, staging: Path, cfg: dict,
             "present with spread + agreement, never the median alone (X2/X3)",
             "missing cells are absent rows, never imputed (R10)",
             "ensemble n recorded, never assumed (X3)",
+            "direction agreement is a model COUNT, never a probability; its "
+            "effective window is recorded verbatim (dir_agreement block)",
         ]),
         ("catalog_files_projections_shape",
          "{scenario: {stat: [paths]}} - structured extension of docs/v2/03 "
@@ -247,12 +271,30 @@ def export_ssp(work_root: Path, staging: Path, cfg: dict,
     n_files = 0
     total_bytes = 0
     nc_vars = sorted(set(stats.values()))
+    dir_info = None
     for exp_dir in sorted(p for p in ens_root.iterdir()
                           if p.is_dir() and p.name.startswith("ssp")):
         scenario = exp_dir.name
         for nc_path in sorted(exp_dir.glob("*_ensemble_*.nc")):
             variable = nc_path.name.split("_ensemble_")[0]
             panels, keys, dids, attrs = load_nc_panel(nc_path, nc_vars)
+            if dir_info is None and "dir_agreement_window_effective" in attrs:
+                eff = attrs.get("dir_agreement_window_effective")
+                if eff and eff != "none":
+                    dir_info = {
+                        "base": _py(attrs.get("dir_agreement_base")),
+                        "base_years": _py(attrs.get(
+                            "dir_agreement_base_years")),
+                        "window_configured": _py(attrs.get(
+                            "dir_agreement_window_configured")),
+                        "window_effective": _py(eff),
+                        "window_note": _py(attrs.get(
+                            "dir_agreement_window_note")),
+                        "min_window_years": _py(attrs.get(
+                            "dir_agreement_min_window_years")),
+                        "definition": _stat_definition(
+                            "dir_agreement_drier", attrs),
+                    }
             anom = check_calendar(keys)
             if anom:
                 raise ValueError(f"{nc_path.name}: calendar anomaly at "
@@ -263,6 +305,11 @@ def export_ssp(work_root: Path, staging: Path, cfg: dict,
             for stat, nc_var in stats.items():
                 panel = panels[nc_var]
                 for year, idx in sorted(year_idx.items()):
+                    if not np.isfinite(panel[:, idx]).any():
+                        # no data at all in this year (e.g. a window-only
+                        # statistic outside its window): write NO file, never
+                        # an empty partition (R10: absent, not a stub)
+                        continue
                     months = [keys[i][1] for i in idx]
                     rel = partition_rel(scenario, stat, variable, year,
                                         None, ex["partition_file"])
@@ -310,6 +357,8 @@ def export_ssp(work_root: Path, staging: Path, cfg: dict,
                         year_idx.setdefault(y, []).append(i)
                     panel = panels[variable]
                     for year, idx in sorted(year_idx.items()):
+                        if not np.isfinite(panel[:, idx]).any():
+                            continue    # no rows in this year: no file (R10)
                         months = [keys[i][1] for i in idx]
                         rel = partition_rel(scenario, stat, variable, year,
                                             model, ex["partition_file"])
@@ -333,6 +382,8 @@ def export_ssp(work_root: Path, staging: Path, cfg: dict,
 
     man["totals"] = {"files": n_files, "bytes": total_bytes,
                      "max_file_bytes": max_bytes}
+    if dir_info is not None:
+        man["dir_agreement"] = dir_info
     if n_files == 0:
         raise ValueError(
             "no ssp products found under work/ensemble|aggregate - run "
@@ -475,7 +526,12 @@ def publish(work_root: Path, repo: Path, paths: dict, cfg: dict) -> int:
           f"({cat_path.stat().st_size / 1024:.0f} KB)")
 
     update_pipeline_manifest(repo / targets["pipeline_manifest"], dest, cfg)
-    update_metadata(repo / targets["metadata"], cfg, years=info["years"])
+    staged_man = {}
+    mpath = staging / "export_manifest.json"
+    if mpath.exists():
+        staged_man = json.loads(mpath.read_text(encoding="utf-8"))
+    update_metadata(repo / targets["metadata"], cfg, years=info["years"],
+                    dir_block=staged_man.get("dir_agreement"))
     print("  pipeline_manifest.json + metadata.json era-C blocks written")
     print("  NOTE: data/ changed - review the git diff; the regression "
           "baseline fingerprints catalog.json and must be re-blessed "
@@ -514,7 +570,8 @@ def update_pipeline_manifest(path: Path, dest: Path, cfg: dict) -> None:
                     encoding="utf-8")
 
 
-def update_metadata(path: Path, cfg: dict, years: list[int] | None = None) -> None:
+def update_metadata(path: Path, cfg: dict, years: list[int] | None = None,
+                    dir_block: dict | None = None) -> None:
     md = json.loads(path.read_text(encoding="utf-8")) if path.exists() \
         else {}
     labels = cfg["export"]["labels"]
@@ -544,6 +601,22 @@ def update_metadata(path: Path, cfg: dict, years: list[int] | None = None) -> No
                      "spread + agreement shown alongside the median (X2/X3)",
                      "ensemble n recorded, never assumed (X3)"]),
     ])
+    if dir_block:
+        # R2/R3: the EFFECTIVE window is stated verbatim (it is currently a
+        # record-end truncation, not the configured 2081-2100 window). The
+        # statistic is a count of models, never a probability (R9).
+        md["era_c"]["dir_agreement"] = OrderedDict([
+            ("definition",
+             "fraction of subset models whose effective-window mean is drier "
+             "(lower z) than their own 1981-2020 base mean; window-constant "
+             "per district; a count of models, never a probability"),
+            ("base", dir_block.get("base")),
+            ("base_years", dir_block.get("base_years")),
+            ("window_configured", dir_block.get("window_configured")),
+            ("window_effective", dir_block.get("window_effective")),
+            ("window_note", dir_block.get("window_note")),
+            ("min_window_years", dir_block.get("min_window_years")),
+        ])
     path.write_text(json.dumps(md, indent=2, ensure_ascii=False) + "\n",
                     encoding="utf-8")
 
@@ -679,6 +752,10 @@ def selftest() -> int:
             seed_off = 100 * si + vi          # deterministic, no hash()
             nan_d3 = scenario == "ssp585"     # island-like NaN pattern
             med = synth_panel(seed_off, nan_d3)
+            # direction stats exist ONLY in 2027 (mirrors the real
+            # window-only spans: the exporter must not invent 2026 rows)
+            dir_ok = np.array([y == 2027 for (y, _m) in months])
+            dir_mask = dir_ok[None, :] & np.isfinite(med)
             specs = {
                 "median": med,
                 "p25": med - 0.5,
@@ -687,6 +764,8 @@ def selftest() -> int:
                                                np.nan),
                 "agreement_severe": np.where(np.isfinite(med), 0.0, np.nan),
                 "n_models": np.where(np.isfinite(med), 2, 0).astype(np.int16),
+                "dir_agreement_drier": np.where(dir_mask, 0.5, np.nan),
+                "dir_agreement_n": np.where(dir_mask, 2, -999).astype(np.int16),
             }
             defs = json.dumps({
                 "median_p25_p75":
@@ -697,10 +776,25 @@ def selftest() -> int:
                 "agreement_severe":
                     "fraction of available models with value <= -1.5 "
                     "that month",
+                "dir_agreement_drier":
+                    "fraction of models whose effective-window mean is "
+                    "drier (lower z) than their own base mean; "
+                    "window-constant per district (ssp mode only)",
+                "dir_agreement_n":
+                    "number of models with a finite base AND window mean",
                 "n_models": "contributing model count"})
             write_world_nc(world / "ensemble" / scenario
                            / f"{variable}_ensemble_2026-2027.nc",
-                           specs, {"definitions_verbatim": defs})
+                           specs, {"definitions_verbatim": defs,
+                                   "dir_agreement_base": "1981-2020",
+                                   "dir_agreement_base_years": 40,
+                                   "dir_agreement_window_configured":
+                                       "2081-2100",
+                                   "dir_agreement_window_effective":
+                                       "2027-2027",
+                                   "dir_agreement_window_note":
+                                       "synthetic one-year window (selftest)",
+                                   "dir_agreement_min_window_years": 10})
             for mi, model in enumerate(models):
                 write_world_nc(
                     world / "aggregate" / model / scenario
@@ -713,11 +807,18 @@ def selftest() -> int:
     man = export_ssp(world, staging, cfg, models)
 
     # ---- T1: partition set --------------------------------------------------
-    # ensemble: 2 scen x 2 vars x 6 stats x 2 yr = 48; members: 2 m x 2 s
-    # x 2 v x 2 y = 16 -> 64
+    # ensemble: 2 scen x 2 vars x (6 stats x 2 yr + 2 dir stats x 1 yr) = 56;
+    # members: 2 models x 2 scen x 2 vars x 2 yr = 16 -> 72.
+    # The direction stats must NOT be repeated into the year they do not cover.
     n_files = len(man["files"])
-    ok = n_files == 64
-    print(f"T1 partition count: {n_files} (expect 64): {ok}")
+    dir_2026 = [r for r in man["files"]
+                if "/stat=dir_agreement_" in r and "year=2026" in r]
+    dir_2027 = [r for r in man["files"]
+                if "/stat=dir_agreement_drier" in r and "year=2027" in r]
+    ok = n_files == 72 and not dir_2026 and len(dir_2027) == 4
+    print(f"T1 partition count: {n_files} (expect 72), dir 2026 rows="
+          f"{len(dir_2026)} (expect 0), dir 2027 files={len(dir_2027)} "
+          f"(expect 4): {ok}")
     if not ok:
         fails.append("T1 partition set wrong")
 
@@ -824,11 +925,12 @@ def selftest() -> int:
     probs7 = [p for p in gc.validate(cat)
               if p.startswith("variable path missing")]
     ok = (era["available"] is True and era["years"] == [2026, 2027]
-          and n_paths == 32          # 6 stats x 2 scen x 2 yr + members 2x2x2
+          and n_paths == 36          # 6 stats x 2 scen x 2 yr + 2 dir stats
+                                     # x 2 scen x 1 yr + members 2x2x2
           and all_exist and "projections" in var["eras"]
           and all("scenario=" in p for p in probs7))
     print(f"T7 catalog: available={era['available']}, "
-          f"years={era['years']}, {n_paths} paths (expect 32 for spi_03), "
+          f"years={era['years']}, {n_paths} paths (expect 36 for spi_03), "
           f"all exist={all_exist}, validate problems={len(probs7)}: {ok}")
     if not ok:
         fails.append("T7 catalog block broken")
@@ -856,10 +958,26 @@ def selftest() -> int:
     if not ok:
         fails.append("T9 validation export broken")
 
+    # ---- T10: dir window carried into manifest + metadata era-C block ------
+    dm = man.get("dir_agreement") or {}
+    tmpp = base / "metadata_selftest.json"
+    update_metadata(tmpp, cfg, years=[2026, 2027], dir_block=dm)
+    blk = json.loads(tmpp.read_text(encoding="utf-8"))["era_c"].get(
+        "dir_agreement", {})
+    ok = (dm.get("window_effective") == "2027-2027"
+          and dm.get("window_configured") == "2081-2100"
+          and dm.get("base") == "1981-2020"
+          and blk.get("window_effective") == "2027-2027"
+          and "never a probability" in blk.get("definition", ""))
+    print(f"T10 dir window: manifest={dm.get('window_effective')} "
+          f"metadata={blk.get('window_effective')} (expect 2027-2027): {ok}")
+    if not ok:
+        fails.append("T10 dir window block broken")
+
     if fails:
         print(f"SELFTEST FAIL ({len(fails)}): {fails[:10]}")
         return 1
-    print("SELFTEST PASS (T1, T2, T3, T4, T5, T6, T7, T8, T9)")
+    print("SELFTEST PASS (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)")
     return 0
 
 

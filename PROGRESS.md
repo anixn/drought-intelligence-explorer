@@ -8,15 +8,17 @@
 
 ```
 | STATUS:        ACTIVE - M5 COMPLETE: all #projections views LIVE        |
-|                (M5.2 skeleton, M5.3 band+map, M5.4-M5.8 batch done).    |
-|                Next: M6 (Atlas era A, gated on OD4) or M3/M4           |
+|                (M5.2 skeleton, M5.3 band+map, M5.4-M5.8 batch done;      |
+|                F10 dir_agreement coded 2026-11-18 - awaiting Owner       |
+|                re-run of 07 ssp + 09 --publish to light it up).         |
+|                Next: M6 (Atlas era A, gated on the Atlas file) or M3/M4 |
 | PHASE:         M5 complete; M2 complete; M3/M4/M6 queueable            |
 | ROADMAP:       M0-M2 complete. M5.2-M5.8 done 2026-11-18               |
-| LAST SESSION:  2026-11-18 (row 31 - OD1 genealogy + OD4 DOI)             |
+| LAST SESSION:  2026-11-18 (row 32 - F10 step-07/09 dir_agreement + UI)   |
 | BLOCKERS:      none technical. Pending Owner: Atlas file download (in   |
 |                progress), manuscript review, era-C store hosting (at    |
-|                release), SSP 2051-2100 download, step-07 dir_agreement  |
-|                emission, OD10/OD11                                      |
+|                release), SSP 2051-2100 download, step-07/09 dir_agreement|
+|                re-run (commands in section 9), OD10/OD11                 |
 | BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)             |
 ```
 
@@ -93,6 +95,7 @@ tracker (F2); open items are recorded in section 8.
 | M5.7 | 2026-11-18 | Projection banner refinement (M5.7/X3): 4 lines — honest ensemble n from best_subset with the criterion rule, "median never shown alone / disagreement is a finding" (X2), era labels + never-spliced rule; band and map metas prefixed "era C · " - session log row 30 |
 | M5.8 | 2026-11-18 | **E14 future drought event analytics (OD9 resolved — Owner confirmed via the session instruction "complete m5.4 to m5.8", recorded §6 + register §5):** `scripts/build_events_baseline.py` → `data/events/baseline_1981_2020.json` (1,188,366 bytes, sha256 2c87f62a24ed69fd; 8 SPI/SPEI variables, 5,788 district records; frozen runs analysis on the era-B parquet, threshold −1.0, min 3 months, censoring flagged; sanity: Ahmedabad spi_03 = 8 events/40 yr, national mean 9.99); era-C side computed live client-side via `DIE.Analytics.findEvents` (same frozen machinery); events panel (9 columns, sort by frequency/duration/severity, top 15, national medians, censoring count, "median-based, not a forecast" + agreement column X2) - session log row 30 |
 | OD1 | 2026-11-18 | **Genealogy filled from the Owner memo** (`D:\OneDrive\Desktop\Geneology.md`, "CMIP6 Model Genealogy and Validation Gate"): 5 documented lineages grouped — ACCESS (ACCESS-CM2 + ACCESS-ESM1-5, shared UM7.1/MOM5 core, Bi et al. 2020), MPI (HR/LR, same model at different resolution, Müller et al. 2017), EC-Earth (EC-Earth3 + EC-Earth3-Veg-LR, identical atmosphere/ocean/sea-ice), MIROC (MIROC6 + MIROC-ES2L, Earth-system extension, Hajima et al. 2020), INM (INM-CM4-8 + INM-CM5-0, successive generations, Volodin et al. 2017); 14 singletons carry their own source_id as `family`; cross-family shared components (UM, NEMO/MOM) recorded as approximate-independence caveats, not YAML groupings; `meta.status: owner-confirmed-2026-11-18`; gate-pooling semantics unchanged (F3 open methodology decision — genealogy is display/report metadata) - session log row 31 |
+| F10 / M5.4b | 2026-11-18 | **`dir_agreement_drier` end-to-end (F10 closed in code; Owner re-run pending):** step 07 ssp mode now stitches each model's historical-corrected record to the ssp record (AS6 seam validated: Dec→Jan, year+1, identical district/time fabric across models — a defect is a loud FATAL, never a mixed base), takes the per-model 1981–2020 base mean from the stitched series, derives the **effective window** by the declared two-step rule (overlap of the configured 2081–2100 with the record when ≥ `dir_agreement_min_window_years: 10` distinct years, else the LATEST 10 years available — today 2041–2050, automatic once 2051–2100 lands), and emits `dir_agreement_drier` (fraction of models drier, paired-finite denominator) + `dir_agreement_n` (exact denominator, int16 −999 fill) as **window-constant** panels (repeated inside the window, absent outside). NC attrs carry base/base_years/window_configured/window_effective/window_note/min_window_years verbatim; ensemble manifest gains `dir_agreement[tag]`. Step 09 exports both stats, skips year partitions with no finite values (no empty window-only files), carries the block into `export_manifest.json` and (publish) `metadata.json → era_c.dir_agreement`, and its honesty list now states "direction agreement is a model COUNT, never a probability". UI: the option enables itself dynamically only when catalog partitions exist (label 「awaiting published partitions」 otherwise), dir map has its own 5-bin tan/brown share palette + legend head + tooltip "N of M subset models drier than their 1981–2020 base (window …) — count, not a probability", selection-check row reports the statistic's own span as "window-constant", and the window comes from catalog years with metadata fallback. Selftests: 07 T1–T7 (T4 exact fraction + denominator, T6 window rule incl. partial overlap + short-record null, T7 AS6 seam), 09 T1–T10 (T10 manifest→metadata window block), world W9 (window 2041-2050, exact/constant/absent-outside, n == 3) - session log row 32 |
 
 ## 4. In progress
 
@@ -105,7 +108,7 @@ tracker (F2); open items are recorded in section 8.
 | **1** | **M6 — Atlas era A ingestion (start M6.1: Atlas v2 dataset verification, DOI/licence/variables)** | M6 | **OD4 — Owner verification of Atlas v2 (pending)** | gated on Owner; M6.8 (era A↔B cross-validation → `seam_uncertainty` X7) later in the milestone |
 | 2 | M3 freshness/status (M3.x) · M4 IMD validation framework (M4.1 acquisition is Owner-side) | M3/M4 | — | queueable while OD4 pending |
 | 3 | M7 release (era-C hosting decision resolves here: commit vs R2 + Zenodo) | M7 | M3–M6 | — |
-| — | Owner-compute dependencies that unlock #projections UI: SSP 2051–2100 download (late-century window), step-07 `dir_agreement_drier` ssp emission (statistic option), M6.8 `seam_uncertainty` (tooltips) | M5/M6 | Owner | honest disabled/pending states shipped in M5.4–M5.8 |
+| — | Owner-compute dependencies that unlock #projections UI: SSP 2051–2100 download (late-century window → the direction statistic's effective window becomes 2081–2100 automatically), the step-07 ssp re-run + step-09 `--publish` that lights up `dir_agreement_drier`/`dir_agreement_n` (code + selftests done, session 32), M6.8 `seam_uncertainty` (tooltips) | M5/M6 | Owner | honest disabled/pending states shipped in M5.4–M5.8; the direction option enables itself from the catalog as soon as the partitions exist |
 
 (Full task tables per milestone: `docs/v2/02-roadmap-milestones.md` §3.)
 
@@ -124,6 +127,7 @@ tracker (F2); open items are recorded in section 8.
 | **Era-C store hosting (NEW, Owner decision 2026-11-17): keep the 8,064-file projections store (355.4 MB) LOCAL, not committed/pushed, until the Owner is satisfied with internal testing, layout and working — i.e. until the full and final v2.0 release.** The store is gitignored; committed catalog/manifest/metadata era-C blocks are the standing contract. At release: commit to the repo OR host on Cloudflare R2 (+ Zenodo archival deposit per D5). Nothing to un-do — publish already ran locally; CI and the live site are unaffected. | M5 (era-C surfaces) / release gate | ✅ Owner-decided (local-until-final) |
 | Locate `work/die-2.0/` prototype (AS2) — reuse or rebuild | M1.6 | ⏳ to check at M1.6 |
 | **OD9 — E14 Tier-1 confirmation: RESOLVED 2026-11-18.** The Owner's session instruction "complete m5.4 to m5.8" is recorded as the explicit confirmation; M5.8 shipped the same session (docs/v2/05-decision-register.md §5 updated). | M5.8 | ✅ Owner-confirmed |
+| **F10 dir_agreement re-run (Owner compute, session 32).** Code + selftests are done; the published store still lacks the direction partitions. Exact commands (repo root, canonical Python): `python gcm-pipeline/07_ensemble_stats.py --mode ssp --experiments ssp245,ssp585` (~12 min) then `python gcm-pipeline/09_export_parquet.py --mode ssp --publish` (requires the PASSING ssp-mode step-08 report — X1). Then `python scripts/regression_check.py` (expect a catalog-fingerprint diff) → review → `--bless`. Today the effective window will be **2041–2050** (latest-10 fallback) and becomes 2081–2100 once 2051–2100 lands. | M5.4b / #projections | ⏳ pending Owner run |
 
 **Open technical questions:** none beyond the register's OD1–OD8 (docs/v2/05 §5).
 
@@ -181,6 +185,36 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
   downloading the ~3 GB dataset. Variables/timescale/units/licence remain to
   be verified against the landed files before M6.1 ingestion.
 
+### Session-32 additions (2026-11-18)
+
+- **Direction-of-change agreement (F10) — definition fixed and implemented.**
+  `dir_agreement_drier` = per district, the fraction of models whose
+  future-window mean z is **lower (drier)** than that model's own base mean.
+  The base is `[1981, 2020]` taken from the **AS6-stitched** per-model series
+  (historical-corrected 1981–2014 + ssp 2015–…), i.e. the same fabric step 05
+  fits on — never the ssp segment alone. Companion `dir_agreement_n` carries
+  the exact denominator (models with BOTH a finite base and window mean); a
+  model missing either window leaves numerator AND denominator (R10).
+- **Effective-window rule (declared, recorded verbatim, never silent).**
+  Configured target `[2081, 2100]`. The effective window is (1) the overlap
+  of the configured window with the record when that overlap holds at least
+  `dir_agreement_min_window_years` (10) distinct years, otherwise (2) the
+  LATEST 10 years available — today **2041–2050** because the record ends
+  2050; it becomes 2081–2100 automatically when the 2051–2100 inputs land.
+  A record shorter than 10 years emits **no** statistic (honest null, no
+  stub). The effective window, the note and the configured window travel
+  through NC attrs → ensemble manifest → export manifest → `metadata.json`
+  (`era_c.dir_agreement`) → UI text.
+- **Statistic shape.** Window-constant per district (repeated across the
+  months inside the effective window, absent outside) — it is a
+  direction-of-change statement, not a monthly series; the exporter writes no
+  partition for years with no finite values, so no empty files exist. The UI
+  says this explicitly and the selection-check row reports the statistic's
+  own span as "window-constant".
+- **R9 wording.** Tooltips and the map note say "N of M subset models drier
+  than their 1981–2020 base … — count, not a probability", consistent with
+  the agreement layers.
+
 ### Review-finding triage 2026-11-17 (F1-F10, user-reported)
 
 - **F1 (valid, HIGH - FIXED this session).** `05_spi_spei_compute.py` ssp mode
@@ -228,10 +262,17 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 - **F9 (valid, low - DOC BACKLOG).** Documented simplifications (Hargreaves
   PET from monthly-mean extremes; monthly-scale QDM; mask-renormalised
   conservative remap) must reach the methodology page (M2.14 / methodology v2).
-- **F10 (valid - REGISTERED).** `dir_agreement_drier` is declared in
-  `config/export.yaml` but commented out until 07 ssp mode writes it
-  (needs the AS6 base 1981-2020 on district aggregates - natural follow-up of
-  the F1 stitch pattern); OD1/O-06a provisional status already registered.
+- **F10 (valid - FIXED IN CODE 2026-11-18, session 32).** `dir_agreement_drier`
+  was declared in `config/export.yaml` but commented out because step-07 ssp
+  mode did not write it. Step 07 now stitches each model's historical-corrected
+  record to its ssp record (AS6 seam), emits `dir_agreement_drier` +
+  `dir_agreement_n` over the declared effective window with the window in the
+  NC attrs, and step 09 exports both (skipping empty year partitions) and
+  carries the window into the export manifest + `metadata.json`. Agreement
+  itself was already fixed by F7. **Remaining: the Owner's ssp-mode re-run of
+  07 + `09 --publish`** (§6) so the published store carries the partitions;
+  the UI option enables itself from the catalog and stays disabled with an
+  explanatory label until then (R3).
 
 ## 9. Next recommended task
 
@@ -256,10 +297,18 @@ Tell OpenCode the path where the Atlas file lands (and the file name) to begin.
 Standing M5 follow-ups (Owner compute, honest pending states already shipped):
 
 1. SSP 2051–2100 subset download → unlocks the late-century window
-   (2081–2100) and the full record to 2100.
-2. Step-07 ssp-mode emission of `dir_agreement_drier` → enables the
-   disabled statistic option (declared in config/export.yaml; UI shows it
-   disabled with an explanatory label — R3).
+   (2081–2100) and the full record to 2100. The direction statistic's
+   effective window moves from 2041–2050 to 2081–2100 automatically on the
+   next 07+09 run.
+2. **F10 re-run (code + selftests done in session 32)** — from the repo root,
+   canonical Python:
+   `python gcm-pipeline/07_ensemble_stats.py --mode ssp --experiments ssp245,ssp585`
+   (~12 min, writes only under `gcm-pipeline/work/` — X9), then
+   `python gcm-pipeline/09_export_parquet.py --mode ssp --publish` (needs the
+   PASSING ssp-mode step-08 report — X1). Afterwards
+   `python scripts/regression_check.py` will report a catalog-fingerprint diff
+   (new partitions) → review → `--bless`. The `#projections` option
+   "Direction of change" enables itself once the partitions are published.
 3. M6.8 era A↔B cross-validation → per-district `seam_uncertainty` in
    projection tooltips (X7).
 4. O14 optional standardisation-baseline sensitivity (memo section, not a
@@ -327,3 +376,4 @@ X1 refusal. WORLD SELFTEST PASS.
 | 30 | 2026-11-18 | **M5.4-M5.8 batch (M5 COMPLETE).** M5.4 agreement hardening: tooltips 'N of 8 subset models <= -1.0/-1.5 (count, not a probability)' (R9), stat-aware legend heads with the exact threshold, map note states the exact definition + honest pending for per-district seam_uncertainty (X7 -> M6.8, never fabricated - R3), dir_agreement_drier DISABLED statistic option + STAT_LABEL entry (declared in config/export.yaml; step-07 ssp emission pending). M5.5: scripts/build_ranking_data.py reads Owner-local step-08 outputs -> data/ranking.json (9,439 B, sha256 25d44936a25a17dd), cell-level round-trip verified (22 rows x 10 fields, subset n=8, --check PASS); full 22-row ranking panel (composite + all 8 metrics, .rk-subset/.rk-badge highlight), weights verbatim + criterion rule + 'historical skill is not future skill'; never single-metric. M5.6: SPI-SPEI divergence map (fixed SPI-3 vs SPEI-3 ensemble medians, same 8 models), d = SPI-SPEI with 5 bins (>=+0.5 strong demand-driven #A63B34 ... <=-0.5 strong rainfall-driven #33608A, balanced +/-0.25 #E7E2D8), lazy second choropleth (divApi) + function tooltips (per-district SPI/SPEI/d + bin label), own state (divYear 2040/divMonth 7), legend + note with bin counts, index-construction caveat (R9) and the exact quote 'Rainfall alone does not decide India''s drought future; demand does half the work.' M5.7: banner refinement to 4 lines - honest ensemble n (subset list + criterion rule), 'median never shown alone / disagreement is a finding' (X2), era labels + never-spliced; band + map metas prefixed 'era C - '. M5.8 (E14, OD9 RESOLVED via the session instruction 'complete m5.4 to m5.8', recorded section 6 + register section 5): scripts/build_events_baseline.py -> data/events/baseline_1981_2020.json (1,188,366 B, sha256 2c87f62a24ed69fd; 8 SPI/SPEI vars, 5,788 district records; frozen runs analysis on era-B parquet: threshold -1.0, min 3 months, NaN breaks runs, censoring flagged never dropped; sanity: Ahmedabad spi_03 = 8 events/40 yr mean dur 3.75, national mean 9.99); era-C side live via DIE.Analytics.findEvents (same frozen machinery both sides); events panel (9 columns: district, base ev/yr, era-C ev/yr, freq ratio, mean dur base->era C, max dur, sev ratio, mean agreement x/8, valid months; sort by freq/duration/severity, top 15, national medians summary, censoring count, 'median-based, not a forecast' note + baseline source). Roadmap panel rewritten to 'Pending compute & next steps' (SSP 2051-2100, 07->09 dir_agreement, M6.8 seam_uncertainty, O14, M7 hosting). Wiring: scenario -> +divergence+events; variable/window -> +events; div year/month + events sort listeners; init Promise.allSettled +ranking+divergence+events; invalidate/mapSize cover divApi; snapshot exposes divApi/divValues; index.html new panels (projRankingPanel/projDivPanel/projEventsPanel), disabled dir option, control note extended; CSS .rk-subset/.rk-badge; ASSET_VERSION 2026-11-18g | assets/js/projections.js, index.html, assets/css/style.css, scripts/build_ranking_data.py (new), scripts/build_events_baseline.py (new), data/ranking.json (new, shipped artifact), data/events/baseline_1981_2020.json (new, shipped artifact), PROGRESS.md, docs/v2/05-decision-register.md (OD9 row) | Browser battery (cache-busted reload): ranking 22 rows + 8 subset badges/highlights, divergence 724 layers colored exactly per bin (SSP2-4.5 Jul: 711 balanced / 8 rainfall-driven / 1 mild demand / 4 no-data ocean mask = honest null districts; SSP5-8.5 Oct: 713 balanced / 7 mild demand), events 15 rows with valid months 180 = 15 yr x 12 (near window), sort switch reorders, scenario + month switches re-render all four surfaces with 'era C - ' metas, banner 4 lines, roadmap panel retitle; R7 numeric round-trip: Birbhum spi_03 2026-2040 recomputed independently in Python from the era-C partitions -> n_events 1, ev/yr 0.0667, mean dur 3.0, freq ratio 0.381 = EXACT match to the UI (0.07/3.0/0.38); events note wording fixed ('sorted by frequency ratio'); engine-smoke ALL GATES PASS (init 450 ms, cold slice 60 ms, repeat 0 KB, era-C band 89 ms < 150 ms, p25<=median<=p75 180 months, map frame 15 ms, bad-stat + injection guards, SMOKE DONE no uncaught errors); zero console errors over full 7-tab cycle; regression PASS 681; data-pipeline selftest PASS; new panels reuse .table-scroll (overflow-x auto) + .proj-map responsive classes (no new layout risk) | M6.1 (gated OD4) or M3/M4 |
 
 | 31 | 2026-11-18 | **OD1 closed (genealogy) + OD4 DOI confirmed (Owner inputs).** Owner memo `D:\OneDrive\Desktop\Geneology.md` (CMIP6 Model Genealogy and Validation Gate) integrated into `gcm-pipeline/config/models.yaml`: 5 documented lineages grouped - ACCESS (ACCESS-CM2 + ACCESS-ESM1-5, shared UM7.1/MOM5 core + carbon cycle, Bi et al. 2020), MPI (HR/LR same model at different resolution, Muller et al. 2017), EC-Earth (EC-Earth3 + EC-Earth3-Veg-LR, identical atmosphere/ocean/sea-ice; Veg adds LPJ-GUESS), MIROC (MIROC6 + MIROC-ES2L Earth-system extension, Hajima et al. 2020), INM (INM-CM4-8 + INM-CM5-0 successive generations, Volodin et al. 2017); 14 singletons carry their own source_id as family; memo cross-family component caveats (UM atmosphere ACCESS/HadGEM, NEMO/MOM oceans) recorded as approximate-independence notes, NOT additional groupings (modest grouping per the memo); `meta.status: owner-confirmed-2026-11-18` + genealogy_status; gate-pooling semantics deliberately unchanged (review F3 = open methodology decision; genealogy is display/report metadata until a documented gate re-basing is signed off). OD4: Owner verified the DOI (https://zenodo.org/records/20368514 correct) and is downloading the ~3 GB Atlas v2 file. Tracker + register updated (OD1 resolved, OD4 partially closed), section 9 rewritten for M6.1 (verification checklist for when the file lands) | gcm-pipeline/config/models.yaml, docs/v2/05-decision-register.md (OD1, OD4), PROGRESS.md | YAML re-parse: 24 models, 24 genealogy entries, 0 missing/extra, families ACCESS/MPI/EC-Earth/MIROC/INM = 2 each, 14 singletons; diff scoped to the genealogy block + meta lines only (59 changed lines, no model rows touched); selftest_gcm world builder overrides genealogy with {} so no suite impact | M6.1 (waiting on Atlas file) |
+| 32 | 2026-11-18 | **F10 / M5.4b: `dir_agreement_drier` end-to-end (step 07 ssp emission → step 09 export → UI), Owner re-run pending.** (a) step 07: ssp mode now loads each model's historical-corrected aggregates, validates the AS6 seam (hist ends Dec → ssp starts Jan, year+1) and the identical stitched district/time fabric across models (loud FATAL, never a mixed base), concatenates into one per-model series, takes the base mean over `[1981,2020]` (the C2 baseline, now reachable because the stitch supplies 2015–2020), derives the effective window by the declared two-step rule (`dir_agreement_min_window_years: 10`: overlap of the configured 2081–2100 when it holds ≥ 10 years, else the LATEST 10 years available → 2041–2050 today, 2081–2100 automatically once 2051–2100 lands; short record → honest null, no stub) and emits `dir_agreement_drier` + `dir_agreement_n` (paired-finite denominator, int16 −999) as window-constant panels (repeated inside the window, absent outside). NC attrs record base/base_years/configured/effective/note/min-10 verbatim; ensemble manifest gains `dir_agreement[tag]`. 07 selftests T1–T7 (T4 exact fraction 3/5 with the NaN-window model excluded from BOTH numerator and n; T6 window rule short/full/partial/tiny; T7 seam accept/reject). (b) step 09: `dir_agreement_drier` + `dir_agreement_n` un-commented in `config/export.yaml`; `load_nc_panel` is mask/int-fill safe; a year slice with no finite values writes NO partition (prevents empty window-only files; applied to ensemble stats and members); the export manifest gains a `dir_agreement` block read from the NC attrs, publish carries it into `metadata.json → era_c.dir_agreement`, and the honesty list now states the direction statistic is a model COUNT over a recorded window. 09 selftests T1–T10 (T1 72 partitions with 0 dir-2026 rows and 4 dir-2027 files; T7 36 catalog paths; T10 manifest→metadata window block). (c) `selftest_gcm.py`: int-safe NC panel loaders, W7 count 2,752 (6 stats × 36 yr + 2 dir stats × 10 yr + members), new W9 (window `2041-2050`, configured `2081-2100`, exact per-district fraction recomputed from the stitched aggregates, constant inside / masked outside, n == 3). (d) UI: `ducklab.ensemble` STAT_KEYS whitelist extended; `projections.js` gains the dir partition map, `DIR_COLORS`/`DIR_BINS` tan→brown share palette, dir legend head + 5 bins, dir tooltip "N of M subset models drier … (window) — count, not a probability", dir map note (window-constant + the pipeline note), dir branch in the selection check (own span, "window-constant"), `syncStatisticOptions()` enabling the option ONLY when catalog partitions exist (label 「awaiting published partitions」 otherwise), window from catalog years with `metadata.era_c.dir_agreement` fallback, snapshot exposes `dirN`; `index.html` option enabled, roadmap item reworded, `ASSET_VERSION` 2026-11-18h | `gcm-pipeline/07_ensemble_stats.py`, `gcm-pipeline/09_export_parquet.py`, `gcm-pipeline/selftest_gcm.py`, `gcm-pipeline/config/ensemble.yaml`, `gcm-pipeline/config/export.yaml`, `assets/js/ducklab.js`, `assets/js/projections.js`, `index.html`, `docs/v2/05-decision-register.md` (C5 note), `PROGRESS.md` | 07 `--selftest` PASS (T1-T7); 09 `--selftest` PASS (T1-T10, 72 partitions); `selftest_gcm.py --only "07,09"` 2/2 PASS; `selftest_gcm.py --world` W1–W9 (chain 02→09, X1 refusal intact); `scripts/regression_check.py` PASS (681 values); `data-pipeline/selftest.py` PASS; browser: full 7-hash cycle with 0 console errors, dir option correctly DISABLED + honest label against the real catalog, and a fake-catalog + synthetic-engine injection exercised the enabled path — check row "30 files / 10 years / 2041–2050 (window-constant)", legend head + 5 bins, tooltip "5 of 8 subset models drier … — count, not a probability", fill colour `#A57344` for 0.625 (51–75 % bin); reload restored the honest state | Owner: re-run 07 ssp + 09 `--publish` (§9 command block), then `regression_check.py --bless` |

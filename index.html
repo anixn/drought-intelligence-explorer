@@ -1987,9 +1987,8 @@
                     </option>
                     <option value="median">Ensemble median</option>
                     <option value="band">Median + 25–75 % band</option>
-                    <option value="dir_agreement_drier" disabled>
-                      Direction of change — models agreeing drier (stat pending
-                      step-07 emission; enabled when published)
+                    <option value="dir_agreement_drier">
+                      Direction of change — models agreeing drier
                     </option>
                   </select>
                 </div>
@@ -2196,7 +2195,7 @@
             </div>
             <ul class="proj-roadmap">
               <li><span class="proj-ms">SSP</span> 2051–2100 subset download unlocks the late-century window (2081–2100) and the full record to 2100</li>
-              <li><span class="proj-ms">07→09</span> step-07 emission of <code>dir_agreement_drier</code> enables the disabled "Direction of change" statistic (M5.4)</li>
+              <li><span class="proj-ms">07→09</span> <code>dir_agreement_drier</code> + <code>dir_agreement_n</code> are coded and self-tested; this statistic enables itself only after the Owner re-runs 07 (ssp) and 09 <code>--publish</code> (M5.4 / F10)</li>
               <li><span class="proj-ms">M6.8</span> era A↔B cross-validation delivers per-district <code>seam_uncertainty</code> for tooltips (X7)</li>
               <li><span class="proj-ms">O14</span> optional standardisation-baseline sensitivity (fixed 1981–2020 vs rolling) — memo section, not a UI default</li>
               <li><span class="proj-ms">M7</span> release: era-C store hosting decision (commit vs R2 + Zenodo)</li>
@@ -3558,7 +3557,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-18g";
+        var ASSET_VERSION = "2026-11-18h";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

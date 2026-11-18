@@ -17,6 +17,21 @@ ensemble:
   dir_agreement_window: [2081, 2100]    # future window mean
   dir_agreement_base: [1981, 2020]      # vs base-period mean (per model's own
                                         # base record in historical mode)
+  # The configured window is a NOMINAL target. The effective window follows a
+  # declared two-step rule (printed verbatim into the NC attrs, the ensemble
+  # manifest and the export manifest, and stated in the UI):
+  #   1. the overlap of dir_agreement_window with the years present in the
+  #      record, when that overlap holds at least dir_agreement_min_window_years
+  #      distinct years (so once 2081-2100 lands the effective window IS
+  #      2081-2100, automatically);
+  #   2. otherwise the LATEST dir_agreement_min_window_years years available
+  #      (today 2041-2050 while the record ends 2050) - an explicit, labelled
+  #      record-end truncation, never a silent shortening and never a stub.
+  # If the record itself holds fewer than the minimum years, the statistic is
+  # NOT emitted (honest null).
+  dir_agreement_min_window_years: 10
   # dir_agreement_drier = fraction of models whose window mean is drier
   # (lower z) than their base mean. Not applicable in historical-corrected
   # mode (no future window) - recorded as null in that manifest.
+  # dir_agreement_n = number of models with BOTH a finite base mean and a
+  # finite window mean (the exact denominator; printed in the UI tooltip).

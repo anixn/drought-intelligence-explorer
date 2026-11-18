@@ -55,6 +55,7 @@
     band: ["median", "p25", "p75"],
     agreement_moderate: ["agreement_moderate"],
     agreement_severe: ["agreement_severe"],
+    dir_agreement_drier: ["dir_agreement_drier"],
   };
   const STAT_LABEL = {
     median: "median",
@@ -62,10 +63,9 @@
     p75: "p75",
     agreement_moderate: "agreement (moderate)",
     agreement_severe: "agreement (severe)",
-    // declared in config/export.yaml but step 07 does not emit it yet — the
-    // option stays disabled in the UI until the partition exists (R3: no
-    // placeholders, section 7 rule)
-    dir_agreement_drier: "direction of change (models agreeing drier)",
+    // published only when step 07 emitted it and step 09 exported it; the
+    // option is enabled dynamically from the catalog (R3: no placeholders)
+    dir_agreement_drier: "direction of change (share of models drier)",
   };
   const SCENARIO_LABEL = { ssp245: "SSP2-4.5", ssp585: "SSP5-8.5" };
   const YEAR_RE = /year=(\d{4})\//;
@@ -75,6 +75,7 @@
   let lastMapValues = null; // Map district_id -> value for the current map frame
   let lastMapStat = null;   // stat key behind lastMapValues
   let lastMapVar = null;    // variable id behind lastMapValues
+  let lastDirN = null;      // Map district_id -> dir_agreement_n (exact denominator)
   let bandSeq = 0;          // stale-render guard: only the latest render paints
   let mapSeq = 0;           // same for the choropleth
   let divApi = null;        // SPI–SPEI divergence choropleth (lazy)
@@ -259,6 +260,17 @@
         const m = YEAR_RE.exec(f.replace(/\\/g, "/") + "/");
         if (m) years.add(Number(m[1]));
       }
+      if (st === "dir_agreement_drier") {
+        // window-constant: report its own published span, never the selected
+        // window's coverage (the statistic is not a monthly series)
+        const ys = [...years].sort((a, b) => a - b);
+        const span = ys.length
+          ? ys[0] + "–" + ys[ys.length - 1] + " (window-constant)"
+          : "not published";
+        return "<tr><td>" + esc("stat=" + st) + "</td><td class=\"num\">" +
+          files.length + "</td><td class=\"num\">" + ys.length +
+          "</td><td>" + esc(span) + "</td></tr>";
+      }
       let covered = 0;
       for (let y = from; y <= to; y++) if (years.has(y)) covered++;
       const total = to - from + 1;
@@ -280,6 +292,17 @@
 
     tbody.innerHTML = rows;
     meta.textContent = label + " · window " + from + "–" + to;
+    if (state.statistic === "dir_agreement_drier") {
+      const win = dirWindowLabel();
+      note.textContent =
+        "Resolved against the committed catalog (no engine query yet). The " +
+        "direction-of-change statistic is computed once per district over its " +
+        "effective window" + (win ? " (" + win + ")" : "") + " and repeated " +
+        "across the months inside it, so it is not a monthly series and the " +
+        "time-window selector above does not apply to it. Coverage of each " +
+        "statistic is listed in the table.";
+      return;
+    }
     note.innerHTML =
       "Resolved against the committed catalog (no engine query yet). " +
       (worst === "full"
@@ -332,6 +355,24 @@
     if (!Number.isFinite(v)) return null;
     const f = Math.min(1, Math.max(0, v));
     return AGREEMENT_BINS.find((b) => b.test(f));
+  }
+
+  // direction-of-change colours: share of subset models whose effective-window
+  // mean is drier (lower z) than their own 1981-2020 base mean. Five share
+  // bins; the exact "N of M" count comes from the companion dir_agreement_n
+  // partition and is stated in the tooltip (a count, never a probability).
+  const DIR_COLORS = ["#F7F3EC", "#E3D2BA", "#C9A97F", "#A57344", "#6E4523"];
+  const DIR_BINS = [
+    { test: (f) => f <= 0, label: "0 % of models drier", range: "0" },
+    { test: (f) => f <= 0.25, label: "1–25 % of models drier", range: "(0, 0.25]" },
+    { test: (f) => f <= 0.5, label: "26–50 % of models drier", range: "(0.25, 0.5]" },
+    { test: (f) => f <= 0.75, label: "51–75 % of models drier", range: "(0.5, 0.75]" },
+    { test: () => true, label: "76–100 % of models drier", range: "> 0.75" },
+  ];
+  function dirBin(v) {
+    if (!Number.isFinite(v)) return null;
+    const f = Math.min(1, Math.max(0, v));
+    return DIR_BINS.find((b) => b.test(f));
   }
   function effectiveStat() {
     // the band statistic maps the median on the choropleth (explained in UI)
@@ -610,6 +651,54 @@
     return [...years].sort((a, b) => a - b);
   }
 
+  /* -- direction-of-change availability / window --------------------------- */
+  /* The statistic is published only when step 07 emitted it and step 09
+   * exported it. Its window is whatever the pipeline recorded (catalog years
+   * are the source of truth; metadata.json is the fallback). */
+
+  function dirPublished() {
+    return (catalog.variables || []).some((v) => {
+      const p = (v.files && v.files.projections) || {};
+      return Object.keys(p).some((s) =>
+        !!(p[s] && p[s].dir_agreement_drier && p[s].dir_agreement_drier.length));
+    });
+  }
+
+  function dirWindowYears() {
+    const own = catalogYears(state.scenario, "dir_agreement_drier");
+    if (own.length) return own;
+    const other = state.scenario === "ssp585" ? "ssp245" : "ssp585";
+    return catalogYears(other, "dir_agreement_drier");
+  }
+
+  function dirWindowLabel() {
+    const ys = dirWindowYears();
+    if (ys.length) return ys[0] + "–" + ys[ys.length - 1];
+    const md = (DIE.meta && DIE.meta.era_c && DIE.meta.era_c.dir_agreement) || null;
+    return md && md.window_effective
+      ? String(md.window_effective).replace("-", "–") : null;
+  }
+
+  function dirWindowNote() {
+    const md = (DIE.meta && DIE.meta.era_c && DIE.meta.era_c.dir_agreement) || null;
+    return md && md.window_note ? String(md.window_note) : "";
+  }
+
+  function syncStatisticOptions() {
+    const sel = $("projStatistic");
+    const opt = [...sel.options].find((o) => o.value === "dir_agreement_drier");
+    if (!opt) return;
+    const ok = dirPublished();
+    opt.disabled = !ok;
+    opt.textContent = ok
+      ? "Direction of change — models agreeing drier"
+      : "Direction of change — models agreeing drier (awaiting published partitions)";
+    if (!ok && state.statistic === "dir_agreement_drier") {
+      state.statistic = "agreement_moderate";
+      sel.value = state.statistic;
+    }
+  }
+
   function populateMapPeriods() {
     const years = catalogYears(state.scenario, effectiveStat());
     const ySel = $("projMapYear"), mSel = $("projMapMonth");
@@ -648,7 +737,16 @@
         '<span class="legend-range">' + esc(range) + "</span>";
       el.appendChild(div);
     };
-    if (statKey.indexOf("agreement") === 0) {
+    if (statKey === "dir_agreement_drier") {
+      const head = document.createElement("div");
+      head.className = "legend-head";
+      const win = dirWindowLabel();
+      head.textContent = "Share of subset models whose window mean is drier " +
+        "than their own 1981–2020 base" + (win ? " — window " + win : "");
+      el.appendChild(head);
+      DIR_BINS.forEach((b, i) =>
+        row(DIR_COLORS[i], b.label, b.range));
+    } else if (statKey.indexOf("agreement") === 0) {
       const head = document.createElement("div");
       head.className = "legend-head";
       // exact definition (M5.4): count of subset models at/below the
@@ -689,7 +787,21 @@
         const label = STAT_LABEL[statKey] || statKey;
         if (!d) return esc(label) + ": " + esc(fmtVal(state.variable, v));
         let line2;
-        if (statKey && statKey.indexOf("agreement") === 0) {
+        if (statKey === "dir_agreement_drier") {
+          const nRaw = lastDirN ? lastDirN.get(id) : undefined;
+          const m = Number.isFinite(nRaw) && nRaw > 0 ? nRaw : null;
+          const win = dirWindowLabel();
+          // exact definition: a COUNT of subset models whose window mean is
+          // drier than their own base mean — never a probability (R9)
+          if (!Number.isFinite(v) || m === null) {
+            line2 = "no data";
+          } else {
+            const count = Math.round(Math.min(1, Math.max(0, v)) * m);
+            line2 = count + " of " + m + " subset models drier than their " +
+              "1981–2020 base" + (win ? " (window " + win + ")" : "") +
+              " — count, not a probability";
+          }
+        } else if (statKey && statKey.indexOf("agreement") === 0) {
           const models = Number.isFinite(v) ? Math.round(Math.min(1, Math.max(0, v)) * 8) : null;
           // exact definition (M5.4): a COUNT of subset models at or below the
           // truncation threshold in this month — never a probability (R9)
@@ -718,6 +830,11 @@
     const note = $("projMapNote"), meta = $("projMapMeta");
     if (!catalog || !eraC() || !eraC().available || !DIE.MapView) return;
     const statKey = effectiveStat();
+    if (statKey === "dir_agreement_drier" && !dirWindowYears().length) {
+      note.textContent = "Direction of change is not published for this " +
+        "indicator yet (step-07/09 products pending).";
+      return;
+    }
     try {
       if (!mapApi) {
         mapApi = DIE.MapView.createChoropleth(mapEl, {
@@ -747,11 +864,29 @@
         stat: statKey,
         yearRange: [state.mapYear, state.mapYear],
       });
+      let nRows = null;
+      if (statKey === "dir_agreement_drier") {
+        // exact denominator for the tooltip ("N of M subset models drier")
+        nRows = await DIE.Engine.ensemble({
+          scenario: state.scenario,
+          variable: state.variable,
+          stat: "dir_agreement_n",
+          yearRange: [state.mapYear, state.mapYear],
+        });
+      }
       if (seq !== mapSeq) return;      // a newer frame superseded this render
       lastMapValues = new Map();
+      lastDirN = new Map();
       for (const r of rows) {
         if (r.month === state.mapMonth && Number.isFinite(r.value)) {
           lastMapValues.set(r.district_id, r.value);
+        }
+      }
+      if (nRows) {
+        for (const r of nRows) {
+          if (r.month === state.mapMonth && Number.isFinite(r.value)) {
+            lastDirN.set(r.district_id, r.value);
+          }
         }
       }
       lastMapStat = statKey;
@@ -759,7 +894,12 @@
 
       const selectedId = state.geography === "district" ? state.district : null;
       let colorFn;
-      if (statKey.indexOf("agreement") === 0) {
+      if (statKey === "dir_agreement_drier") {
+        colorFn = (id) => {
+          const b = dirBin(lastMapValues.get(id));
+          return b ? DIR_COLORS[DIR_BINS.indexOf(b)] : "#D7DEE7";
+        };
+      } else if (statKey.indexOf("agreement") === 0) {
         colorFn = (id) => {
           const b = agreementBin(lastMapValues.get(id));
           return b ? AGREEMENT_COLORS[AGREEMENT_BINS.indexOf(b)] : "#D7DEE7";
@@ -778,15 +918,32 @@
       renderLegend(statKey);
 
       const nWith = lastMapValues.size;
-      note.innerHTML =
+      let noteText =
         "724 districts at " + state.mapYear + "-" + String(state.mapMonth).padStart(2, "0") +
-        " · " + nWith + " with values (missing rendered grey, never imputed). " +
-        (statKey.indexOf("agreement") === 0
-          ? "Agreement = count of the honest 8-model subset with the index ≤ " +
-            (statKey === "agreement_severe" ? "−1.5 (severe)" : "−1.0 (moderate)") +
-            " in this month — a count, not a probability. " +
-            "Per-district seam uncertainty (X7) arrives with era A↔B cross-validation (M6.8); it is not fabricated here."
-          : "Median across the honest 8-model subset; era C projection, not a forecast.");
+        " · " + nWith + " with values (missing rendered grey, never imputed). ";
+      if (statKey === "dir_agreement_drier") {
+        const win = dirWindowLabel();
+        noteText +=
+          "Direction of change = share of the honest 8-model subset whose " +
+          "window mean is drier (lower z) than their own 1981–2020 base mean" +
+          (win ? " — window " + win : "") +
+          ". Window-constant per district: repeated across the months inside " +
+          "the window, absent outside it. A count of models, never a " +
+          "probability. ";
+        const wn = dirWindowNote();
+        if (wn) noteText += "Pipeline window note: " + wn + ". ";
+      } else if (statKey.indexOf("agreement") === 0) {
+        noteText +=
+          "Agreement = count of the honest 8-model subset with the index ≤ " +
+          (statKey === "agreement_severe" ? "−1.5 (severe)" : "−1.0 (moderate)") +
+          " in this month — a count, not a probability. " +
+          "Per-district seam uncertainty (X7) arrives with era A↔B " +
+          "cross-validation (M6.8); it is not fabricated here.";
+      } else {
+        noteText += "Median across the honest 8-model subset; era C " +
+          "projection, not a forecast.";
+      }
+      note.textContent = noteText;
     } catch (err) {
       console.warn("[projections] map failed:", err);
       note.textContent = "Choropleth unavailable: " + String(err && err.message || err);
@@ -1347,6 +1504,7 @@
     }
     renderStatus();
     renderVariableOptions();
+    syncStatisticOptions();
     renderGeoPickers();
     renderCheck();
     await Promise.allSettled([
@@ -1377,6 +1535,7 @@
     return {
       mapApi,                       // choropleth api (map, layerById, …)
       values: lastMapValues,        // Map district_id -> value (current frame)
+      dirN: lastDirN,               // Map district_id -> dir_agreement_n
       stat: lastMapStat,
       variable: lastMapVar,
       divApi,                       // divergence choropleth api

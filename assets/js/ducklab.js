@@ -356,7 +356,8 @@
     const v = catalogVariable(opts.variable);
     // published stat partitions: scenario=<s>/stat=<st>/variable=<v>/year=<yyyy>/
     // (each holds a single `value` column — PROGRESS.md row 27/28)
-    const STAT_KEYS = ['median', 'p25', 'p75', 'agreement_moderate', 'agreement_severe'];
+    const STAT_KEYS = ['median', 'p25', 'p75', 'agreement_moderate',
+      'agreement_severe', 'dir_agreement_drier', 'dir_agreement_n'];
     const statKey = opts.stat || 'median';
     if (STAT_KEYS.indexOf(statKey) === -1) {
       throw newEngineError('bad-stat', 'stat must be one of ' + STAT_KEYS.join(', ') + ': ' + statKey);

@@ -28,6 +28,22 @@
 | **C6** | Scenarios | **SSP2-4.5 + SSP5-8.5** (D4); schema accommodates more | — |
 | **C7** | Target grid | **0.25°** — conservative remap for precipitation, bilinear for temperature; district aggregation after bias correction | NEX-GDDP-style practice |
 
+**C5 note — direction-of-change agreement (F10, implemented 2026-11-18).**
+`dir_agreement_drier` is the per-district **fraction of models whose
+future-window mean z is lower (drier) than that same model's own base mean**.
+The base is `[1981, 2020]` of the **AS6-stitched** series (historical-corrected
+1981–2014 + ssp 2015–…), never the ssp segment alone; a model missing either
+window leaves both numerator and denominator, and the companion
+`dir_agreement_n` records the exact denominator. **Effective-window rule**
+(declared in `gcm-pipeline/config/ensemble.yaml`, recorded verbatim in the NC
+attrs → export manifest → `metadata.json` → UI): the overlap of the configured
+`[2081, 2100]` with the record when it holds ≥ `dir_agreement_min_window_years`
+(10) distinct years, otherwise the **latest 10 years available** (2041–2050
+today, because the record ends 2050) — an explicit, labelled record-end
+truncation, never a silent shortening; a record shorter than 10 years emits no
+statistic. The statistic is **window-constant** per district and is presented
+as a **model count, never a probability** (R9).
+
 ## 3. Architecture decisions (locked — measured, not argued)
 
 | Layer | Choice |
