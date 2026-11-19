@@ -70,9 +70,26 @@ C:\Users\deshm\miniconda3\envs\drought\python.exe atlas-pipeline\02_atlas_to_dis
 - The readme is stale (claims 1901–2020 + a PNG atlas; the files run to
   2025-12 and contain no PNGs).
 
-## Trim policy (after the ingest verifies)
+## Trim policy (AFTER the ingest verifies)
 
 KEEP both grid roots + district/taluka boundary shapefiles + readme.
 DELETE only afterwards (Owner-executed, with before/after sizes recorded):
 `Z-score/`, `STATE_BOUNDARY.*`, `India_Country_Boundary.*`,
 `latlon_India_0.05degree.csv`. Nothing is deleted today.
+
+## Trim EXECUTED 2026-11-20 (Owner authorisation: "you can delete the
+## unused atlas file")
+
+`05_trim.py --apply` (keep-list protected, dry-run default, selftest PASS):
+deleted `Z-score/` (255.7 MB — the QA it fed is committed at
+`validation/district_qa/`), `STATE_BOUNDARY.*` (~23 MB),
+`India_Country_Boundary.*` (~7 MB), `latlon_India_0.05degree.csv` (1.6 MB).
+**6,685.5 → 6,398.2 MB (freed 287.3 MB)**; report `work/trim_report.json`.
+Keep-list verified after the trim: `Gridded_SPEI` = 115,394 cells /
+5,901.8 MB (the archive's two sibling grid halves were merged by the Owner
+into one root — the union is identical and both configured roots are
+handled), `DISTRICT_BOUNDARY.*` + `SUBDISTRICT_BOUNDARY.*` + readme intact.
+NOTE: after the trim `04_atlas_district_qa.py` can no longer re-read the
+deleted `Z-score/` series — the committed snapshot is the durable record;
+re-verification would re-acquire the release from Zenodo
+(DOI 10.5281/zenodo.20368514).
