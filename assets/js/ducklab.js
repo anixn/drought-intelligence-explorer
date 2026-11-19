@@ -324,6 +324,44 @@
     return toRows(await query(sql));
   }
 
+  /* Era A (atlas reconstruction): one year of one scale, all districts.
+   * Layout mirrors era B exactly (data/parquet/atlas/variable=<id>/
+   * year=<yyyy>/part-0.parquet), so one partition per fetch (M6.3). */
+  async function atlasYear(opts) {
+    const cat = state.catalog || (await ensureCatalog());
+    const eraA = cat.eras && cat.eras.atlas;
+    if (!eraA || !eraA.available) {
+      throw newEngineError('era-a-unavailable',
+        'era A has no published store yet (promotion pending; R3).');
+    }
+    const v = catalogVariable(opts.variable);
+    const files = (v.files && v.files.atlas) || [];
+    if (!files.length) {
+      throw newEngineError('no-files', 'no atlas files for ' + v.id);
+    }
+    const year = intYear(opts.year);
+    const f = files.find((p) => {
+      const m = /year=(\d{4})\//.exec(p.replace(/\\/g, '/') + '/');
+      return m && +m[1] === year;
+    });
+    if (!f) {
+      throw newEngineError('no-files',
+        'no atlas partition for ' + v.id + ' year ' + year);
+    }
+    let where = '';
+    if (opts.month) {
+      const mo = intYear(opts.month);
+      if (mo < 1 || mo > 12) {
+        throw newEngineError('bad-month', 'month must be 1-12: ' + opts.month);
+      }
+      where = ' WHERE month = ' + mo;
+    }
+    return toRows(await query(
+      'SELECT district_id, year, month, value::DOUBLE AS value ' +
+      'FROM read_parquet([\'' + absPath(f) + '\'])' + where +
+      ' ORDER BY month, district_id'));
+  }
+
   async function national(opts) {
     const cat = state.catalog || (await ensureCatalog());
     if (!cat.national) {
@@ -405,6 +443,7 @@
 
   DIE.Engine = {
     ensureEngine, ensureCatalog, query, slice, mapMonth, national, ensemble,
+    atlasYear,
     bytes, lastMs,
     version: DUCKDB_VERSION,
     catalog: () => state.catalog,

@@ -38,6 +38,7 @@
     { id: 'engine', btn: 'tabEngine', view: 'viewEngine' },
     { id: 'projections', btn: 'tabProjections', view: 'viewProjections' },
     { id: 'summary', btn: 'tabSummary', view: 'viewSummary' },
+    { id: 'atlas', btn: 'tabAtlas', view: 'viewAtlas' },
     { id: 'data', btn: 'tabData', view: 'viewData' }
   ];
   const TAB_LABELS = {
@@ -48,12 +49,13 @@
     engine: 'Engine Lab',
     projections: 'Projections',
     summary: 'Drought to 2100',
+    atlas: 'Atlas 1901–2025',
     data: 'Documentation'
   };
   let currentTab = 'overview';
   // Tabs are marked dirty on state changes while hidden and re-render only
   // when entered. This avoids updating 5 workspaces on every slider tick.
-  const DIRTY = { overview: true, historical: true, events: true, propagation: true, engine: true, projections: true, summary: true, data: true };
+  const DIRTY = { overview: true, historical: true, events: true, propagation: true, engine: true, projections: true, summary: true, atlas: true, data: true };
   const markDirty = (tab) => { DIRTY[tab] = true; };
 
   /** Run work when the browser is idle (never blocks interaction). */
@@ -252,6 +254,8 @@
         DIE.Projections.invalidate();
       } else if (tab.id === 'summary' && DIE.Summary) {
         DIE.Summary.invalidate();
+      } else if (tab.id === 'atlas' && DIE.AtlasView) {
+        DIE.AtlasView.invalidate();
       }
     }, 60);
     document.body.dataset.tab = tab.id;
@@ -2440,6 +2444,7 @@
     engine() { DIE.EngineLab.init(); },
     projections() { DIE.Projections.init(); },
     summary() { DIE.Summary.init(); },
+    atlas() { DIE.AtlasView.init(); },
     data() { DataView.init(); }
   };
 

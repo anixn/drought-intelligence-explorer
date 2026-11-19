@@ -3538,6 +3538,30 @@ body[data-tab="summary"] {
   --ws-soft-dark: rgba(141, 63, 109, 0.28);
   --ws-line-dark: rgba(189, 123, 161, 0.55);
 }
+body[data-tab="atlas"] {
+  --ws: #708238;
+  --ws-ink: #55662a;
+  --ws-soft: rgba(112, 130, 56, 0.13);
+  --ws-line: rgba(112, 130, 56, 0.45);
+  --ws-bright: #a3b566;
+  --ws-soft-dark: rgba(112, 130, 56, 0.28);
+  --ws-line-dark: rgba(163, 181, 102, 0.55);
+}
+
+/* #atlas anchors row (M6.3) */
+.atlas-anchors {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.atlas-anchor {
+  min-width: 52px;
+}
+.proj-year-readout {
+  font-weight: 700;
+  color: var(--ws-ink);
+  margin-left: 8px;
+}
 
 /* ------------------------------------------------- primary tab identity -- *
  * Icons join the labels; the active tab takes the workspace accent for its
@@ -4273,6 +4297,11 @@ body[data-tab="projections"] .side-sec[data-side="global"] {
 /* #summary (E19/M9, appended 2026-11-19) carries its own controls too; the
  * era-B global sidebar filters would be misleading here — same rule. */
 body[data-tab="summary"] .side-sec[data-side="global"] {
+  display: none;
+}
+
+/* #atlas (M6.3) carries its own controls too — same rule. */
+body[data-tab="atlas"] .side-sec[data-side="global"] {
   display: none;
 }
 

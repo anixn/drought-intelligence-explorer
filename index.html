@@ -634,6 +634,31 @@
             </svg>
             Drought to 2100
           </button>
+          <button
+            type="button"
+            role="tab"
+            id="tabAtlas"
+            aria-selected="false"
+            aria-controls="viewAtlas"
+            tabindex="-1"
+          >
+            <svg
+              class="tab-ic"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 3" />
+            </svg>
+            Atlas 1901–2025
+          </button>
         </div>
 
         <!-- ============ VIEW 1: OVERVIEW ============ -->
@@ -2399,7 +2424,139 @@
           </div>
         </div>
 
-        <!-- ============ VIEW 8: DATA, METHODOLOGY & DOWNLOADS ============ -->
+        <!-- ============ VIEW 9: ATLAS CONTEXT 1901–2025 (era A, M6.3) ============ -->
+        <div id="viewAtlas" role="tabpanel" aria-labelledby="tabAtlas" hidden>
+          <div class="view-intro is-compact" id="introAtlas" aria-label="Workspace introduction">
+            <span class="vi-step">8</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                Atlas 1901&ndash;2025 <span class="vi-tag">era A</span>
+                <span class="vi-hint"
+                  >The Drought Atlas reconstruction &mdash; 125 years of SPEI,
+                  era-labelled, never spliced with the observed record.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-banner" id="atlasBanner" role="note"></div>
+
+          <div class="panel-grid">
+            <section class="panel" id="atlasControlPanel" aria-label="Atlas scrubber controls">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Time scrubber</h2>
+                  <span class="panel-meta">one year fetched per frame (per-year partition)</span>
+                </div>
+              </div>
+              <div class="proj-controls">
+                <div class="proj-field">
+                  <label class="proj-label" for="atlasVariable">Timescale</label>
+                  <select id="atlasVariable" class="panel-ctl" aria-label="Atlas timescale">
+                    <option value="spei_01" selected>SPEI-1 (monthly)</option>
+                    <option value="spei_04">SPEI-4</option>
+                    <option value="spei_12">SPEI-12 (annual)</option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="atlasMonth">Month</label>
+                  <select id="atlasMonth" class="panel-ctl" aria-label="Month"></select>
+                </div>
+                <div class="proj-field" style="min-width: 260px">
+                  <label class="proj-label" for="atlasYear">Year
+                    <span class="proj-year-readout" id="atlasYearReadout">1901</span>
+                  </label>
+                  <input
+                    type="range"
+                    id="atlasYear"
+                    min="1901"
+                    max="2025"
+                    step="1"
+                    value="1901"
+                    aria-label="Atlas year scrubber"
+                  />
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Drought anchors</span>
+                  <div class="atlas-anchors" role="group" aria-label="Historical drought anchors">
+                    <button type="button" class="btn btn-ghost atlas-anchor" data-year="1918">1918</button>
+                    <button type="button" class="btn btn-ghost atlas-anchor" data-year="1965">1965</button>
+                    <button type="button" class="btn btn-ghost atlas-anchor" data-year="1972">1972</button>
+                    <button type="button" class="btn btn-ghost atlas-anchor" data-year="1987">1987</button>
+                    <button type="button" class="btn btn-ghost atlas-anchor" data-year="2002">2002</button>
+                  </div>
+                </div>
+              </div>
+              <p class="table-help" id="atlasScrubNote">
+                Loading the era-A store…
+              </p>
+            </section>
+
+            <section class="panel" id="atlasMapPanel" aria-label="Atlas choropleth">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Reconstruction map</h2>
+                  <span class="panel-meta" id="atlasMapMeta">—</span>
+                </div>
+              </div>
+              <div id="atlasMap" class="proj-map" style="height: 460px" role="img" aria-label="Choropleth map of the Drought Atlas reconstruction"></div>
+              <div id="atlasLegend" class="proj-legend" aria-hidden="true"></div>
+              <p class="table-help" id="atlasMapNote">loading…</p>
+            </section>
+
+            <section class="panel" id="atlasSharePanel" aria-label="Class shares">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Drought-class shares</h2>
+                  <span class="panel-meta" id="atlasShareMeta">—</span>
+                </div>
+              </div>
+              <dl class="el-status" id="atlasShareList">
+                <div><dt>Moderate-or-worse</dt><dd id="atlasShareMod">—</dd></div>
+                <div><dt>Severe-or-worse</dt><dd id="atlasShareSev">—</dd></div>
+                <div><dt>Extreme</dt><dd id="atlasShareExt">—</dd></div>
+                <div><dt>Wetter than normal</dt><dd id="atlasShareWet">—</dd></div>
+                <div><dt>With data (n districts)</dt><dd id="atlasShareN">—</dd></div>
+              </dl>
+              <p class="table-help" id="atlasShareNote"></p>
+            </section>
+
+            <section class="panel" id="atlasCaveatPanel" aria-label="Reading guide">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">How to read this workspace</h2>
+                  <span class="panel-meta">interpretation guardrails</span>
+                </div>
+              </div>
+              <ul class="table-help" id="atlasCaveats" style="margin: 10px 16px; padding-left: 18px">
+                <li>
+                  <b>Era A is a reconstruction</b> built from the Drought Atlas
+                  of India (SPEI at 1/4/12-month scales) — attribution and
+                  licence are rendered in the banner from the data contract.
+                </li>
+                <li>
+                  <b>Never spliced</b> with the era-B Gridded Multi-Source
+                  Product or era-C projections: the 1981–2025 overlap is
+                  cross-validation material (the <code>#crossval</code>
+                  panel), never one continuous line.
+                </li>
+                <li>
+                  <b>Six island districts have no Atlas grid cells</b>
+                  (documented ocean mask) — grey on every map, never imputed
+                  (R10).
+                </li>
+                <li>
+                  <b>A reconstruction is not an observation:</b> early-20th-
+                  century station density is lower; treat pre-1951 values
+                  with correspondingly wider uncertainty (quantified in the
+                  cross-validation panel).
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+
+        <!-- ============ VIEW 9: DATA, METHODOLOGY & DOWNLOADS ============ -->
         <div id="viewData" role="tabpanel" aria-label="Documentation and Resources" hidden>
           <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step" aria-hidden="true">
@@ -3749,7 +3906,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-19a";
+        var ASSET_VERSION = "2026-11-20b";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
@@ -3783,6 +3940,7 @@
           "engine-lab",
           "projections",
           "summary",
+          "atlas",
         ];
         var inflight = {};
 

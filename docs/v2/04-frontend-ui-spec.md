@@ -135,7 +135,6 @@ Era-labelled scrubber (1901→end; per-year tile fetch only), seasonal composite
 Era A ↔ Era B panel at 1981–2020: agreement time-series, event-match table, per-district discrepancy map, and the headline statistics (r, class agreement, event-match rate) with the interpretation guardrail text from docs/v2/03 §6. IMD benchmark results are surfaced in the Documentation centre (§5), not here — this panel is specifically the Atlas↔Observed seam.
 
 ### 4.5 Drought to 2100 (`#summary`, M9 — BUILT 2026-11-19, MVP live)
-
 The headline "so what" surface (Owner request: "how drought changes from now to 2100"; Owner preference: the differentiating view, NOT an Atlas re-portal):
 
 - **One primary map, agreement-first (X2):** DEFAULT statistic = `dir_agreement_drier` (share of the 8-model committed subset whose effective-window mean is drier than their own 1981–2014 base — a count of models, never a probability, R9; window recorded verbatim from `metadata.json`). The median-based change metrics — drought-month-share change (pp), mean event duration change, mean severity per event change — are one click away and always labelled "MEDIAN-BASED".
@@ -144,6 +143,24 @@ The headline "so what" surface (Owner request: "how drought changes from now to 
 - **Per-state table:** area-weighted (v1.0 LAEA areas) with n per row (R10); national area-weighted baseline→future drought-share figures with Δpp.
 - **Export:** CSV with `#` reproducibility headers (X6): selection, windows, machinery, sources.
 - **Caveat block (M9.4):** simulations-not-forecasts (R2); median-based + concentration warning; `seam_uncertainty` (X7) pending M6.6/M6.8, labelled, never fabricated; PET-seam note (era C Hargreaves vs era B ERA5-Land).
+
+### 4.6 Atlas 1901–2025 (`#atlas`, M6.3 — BUILT 2026-11-20, live)
+
+The era-A scrubber surface (Owner: "start the M6.3"), deliberately an *era surface* of DIE — not an Atlas re-portal:
+
+- **Time scrubber:** year slider 1901–2025 + month selector (default August, the JJAS core) + timescale select (SPEI-1/4/12). **Per-year tile fetch only** (M6.3 rule): one partition query per frame (`DIE.Engine.atlasYear`), cached per (timescale, year) with a bounded LRU.
+- **Drought anchors:** 1918 / 1965 / 1972 / 1987 / 2002 as one-click pre-set views (documented historical episodes; setting a view is not a claim about any single month).
+- **Map:** McKee-class choropleth of the selected frame; class palette from the shared era-B SPEI classification table (the Atlas z-scores use the same class definitions).
+- **Class shares:** area-weighted (v1.0 LAEA registry) share of moderate-or-worse / severe-or-worse / extreme / wetter-than-normal for the displayed month, with n.
+- **Banner:** attribution rendered from `metadata.json → era_a.source` (Chuphal et al. citation, DOI, CC-BY-4.0) — never hand-typed (config attribution_note).
+- **Caveats:** reconstruction ≠ observation (pre-1951 station density is lower, quantified in `#crossval`); never spliced (R2); six island districts honestly absent (R10).
+
+### 4.7 Map interaction contract (all choropleths — Owner directive 2026-11-20)
+
+Two viewport rules implemented ONCE in `MapView.createChoropleth`, so every map in the app behaves identically:
+
+1. **Click = zoom:** clicking any district zooms it to fill that map's own container (`fitRegion("district", id)`, animated; opt-out `zoomOnDistrictClick: false`).
+2. **Never smaller than fitted:** `minZoom` = the zoom at which the national outline fits THAT map's container — scrolling out stops at "India fully fitted in the viewport of each figure". The fit zoom is computed **analytically** from the CRS at a fixed reference zoom (Leaflet's `getBoundsZoom()` starts from the current zoom and never returns below it, so a map created in a small/hidden container would otherwise deadlock its minimum high — bug found and fixed in the same change; the initial view IS the fit, and every resize/tab-entry recomputes it).
 
 ## 5. Documentation & Resources centre extensions
 

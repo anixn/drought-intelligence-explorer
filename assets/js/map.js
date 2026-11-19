@@ -221,9 +221,15 @@
         layer.on("mouseout", () =>
           layer.setStyle({ weight: 0.6, color: "#FFFFFF" }),
         );
-        if (opts.onDistrictClick) {
-          layer.on("click", () => opts.onDistrictClick(id));
-        }
+        // Owner UX directive (2026-11-20): clicking a district zooms it to
+        // fill the map's own container (opt-out with zoomOnDistrictClick).
+        // Applies to EVERY choropleth — one code path, consistent feel.
+        layer.on("click", () => {
+          if (opts.onDistrictClick) opts.onDistrictClick(id);
+          if (opts.zoomOnDistrictClick !== false) {
+            fitRegion("district", id);
+          }
+        });
         if (opts.tooltip !== false) {
           layer.bindTooltip(
             () =>
@@ -266,6 +272,42 @@
     const layerBySid = new Map();
     districtsLayer.eachLayer((l) => layerById.set(l.feature.properties.id, l));
     statesLayer.eachLayer((l) => layerBySid.set(l.feature.properties.sid, l));
+
+    /* -- viewport-fit discipline (Owner UX directive 2026-11-20) -----------
+     * The map may NEVER shrink below "India fully fitted in this map's own
+     * container": minZoom = the zoom at which the national outline fits the
+     * container, recomputed on every resize; the initial view IS that fit.
+     * NOTE: Leaflet's getBoundsZoom() starts from the CURRENT zoom and
+     * never returns below it (it climbs to maxZoom otherwise) — so a map
+     * created in a small/hidden container would deadlock its minimum at a
+     * too-high zoom. The fit zoom is therefore computed ANALYTICALLY from
+     * the CRS at a fixed reference zoom, independent of the current view. */
+    const outlineBounds = outlineLayer.getBounds();
+    let fittedOnce = false;
+    function analyticFitZoom() {
+      const size = map.getSize();
+      if (!outlineBounds.isValid() || !size.x || !size.y) return null;
+      const z0 = 4;
+      const nw = map.project(outlineBounds.getNorthWest(), z0);
+      const se = map.project(outlineBounds.getSouthEast(), z0);
+      const w = Math.abs(nw.x - se.x) + 16;   // +16px breathing room
+      const h = Math.abs(nw.y - se.y) + 16;
+      const snap = map.options.zoomSnap || 1;
+      let z = z0 + Math.log2(Math.min(size.x / w, size.y / h));
+      z = Math.floor(z / snap) * snap;
+      return Math.max(0, Math.min(z, map.options.maxZoom || 18));
+    }
+    function applyMinZoomFit(forceFit) {
+      const z = analyticFitZoom();
+      if (z === null) return;                 // zero-size container (hidden tab)
+      map.setMinZoom(z);
+      if ((forceFit || !fittedOnce) && map.getContainer().offsetWidth > 0) {
+        map.setView(outlineBounds.getCenter(), z);
+        fittedOnce = true;
+      }
+    }
+    applyMinZoomFit(true);
+    map.on("resize", () => applyMinZoomFit(false));
 
     const labelGroup = L.layerGroup();
     function buildLabels() {
@@ -392,7 +434,13 @@
       setLabels,
       layerById,
       layerBySid,
-      invalidateSize: () => map.invalidateSize(),
+      invalidateSize: () => {
+        map.invalidateSize();
+        // viewport-fit discipline: recompute the fitted minimum (a map
+        // hidden at creation re-fits on its first real invalidateSize;
+        // later resizes only raise the minimum, never the user's zoom)
+        applyMinZoomFit(false);
+      },
     };
     choropleths.add(api);
     return api;
@@ -615,6 +663,8 @@
     districtCompleteness,
     classChip,
     setBasemapAll,
+    /* live choropleth instances (testing + keyboard focus helpers) */
+    choropleths: () => Array.from(choropleths),
     get main() {
       return main;
     },
