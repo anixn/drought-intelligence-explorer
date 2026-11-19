@@ -4,9 +4,11 @@
  *
  * The headline surface: per district, drought FREQUENCY / DURATION /
  * SEVERITY in the validated era-C ensemble over a future window (near /
- * mid / late) compared against the OBSERVED 1981–2014 baseline
- * (register D6, the GCM-native historical window) built by
- * scripts/build_events_baseline.py from the committed era-B store.
+ * mid / late) compared against the ERA-B GRIDDED MULTI-SOURCE PRODUCT
+ * 1981–2014 baseline (register D6 — era B is NOT labelled "observed",
+ * decision D8: CHIRPS/ERA5-Land/MODIS are observation-based gridded
+ * sources, never merged) built by scripts/build_events_baseline.py from
+ * the committed era-B store.
  *
  * Every number is computed from published, validated products only (R3):
  *   - era C: the committed Parquet store via the DuckDB engine
@@ -195,8 +197,9 @@
       "<b>Drought change, honestly framed.</b> Future values are " +
       "<b>simulations, not forecasts</b> (era C: QDM-bias-corrected CMIP6, " +
       "8-model committed subset" + (ec && ec.label ? " — " + esc(ec.label) : "") +
-      "). The comparison baseline is the <b>observed 1981–2014 record</b> " +
-      "(era B, 34 years; register D6). The two eras are <b>never spliced</b> — " +
+      "). The comparison baseline is the <b>era-B Gridded Multi-Source " +
+      "Product 1981–2014 record</b> (34 years; register D6). The two eras are " +
+      "<b>never spliced</b> — " +
       "each side is computed separately and only their difference is shown. " +
       "Every map pairs the median-based change with the " +
       "<b>share of models agreeing on drying</b> (never the median alone, X2" +
@@ -411,7 +414,7 @@
         renderLegend($("sumLegend"), CHANGE_LEGEND[state.metric], CHANGE_COLORS);
         noteText =
           "MEDIAN-BASED change (era-C ensemble median over " + nYears +
-          " years vs the observed 1981–2014 baseline, 34 years): " + n +
+          " years vs the era-B 1981–2014 baseline, 34 years): " + n +
           " districts with comparable data · " + drier +
           " much drier, " + wetter + " much wetter (outer bins). " +
           "Read with care: the ensemble median CONCENTRATES (a documented " +
@@ -458,7 +461,7 @@
       dirArea.reduce((s, r) => s + r.area, 0);
     note.innerHTML =
       "<b>National (area-weighted, LAEA):</b> share of months in moderate-or-" +
-      "worse drought — observed 1981–2014 baseline <b>" + shareB.toFixed(1) +
+      "worse drought — era-B 1981–2014 baseline <b>" + shareB.toFixed(1) +
       "%</b> → " + WINDOW_LABEL[state.window].toLowerCase() + " ensemble median <b>" +
       shareC.toFixed(1) + "%</b> (change " + (shareC - shareB >= 0 ? "+" : "") +
       (shareC - shareB).toFixed(1) + " pp). Area-weighted share of the " +
@@ -517,7 +520,7 @@
     noteEl.textContent =
       "Area-weighted with the v1.0 LAEA district areas; drought-month share " +
       "is months ≤ −1.0 z over valid months (era C: " + WINDOW_LABEL[state.window] +
-      " median series; baseline: observed 1981–2014). Rows with no area fall " +
+      "median series; baseline: era B 1981–2014). Rows with no area fall " +
       "back to unweighted means of the same districts. Agreement column = " +
       "area-weighted share × 8 (models drier than their 1981–2014 base, " +
       "window " + dirEffectiveWindow() + "). National comparable area " +
@@ -540,7 +543,7 @@
     L.push("# scenario: " + state.scenario + " (" + SCENARIO_LABEL[state.scenario] + ")");
     L.push("# indicator: " + state.variable + (ind ? " (" + ind.label + ")" : ""));
     L.push("# future window: " + w.from + "-" + w.to + " (era C ensemble median series)");
-    L.push("# baseline: observed 1981-2014 (era B; data/events/baseline_1981_2014.json, register D6)");
+    L.push("# baseline: era B Gridded Multi-Source Product 1981-2014 (data/events/baseline_1981_2014.json, register D6)");
     L.push("# event machinery: frozen v1.0 runs analysis, threshold -1.0 z, min duration 3 months, censoring flagged");
     L.push("# dir_agreement: fraction of the 8-model subset drier than their own 1981-2014 base; effective window " + dirEffectiveWindow());
     L.push("# areas: LAEA km2 (v1.0 registry); missing values are empty cells, never imputed (R10)");

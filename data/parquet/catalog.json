@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "eras": {
     "observed": {
-      "label": "Observed 1981-2025 -> current",
+      "label": "Gridded Multi-Source Product 1981-2025 -> current",
       "path": "data/parquet/observed",
       "available": true,
       "years": [

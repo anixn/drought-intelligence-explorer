@@ -33,7 +33,7 @@
 Evolve DIE v1.0.0 — a validated, published, four-workspace drought analytics platform serving 10 district-level indicators (1981–2025) — into **DIE v2.0**: a scientifically rigorous, India-focused, extensible drought record spanning three labelled eras:
 
 - **Era A — Atlas (1901–2025, pending verification of Atlas v2):** Drought Atlas of India reconstruction (SPEI), tehsil-native source, served at district level first.
-- **Era B — Observed (1981–2025 → ongoing):** the existing v1.0.0 record (SPI-1/3/6/12, SPEI-1/3/6/12, SMA, VCI), preserved as-is and extended monthly.
+- **Era B — Gridded Multi-Source Product (1981–2025 → ongoing):** the existing v1.0.0 record (SPI-1/3/6/12, SPEI-1/3/6/12, SMA, VCI), preserved as-is and extended monthly. **D8 (2026-11-20): era B is NOT labelled "observed"** — CHIRPS (satellite–gauge), ERA5-Land (reanalysis) and MODIS are observation-based gridded sources, each driving its own indicator family, never merged ("blended" rejected, R3).
 - **Era C — Projections (2026–2100, default):** 24 bias-corrected CMIP6 GCMs (PR, TASMAX, TASMIN → SPI/SPEI), SSP2-4.5 + SSP5-8.5, ensemble median + spread + agreement.
 
 …into one queryable schema (Parquet + DuckDB-WASM), presented as labelled eras that are **never silently spliced**, with a standing cross-validation programme (IMD benchmark; Era A ↔ Era B overlap).

@@ -805,7 +805,7 @@
       }).join('') + '</tbody>';
 
     $('sidebarFootMeta') && ($('sidebarFootMeta').textContent = '');
-    $('footPeriod').textContent = 'Observations ' + DIE.meta.period.start + ' – ' + DIE.meta.period.end;
+    $('footPeriod').textContent = 'Gridded Multi-Source Product ' + DIE.meta.period.start + ' – ' + DIE.meta.period.end;
     $('footRes').textContent = DIE.meta.temporal_resolution + ' · ' + DIE.meta.spatial_units;
     $('footMode').textContent = isDemo()
       ? 'Demonstration dataset (synthetic · seed ' + DIE.meta.random_seed + ')'

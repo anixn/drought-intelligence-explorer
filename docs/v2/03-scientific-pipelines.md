@@ -335,7 +335,7 @@ Era-optional columns added only where needed (DuckDB handles missing columns per
 {
   "version": "2.0.0",
   "eras": {
-    "observed":    { "label": "Observed 1981–2025",   "years": [1981, 2025], "path": "data/parquet/observed" },
+    "observed":    { "label": "Gridded Multi-Source Product 1981–2025 (D8 — not labelled 'observed': CHIRPS/ERA5-Land/MODIS are observation-based, never merged)",   "years": [1981, 2025], "path": "data/parquet/observed" },
     "atlas":       { "label": "Atlas 1901–2025",      "years": [1901, 2025], "path": "data/parquet/atlas" },
     "projections": { "label": "CMIP6 2026–2100",      "years": [2026, 2100], "path": "data/parquet/projections" }
   },

@@ -210,7 +210,7 @@
       "not noise to hide (agreement layers default first, X2).";
     const eraLine =
       "<b>Era labels:</b> era C (simulations, " + esc(ec.label) +
-      ") is never spliced with observed era B (1981–2025) — the two eras are " +
+      ") is never spliced with era B (1981–2025, Gridded Multi-Source Product) — the two eras are " +
       "presented side by side only, with the seam visible.";
     el.innerHTML =
       "<b>Projections, not forecasts.</b> " + esc(ec.banner) +
@@ -1245,7 +1245,7 @@
   /* -- future drought events (M5.8 / E14) ------------------------------------- */
   /* Frozen v1.0 runs analysis (DIE.Analytics.findEvents: runs ≤ threshold,
    * min 3 months, severity Σ(τ−x), NaN breaks runs) on era-C ensemble-median
-   * series, compared against the observed 1981–2014 baseline built by
+   * series, compared against the era-B 1981–2014 baseline built by
    * scripts/build_events_baseline.py (window = register D6, the GCM-native
    * historical window). Agreement reported alongside (X2);
    * windows are median-based and labelled as such. */
@@ -1397,13 +1397,13 @@
         "). <strong>National median:</strong> frequency ratio " +
         fmt(medFreq, 2) + " ×, duration change " + fmt(medDur, 1) +
         " months, severity ratio " + fmt(medSev, 2) +
-        " × vs the observed 1981–2014 baseline (same frozen machinery, " +
+        " × vs the era-B 1981–2014 baseline (same frozen machinery, " +
         "threshold −1.0, min 3 months, no imputation; " + censored +
         " era-C events touch window edges — flagged censored, not dropped). " +
         "Computed on the <strong>ensemble median</strong> — not a single " +
         "realisation; the agreement column (mean models ≤ −1.0 across the " +
         "window) is the honest spread companion (X2). " +
-        "A ratio is a comparison to the observed baseline, <strong>not a " +
+        "A ratio is a comparison to the era-B baseline, <strong>not a " +
         "forecast</strong>. Baseline: " + esc(base.source) + ".";
     } catch (err) {
       console.warn("[projections] events failed:", err);

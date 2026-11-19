@@ -53,7 +53,12 @@ VARIABLES = [  # (id, label, unit) - labels/units per v1.0 metadata contract
 
 ERAS = OrderedDict([
     # (key, label, path, available-now?) - years bumped by refresh (res. M)
-    ("observed", ("Observed 1981-2025 -> current", "data/parquet/observed", True)),
+    # D8 (2026-11-19, Owner-confirmed): era B is a "Gridded Multi-Source
+    # Product", never plain "observed" - CHIRPS (satellite-gauge), ERA5-Land
+    # (reanalysis) and MODIS are observation-BASED inputs, each driving its
+    # own indicator family, and are never merged into one field (a "blend"
+    # label would claim a merge that did not happen, R3).
+    ("observed", ("Gridded Multi-Source Product 1981-2025 -> current", "data/parquet/observed", True)),
     ("atlas", ("Atlas reconstruction (1901-2025, pending verification)", "data/parquet/atlas", False)),
     ("projections", ("CMIP6 projections 2026-2100 (Owner compute pending)", "data/parquet/projections", False)),
 ])

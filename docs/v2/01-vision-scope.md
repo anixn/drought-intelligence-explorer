@@ -17,7 +17,7 @@ Three eras, one queryable contract:
 | Era | ID | Source | Time | Spatial units | Variables |
 |---|---|---|---|---|---|
 | **A — Atlas** | `atlas` | Drought Atlas of India (Chuphal et al., Zenodo — **verify v2 release before integration**) | 1901–2025 (v2) or 1901–2021 (v1) | tehsil-native source; served at district level first | SPEI-1/3/6/12 (per Atlas release) |
-| **B — Observed** | `observed` | Existing v1.0.0 pipeline: CHIRPS v2.0, ERA5-Land, MODIS MOD13A3.061 via GEE | 1981–2025 → extended monthly | district (724) | SPI-1/3/6/12, SPEI-1/3/6/12, SMA, VCI |
+| **B — Gridded Multi-Source Product** | `observed` | Existing v1.0.0 pipeline: CHIRPS v2.0, ERA5-Land, MODIS MOD13A3.061 via GEE — observation-based sources, each driving its own indicator family, **never merged into one field** (register D8: not labelled "observed"; "blended" rejected, R3) | 1981–2025 → extended monthly | district (724) | SPI-1/3/6/12, SPEI-1/3/6/12, SMA, VCI |
 | **C — Projections** | `projections` | 24 CMIP6 GCMs (PR, TASMAX, TASMIN), QDM bias-corrected vs IMD reference | 2026–2100 (default; 2022–2100 is an open decision) | district (724) | SPI-1/3/6/12, SPEI-1/3/6/12 |
 | **D — Reanalysis bridge** (optional, Tier 3) | `reanalysis` | ERA5-Land monthly, 1950 onward | 1940/1950–2025 | district (724) | SMA, PET, T2m context |
 
