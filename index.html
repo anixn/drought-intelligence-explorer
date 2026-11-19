@@ -607,6 +607,33 @@
             </svg>
             Future Projections
           </button>
+          <button
+            type="button"
+            role="tab"
+            id="tabSummary"
+            aria-selected="false"
+            aria-controls="viewSummary"
+            tabindex="-1"
+          >
+            <svg
+              class="tab-ic"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="4" y1="20" x2="20" y2="20" />
+              <rect x="6" y="12" width="3" height="8" />
+              <rect x="12" y="7" width="3" height="13" />
+              <rect x="18" y="3" width="3" height="17" />
+            </svg>
+            Drought to 2100
+          </button>
         </div>
 
         <!-- ============ VIEW 1: OVERVIEW ============ -->
@@ -2205,7 +2232,172 @@
           </section>
         </div>
 
-        <!-- ============ VIEW 7: DATA, METHODOLOGY & DOWNLOADS ============ -->
+        <!-- ============ VIEW 8: SUMMARY — DROUGHT CHANGE NOW → 2100 (E19/M9) ============ -->
+        <div id="viewSummary" role="tabpanel" aria-labelledby="tabSummary" hidden>
+          <div class="view-intro is-compact" id="introSummary" aria-label="Workspace introduction">
+            <span class="vi-step">7</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                Drought to 2100 <span class="vi-tag">v2.0</span>
+                <span class="vi-hint"
+                  >How drought changes from the observed 1981&ndash;2014
+                  baseline to the model windows &mdash; simulations, never
+                  forecasts.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-banner" id="sumBanner" role="note"></div>
+
+          <div class="panel-grid">
+            <section class="panel" id="sumControlPanel" aria-label="Summary selection controls">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Selection</h2>
+                  <span class="panel-meta">validated era C products · observed 1981–2014 baseline (D6)</span>
+                </div>
+              </div>
+              <div class="proj-controls">
+                <fieldset class="proj-field proj-scenario">
+                  <legend>Scenario</legend>
+                  <label
+                    ><input type="radio" name="sumScenario" value="ssp245" checked />
+                    SSP2-4.5</label
+                  >
+                  <label
+                    ><input type="radio" name="sumScenario" value="ssp585" />
+                    SSP5-8.5</label
+                  >
+                </fieldset>
+                <div class="proj-field">
+                  <label class="proj-label" for="sumVariable"
+                    >Indicator &amp; timescale</label
+                  >
+                  <select id="sumVariable" class="panel-ctl" aria-label="Indicator and timescale"></select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="sumWindow">Future window</label>
+                  <select id="sumWindow" class="panel-ctl" aria-label="Future window">
+                    <option value="near">Near term (2026–2040)</option>
+                    <option value="mid">Mid century (2041–2060)</option>
+                    <option value="late" selected>Late century (2081–2100)</option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="sumMetric">Map statistic</label>
+                  <select id="sumMetric" class="panel-ctl" aria-label="Map statistic">
+                    <option value="agreement" selected>
+                      Model agreement — share of models drier (default)
+                    </option>
+                    <option value="frequency">
+                      Drought-month share change (pp, median-based)
+                    </option>
+                    <option value="duration">
+                      Mean event duration change (months, median-based)
+                    </option>
+                    <option value="severity">
+                      Mean severity per event change (z, median-based)
+                    </option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Download</span>
+                  <button type="button" class="btn btn-ghost" id="sumCsvBtn">
+                    Export CSV
+                  </button>
+                </div>
+              </div>
+              <p class="table-help" id="sumNationalNote">
+                Loading national figures…
+              </p>
+            </section>
+
+            <section class="panel" id="sumMapPanel" aria-label="Drought change and agreement map">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Model agreement &amp; drought change vs the 1981–2014 baseline</h2>
+                  <span class="panel-meta" id="sumMapMeta">—</span>
+                </div>
+              </div>
+              <div id="sumMap" class="proj-map" style="height: 420px" role="img" aria-label="Choropleth map of model agreement and drought change by district"></div>
+              <div id="sumLegend" class="proj-legend" aria-hidden="true"></div>
+              <p class="table-help" id="sumMapNote">loading…</p>
+            </section>
+
+            <section class="panel" id="sumStatePanel" aria-label="Per-state summary">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Per-state summary</h2>
+                  <span class="panel-meta" id="sumStateMeta">—</span>
+                </div>
+              </div>
+              <div class="table-scroll" id="sumStateWrap">
+                <table class="comp-table" id="sumStateTable">
+                  <thead>
+                    <tr>
+                      <th>State / UT</th>
+                      <th class="num">Districts (n)</th>
+                      <th class="num">Baseline drought-month share</th>
+                      <th class="num">Future window share</th>
+                      <th class="num">Change (pp)</th>
+                      <th class="num">Models agreeing drier (of n)</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <p class="table-help" id="sumStateNote"></p>
+            </section>
+
+            <section class="panel" id="sumCaveatPanel" aria-label="Reading guide and caveats">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">How to read this workspace</h2>
+                  <span class="panel-meta">interpretation guardrails</span>
+                </div>
+              </div>
+              <ul class="table-help" id="sumCaveats" style="margin: 10px 16px; padding-left: 18px">
+                <li>
+                  <b>Projections are simulations, not forecasts</b> (era C,
+                  QDM-bias-corrected CMIP6, 8-model committed subset): no model
+                  reproduces the actual weather of any future year.
+                </li>
+                <li>
+                  <b>The comparison baseline is the observed 1981–2014 record</b>
+                  (34 years, era B) — window per register D6; the future windows
+                  are 15–20 years, and every statistic reports its sample size.
+                </li>
+                <li>
+                  <b>The map defaults to model agreement (X2)</b>: the share of
+                  the 8-model subset drier than their own 1981–2014 base. The
+                  median-based change metrics are one click away and labelled
+                  — the ensemble median concentrates, so it is never read
+                  alone.
+                </li>
+                <li>
+                  <b>Event statistics are median-based</b> where shown: runs of
+                  the
+                  ensemble-median series ≤ −1.0 with the frozen v1.0 machinery
+                  (min 3 months, censoring flagged); spread across models is
+                  shown by the agreement statistic, never hidden.
+                </li>
+                <li>
+                  <b>Per-district seam uncertainty (X7) is pending</b> the era
+                  A↔B cross-validation (M6.6/M6.8) and is not fabricated here.
+                </li>
+                <li>
+                  <b>PET seam:</b> era C SPEI uses Hargreaves PET on corrected
+                  temperature; era B uses ERA5-Land reanalysis PET (documented
+                  seam, never bridged). Its sensitivity is a registered
+                  follow-up (O14/E16).
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+
+        <!-- ============ VIEW 8: DATA, METHODOLOGY & DOWNLOADS ============ -->
         <div id="viewData" role="tabpanel" aria-label="Documentation and Resources" hidden>
           <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step" aria-hidden="true">
@@ -3555,7 +3747,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-18h";
+        var ASSET_VERSION = "2026-11-19a";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
@@ -3588,6 +3780,7 @@
           "engine-data",
           "engine-lab",
           "projections",
+          "summary",
         ];
         var inflight = {};
 

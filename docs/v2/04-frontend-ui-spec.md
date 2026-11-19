@@ -22,6 +22,7 @@ New surfaces (added in dependency order; each keeps its own stable hash):
 |---|---|---|---|
 | Engine Lab (SQL playground + measurements) | `#engine` | all | M1 |
 | Future Projections | `#projections` | C | M5 |
+| Drought to 2100 (agreement-first change summary) | `#summary` | B vs C | M9 (built 2026-11-19) |
 | Atlas Context | `#atlas` | A | M6 |
 | Cross-Validation | `#crossval` | A + B | M6 |
 | Monthly Brief (Tier 2) | `#brief` | B | M8+ |
@@ -132,6 +133,17 @@ Era-labelled scrubber (1901→end; per-year tile fetch only), seasonal composite
 ### 4.4 Cross-Validation (`#crossval`, M6)
 
 Era A ↔ Era B panel at 1981–2020: agreement time-series, event-match table, per-district discrepancy map, and the headline statistics (r, class agreement, event-match rate) with the interpretation guardrail text from docs/v2/03 §6. IMD benchmark results are surfaced in the Documentation centre (§5), not here — this panel is specifically the Atlas↔Observed seam.
+
+### 4.5 Drought to 2100 (`#summary`, M9 — BUILT 2026-11-19, MVP live)
+
+The headline "so what" surface (Owner request: "how drought changes from now to 2100"; Owner preference: the differentiating view, NOT an Atlas re-portal):
+
+- **One primary map, agreement-first (X2):** DEFAULT statistic = `dir_agreement_drier` (share of the 8-model committed subset whose effective-window mean is drier than their own 1981–2014 base — a count of models, never a probability, R9; window recorded verbatim from `metadata.json`). The median-based change metrics — drought-month-share change (pp), mean event duration change, mean severity per event change — are one click away and always labelled "MEDIAN-BASED".
+- **Measured finding shipped as copy (2026-11-19):** the era-C ensemble-median drought-month share is ≈ 0 (median-of-subset concentration; measured Jul-2090 sd 0.41, zero months ≤ −1 for SPI-3) while the per-model members keep ~10.7 % — the agreement default exists precisely so the median is never read alone.
+- **Baseline:** observed 1981–2014 era-B metrics from the committed `data/events/baseline_1981_2014.json` (register D6 window); frozen v1.0 runs analysis on both sides; the eras are never spliced — only their per-district difference is shown.
+- **Per-state table:** area-weighted (v1.0 LAEA areas) with n per row (R10); national area-weighted baseline→future drought-share figures with Δpp.
+- **Export:** CSV with `#` reproducibility headers (X6): selection, windows, machinery, sources.
+- **Caveat block (M9.4):** simulations-not-forecasts (R2); median-based + concentration warning; `seam_uncertainty` (X7) pending M6.6/M6.8, labelled, never fabricated; PET-seam note (era C Hargreaves vs era B ERA5-Land).
 
 ## 5. Documentation & Resources centre extensions
 

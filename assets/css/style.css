@@ -3529,6 +3529,15 @@ body[data-tab="projections"] {
   --ws-soft-dark: rgba(178, 92, 61, 0.28);
   --ws-line-dark: rgba(217, 141, 109, 0.55);
 }
+body[data-tab="summary"] {
+  --ws: #8d3f6d;
+  --ws-ink: #6d2f54;
+  --ws-soft: rgba(141, 63, 109, 0.12);
+  --ws-line: rgba(141, 63, 109, 0.45);
+  --ws-bright: #bd7ba1;
+  --ws-soft-dark: rgba(141, 63, 109, 0.28);
+  --ws-line-dark: rgba(189, 123, 161, 0.55);
+}
 
 /* ------------------------------------------------- primary tab identity -- *
  * Icons join the labels; the active tab takes the workspace accent for its
@@ -4258,6 +4267,12 @@ body[data-tab="projections"] {
  * era-B filters would be misleading here. Visibility is pure CSS, exactly
  * like the other body[data-tab] sidebar rules. */
 body[data-tab="projections"] .side-sec[data-side="global"] {
+  display: none;
+}
+
+/* #summary (E19/M9, appended 2026-11-19) carries its own controls too; the
+ * era-B global sidebar filters would be misleading here — same rule. */
+body[data-tab="summary"] .side-sec[data-side="global"] {
   display: none;
 }
 

@@ -216,7 +216,7 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 Work Tier 2 (O01–O12) in worth order; Tier 3 items only when their data/licence gates are satisfied. Each item still follows one-task-per-session with tracker updates.
 
 ### M9 — `#summary` tab: drought change now → 2100 (E19, Owner request 2026-11-18)
-*Suggested: after M5.8 + the Owner's 2051–2100 SSP download (COMPLETE 2026-11-19: 8-model subset × 2 scenarios × 3 variables × 2015–2100, 4,128 files) and the full-record era-C recompute. Depends on: validated era C past the register §6 gate; E14 event machinery.*
+*Suggested: after M5.8 + the Owner's 2051–2100 SSP download (COMPLETE 2026-11-19: 8-model subset × 2 scenarios × 3 variables × 2015–2100, 4,128 files) and the full-record era-C recompute. Depends on: validated era C past the register §6 gate; E14 event machinery. **Build-order note (2026-11-19, Owner arbitration): the Owner's explicit "I prefer summary and crossover" supersedes the X1 "after `#crossval`" sequencing for THIS surface — the MVP shipped with `seam_uncertainty` (X7) explicitly labelled pending M6.6/M6.8, never fabricated; `#crossval` remains the next credibility surface.***
 
 | Task | Content | Gate |
 |---|---|---|
