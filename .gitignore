@@ -23,3 +23,4 @@ atlas-pipeline/work/*
 # at scale). catalog.json lists the exact paths; the store is provisioned
 # owner-local / on R2. Hosting decision recorded in PROGRESS.md.
 data/parquet/projections/
+data/parquet/atlas/

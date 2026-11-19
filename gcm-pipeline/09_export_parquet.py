@@ -509,12 +509,22 @@ def publish(work_root: Path, repo: Path, paths: dict, cfg: dict) -> int:
     # catalog / manifests / metadata era-C blocks (additive only, R1)
     sys.path.insert(0, str(repo / "scripts"))
     import generate_catalog as gc
+    existing_path = repo / targets["catalog"]
+    existing = None
+    if existing_path.exists():
+        try:
+            existing = json.loads(existing_path.read_text(encoding="utf-8"))
+        except Exception as exc:            # corrupt catalog -> rebuild loses nothing we own
+            print(f"  NOTE: existing catalog unreadable ({exc}); rebuilding")
     cat = gc.build()
+    # Preserve era contracts owned by OTHER publish steps (era A atlas) -
+    # a bare rebuild silently drops them (footgun recorded 2026-11-20).
+    gc.preserve_era_blocks(cat, existing, keys=("atlas",))
     info = scan_projections(dest, targets["parquet"].replace("\\", "/"))
     gc.apply_projections(cat, {
         "label": " ".join(cfg["export"]["labels"]["ssp"].split()),
         "years": info["years"], "files": info["files"]})
-    problems = gc.validate(cat)
+    problems = gc.validate(cat, repo)
     if problems:
         for p in problems:
             print(f"CATALOG VALIDATE: {p}")

@@ -26,7 +26,7 @@
     "parquet/sma": "c6166e495f20af337d4090b880eea3ddf43fab0264150b9ec6168a31c97f7662",
     "csv/vci": "53b0ac80999affc2d6153e51db56e6cbebbea54a1d730c471c2262263a644b9f",
     "parquet/vci": "c7a7913e9d968f40b9b7ee8be1378aef489e26623c53c63fa8c871b2a64652fe",
-    "catalog.json": "65b4886b0662d69fb185b94426ea1bead8a7e552cf9c427ad71d1024573fe85e",
+    "catalog.json": "e9f5c070414f8825a0ba11b8b7456212e11020ec0494c6dbb0fa65c931dde6d0",
     "national": "f925a3601c715a46482079214ea099a188b521dec109c67cf53549127e83aeb4"
   },
   "catalog": {
@@ -41,7 +41,8 @@
       "spei_06",
       "spei_12",
       "sma",
-      "vci"
+      "vci",
+      "spei_04"
     ],
     "eras": [
       "atlas",
@@ -49,10 +50,11 @@
       "projections"
     ],
     "available_eras": [
+      "atlas",
       "observed",
       "projections"
     ],
-    "file_count": 26
+    "file_count": 401
   },
   "per_variable": {
     "spi_01": {

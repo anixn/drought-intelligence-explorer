@@ -143,6 +143,68 @@ def apply_projections(catalog: dict, info: dict) -> None:
                 var["eras"].append("projections")
 
 
+def apply_atlas(catalog: dict, info: dict) -> None:
+    """Fill the atlas era block (task M6.2b promotion).
+
+    info: {"label": str, "years": [y0, y1] or None, "files": {var: [paths]}}
+    Flat per-variable path list (era A has no scenario/stat nesting).
+    Additive: never touches the observed or projections blocks. Era A has a
+    timescale era B lacks (SPEI-4 — the Atlas ships 1/4/12): a variable id
+    unknown to the era-B registry is ADDED as a new catalog variable entry
+    (eras: ["atlas"]) so its 125 exact paths are carried (M6.2b fix,
+    2026-11-20 — the first merge silently dropped 125 spei_04 paths).
+    """
+    era = catalog["eras"]["atlas"]
+    era["label"] = info["label"]
+    era["available"] = True
+    if info.get("years"):
+        era["years"] = info["years"]
+    by_var = {v["id"]: v for v in catalog["variables"]}
+    for var_id, paths in info["files"].items():
+        var = by_var.get(var_id)
+        if var is None:
+            var = OrderedDict([
+                ("id", var_id),
+                ("label", "SPEI-" + var_id.split("_")[1]),
+                ("unit", "z"),
+                ("eras", ["atlas"]),
+                ("files", OrderedDict()),
+            ])
+            catalog["variables"].append(var)
+        var["files"]["atlas"] = list(paths)
+        if "atlas" not in var["eras"]:
+            var["eras"].append("atlas")
+
+
+def preserve_era_blocks(catalog: dict, existing: dict | None,
+                        keys: tuple[str, ...] = ("atlas",)) -> None:
+    """Copy era-specific state from an EXISTING catalog into a freshly
+    built one (the 09 footgun fix, recorded 2026-11-20).
+
+    gc.build() rebuilds era blocks from scratch; a bare rebuild silently
+    drops any era contract that another publish step added (it wiped the
+    projections block once already). After build(), re-apply every era in
+    `keys` from the existing catalog: the era block itself (label/years/
+    available) and each variable's files[key] entry + eras membership.
+    Callers still overwrite the blocks they own (e.g. 09 re-applies
+    projections via apply_projections AFTER calling this).
+    """
+    if not existing:
+        return
+    by_var_new = {v["id"]: v for v in catalog["variables"]}
+    for key in keys:
+        src_era = (existing.get("eras") or {}).get(key)
+        if src_era and key in catalog.get("eras", {}):
+            catalog["eras"][key].update(src_era)
+        for var in existing.get("variables", []):
+            files = var.get("files") or {}
+            if key in files and var["id"] in by_var_new:
+                nv = by_var_new[var["id"]]
+                nv["files"][key] = files[key]
+                if key not in nv["eras"]:
+                    nv["eras"].append(key)
+
+
 def _iter_era_paths(era_files) -> Iterator[str]:
     """Yield every path string in an era files block.
 
@@ -161,19 +223,21 @@ def _iter_era_paths(era_files) -> Iterator[str]:
         yield era_files
 
 
-def validate(catalog: dict) -> list[str]:
+def validate(catalog: dict, repo: Path | None = None) -> list[str]:
     """Paths the UI can query (available eras' files + national) must exist on
-    disk. Unavailable eras expose no files, so their directory absence is fine."""
+    disk. Unavailable eras expose no files, so their directory absence is fine.
+    `repo` defaults to the real repo root; selftests pass their fixture root."""
+    repo = repo or REPO
     problems = []
     for era in catalog["eras"].values():
-        if era["available"] and not (REPO / era["path"]).exists():
+        if era["available"] and not (repo / era["path"]).exists():
             problems.append(f"available era path missing: {era['path']}")
     for var in catalog["variables"]:
         for era_files in var["files"].values():
             for f in _iter_era_paths(era_files):
-                if not (REPO / f).exists():
+                if not (repo / f).exists():
                     problems.append(f"variable path missing: {f}")
-    if "national" in catalog and not (REPO / catalog["national"]).exists():
+    if "national" in catalog and not (repo / catalog["national"]).exists():
         problems.append(f"national path missing: {catalog['national']}")
     return problems
 

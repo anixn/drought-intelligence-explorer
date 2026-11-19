@@ -1,8 +1,9 @@
 # atlas-pipeline — era A (Drought Atlas of India) ingestion
 
 Era A is the Atlas *reconstruction* record (SPEI at 1/4/12-month scales,
-0.05°, 1901-01 → 2025-12). It is **never spliced** with era B (observed,
-1981–2025) or era C (projections) — every surface is era-labelled (R2).
+0.05°, 1901-01 → 2025-12). It is **never spliced** with era B (Gridded
+Multi-Source Product, 1981–2025 — register D8: not labelled "observed")
+or era C (projections) — every surface is era-labelled (R2).
 Era A lands on the **platform's 724-district v1.0 fabric** (OD4), not the
 Atlas's own 742-polygon fabric.
 
@@ -23,7 +24,15 @@ Atlas's own 742-polygon fabric.
 | 0 | `00_verify_atlas.py` | M6.1 source gate: structure, series, boundaries, grid, provenance, sizes (V1–V6) | `work/atlas_source_report.json` |
 | 1 | `01_crosswalk.py` | Area weights: 724 district polygons × 0.05° lattice (imports the proven `gcm-pipeline/06` clipping machinery) | `work/crosswalk/weights.json` + summary + manifest |
 | 2 | `02_atlas_to_district.py` | Stream both grid roots → weighted aggregation → era-A Parquet + built-in QA (national vs Atlas India file, per-district-month round-trip recomputation) | `work/atlas_store/atlas/variable=*/year=*` + `work/ingest/ingest_manifest.json` |
-| 3 | *(after verification)* promotion | Copy `work/atlas_store/atlas/` → `data/parquet/atlas/`, catalog + metadata era-A block | `data/parquet/atlas/` |
+| 3 | `03_atlas_promote.py` (**RUN 2026-11-20**, Owner "go") | Verify staging (375 partitions, 3,220,872 rows) → copy to `data/parquet/atlas/` → **additive** catalog merge (`gc.apply_atlas`; never the bare rebuild) → metadata `era_a` block → per-file SHA-256 in `pipeline_manifest.json` | `data/parquet/atlas/` (gitignored, Owner-local until release) + contract blocks |
+| 4 | `04_atlas_district_qa.py` (**RUN 2026-11-20**) | Per-district QA cross-check: the Atlas's OWN 732 polygon series (DBF `ID` → `data_distwise_id_<ID>`; LCC_WGS84 .prj transformed to WGS84 first) centroid-assigned onto the 724 fabric (approximate, QA-only), compared with the PROMOTED store over 1981–2025 | `work/district_qa.json` + `.csv`; summary attached to `metadata.json → era_a.district_qa` |
+
+**Per-district QA result (710 matched districts, overlap 1981–2025):**
+r median **0.996 / 0.998 / 0.999** (spei 1/4/12), p10 ≥ 0.988, 99.4 % of
+districts ≥ 0.9, median |bias| ≤ 0.03 z. The geometric grid→724 route
+reproduces the Atlas's own polygon-averaged district series almost exactly;
+the two unmatched centroids and the 10 series-less polygons are the
+documented M6.1 fabric anomalies (QA-only, never published).
 
 Each script has `--selftest` (synthetic, deterministic); run it before the
 real thing. The real runs are build-time ETL over local files — they are

@@ -20153,5 +20153,1516 @@
       "data/parquet/projections/scenario=ssp585/stat=p75/variable=spi_12/year=2099/part-0.parquet": "21a15ca029bad1cdc020e4b6b9dc155301c5c1f5955a0f06ed696a44648db65e",
       "data/parquet/projections/scenario=ssp585/stat=p75/variable=spi_12/year=2100/part-0.parquet": "e5e13fd3d5264e8c8bbd8a1fa3ce517bb5eaa70f5eeb51195f1561be81ff37cd"
     }
+  },
+  "era_a": {
+    "schema": "die-pipeline-manifest-era-a/1.0",
+    "staging": "D:\\Websites\\drought-intelligence-explorer-v2.0\\atlas-pipeline\\work\\atlas_store\\atlas",
+    "ingest_manifest_sha256": "c4220b4c318b4e117728d43407c9a4d08a05974ea2243cdbf7daf912b2136eb2",
+    "totals": {
+      "files": 375,
+      "bytes": 20288620
+    },
+    "files": {
+      "data/parquet/atlas/variable=spei_01/year=1901/part-0.parquet": {
+        "bytes": 54297,
+        "sha256": "de4c86caac93fccc879299b14c662edf9597e62bb92c476615a6862237087c25"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1902/part-0.parquet": {
+        "bytes": 54307,
+        "sha256": "2db5161467b3722dfaeecb66f652cc7710c36b2dbd101de59a7f7cb681b4b450"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1903/part-0.parquet": {
+        "bytes": 54291,
+        "sha256": "a5fa6895618465bc1f6960b8a290bf0cabeda7db601ba590f81127a23ad159a7"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1904/part-0.parquet": {
+        "bytes": 54343,
+        "sha256": "4f236a0b4b374b75b3a4b3942d9d1c8154f56ac23d95c983e41a8b0fa80c5302"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1905/part-0.parquet": {
+        "bytes": 54236,
+        "sha256": "53eb02778cc2920cdb848d0d39ad1602cba0947d496820d499886a0eb9eac904"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1906/part-0.parquet": {
+        "bytes": 54378,
+        "sha256": "7ab2c6d7749527101665cac5cc9728951d17237711d656c7be4e6efbb0897b9f"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1907/part-0.parquet": {
+        "bytes": 54383,
+        "sha256": "1eeae027134d1c96f72490e404752f15555a02557c1e586459ed86e6ecffd765"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1908/part-0.parquet": {
+        "bytes": 54338,
+        "sha256": "4c9b86521f206d0baca0809fa16addc3e6de4aa6f1c0be52c26076a3fe3dc8f6"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1909/part-0.parquet": {
+        "bytes": 54304,
+        "sha256": "f50a4710911ac690edce2656254b1f05163aae161e42a66f3368c5cd9a4601e8"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1910/part-0.parquet": {
+        "bytes": 54394,
+        "sha256": "17300944ddd3d0542a766a024131e1de2aac97b60f7d8387b4e8677c4994a7bd"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1911/part-0.parquet": {
+        "bytes": 54409,
+        "sha256": "2edece6584ae1ee7a8c43159f8cee250225c2869c8b2774cc1ab6fa814419c26"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1912/part-0.parquet": {
+        "bytes": 54326,
+        "sha256": "b29f7178d4f9513d9339cee42801d8fde4783499b2e8f23c7795378e7632e4c9"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1913/part-0.parquet": {
+        "bytes": 54409,
+        "sha256": "2b7248a905c42bd12ceb6dd9c76f85e89c469099734dce5eff35ab2b00b6b7ca"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1914/part-0.parquet": {
+        "bytes": 54375,
+        "sha256": "8e6861c3bc3f2f28c2b7b18e07248a53a3a2f6125d10889df791819effe0b103"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1915/part-0.parquet": {
+        "bytes": 54367,
+        "sha256": "6b8f4793b8daf051f5b7ec4dba135f941ac6c0fa7b956dc9616a0ae5ba182913"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1916/part-0.parquet": {
+        "bytes": 54362,
+        "sha256": "ffb395c345efb320af2fcb0e5856e599ef441049fa74752a589593af561e8d23"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1917/part-0.parquet": {
+        "bytes": 54280,
+        "sha256": "0b2c9bc0b9cfe05010234d8212c3ecc26a6a9952f521ac056cb05a6e3bcd273c"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1918/part-0.parquet": {
+        "bytes": 54173,
+        "sha256": "775f8b32508dc61afcf19c84755626d8b6accc2975494b57d77c34c50f2c3313"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1919/part-0.parquet": {
+        "bytes": 54343,
+        "sha256": "c96ab3fff5f58ad98f6d87a14cfb3d264e703ee276d6027b0f54b1bd76a11353"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1920/part-0.parquet": {
+        "bytes": 54439,
+        "sha256": "8784a9d60638210021cf7ac1214450ae67e3771bf02ae1e6555a34f7e921ac2d"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1921/part-0.parquet": {
+        "bytes": 54176,
+        "sha256": "b6474219aab17df6d4265380085f2e46583262fc445150c8649810f9d16152e9"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1922/part-0.parquet": {
+        "bytes": 54375,
+        "sha256": "fafb626772e90c5f238d7ec950aaf4a99d71d18a91e3d96e03dcef62b9a0d134"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1923/part-0.parquet": {
+        "bytes": 54276,
+        "sha256": "4d76f079da32b99cf18217a38a60038bbe2a70621efd2761ec5664224f5f9e97"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1924/part-0.parquet": {
+        "bytes": 54386,
+        "sha256": "79d88143c3318de7e147a3ad03e106e576568c1ce83874d3f00c37ff71385e3d"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1925/part-0.parquet": {
+        "bytes": 54224,
+        "sha256": "69cc11e1a1fcd03ddcbbf16aac05ddd8f487e2db4a5379dd8d9e104424cc34e3"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1926/part-0.parquet": {
+        "bytes": 54251,
+        "sha256": "98f5f9fd6c1acb33d7537cfbe1b9b603dbdd2ff08cc3e73d2d0edcf440716a77"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1927/part-0.parquet": {
+        "bytes": 54437,
+        "sha256": "b769f55fe434b52db4ee5507bbc99cb808da4c621f431b0bf22f310b46dcd7aa"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1928/part-0.parquet": {
+        "bytes": 54296,
+        "sha256": "0fbd0a473c9b052fe4704ac7210866ec4bba2a956477c0cc3efb5c3930282a09"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1929/part-0.parquet": {
+        "bytes": 54283,
+        "sha256": "9c34b05cd332378560c537e8ddd9f74b41cb8ff7b61db479228c9504cabc34fd"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1930/part-0.parquet": {
+        "bytes": 54352,
+        "sha256": "9cca5ebcc10d68bec2e12449ee3d207dee988abb935777456ad07d569a28e27e"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1931/part-0.parquet": {
+        "bytes": 54262,
+        "sha256": "95cbfc9448d0e8369e27764347ac8b51748b457a2ff9457b52b249f2b76b757e"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1932/part-0.parquet": {
+        "bytes": 54397,
+        "sha256": "e7410eb1cc9612905888797d5fad80dcd4be59173590e80ea9a05fd667bfd414"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1933/part-0.parquet": {
+        "bytes": 54228,
+        "sha256": "a6dc4bac5ddf7b7f9ade5a4fd8884c11712308ac79ba97c5256670f8411d3201"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1934/part-0.parquet": {
+        "bytes": 54400,
+        "sha256": "3c8d8db4022104b6d75d5ad8b51f805d4abaa4e84f7ff7232d636d48cf41676a"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1935/part-0.parquet": {
+        "bytes": 54258,
+        "sha256": "8dbc88255687a3e7866c896545cdb4e20d9a4e462d01e8c1d77bb820980eb7e9"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1936/part-0.parquet": {
+        "bytes": 54348,
+        "sha256": "dcbf082b12124513c97d5094b5bcbc3e9d4494438dffffaf05f57adebb2d4213"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1937/part-0.parquet": {
+        "bytes": 54314,
+        "sha256": "4dbd7013b1c739b177fb3f63c2a71cf35f5b375b44d5ef26165f36ed4d472402"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1938/part-0.parquet": {
+        "bytes": 54460,
+        "sha256": "b8d832829c03aa44f57cace530bd11778d72e28406dfcf7c084630803ed704a0"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1939/part-0.parquet": {
+        "bytes": 54250,
+        "sha256": "c617c92335c6b5b42b6d5a7c702ddd78a13160a460e69187d48319dfe13e6b7b"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1940/part-0.parquet": {
+        "bytes": 54341,
+        "sha256": "381bbff3bd358650eb3c7710a768c58cb87575d8cbe5edc99fe950edab445354"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1941/part-0.parquet": {
+        "bytes": 54331,
+        "sha256": "8d54cc4ffdcaaded75a1cc5735232be8655b1ecbb7bad47b8ca67ba1941a6ef7"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1942/part-0.parquet": {
+        "bytes": 54287,
+        "sha256": "b80e0af3db088a939da223d2e51dd729ac3f81cd4a3d64d9e7e272cf4d185bf8"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1943/part-0.parquet": {
+        "bytes": 54487,
+        "sha256": "5198e9a81321a0408589d8b0c75b97ac24bda5292aff9321b7f27f6bb041510d"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1944/part-0.parquet": {
+        "bytes": 54426,
+        "sha256": "c29a9093dabb299cd7f14dcb17bdf2d7c4d1001677dcfbe645701942564f170e"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1945/part-0.parquet": {
+        "bytes": 54358,
+        "sha256": "7a4fa1f277543194517f9f9b8def623f84ee297090dcecc8b8f962bedcbf297f"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1946/part-0.parquet": {
+        "bytes": 54242,
+        "sha256": "afb9f1577d4febcf95eb5eb2633d58f5376d6be63fb2bb12b6efdc11d66a71ea"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1947/part-0.parquet": {
+        "bytes": 54354,
+        "sha256": "d7d8ec2d37392bb205f0bb0fcfac93dd1054ea060b7c5c9f7a2479214f25a7ad"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1948/part-0.parquet": {
+        "bytes": 54378,
+        "sha256": "efcb17703cdd48a0fd16c3428e30de284c4840a55062ee970f900509d3216be8"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1949/part-0.parquet": {
+        "bytes": 54360,
+        "sha256": "802fc37bcd4ed4943c12190e6d215f4b259735126b6c9de47e5ff32d7eb9b7fa"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1950/part-0.parquet": {
+        "bytes": 54288,
+        "sha256": "220134f68287f3b2c962d1d3691c1865402fd71fd1970ba02eb7b3079569e370"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1951/part-0.parquet": {
+        "bytes": 54260,
+        "sha256": "68acd80e87d15b527fa002e81dd61538a023797a23f2cf65e509a96d67cef59d"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1952/part-0.parquet": {
+        "bytes": 54426,
+        "sha256": "64c002f694be369dd0acde20a6634b8b0576d8b8ce0a2d622fafbd2243a676c5"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1953/part-0.parquet": {
+        "bytes": 54257,
+        "sha256": "c49ef3ff43ecddf3e67615106a306bc8ce58eded5d070d7a374d4ec3b98c96a5"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1954/part-0.parquet": {
+        "bytes": 54267,
+        "sha256": "6044f0fd514d251fb987b1185d623108e17c90c2414540c170a06e46b5c58948"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1955/part-0.parquet": {
+        "bytes": 54363,
+        "sha256": "7a7aa662795f57945893375e4c16c543ea8b07e9c47d9014f2b5115304960006"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1956/part-0.parquet": {
+        "bytes": 54237,
+        "sha256": "fa9f909c7e595e7ef0ecd38302bd45f688b357313b635d66194a2fd9ee42a8d1"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1957/part-0.parquet": {
+        "bytes": 54278,
+        "sha256": "98cc48bd445495fd1e496a322941780aea6d01b2cdea85338793044a31bbefcf"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1958/part-0.parquet": {
+        "bytes": 54289,
+        "sha256": "0e100319c807303019a9fa42021bb1e8da8b8795c9bcba49810de28ccfb5f589"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1959/part-0.parquet": {
+        "bytes": 54270,
+        "sha256": "39a9d8ebecb6a3dbf187f1d25d88856583dc763500ed8862098b58c0c20467fe"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1960/part-0.parquet": {
+        "bytes": 54251,
+        "sha256": "bedb14325c17f591c3a96fd6b4384353674b4d264d16413376c4d5d56a3d55d6"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1961/part-0.parquet": {
+        "bytes": 54317,
+        "sha256": "d83859ee5b12f0c0b76bef95c63cd0a4cc560634a7660cd0c19150892857b5fb"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1962/part-0.parquet": {
+        "bytes": 54346,
+        "sha256": "54ee82beca521f5f565dc269f5fd200433cab594ac89d6bab2ed0a9bd3bf2602"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1963/part-0.parquet": {
+        "bytes": 54339,
+        "sha256": "1b93cbe4d128eb405b3fb3d9bb7357d6b39b571a59c751a241cc2a020fa173a2"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1964/part-0.parquet": {
+        "bytes": 54253,
+        "sha256": "06af9fa950602bd09a68d51b2cadef27166fe5a0eb90b58678285c7d96a2354e"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1965/part-0.parquet": {
+        "bytes": 54211,
+        "sha256": "ba88c05547f1862d800c4dbec99f212dcb166efebcb341e5271131650ff1f33e"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1966/part-0.parquet": {
+        "bytes": 54258,
+        "sha256": "26b3a9e2bd5b381af544816357855462535c4de8bec89db01586b8ac1cf02a44"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1967/part-0.parquet": {
+        "bytes": 54373,
+        "sha256": "6c81841d7db2525e1d82c8cec08612b1b5c3efd874be52ed7e99d96c5dcecba5"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1968/part-0.parquet": {
+        "bytes": 54360,
+        "sha256": "ba9abdb74d01cfa736eb14b6f7618074be1fd9bd5619687f05814112dc57eccb"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1969/part-0.parquet": {
+        "bytes": 54102,
+        "sha256": "d08dfa60f43eb6d661f00378980d7b5be07c7fd51f69c6621cfc43cab1e4180b"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1970/part-0.parquet": {
+        "bytes": 54200,
+        "sha256": "e8090b8a674c9376c5f0d418f6252c3757e2de76b73f14f6a313e8912bb9bc01"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1971/part-0.parquet": {
+        "bytes": 54373,
+        "sha256": "cd6d43a0a79ef625e0794453853bb505bed669c30597668c1a44a234e5e9bb8a"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1972/part-0.parquet": {
+        "bytes": 54031,
+        "sha256": "6a40d2e43eb1ebc47f5c3a63b0acbbbfd3014607e9e0111188677b45b85863de"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1973/part-0.parquet": {
+        "bytes": 54460,
+        "sha256": "0f8e973063942af8c5d1ef77c56fb6dd0c82302f0276af0bbf15876f638c80af"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1974/part-0.parquet": {
+        "bytes": 54158,
+        "sha256": "c791b19266278548c3ae0b7472ce2a3c4aa1f90ee1ba98060e163d9057efb82a"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1975/part-0.parquet": {
+        "bytes": 54304,
+        "sha256": "b13f00a77d34e1e3471499db367943241afe8b40a4b0673d74b4f7e8e1244cf2"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1976/part-0.parquet": {
+        "bytes": 54317,
+        "sha256": "7a4b37761741646e9231b98716b01fd4b0b9850e1622c1fef614187d0e45f816"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1977/part-0.parquet": {
+        "bytes": 54268,
+        "sha256": "d836a6b9c48d702e3d085895f425ac7e4976f39fdd9a8129ce3f705812d12617"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1978/part-0.parquet": {
+        "bytes": 54414,
+        "sha256": "c0e02ae1affab6cff5b430333b1ce83f31c291bbbb3016fedddf501cb1ab998f"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1979/part-0.parquet": {
+        "bytes": 54121,
+        "sha256": "ab5d07ac315c12145d642a9c352dded89163ddf6a1f4fa3c9a37c325ed8c4b45"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1980/part-0.parquet": {
+        "bytes": 54231,
+        "sha256": "acdba2febc931289cb32f1f992a0325f9d2dfe4884e8c17afd7657741c5bd6b4"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1981/part-0.parquet": {
+        "bytes": 54280,
+        "sha256": "451c7c69025188f410a3dc3f56a42d2eea72f26197ddc29ac9b16d29ad448425"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1982/part-0.parquet": {
+        "bytes": 54298,
+        "sha256": "3615036e6f2cca72060a5961909e483b6a7a79ba467759d6af4a70e7434f290c"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1983/part-0.parquet": {
+        "bytes": 54288,
+        "sha256": "597c80ca5c2aa17dc604e156919b54437caf2c429cb0abde05ba5da6a8637986"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1984/part-0.parquet": {
+        "bytes": 54170,
+        "sha256": "f351737506902df466672760218107d30ab66bbdd6412f65d158719100e6e3e9"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1985/part-0.parquet": {
+        "bytes": 54252,
+        "sha256": "6c7c24e89948b93439b59a206695162f5f0b0273581a0c8b4b7b6f3ee72a4da6"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1986/part-0.parquet": {
+        "bytes": 54219,
+        "sha256": "1e649b4b49a7351bda013c841c06a4bd61de07916d4ac20db30d39ef1b01cf82"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1987/part-0.parquet": {
+        "bytes": 54367,
+        "sha256": "427a4ac7c15162039643338ef8c4bba83c0342b4dffc9a4a30974e46246f56ce"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1988/part-0.parquet": {
+        "bytes": 54178,
+        "sha256": "b6ad74d82c5da6bc4299285097caf9e05e8c0d028afba4ce2f336ff651dd3f6c"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1989/part-0.parquet": {
+        "bytes": 54282,
+        "sha256": "1fa52d33496bef9f806790ab92bc2b7504cd86f403531e986e87b102168d878f"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1990/part-0.parquet": {
+        "bytes": 54347,
+        "sha256": "c0455604461f79336e9a04c4e572ba16c734e72e511ec28e1e3682325fdd88e4"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1991/part-0.parquet": {
+        "bytes": 54286,
+        "sha256": "e63f940c1981f9cab4895a5b9eead99cc319defec8e1e57531ccdfd53ff27845"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1992/part-0.parquet": {
+        "bytes": 54321,
+        "sha256": "cbcd3cf0ff06072a1f98c2fd916cfb005768318b146fc903397ffc64579c3ae7"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1993/part-0.parquet": {
+        "bytes": 54264,
+        "sha256": "2a6e7931b481ca4d46ec5ab8b7b2ad0171b0c08865c9cc79563561e8fb5502ba"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1994/part-0.parquet": {
+        "bytes": 54260,
+        "sha256": "f8ea8796a45ea24738b146adb29604d993f6150642efefd0edb137feff6cbded"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1995/part-0.parquet": {
+        "bytes": 54335,
+        "sha256": "7a5a5be1b3d5a3d2c8e8027839d98f845d8195e5738c054a1beaf391f18f0cd6"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1996/part-0.parquet": {
+        "bytes": 54411,
+        "sha256": "9a9d9f43fa70200213a23b5b0363ef42a6d8c1aec41a3f01ea175ce8bfa7d433"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1997/part-0.parquet": {
+        "bytes": 54310,
+        "sha256": "479168e62655d7eb605ef4f9a24313560d7cc7811a5b4c2ac5a5b09adaea28fb"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1998/part-0.parquet": {
+        "bytes": 54158,
+        "sha256": "ceeac4f6439689386da17ef67347ba429fb3fdac7fcdad7559698c46ccd41be4"
+      },
+      "data/parquet/atlas/variable=spei_01/year=1999/part-0.parquet": {
+        "bytes": 54268,
+        "sha256": "3366c2859dbb6af990d6b8544c98979aa52cb4189313fabed25baadbdded3e19"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2000/part-0.parquet": {
+        "bytes": 54317,
+        "sha256": "0f9a8322ab3be5d68adc62ff85f29eb7fe404df49cfdae670212931839434d1b"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2001/part-0.parquet": {
+        "bytes": 54249,
+        "sha256": "83f9312e25df3350a6485693985f9b3beb0e2dc5576cabca827aaea15181e13f"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2002/part-0.parquet": {
+        "bytes": 54342,
+        "sha256": "218c4564147c189b215404abd24f902b58396ed0a1df1e7534743fadc50ed315"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2003/part-0.parquet": {
+        "bytes": 54297,
+        "sha256": "cca8fdfd4e61e9b3226ceb8ae457112ca6ae85f49ed0dec6e5bdf78c3e11f082"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2004/part-0.parquet": {
+        "bytes": 54234,
+        "sha256": "9463a460e7071dcdde6d3b2d1f7b9dc0cfa185978d755d0b2cdffb08500b90e1"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2005/part-0.parquet": {
+        "bytes": 54291,
+        "sha256": "9160aa5e8159c6c6a2b275ae08b3961b336766b5ecf266e430ccc6c8886e12e6"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2006/part-0.parquet": {
+        "bytes": 54489,
+        "sha256": "5ae71807088e789ef733a4e7f1013deeb98c134cccff5add48a981a877c3d6d0"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2007/part-0.parquet": {
+        "bytes": 54166,
+        "sha256": "7416135b609c70db24cd813d90e44d21e188d07c8db743071fcf867c7d7df0f3"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2008/part-0.parquet": {
+        "bytes": 54485,
+        "sha256": "b3622e2550fea82f95ff9da8f5fc6802b10232c764c9795349bb8b2b3027581d"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2009/part-0.parquet": {
+        "bytes": 54067,
+        "sha256": "47fce495af3f5e6a39536361a0debea79b0fd39e970cbed08f188607351804ea"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2010/part-0.parquet": {
+        "bytes": 54348,
+        "sha256": "836848b8e01175112df65900c57d59a6077f20a6cf6c218242bffa2bcb40bf56"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2011/part-0.parquet": {
+        "bytes": 54448,
+        "sha256": "b4c000e38504f75d492b49d255cd54a228fa6bba6ee48646cf7c57b9fb795c5b"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2012/part-0.parquet": {
+        "bytes": 54387,
+        "sha256": "5f1c7c2222a587c2dcdc2f297164bc592f74fd043f680230eb67dfa4e6c23239"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2013/part-0.parquet": {
+        "bytes": 54246,
+        "sha256": "61d55674fc6e0bef332df65a9652b845b24a220b4c024c9f1fb07069e91030e5"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2014/part-0.parquet": {
+        "bytes": 54184,
+        "sha256": "f04e1134c61a95841448159f84db5f818ac769a56270a1c745981971bbe333c5"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2015/part-0.parquet": {
+        "bytes": 54217,
+        "sha256": "7d0b44ef138e266ef523d244bb53799b3f09fe55dd8361408fa601bf44a5adef"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2016/part-0.parquet": {
+        "bytes": 54243,
+        "sha256": "3fc83e15a6893fd635fe68c7be4a81c3836859ab135ac46a37d3b5930e10adb4"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2017/part-0.parquet": {
+        "bytes": 54365,
+        "sha256": "322930813cc55133c81ba3d463dd53bdeef794751d8a6e59ab66036ff92e2f2c"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2018/part-0.parquet": {
+        "bytes": 54278,
+        "sha256": "84c093e8dbbe7528f740a3cfa7e18ad6daac93e82cbe34d8af465382d804fe52"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2019/part-0.parquet": {
+        "bytes": 54266,
+        "sha256": "65f5fc8adfff04bfb764414369291eb0fead9fc43234bfab673351aea3e366b4"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2020/part-0.parquet": {
+        "bytes": 54099,
+        "sha256": "64275379ececf1a886d2a4ea04683b06b204059da746f6ba35fb73d71d4ac552"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2021/part-0.parquet": {
+        "bytes": 54397,
+        "sha256": "f6bd2567e0788ed25b06764fd16c66bafab3f7748035a6e8a2d3f577ee8e2475"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2022/part-0.parquet": {
+        "bytes": 54302,
+        "sha256": "9772b76948bfb58c64c9640ace495f9734b3c4c2af980c38869d627855f41c73"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2023/part-0.parquet": {
+        "bytes": 54060,
+        "sha256": "ddf982e8d8c602fcc721fbf99dda3e7baf661e1b38c21b646887f7d7e16d270e"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2024/part-0.parquet": {
+        "bytes": 54450,
+        "sha256": "6791493e667c0053b8c806e484d4932f5882b909b81111d03b586b7f6b1ee217"
+      },
+      "data/parquet/atlas/variable=spei_01/year=2025/part-0.parquet": {
+        "bytes": 54243,
+        "sha256": "d17a503312ec97632b96f3ab95242f12cb401ff5490e0909f2945ef938ee7e13"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1901/part-0.parquet": {
+        "bytes": 41792,
+        "sha256": "492e9633ce981d5c8598b449780605cac2bffd7824d8edadca90f40033a0d377"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1902/part-0.parquet": {
+        "bytes": 54426,
+        "sha256": "4eb66d6e9361e804c41552482e9271084333129597aec865a9dc9a32e34c9d5d"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1903/part-0.parquet": {
+        "bytes": 54224,
+        "sha256": "849fc099a8076b717d1ad041e6d2fd72399f87c4538df5f94eba9b2173b0d92b"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1904/part-0.parquet": {
+        "bytes": 54260,
+        "sha256": "c5fcf85da9a2ed81d6705953a58aa5ddfb2cf3aabf5db911aae85b9e58137e5c"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1905/part-0.parquet": {
+        "bytes": 54236,
+        "sha256": "f87aebb43fc429b01aa2d33ce69a06741933cbe8d03264fe59904570a4995230"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1906/part-0.parquet": {
+        "bytes": 54279,
+        "sha256": "f93c9485a64eb9ad70d3e82a0a0f594681f560770f307a687dca26a6f6010ce6"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1907/part-0.parquet": {
+        "bytes": 54216,
+        "sha256": "bef14811702a2550f3a69bf348ae12a24482355671f6a8e6b6bbbbd1f57f6210"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1908/part-0.parquet": {
+        "bytes": 54154,
+        "sha256": "24b7221fa388472c3aee8fb947f8e3b424af7d03d13ced6dd1e01129b98d6e50"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1909/part-0.parquet": {
+        "bytes": 54192,
+        "sha256": "572de0b368b30f40ced95503e8340c5a1878ac7028d1d638f6524936a7d33fc4"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1910/part-0.parquet": {
+        "bytes": 54295,
+        "sha256": "8b86c4fb4a603ad1c3cd59f0d6836147adb2f6015575950513fde888b9d38743"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1911/part-0.parquet": {
+        "bytes": 54229,
+        "sha256": "2557cca36b34964f1225b392e58e89571835084dd7b57bfd6bd5e76bda68e402"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1912/part-0.parquet": {
+        "bytes": 54302,
+        "sha256": "debccc731806836593e3474487c202be6f40b9f6da9f9ec9bbab767193b12195"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1913/part-0.parquet": {
+        "bytes": 54207,
+        "sha256": "a09ac2c6c145df8244ec4eedeb474ac6d4221241231bda109f8c85956de6b085"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1914/part-0.parquet": {
+        "bytes": 54349,
+        "sha256": "5b257b6f9205ec092c195fa85bd1d3c789ea127fad708e6d36f62d6e389f31b6"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1915/part-0.parquet": {
+        "bytes": 54277,
+        "sha256": "6a23aa713d215b6639b34c2237706fbf5dae6c66bddd9dac77d043b4a0453014"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1916/part-0.parquet": {
+        "bytes": 54122,
+        "sha256": "3e223b6fad946db290b7ae86f37a83c45901d171f3b92c4cc84ed3509e10a48a"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1917/part-0.parquet": {
+        "bytes": 53950,
+        "sha256": "79f632eecd02bc0011816f65c013e0a33f6fc2ac8dbaaff4241313a6a535ff26"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1918/part-0.parquet": {
+        "bytes": 53989,
+        "sha256": "8dad0e650812b309823c29697597cbed110b58be735734653d25c279a6fdc95f"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1919/part-0.parquet": {
+        "bytes": 54375,
+        "sha256": "040f9b0e179527677a8f69f6d98c3c165a6959dad1019af67b87e0a1817bb2a9"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1920/part-0.parquet": {
+        "bytes": 54162,
+        "sha256": "bfd97bbfc87a5e64dbbf1a737fdff7378fc883c462be8e02d534e309b17624d2"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1921/part-0.parquet": {
+        "bytes": 54381,
+        "sha256": "99bd05c79cbeaf6bb19431566b4f17d4510c773cf72e610217d30a19a85925fa"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1922/part-0.parquet": {
+        "bytes": 54337,
+        "sha256": "8ef9354cc8ca0e60ebaf88078ff4c3696ecb33a195ab5d9be2c872db5064f5d0"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1923/part-0.parquet": {
+        "bytes": 54241,
+        "sha256": "f40d378783c081156c073db99ca3be9c998b4407931bab8f13023c12deb39273"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1924/part-0.parquet": {
+        "bytes": 54355,
+        "sha256": "dfeddc433edc20148fd45f840155fabf304e6eef18747e5ed0e69a81d0763f57"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1925/part-0.parquet": {
+        "bytes": 54202,
+        "sha256": "5766e20f04b79255778ac041b533119242501cb1b008055b41ce0234049143d8"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1926/part-0.parquet": {
+        "bytes": 54258,
+        "sha256": "01f6e1e199a4796ac8d05d5b0f6adf2bc7bd385071ae5f88706b0d8f50241312"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1927/part-0.parquet": {
+        "bytes": 54386,
+        "sha256": "7ed1c07b29ac0330ba021b58a9a4b459e44c724409ed78efa517bddd8fcf653e"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1928/part-0.parquet": {
+        "bytes": 54328,
+        "sha256": "77b89fb45f09f9df1f0dac12f2c45ea767d0ee05b68b5c073b2444e4a83a2d84"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1929/part-0.parquet": {
+        "bytes": 54231,
+        "sha256": "5ce732fd16ffa953bf79985f2bb1cc3882d3640998eca1d58d221d56c53166ca"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1930/part-0.parquet": {
+        "bytes": 54343,
+        "sha256": "b428d50f9dcc3a835efb3423e536e4a9561d0c5f932a3559a8a2811deb323fc7"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1931/part-0.parquet": {
+        "bytes": 54417,
+        "sha256": "7ae489a5338bac60eeffc66461cac31af68ac5c2805270c320a6004c58fdd608"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1932/part-0.parquet": {
+        "bytes": 54379,
+        "sha256": "9e365094434dadd214bb09d1e77998433c800849eb566333472e59f1a6ff4eb8"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1933/part-0.parquet": {
+        "bytes": 53978,
+        "sha256": "c40a0964feea657730927ae47195f8b4620c5d88a23d9857c3a7ff366dcbcfac"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1934/part-0.parquet": {
+        "bytes": 54199,
+        "sha256": "6a00d4f3ba7ca8d1aa6cf74546c7964ea750a24c42e3980c4252c1bca7b90f9a"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1935/part-0.parquet": {
+        "bytes": 54297,
+        "sha256": "9b119e1ea76950a83504a331ab7c9c1a93b6776539493b5c12840de05687789a"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1936/part-0.parquet": {
+        "bytes": 54368,
+        "sha256": "2993ef65ad977fc401b1a58f029026d24e404b4b3c7af86608e71f9e810db92e"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1937/part-0.parquet": {
+        "bytes": 54339,
+        "sha256": "a1f9bd196891ad911a5271163cbb177387b09a75cd72ed689d354ab552d9e4ca"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1938/part-0.parquet": {
+        "bytes": 54361,
+        "sha256": "96bfdf46dd716f883628a570eeabfabe8217824e01472b1338db896357a1cb20"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1939/part-0.parquet": {
+        "bytes": 54260,
+        "sha256": "2ae1d976638dcea02e971d851b6a6ab18f79d5d0da9020412c92e1370f4c6c80"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1940/part-0.parquet": {
+        "bytes": 54291,
+        "sha256": "5c0475a549db6cc00fc116b2be4878ab253f6b7d07a6f37d0a6f71aeb3ebc287"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1941/part-0.parquet": {
+        "bytes": 54249,
+        "sha256": "20cda53fb3ead27209f4f7ffcceaa4c106bcef10579574adcead24aecc4cae28"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1942/part-0.parquet": {
+        "bytes": 54387,
+        "sha256": "58e4812b29618e0ac3242adc983474a3f061c6cf0c461a0e188d59ce3d098a53"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1943/part-0.parquet": {
+        "bytes": 54260,
+        "sha256": "82ccae1559c960144243b873999b0bb3547e9948ca64f1d1e5895492852ff446"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1944/part-0.parquet": {
+        "bytes": 54344,
+        "sha256": "01170321fd913b6528af2cc1af19429902a72d19f15994c69fcb1651a6950838"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1945/part-0.parquet": {
+        "bytes": 54390,
+        "sha256": "22f827584636206bce5711aaa64f1a2f2e324a03a436228137a135e359effff5"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1946/part-0.parquet": {
+        "bytes": 54348,
+        "sha256": "9bd25001637729bd90d77c898f961a7c1401019edbe98c136c0991f786526031"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1947/part-0.parquet": {
+        "bytes": 54299,
+        "sha256": "ff2d7152f0d44dc2a31709fcc126a376089784ce5c8c22b7c405963f4aea9b1a"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1948/part-0.parquet": {
+        "bytes": 54251,
+        "sha256": "71a6eed97a121bbc1404681b0a27c1db2ac81c999ec01464cd2535ea576e3b6d"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1949/part-0.parquet": {
+        "bytes": 54156,
+        "sha256": "766887298acc0343a88e5b7cac1ab7658ab4777646d13191d7f38ee96576477b"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1950/part-0.parquet": {
+        "bytes": 54282,
+        "sha256": "1bf9fe4207ee85454d2ca9d778e36666335db7bb3fd655167bcc03bb3bee3834"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1951/part-0.parquet": {
+        "bytes": 54210,
+        "sha256": "b0ad9f1f413b0ee58f67176c921523bb227b532681096f47237ed96135630439"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1952/part-0.parquet": {
+        "bytes": 54391,
+        "sha256": "a75330706ef260362bc44242bd7fcc2c4a433f05c78233590d9a804eac881a9d"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1953/part-0.parquet": {
+        "bytes": 54281,
+        "sha256": "21ae2719abbf3376a1c9add6277f96bb186fc096e2b4970edabdeb0b6913c1f1"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1954/part-0.parquet": {
+        "bytes": 54368,
+        "sha256": "ace18f634549630a66f9fa07252e93a59b10f483e666ae7b91df6ad311a7d21a"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1955/part-0.parquet": {
+        "bytes": 54438,
+        "sha256": "4515bb18dd9a21e030d60e7741a0633b4d3c7190bf76d3e1479a38ae7e0bbb03"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1956/part-0.parquet": {
+        "bytes": 54031,
+        "sha256": "aea3f5956da9a93087a04d5710a6fffcc25110a9eadd0d2904515ad73535a0f5"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1957/part-0.parquet": {
+        "bytes": 54391,
+        "sha256": "2f11d1cd23ee959e0f0f77408fdb688a483eb7995b99d219cc3b033e066c628f"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1958/part-0.parquet": {
+        "bytes": 54118,
+        "sha256": "3038002839b67d1adb24a7b1ca73b61e47413eef15cceca77e986c91490d5237"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1959/part-0.parquet": {
+        "bytes": 54275,
+        "sha256": "f23263fff69d8f2071cc45fb3fc29e909e9b79bb27a1e279951556aefa246acf"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1960/part-0.parquet": {
+        "bytes": 54257,
+        "sha256": "add063c3c0c2265f2cc86eea13d9b6e4417728c11c8267151bc8e01c33f675cb"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1961/part-0.parquet": {
+        "bytes": 54220,
+        "sha256": "8099fcbe8e5189fb06ed2162614c0d93c05f53a17962ea91eeb40977a38955df"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1962/part-0.parquet": {
+        "bytes": 54273,
+        "sha256": "75b701d34fe0570ff59eb8ef2a8eff1e6a2428348d29c0b3ea545c40b0dfac67"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1963/part-0.parquet": {
+        "bytes": 54291,
+        "sha256": "5925836c6d2114c2a1814c60573b8a38269fbacc4e34ad7884c0772b56cc99e3"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1964/part-0.parquet": {
+        "bytes": 54212,
+        "sha256": "af1f426ddf9ed97bd17c1efab8e0d15073f73b0b48710966427f63c112d380c1"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1965/part-0.parquet": {
+        "bytes": 54081,
+        "sha256": "eadf669c7de718e7b805bdb61b813c77b453e827068ad5b481d0491f4462ab46"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1966/part-0.parquet": {
+        "bytes": 54071,
+        "sha256": "2454c0bd95a5e9ba5df7a7e4134532c4c105d0a3903d99587b3502916da875b3"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1967/part-0.parquet": {
+        "bytes": 54391,
+        "sha256": "0c362f73723eeff7c1cf1015ecdfbbd6b078d56e012f265d4b9688246cd464f8"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1968/part-0.parquet": {
+        "bytes": 54223,
+        "sha256": "5e83eea24238a10f138da9c1f90e3006b76196ba9a8af1a4b98222ef393ecd46"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1969/part-0.parquet": {
+        "bytes": 54265,
+        "sha256": "473bdd0c0c03a8eb351fe7b7351bb82e6a47eb6ca9cdc1251045434b17382d05"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1970/part-0.parquet": {
+        "bytes": 54338,
+        "sha256": "af2ca7b2dd542486015aaae70a549b4b1b60187eed6e42de79140527ae7a754c"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1971/part-0.parquet": {
+        "bytes": 54141,
+        "sha256": "2d42cbcefcbfde1022eecd540d09f3f31d1a7b38e5ffab3224d124c131077d7c"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1972/part-0.parquet": {
+        "bytes": 54200,
+        "sha256": "0a4e39675ccf0bb6b245818c1d00d11f3a7ed6c439c21d889eed873f1b7608c2"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1973/part-0.parquet": {
+        "bytes": 54394,
+        "sha256": "c8815e5a502b5e3c0f81b091e78d7854c34477f93550e2e7d0127d6cc914cd03"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1974/part-0.parquet": {
+        "bytes": 54083,
+        "sha256": "e0ac8e9237f8bcb28d7fa4485d90c490e8f859a283313cbea0790d60baca59b4"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1975/part-0.parquet": {
+        "bytes": 54312,
+        "sha256": "2ae94a69a9003136a423f58f4f0a16009767da23db5127668cb1de338158638e"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1976/part-0.parquet": {
+        "bytes": 54259,
+        "sha256": "f4e86b798e4a7bd99e484ac3d5d92b2ca451b0923448273292f01bdb525fee65"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1977/part-0.parquet": {
+        "bytes": 54344,
+        "sha256": "fb9d6b93b47cf958b1ea15e6ff1b9b1c4211d8d8a237d94971d81ea054d0871d"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1978/part-0.parquet": {
+        "bytes": 54165,
+        "sha256": "ab90d5e5344fa39cd3c47fae2507019e5df79c1d77cd8f5ef67396ccd6f9e4e9"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1979/part-0.parquet": {
+        "bytes": 54000,
+        "sha256": "ff1eba1c38436e70e59c2135dd2f74cbb13b3f3030a6d7eae898e1f3e1702f58"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1980/part-0.parquet": {
+        "bytes": 54291,
+        "sha256": "ad3c446a6cf9ddd44cbf731fdb16812f1d4ae69ed1edd76895dcbdcb3837e852"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1981/part-0.parquet": {
+        "bytes": 54230,
+        "sha256": "355e6bae44367cb3318d052652e838ba48ba916a991f5e92cb02541e0c61b025"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1982/part-0.parquet": {
+        "bytes": 54181,
+        "sha256": "04a697eae5eb7aaa2d9eb4acd22e473c03acaf6f1325ef299308139f1bc5bae7"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1983/part-0.parquet": {
+        "bytes": 54146,
+        "sha256": "7d99832ca4a09e02462702e012d2716b9f4599b423300e3e9f8dba01986bf60d"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1984/part-0.parquet": {
+        "bytes": 54221,
+        "sha256": "d19be779a45f7b77cbdc0e7a7ddccfebd2aa36dbf848b2b33f2cfca5d990b3e6"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1985/part-0.parquet": {
+        "bytes": 54128,
+        "sha256": "e2ebcd2df96e6b5fe68f78ae8d2d3d8e83a64bcb6ed7e3c337d85889fba28abb"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1986/part-0.parquet": {
+        "bytes": 54245,
+        "sha256": "a8938e78c3a8523b36388c35b9626065f4ce8b0709d8ff6a7ec742574dd2eb44"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1987/part-0.parquet": {
+        "bytes": 54330,
+        "sha256": "474770a1892def69ce290bd253994a32f7434ad0e29eed850548fc5e0c71a6f1"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1988/part-0.parquet": {
+        "bytes": 54252,
+        "sha256": "62c80a91a05f4d4da324b2ef3c3f64c260335dabcfedbe1981cd3d17d1fae894"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1989/part-0.parquet": {
+        "bytes": 54180,
+        "sha256": "b855082dce6a8aa0f94e90b45fe6b311d4c58135b209c033fffa6bbe24a047a7"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1990/part-0.parquet": {
+        "bytes": 54050,
+        "sha256": "71c035b1d627a838fff741a3ba8d67e132812c2d9c3e9c27cb98ffc5f6cd9799"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1991/part-0.parquet": {
+        "bytes": 54438,
+        "sha256": "3153c0f6b1c950cabf96e63d8fe76f9360047e743f82e7a67594a68fa1dcf0c3"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1992/part-0.parquet": {
+        "bytes": 54229,
+        "sha256": "4a0e3a7f2c098ab810d8b44df30bfa7ba061c23961f40251a05fa5d1787785da"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1993/part-0.parquet": {
+        "bytes": 54301,
+        "sha256": "6c290351623dff948b08827d481622d848ba96e05d5c252e60ab30cfe0f7b7c6"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1994/part-0.parquet": {
+        "bytes": 54252,
+        "sha256": "317ef9f845e6f480be0d42bce8aa6d4801fcfd335bc49a413e6d14e0a5f2859b"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1995/part-0.parquet": {
+        "bytes": 54359,
+        "sha256": "b0fd98c21d47ac7ec7b9853bcc3ee780662f43e5235ad0246ec33250541cf23d"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1996/part-0.parquet": {
+        "bytes": 54311,
+        "sha256": "aea1f0eeea20d766753b530ea9ca2e6224ade048c575bf70b002100a3b650e9d"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1997/part-0.parquet": {
+        "bytes": 54226,
+        "sha256": "9780ce5988ecd01c7bb58447ad2a1db8b35a389e9274156c1b7e51c3a6d01911"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1998/part-0.parquet": {
+        "bytes": 54067,
+        "sha256": "37a6146d8d35d11058dd0f8952d6df3244f39bc76df9730b8070ea82fc1d4a1c"
+      },
+      "data/parquet/atlas/variable=spei_04/year=1999/part-0.parquet": {
+        "bytes": 54270,
+        "sha256": "2e310130948e339c683f97831929000c9413c8567f44a370ceb78e27d66fa3ee"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2000/part-0.parquet": {
+        "bytes": 54269,
+        "sha256": "84e24958b1028ac898ee2be22fa77af75aefcfe45bccc004260a25645195c380"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2001/part-0.parquet": {
+        "bytes": 54254,
+        "sha256": "1cd259d64be33c25f5cafb2cea1f7f6d27f26c76a33ac5e49362817fa8be89a5"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2002/part-0.parquet": {
+        "bytes": 54143,
+        "sha256": "64a3e58e3dfbd845d55cacf6dd2d69b647d21d603b5566d3e24cb9588c3ab875"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2003/part-0.parquet": {
+        "bytes": 54368,
+        "sha256": "76dbfd122580bd653a68a9f92db67af6a0e9628e63aa12b253b097df157a06a1"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2004/part-0.parquet": {
+        "bytes": 54260,
+        "sha256": "ece57f7bdd7c20af4303708eba914e3e082411cc706eae290f288cadc1e06d9d"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2005/part-0.parquet": {
+        "bytes": 54351,
+        "sha256": "526095c0f4ed9fb005e4123142032b93d9f521556d22bfc192a6565c524b8264"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2006/part-0.parquet": {
+        "bytes": 54374,
+        "sha256": "d375ecb986576a0c60853882cb922612a1fe61cb818d5db58f2ce75b8626f10a"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2007/part-0.parquet": {
+        "bytes": 54192,
+        "sha256": "154417cc8ea4b79254c3d596819783e2af8acac5cbc3d5752401fc714a49063b"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2008/part-0.parquet": {
+        "bytes": 54232,
+        "sha256": "4756f999febb1528891370e935d324f8c524871f0586e2aa6bc09acfd379fdeb"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2009/part-0.parquet": {
+        "bytes": 53850,
+        "sha256": "4b1b0420bf057909906699c64103fc4ecff42a25ce2043d33bb65bdded15ca08"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2010/part-0.parquet": {
+        "bytes": 54331,
+        "sha256": "b96e0e2d399ace28a58921b798cd381dfa6e542c7c16835623f8edb8fa25b8d1"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2011/part-0.parquet": {
+        "bytes": 54234,
+        "sha256": "640df3f6ccd1719364ac13c7845bb5b759e12bdd9a4539c2ea1f73e90dff35fa"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2012/part-0.parquet": {
+        "bytes": 54461,
+        "sha256": "257241dc7a095ee93c87c3823002091177a1279b6f827fc98afddc2cb262bcba"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2013/part-0.parquet": {
+        "bytes": 54398,
+        "sha256": "df56bf8b0d6d296989d3986b1b527acdc2374f0f135bec250ce9f114abbfeedb"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2014/part-0.parquet": {
+        "bytes": 54199,
+        "sha256": "8bb8793867de140ad63d473432f06622b0acd3225a5a30dd8ccb7d340af1ab1f"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2015/part-0.parquet": {
+        "bytes": 54154,
+        "sha256": "27b3ab001d1a89d76bea2a39091613ef408db71bf7de7795c58776f61d3626ba"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2016/part-0.parquet": {
+        "bytes": 54107,
+        "sha256": "af39fe9c566efb3930a817e9df07352ba0b10c2c2e8ac8404d903596ca0a5f2a"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2017/part-0.parquet": {
+        "bytes": 54367,
+        "sha256": "ea83b9c8fd818cecd47f37c8228ecec0809abbc7f9d0fb2d847454e323b62ef6"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2018/part-0.parquet": {
+        "bytes": 54239,
+        "sha256": "673363d71b28093d3592d335f7c117e2b9bcd7b551308fc8afd96273561b8be3"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2019/part-0.parquet": {
+        "bytes": 54216,
+        "sha256": "697c6306504b48e7784693999ab896c644995d2bc0ca9dc1f5c6b03872518f56"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2020/part-0.parquet": {
+        "bytes": 54066,
+        "sha256": "bb6741c0bc07d70b100aa353f73b1c04992692ef4084ed73399cc5bc9e817012"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2021/part-0.parquet": {
+        "bytes": 54143,
+        "sha256": "66f7e66a9e915486f5c1b5ebfaf1bcba5b17a757222cdef6780d0f7d2eed4ba5"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2022/part-0.parquet": {
+        "bytes": 54031,
+        "sha256": "cacd7cf3581bf7b7e343a264db3d3f3f262be04f444ebe9899bc7342bab59e87"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2023/part-0.parquet": {
+        "bytes": 54194,
+        "sha256": "4d87eb4b9874d35a7f4e7105841d46eaf574a053ecd6d2d6022fd406f63e21a1"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2024/part-0.parquet": {
+        "bytes": 54194,
+        "sha256": "538f1e2bf1bda560691e0343e410fa7429f82bc7e18571af93a653bb6d9e7d11"
+      },
+      "data/parquet/atlas/variable=spei_04/year=2025/part-0.parquet": {
+        "bytes": 54199,
+        "sha256": "86e96b1098060a3d5bf86057afc16a5fcd3fc968c4411d289bc8e360c7a54bd0"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1901/part-0.parquet": {
+        "bytes": 10918,
+        "sha256": "4a6d2e864d0ec265f3c7d9e6869b3edd9f503ef6e4da79525fc338e9a4150ffd"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1902/part-0.parquet": {
+        "bytes": 54008,
+        "sha256": "a1e43f41f11b356a4dc36d3c52de85adb2ec1e461664e20fdfe81bc5274dd4cd"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1903/part-0.parquet": {
+        "bytes": 54306,
+        "sha256": "a5464218f5d62dec5da11b4d7a0145aa4c61f343bce0c3aac35aac7cea1eeb5d"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1904/part-0.parquet": {
+        "bytes": 54256,
+        "sha256": "06999bc696cf207f3cce8d33cfa69556d43ceee2cd8efb650bf2455a9387c993"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1905/part-0.parquet": {
+        "bytes": 54076,
+        "sha256": "64346dc05f613ff58dc70ef5b30a667b9e17b1e3a920e4d1f392c781bcf8952e"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1906/part-0.parquet": {
+        "bytes": 54254,
+        "sha256": "844a4fa13357741ab61f22e61da2dd16b6d79f679d0ba1240c020276c7abf75e"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1907/part-0.parquet": {
+        "bytes": 54383,
+        "sha256": "31e43b8469ef665344366a392152f781ff317d113041e23a6779fe7760d9e1ed"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1908/part-0.parquet": {
+        "bytes": 54047,
+        "sha256": "7f139d4086ec2e0fed9eafdf41cf5752a4ba64e00d3a42c23cc73df7b4387562"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1909/part-0.parquet": {
+        "bytes": 54210,
+        "sha256": "f64f0649a1ba128bb86535bef439ca2f9c47471c9a373d040cabfe49b545611a"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1910/part-0.parquet": {
+        "bytes": 54267,
+        "sha256": "8501b6b2de88dbd667dd39741f6f30ce5e310f32a2aa61f51d4fe5ae9ce8b124"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1911/part-0.parquet": {
+        "bytes": 54283,
+        "sha256": "2ec189e00f08fdf89f2c184371a59c889d18c0dbeeb37fa53e658286536f7d35"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1912/part-0.parquet": {
+        "bytes": 54172,
+        "sha256": "855e47457f8353ab382defe35d5cd2a4111f72b3386b71812af5e029d190d764"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1913/part-0.parquet": {
+        "bytes": 54267,
+        "sha256": "620c0a762d5777d58f1e1005d034d8ddebe768011c59dd86f5e5d0cfabec8330"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1914/part-0.parquet": {
+        "bytes": 54248,
+        "sha256": "463154dcc07154f1837230912e36fbcdc7cbd386387fe687f2b6a17e09f7ffbd"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1915/part-0.parquet": {
+        "bytes": 54176,
+        "sha256": "112dffb40c96d7fa90ec0491e7f05bd98229b433c0eb3a1bae7d3c598b4b7255"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1916/part-0.parquet": {
+        "bytes": 54111,
+        "sha256": "fb605aabc910e07fa8e6a6a72a0b179ce3bf97c467b9247eb583c38fad6cc526"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1917/part-0.parquet": {
+        "bytes": 53753,
+        "sha256": "68c3682131e510e090a418df628ccaecb4c980dad1f9cd44207b7d7066e7a657"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1918/part-0.parquet": {
+        "bytes": 53994,
+        "sha256": "248397dd79d1d06fd857f0756fc76918da231e698c25a23808895d3eda2b3553"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1919/part-0.parquet": {
+        "bytes": 54276,
+        "sha256": "1202163c0f4b1b267d33441aeaa2f4d9b0154885ebd17954a92cc4d6c5aa265a"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1920/part-0.parquet": {
+        "bytes": 54257,
+        "sha256": "50399c21a1225c3e8aad4f625e2ef4da53854bdca753b9525f3ea807680caa41"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1921/part-0.parquet": {
+        "bytes": 54346,
+        "sha256": "fcd91bf7405b88d7895c32e0a95d04e438f5d0eb9a429098efdad6a66845963f"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1922/part-0.parquet": {
+        "bytes": 54446,
+        "sha256": "41d1bc44fce39e3891d08ae902dca0d1359ae13647cc5d40e2eb937569c7c73d"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1923/part-0.parquet": {
+        "bytes": 54365,
+        "sha256": "a3ef0daead752b5f46bc8c6ad6a3511cebf96f0d5e64e0796d565bc1a7083636"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1924/part-0.parquet": {
+        "bytes": 54203,
+        "sha256": "a66fe9041b5f64924efe52a0a6a677bd8c7fc4678af8d30d1ee52f50bad48673"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1925/part-0.parquet": {
+        "bytes": 54157,
+        "sha256": "7edb9fc189a380d23d51583caaf8763155607a0a441d7563852925de956a9561"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1926/part-0.parquet": {
+        "bytes": 54265,
+        "sha256": "414e03622990a18f3d8b4ac3c75d132f4aabbdc8a8c7e2b8a4d876ded7c926fa"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1927/part-0.parquet": {
+        "bytes": 54258,
+        "sha256": "c58d6a0993add1d31382824f79ecb2d1c642db94ca9d67524e493bfdc0e5cabe"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1928/part-0.parquet": {
+        "bytes": 54340,
+        "sha256": "a3227b186916dbddb8af742b14ec0840c305c516cf15143cac9235590c185fb6"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1929/part-0.parquet": {
+        "bytes": 54311,
+        "sha256": "60cb9b53ed4974e39a7b603d092836ab4debb2b68b8cb2607e8c6409150cac8d"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1930/part-0.parquet": {
+        "bytes": 54247,
+        "sha256": "533f1596986b7a681ac8d71285d6aef28d8fdf99c75a2c286c27a1a1210f9b49"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1931/part-0.parquet": {
+        "bytes": 54286,
+        "sha256": "7cd53cf661a422fe582b3196a174ad89447ff347942939a38790b01d36455c57"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1932/part-0.parquet": {
+        "bytes": 54268,
+        "sha256": "7deba6cc989fc68403bfacd44e46ee8a29ad86327934147ca40dbbf41ae13725"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1933/part-0.parquet": {
+        "bytes": 54244,
+        "sha256": "3819e7f1a3e77a3912be58f17406697480bc34d269665cd0a778ce261a83b727"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1934/part-0.parquet": {
+        "bytes": 54013,
+        "sha256": "843a7c4d2d7add750c3041f5a11174c4afc8e6500aae89a88adaf28570975731"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1935/part-0.parquet": {
+        "bytes": 54303,
+        "sha256": "1437d9ecebb8d98aef64484b2167be6dfb6f941ab0521ef99e081164d94ba787"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1936/part-0.parquet": {
+        "bytes": 54448,
+        "sha256": "3e728f831e96e1e9487f9e46a842bab55d10e850f62b24339d83be1dcb110e6d"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1937/part-0.parquet": {
+        "bytes": 54172,
+        "sha256": "8c340b9cda37c2f96dfeff3b3286d723320e6d5783d11be74b11484bf37ee0e8"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1938/part-0.parquet": {
+        "bytes": 54201,
+        "sha256": "adf9d6ada045f9d577aa935ae490d1e8576ab6858f28bdad6d9339d4d82adddb"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1939/part-0.parquet": {
+        "bytes": 54154,
+        "sha256": "15377f462a7245ed12ed7d118dd63290253d72608d3809996e4803b200af9224"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1940/part-0.parquet": {
+        "bytes": 54359,
+        "sha256": "1ae428e4ad058f207058f5619e80ed7633948de99e05f96522ceaedbd6fee8b3"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1941/part-0.parquet": {
+        "bytes": 54206,
+        "sha256": "528fc02cfe33486df7ee16e2b93e12032279e0404c085694eb77c10553e77d70"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1942/part-0.parquet": {
+        "bytes": 54311,
+        "sha256": "188bd6bc580790f98820731ed18cd5ada4a4687f3f1da6c13dde8820c0c73a2c"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1943/part-0.parquet": {
+        "bytes": 53989,
+        "sha256": "eb9a6a9240a400f9eef469b12b4b83388b70bf44a3945f61b4fafad80a251ec0"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1944/part-0.parquet": {
+        "bytes": 54293,
+        "sha256": "6dfc0ea0a3e2f6784f54db2e2175f6b2eff312f4f1183eb50512ef45c75ca844"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1945/part-0.parquet": {
+        "bytes": 54281,
+        "sha256": "d48385a71518cc6c3f8c459f492442229dc2ddf0c5f3cf709bf40570ede09451"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1946/part-0.parquet": {
+        "bytes": 54277,
+        "sha256": "72e2ab00e103625f37deb348ec004cc6497c3e75a54dc8a9c0b9a9a68bd18a1e"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1947/part-0.parquet": {
+        "bytes": 54224,
+        "sha256": "32ac6ff7cb402f841c3f48b9b16877bad3d612cee162cf238702e8aed0d8dd62"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1948/part-0.parquet": {
+        "bytes": 54132,
+        "sha256": "807fb0189d1a51a6c05b6a4b566c1488a0c97cbffdcec77c41e18179d6e2196b"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1949/part-0.parquet": {
+        "bytes": 54066,
+        "sha256": "4945d9fc7e9cc45e104320b84eb015a0839598d6032eb2e93ba164a053e02062"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1950/part-0.parquet": {
+        "bytes": 54246,
+        "sha256": "977188b1e32edf5d06b8c5381e3ed70bd46c00714c89398120670b0bb865c991"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1951/part-0.parquet": {
+        "bytes": 54278,
+        "sha256": "3b7ab7cb0fb6ecb303085a375b6cddba9e4f03562474aa15d7c8d9dd4c4566f1"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1952/part-0.parquet": {
+        "bytes": 54255,
+        "sha256": "dc3e29231df35032960bd1cbc08c582b13f4e09fa1cc08fd9540d8c0b289defe"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1953/part-0.parquet": {
+        "bytes": 54338,
+        "sha256": "ffb8ba4c520b660f4af09f8f858fffd52f0cd833785be2ad8433f01635341171"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1954/part-0.parquet": {
+        "bytes": 54258,
+        "sha256": "908e25f0fae9710495e17d154ecbffb8ce77f66bab94922143732b7692a2b85c"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1955/part-0.parquet": {
+        "bytes": 54176,
+        "sha256": "06a63009682227cc0256d0d7ab35ed5115056319e408eb7bab1270489748790a"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1956/part-0.parquet": {
+        "bytes": 53531,
+        "sha256": "1ca6b1a082789f21d6b6fb8e3628f6a257692d3298ba449cb03248f78630a24c"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1957/part-0.parquet": {
+        "bytes": 53738,
+        "sha256": "68aa12aa53583d8fd4ed46ffac64eaf33654f7f8952f9f9b3fe7cc106308cefb"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1958/part-0.parquet": {
+        "bytes": 54282,
+        "sha256": "4b23cb145d0605e087c3445a91cc7d1b727591dfe55371c7f3705585adf0bc50"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1959/part-0.parquet": {
+        "bytes": 54038,
+        "sha256": "5a5f6a75aa27799fb272de232d831172cf66e70174fe30d6db55f96939720dd9"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1960/part-0.parquet": {
+        "bytes": 54222,
+        "sha256": "871c410f6e524b4d77177517c71e42b4065800afd6ce415a41048775676d244e"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1961/part-0.parquet": {
+        "bytes": 54349,
+        "sha256": "cf8944976ebc5e6d88a9763c5c681a44e74c310a269ff4fbec320e4229989a8f"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1962/part-0.parquet": {
+        "bytes": 54156,
+        "sha256": "3a40e631bdc3fd3d07364d9a1fd50b5dfcf083b66bdfb962ed36978fb8e312d1"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1963/part-0.parquet": {
+        "bytes": 54340,
+        "sha256": "895cdcd8ac0a11a77588435efc07f3993840c489fb7985c851a35bc4f25cba80"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1964/part-0.parquet": {
+        "bytes": 54328,
+        "sha256": "5351e39d9185a90301bb6f6d331b550480ac015532d709395b4a1a45397eadcf"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1965/part-0.parquet": {
+        "bytes": 54282,
+        "sha256": "e9a80bd7b9cb8b19c491cc24cbe65ca8f7f3390488e9983fb22433903266d5be"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1966/part-0.parquet": {
+        "bytes": 53719,
+        "sha256": "aed74fe4eac0bd51ba9ab77b6b9d969c5519b040b026f83f3b93051e63d1daa3"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1967/part-0.parquet": {
+        "bytes": 54402,
+        "sha256": "4019873570a477bdb5f80bb35323eb5cafa0facd753c39f1d407b04e2121a000"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1968/part-0.parquet": {
+        "bytes": 54256,
+        "sha256": "42dbd6d5919207c012e23a499adf2421f7a7206acbbd8a96ce1c53f10f9f30c2"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1969/part-0.parquet": {
+        "bytes": 53861,
+        "sha256": "bad2803214d47f0d7982e4bd6aa01de773d1fa429244d6bb4679a5f4de5d2b79"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1970/part-0.parquet": {
+        "bytes": 54336,
+        "sha256": "d8cf43d7c63333bda1a107659933a3b57fafeba23b6f1ba6e21889696b8e55dd"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1971/part-0.parquet": {
+        "bytes": 54383,
+        "sha256": "f2758d7ed38cfa9cb5481ddecd72f811dce265804a4008128717f9e3dae521ab"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1972/part-0.parquet": {
+        "bytes": 54100,
+        "sha256": "0833fe3fa7dfe35a4603714d4d4e8e7d51e775453eb86ca0168186d122d0b31e"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1973/part-0.parquet": {
+        "bytes": 54329,
+        "sha256": "7f8e722d15723583bbd67925679d665dd6549679507838fcc247bd058a5387c3"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1974/part-0.parquet": {
+        "bytes": 54239,
+        "sha256": "5812ebeb52279fc706d3a88585920dce5dcefbce334c11aba922fd6cfe1b31f7"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1975/part-0.parquet": {
+        "bytes": 54226,
+        "sha256": "e006914d30809c1741fa188090a86485991270abc57057e6358a2ece98bd1098"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1976/part-0.parquet": {
+        "bytes": 54174,
+        "sha256": "05ef7bad529350628c69da3062ae942aacf1cc19fdebaf3292f6400261650bce"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1977/part-0.parquet": {
+        "bytes": 54198,
+        "sha256": "289f1e9099460529552a49268374d8130a466ec1ba26899449cc7ab54840f040"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1978/part-0.parquet": {
+        "bytes": 54143,
+        "sha256": "9357e70fc2ef32b46399a37e05e4f1b35fad071cff39b129c63f877ccca4e84f"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1979/part-0.parquet": {
+        "bytes": 54250,
+        "sha256": "8a64a4777509bcf20b0ea93772c2b91d9f54dc60c4e425cd4782b0a36ff55393"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1980/part-0.parquet": {
+        "bytes": 54291,
+        "sha256": "095ae20cee64e8bc52ead15bd33e23d251380be6ce507139aac60635a3117009"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1981/part-0.parquet": {
+        "bytes": 54354,
+        "sha256": "426c2a8e932891188a0caddc81999ec7cb14a0aa2ecfd0b26db6973ff287e058"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1982/part-0.parquet": {
+        "bytes": 54349,
+        "sha256": "b701c1494ac16d15041f3bb8e1d5226b81b832111dd4d1eaa6c705178c166217"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1983/part-0.parquet": {
+        "bytes": 54115,
+        "sha256": "db44654aeb8e1dcf5ad08fc8a836e3c9e1d5ce56076be181eecbe804efe1c626"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1984/part-0.parquet": {
+        "bytes": 54147,
+        "sha256": "d08b28762c2cd880c52c93c8fcb0d87a4d2a56016f01917dab9179047c437ad4"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1985/part-0.parquet": {
+        "bytes": 54291,
+        "sha256": "4bc7b1b07fb048998ca6a03898f614335eb5101d5299b531d41fb404739039cd"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1986/part-0.parquet": {
+        "bytes": 54306,
+        "sha256": "e8daf4b57ccbe48dfa91d13db387997f4022c6104eb3e8c8d02d8a81925130f3"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1987/part-0.parquet": {
+        "bytes": 54295,
+        "sha256": "761985cce2e282b411018e01e68093f713f2dd88129aab6d977dd4b1f4ad63e0"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1988/part-0.parquet": {
+        "bytes": 54509,
+        "sha256": "669140a401129ae4617555eb2944022b1da1474b349efe2bbc7d7cdd658f1925"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1989/part-0.parquet": {
+        "bytes": 54198,
+        "sha256": "dfa4968a666e8be879fef9077216850fc7af7b1f1a022fe969d0198452bf4f96"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1990/part-0.parquet": {
+        "bytes": 54303,
+        "sha256": "7ac4b5e6dbef13b19c8abc4a8b3be6c86626372d1fcd14bcd96e05086d7d805b"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1991/part-0.parquet": {
+        "bytes": 54232,
+        "sha256": "56c9cf23bcafd46f152f8e8e3c015c4797d608248a1a309cec79fcbc8e41d187"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1992/part-0.parquet": {
+        "bytes": 54109,
+        "sha256": "ea55b5f210dcd7f6123684160120f088931845000eafc45fce0a3cf6b71939d8"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1993/part-0.parquet": {
+        "bytes": 54248,
+        "sha256": "82f11b6cf9f7925e5c352b7c5185c94929b31319057cd0c16b7c4b9998963f0b"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1994/part-0.parquet": {
+        "bytes": 54395,
+        "sha256": "74ba0dd3b6a6885506d353ff0057b66a1dc461ab6d2611da6c34aa60809ab56d"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1995/part-0.parquet": {
+        "bytes": 54219,
+        "sha256": "af6294d70f9671b771e4ee4c8b22486491e6c17399d6e70f084fff03d24b0be8"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1996/part-0.parquet": {
+        "bytes": 54221,
+        "sha256": "90cae7a50939cd077262fed5665a6528d7b30c74592c26150850b6f524125c6e"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1997/part-0.parquet": {
+        "bytes": 54246,
+        "sha256": "934c2161759b6605a9f52ed6aa5b51549342bc56fdfb944ed3c2160a40fdaa11"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1998/part-0.parquet": {
+        "bytes": 54090,
+        "sha256": "497cdc95bf2c746c64120768b42e56063b5834e999d5f47650b73c882ccd893c"
+      },
+      "data/parquet/atlas/variable=spei_12/year=1999/part-0.parquet": {
+        "bytes": 54224,
+        "sha256": "d7a2bd440c40c9551affcffffc7c008fb8471baf9b5588b18c4445659f8d8ca3"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2000/part-0.parquet": {
+        "bytes": 54214,
+        "sha256": "ad5ecc5b4bb11e217ee18dae4c3bda84973b45d9490e86a38409f9e399c7f97e"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2001/part-0.parquet": {
+        "bytes": 54275,
+        "sha256": "12f51a1f358dd47c71e513206b55b6834020795fe9f70efec96c54e05627162a"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2002/part-0.parquet": {
+        "bytes": 54258,
+        "sha256": "a6f069e44f846a38d7e7af1607bd53b8e122f8dee7ce4f68ba45d0407144ba69"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2003/part-0.parquet": {
+        "bytes": 54224,
+        "sha256": "8c143fd2517ec506fe690cae5db425b0386f0cdb6f962f3bc801357220b37656"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2004/part-0.parquet": {
+        "bytes": 54303,
+        "sha256": "12ead26a07c14a28e6f24194846e0f4d5fba81d0c8da37acf631fdb967ffb356"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2005/part-0.parquet": {
+        "bytes": 54197,
+        "sha256": "0d82e124b6ba5b9387d1fb60cdfdbb7a4bb0948867db064dcbb22bacb3570ba3"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2006/part-0.parquet": {
+        "bytes": 54129,
+        "sha256": "8be4d44eb43c80fd57c574a83696cb3279f21f8c8e58b6cd9c555fce3bbfcce1"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2007/part-0.parquet": {
+        "bytes": 54209,
+        "sha256": "00764d1555a059b49e93866d3a469d7b5d38f432cdd37b3492f29db088f79eb8"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2008/part-0.parquet": {
+        "bytes": 54250,
+        "sha256": "c80120100f37e2afc124a83d507d041e25cbf87d9770be21020a8c077811525e"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2009/part-0.parquet": {
+        "bytes": 53977,
+        "sha256": "11f845b598e02d5f97d95d903c6f493d6a76708102935bb955d9ab02b83b7cfb"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2010/part-0.parquet": {
+        "bytes": 53936,
+        "sha256": "055dfb185c3141c229e1517d28fd2f41fac8682a1f1f9f63bc5ae29b46d1281e"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2011/part-0.parquet": {
+        "bytes": 54186,
+        "sha256": "263ffb14dab8a9f6e48b64d9fb71d28cd70f63016e3e8b12e9c4d72d44083795"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2012/part-0.parquet": {
+        "bytes": 54242,
+        "sha256": "bf04ee57d3e44774c4fd9f114acad9909964deb1635eac89af992d930c365861"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2013/part-0.parquet": {
+        "bytes": 54197,
+        "sha256": "fcd4784445033d2f4f49a44cf2ad650980a736017edf26f41d8f6bd9259d3f84"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2014/part-0.parquet": {
+        "bytes": 54118,
+        "sha256": "2a20eda7396c7d9d9f8dafa4c026de101290573e093adead6e7a12462ae09e54"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2015/part-0.parquet": {
+        "bytes": 54159,
+        "sha256": "b30167cbe1d16bcd66f6fc460c69bc25fc4deb0a577326371d41d77c6ec2a2bc"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2016/part-0.parquet": {
+        "bytes": 54233,
+        "sha256": "b5611592598cf32587e3b86ac920fc417ddfb050cf4f15abadfd36665f53ddf2"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2017/part-0.parquet": {
+        "bytes": 54220,
+        "sha256": "1fae9da692e38afe367e71d261fc925ddde7a08b4f1a1e15d7e9fd42b1aa6b73"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2018/part-0.parquet": {
+        "bytes": 54041,
+        "sha256": "61085f76b4209bcefbb6c9272fd5201b6fcfd91a2abe3f2b560e52ebd6316723"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2019/part-0.parquet": {
+        "bytes": 54179,
+        "sha256": "b95c1bd6b063ebca7623560fb754b217c01e03de692034c5a91f36cb6fbdf6d1"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2020/part-0.parquet": {
+        "bytes": 53998,
+        "sha256": "a0eca56a46f826bd78bb03895adbed25d256bae266070576d929df62965afe80"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2021/part-0.parquet": {
+        "bytes": 54295,
+        "sha256": "19bd45a83f79edf9ba2b1e84b24c2f2b33e4f80a5bbc634828fed2555af24aa2"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2022/part-0.parquet": {
+        "bytes": 54113,
+        "sha256": "84cabca21e8313ec4682b01f968f569786789c71719484b748a9eaa45be485fe"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2023/part-0.parquet": {
+        "bytes": 54075,
+        "sha256": "5390386797d8e4660f8fef927aedc7fb589e98b14d57cc740d24afb14632ca63"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2024/part-0.parquet": {
+        "bytes": 54306,
+        "sha256": "f1154ef19a7b7366edbaa07f0d2dd364696ad8f6d48ba0fb0f6671dad1387bea"
+      },
+      "data/parquet/atlas/variable=spei_12/year=2025/part-0.parquet": {
+        "bytes": 54098,
+        "sha256": "6a28dea38f1aa21f0753891e1980cd80c4ede35f58e2e84bd15671500a44b1b9"
+      }
+    }
   }
 }

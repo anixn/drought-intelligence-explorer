@@ -1140,5 +1140,50 @@
       "window_note": "overlap of the configured window 2081-2100 with the record 2015-2100",
       "min_window_years": 10
     }
+  },
+  "era_a": {
+    "id": "atlas",
+    "label": "Atlas reconstruction (SPEI) 1901-2025",
+    "banner": "ERA A (reconstruction) - Drought Atlas of India SPEI at 1/4/12-month scales, 0.05-degree grid area-weighted onto the 724-district fabric (route OD4). A reconstruction, never spliced with the era-B Gridded Multi-Source Product or era-C projections (R2); era-labelled on every surface.",
+    "status": "reconstruction - verified ingest, QA attached",
+    "source": {
+      "title": "Drought Atlas of India, 1901-2025",
+      "version": 2,
+      "doi": "10.5281/zenodo.20368514",
+      "licence": "CC-BY-4.0",
+      "citation": "Chuphal, D. S., Kushwaha, A. P., Aadhar, S., & Mishra, V. (2024). Drought Atlas of India, 1901-2025 (Version 2) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.20368514"
+    },
+    "window": [
+      1901,
+      2025
+    ],
+    "timescales": [
+      "spei_01",
+      "spei_04",
+      "spei_12"
+    ],
+    "route": "geometric area-weighted aggregation of the 0.05-degree grid onto 724 districts (Sutherland-Hodgman LAEA clip weights, gcm-pipeline/06 machinery); the Atlas's own 742-polygon/732-series fabric is QA-only, never published",
+    "rows": 3220872,
+    "files": 375,
+    "missing": "the six island districts have no Atlas grid cells (documented ocean mask); values absent, never imputed (R10)",
+    "seam": "era A and era B are NEVER spliced; the 1981-2025 overlap is cross-validation material only (M6.6, register D6 comparison window)",
+    "national_qa": {
+      "spei_01": {
+        "r": 0.98023,
+        "mean_bias": 0.014301,
+        "sd_ratio": 0.495941
+      },
+      "spei_04": {
+        "r": 0.991782,
+        "mean_bias": 0.020399,
+        "sd_ratio": 0.433024
+      },
+      "spei_12": {
+        "r": 0.999114,
+        "mean_bias": 0.025754,
+        "sd_ratio": 0.392254
+      }
+    },
+    "roundtrip_ok": true
   }
 }
