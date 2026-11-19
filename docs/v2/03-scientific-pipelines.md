@@ -249,6 +249,19 @@ All estimates are to be replaced with measured numbers in the runbook after the 
 
 A 3-model × 2-scenario × 41-year synthetic world (seed-deterministic) with known biases and an injected drying trend exercises steps 02→09 end-to-end and asserts: regrid conservation, QDM identity + trend preservation, PET formula correctness, SPI/SPEI calibration gates, ensemble statistic exactness, partition sizes, catalog integrity. This is how OpenCode proves the framework **without executing any production compute**.
 
+### 3.12 Record extension — what happens when the raw record grows (register D7)
+
+The record grows in practice (the SSP archive arrived in two stages: 2015–2050, then 2015–2100). The rule is **recompute the affected era as one consistent product and republish atomically** — never concatenate a new segment onto an old partial-record product:
+
+1. **Inventory first.** `01_inventory_check.py` (coverage per model/scenario) and `scan_nc_health.py --root-sub SSP` (byte-level open of every raw year file) run before any compute. A truncated download fails loudly here — four CanESM5/`ssp585`/tasmin year files were caught this way on 2026-11-19 and re-downloaded, instead of failing 40 minutes into step 02.
+2. **Period is part of the reuse contract.** `02_regrid_025.py` reuses a stored output only when its period equals the declared `models.yaml` window; a shorter output is recomputed (no `--force` needed, no silent stale reuse).
+3. **Prune superseded period files between stages.** Every stage stamps its outputs with the record period and every downstream stage discovers inputs by glob, so the superseded shorter-period files must be removed once the full-period file verifies: `python gcm-pipeline/prune_stale_periods.py --period 2015-2100` (dry run, prints the plan) then `--apply`. Safeguards: same base name only, span strictly inside the target span, a non-empty full-period file must already exist in that directory, historical/validation products untouched; a JSON report is written to `work/`.
+4. **QDM is refitted on the full projection period — deliberately.** τ is the within-projection-period non-exceedance probability, so extending the period legitimately revises earlier ssp-year values; mixing two QDM fits in one series would be indefensible.
+5. **Republish replaces the tree.** `09_export_parquet.py --publish` clears and rewrites `data/parquet/projections/`, regenerates the catalog/manifest/metadata blocks and derives the era label from the years actually scanned (the "(… inputs pending)" suffix disappears only when the record really reaches 2100).
+6. **Re-verify and re-bless.** Full chain gates (08), engine smoke, UI battery, then `scripts/regression_check.py` → review the diff → `--bless` (legitimate drift is data, not code).
+
+The same procedure applies to an era-B monthly refresh (record grows by months, not years) and to any future era.
+
 ## 4. Era D — reanalysis bridge (Tier 3, design sketch only)
 
 Optional ERA5-Land bridge (1950–2025 district SMA/PET/T2m context) using the existing v1.0 extraction machinery pointed at the pre-1981 window. Value: context for the 1950s–1970s; never spliced into era B (different standardisation window needed — design a documented bridge-specific reference window before building). Schema and partitioning already accommodate it (`data/parquet/reanalysis/…`). Do not build until Tier 1/2 are done.

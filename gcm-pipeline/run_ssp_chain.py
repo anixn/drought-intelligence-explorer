@@ -13,6 +13,13 @@ stays a deliberate manual Owner action (X1 gate + sign-off + regression
 
 Usage:
   python run_ssp_chain.py [--upto 07] [--log work/ssp_chain_log.txt]
+  python run_ssp_chain.py --prune-period 2015-2100   # record-extension run
+
+`--prune-period` enables the register-D7 record-extension mode: after each
+stage that stamps its outputs with the record period (02-07) the superseded
+shorter-period files are removed (prune_stale_periods.py --apply), because
+every downstream step discovers its inputs by glob. Without pruning, an old
+`2015-2050` file would be picked ahead of the new `2015-2100` one.
 
 Every step's full output is appended to --log; the console shows the tail
 of the current step.
@@ -68,6 +75,9 @@ def main() -> int:
     ap.add_argument("--upto", default="09",
                     help="stop after this step number (default 09)")
     ap.add_argument("--log", default="work/ssp_chain_log.txt")
+    ap.add_argument("--prune-period", default=None,
+                    help="record-extension mode: prune superseded period files "
+                         "after steps 02-07 (e.g. 2015-2100)")
     args = ap.parse_args()
 
     log_path = HERE / args.log
@@ -95,6 +105,23 @@ def main() -> int:
                   f"({dt:.0f}s) - see {log_path}", flush=True)
             return 1
         print(f"[chain] step {num} OK ({dt:.0f}s)", flush=True)
+        # Record-extension mode (register D7): the stage just wrote
+        # full-period files; remove the superseded shorter-period ones before
+        # the next stage globs its inputs.
+        if args.prune_period and num in ("02", "03", "04", "05", "06", "07"):
+            pcmd = [PY, "-X", "utf8", "prune_stale_periods.py",
+                    "--period", args.prune_period, "--apply"]
+            log.write(f"\n----- prune after step {num} | {' '.join(pcmd)}\n")
+            log.flush()
+            pp = subprocess.run(pcmd, cwd=HERE, env=env, stdout=log,
+                                stderr=subprocess.STDOUT)
+            log.write(f"----- prune rc={pp.returncode}\n")
+            log.flush()
+            if pp.returncode != 0:
+                print(f"[chain] prune after step {num} FAILED - see {log_path}",
+                      flush=True)
+                return 1
+            print(f"[chain] prune after step {num} OK", flush=True)
         if num == args.upto:
             print(f"[chain] stopped after step {num} (--upto)", flush=True)
             break

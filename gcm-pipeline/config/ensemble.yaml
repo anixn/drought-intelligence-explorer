@@ -29,10 +29,10 @@ ensemble:
   # manifest and the export manifest, and stated in the UI):
   #   1. the overlap of dir_agreement_window with the years present in the
   #      record, when that overlap holds at least dir_agreement_min_window_years
-  #      distinct years (so once 2081-2100 lands the effective window IS
-  #      2081-2100, automatically);
+  #      distinct years. Since 2026-11-19 the SSP record runs to 2100, so the
+  #      effective window IS 2081-2100;
   #   2. otherwise the LATEST dir_agreement_min_window_years years available
-  #      (today 2041-2050 while the record ends 2050) - an explicit, labelled
+  #      (2041-2050 while the record ended 2050) - an explicit, labelled
   #      record-end truncation, never a silent shortening and never a stub.
   # If the record itself holds fewer than the minimum years, the statistic is
   # NOT emitted (honest null).

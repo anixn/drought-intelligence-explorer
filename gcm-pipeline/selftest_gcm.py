@@ -136,9 +136,12 @@ def main() -> int:
 # ===========================================================================
 # M2.13 phase 2 — synthetic end-to-end mini world (docs/v2/03 s3.11)
 # ===========================================================================
-# A 3-model world that mirrors the PRODUCTION record shape exactly
-# (historical 1981-2014 + ssp245 2015-2050 — the real phase-2 download is
-# 2015-2050, so the world exercises the same seam logic verbatim) and runs
+# A 3-model world that mirrors the PRODUCTION record shape
+# (historical 1981-2014 + ssp 2015-2050; the real SSP record reached
+# 2015-2100 on 2026-11-19, and the world keeps the 2050 endpoint ON
+# PURPOSE: it exercises the record-end truncation path — dir_agreement
+# falls back to the latest-10-years window — while the full-window path
+# is covered by 07's own selftest, w_full == (2081, 2100)) and runs
 # the whole chain 02->09 through subprocesses with DIE_CONFIG_DIR pointed
 # at a test config dir. Everything lives under work/test-output/ (X9).
 #
@@ -161,7 +164,8 @@ WORLD_SEED = 20261103
 WORLD_MODELS = ("wA", "wB", "wC")
 WORLD_VARS = ("pr", "tasmax", "tasmin")
 WORLD_HIST = (1981, 2014)
-WORLD_SSP = (2015, 2050)                    # mirrors the real phase-2 record
+WORLD_SSP = (2015, 2050)                    # deliberate truncation path (see
+                                            # comment above; real record 2015-2100)
 WORLD_REF = (1981, 2020)
 WORLD_VARIANT, WORLD_GRID = "r1i1p1f1", "gn"
 WORLD_IIDS = tuple(f"{k}_{s:02d}" for k in ("spi", "spei") for s in (1, 3, 6, 12))

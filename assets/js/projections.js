@@ -12,8 +12,10 @@
  *    with the exact thresholds (<= -1.0 moderate, <= -1.5 severe).
  *  - The ensemble n is shown verbatim from metadata (X3), never "24 models".
  *  - Unsupported combinations are DISABLED WITH AN EXPLANATION, never
- *    silently broken (section 7): the late-century window is unavailable
- *    while the 2051-2100 model inputs are pending.
+ *    silently broken (section 7): the late-century window is enabled only
+ *    when the committed catalog actually covers at least 10 years of
+ *    2081-2100 (window bounds are derived from the catalog, never hard-coded
+ *    to a particular download state).
  *  - The selection check reads only the committed catalog — it never
  *    guesses that files exist.
  * ------------------------------------------------------------------------- */
@@ -44,8 +46,8 @@
 
   const WINDOWS = {
     near: { from: 2026, to: 2040 },
-    mid: { from: 2041, to: 2060 },     // partially covered (published to 2050)
-    late: { from: 2081, to: 2100 },    // disabled option; inputs pending
+    mid: { from: 2041, to: 2060 },     // coverage depends on the published record
+    late: { from: 2081, to: 2100 },    // enabled from the catalog once covered
   };
 
   // statistic -> era C partition groups in the published store
@@ -118,6 +120,17 @@
     return (catalog.variables || []).find((v) => v.id === id) || null;
   }
 
+  // Published era-C record window, read from the COMMITTED catalog (never
+  // hard-coded): 2015-2050 while the SSP inputs stopped at 2050, 2015-2100
+  // once the full record is published. Every clamp, custom-range bound and
+  // the late-century window option derive from this.
+  function projRecordRange() {
+    const ec = eraC();
+    const ys = ((ec && ec.years) || []).map(Number).filter(Number.isFinite);
+    if (!ys.length) return { from: 2015, to: 2015, n: 0 };
+    return { from: Math.min(...ys), to: Math.max(...ys), n: ys.length };
+  }
+
   /* ---- helpers ----------------------------------------------------------- */
 
   function esc(s) {
@@ -137,8 +150,42 @@
   }
 
   function clampYear(y) {
-    const n = Number(y) || 2015;
-    return Math.max(2015, Math.min(2050, Math.round(n)));
+    const rec = projRecordRange();
+    const n = Number(y) || rec.from;
+    return Math.max(rec.from, Math.min(rec.to, Math.round(n)));
+  }
+
+  // Keep the time-window selector honest against the published record: the
+  // late-century option is enabled only when the store really covers at least
+  // 10 years of 2081-2100 (the direction statistic's minimum window, D6), and
+  // the custom inputs are bounded by the record itself.
+  function syncRecordRangeUI() {
+    const rec = projRecordRange();
+    const sel = $("projWindow");
+    const late = sel && sel.querySelector('option[value="late"]');
+    if (late) {
+      const covered = Math.max(
+        0, Math.min(rec.to, 2100) - Math.max(rec.from, 2081) + 1
+      );
+      const ok = covered >= 10;
+      late.disabled = !ok;
+      late.textContent = ok
+        ? "Late century (2081–2100)"
+        : "Late century (2081–2100) — inputs pending (record ends " + rec.to + ")";
+      if (!ok && state.window === "late") {
+        state.window = "mid";
+        sel.value = "mid";
+      }
+    }
+    for (const id of ["projFromYear", "projToYear"]) {
+      const el = $(id);
+      if (!el) continue;
+      el.min = String(rec.from);
+      el.max = String(rec.to);
+    }
+    const cf = $("projFromYear"), ct = $("projToYear");
+    if (cf) cf.value = String(clampYear(state.customFrom));
+    if (ct) ct.value = String(clampYear(state.customTo));
   }
 
   /* ---- banner + status --------------------------------------------------- */
@@ -280,7 +327,7 @@
         status = "not published for this window";
         worst = "none";
       } else if (missing > 0) {
-        status = "partial — " + missing + " of " + total + " years pending (2051–2100 inputs pending)";
+        status = "partial — " + missing + " of " + total + " years not published";
         if (worst !== "none") worst = "partial";
       } else {
         status = "full";
@@ -475,8 +522,9 @@
     const [from, to] = windowRange();
     // published era-C years; clamping keeps custom windows from opening
     // partitions that were never written (the check table reports the gap)
-    const a = Math.max(from, 2015), b = Math.min(to, 2050);
-    return a <= b ? [a, b] : [2015, 2015];
+    const rec = projRecordRange();
+    const a = Math.max(from, rec.from), b = Math.min(to, rec.to);
+    return a <= b ? [a, b] : [rec.from, rec.from];
   }
 
   async function ensurePlotly() {
@@ -1505,6 +1553,7 @@
       return;
     }
     renderStatus();
+    syncRecordRangeUI();
     renderVariableOptions();
     syncStatisticOptions();
     renderGeoPickers();

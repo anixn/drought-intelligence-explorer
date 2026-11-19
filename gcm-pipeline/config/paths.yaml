@@ -15,16 +15,18 @@
 # (phase 2 SSPs) must follow the SAME naming so the pipeline stays uniform.
 
 raw_root: "D:/Websites/die-data/cmip6/Hist"    # phase-1 store — RELOCATED 2026-11-17 (Owner reorganisation: was outdir/, now Hist/; inventory identical: 24-model pr, 22-model tas, 1981-2014, complete)
-# Phase-2 SSP downloads (Owner): COMPLETE to 2050 as of 2026-11-17 —
+# Phase-2 SSP downloads (Owner): COMPLETE 2015-2100 as of 2026-11-19 —
 #   D:/Websites/die-data/cmip6/SSP/<var>/  8-model committed subset,
-#   ssp245 + ssp585, 2015-2050, 1,728 files, verified complete (no gaps,
-#   inventory run 2026-11-17). Same per-variable flat layout + naming as
-#   phase 1. 2051-2100 remain pending (models.yaml keeps the full 2015-2100
-#   contract; steps derive the actual record end from data and report
-#   coverage honestly — never pad, R3).
+#   ssp245 + ssp585, 2015-2100, 4,128 files (1,376 per variable), 25.2 GB,
+#   verified complete by the 01 inventory gate (coverage 2015-2100 for both
+#   scenarios, 0 gaps) and by the byte-level health scan
+#   (scan_nc_health.py --root-sub SSP: 4,128 files opened, 4 damaged copies
+#   of CanESM5/ssp585/tasmin 2039/2041/2042/2043, re-downloaded by the Owner
+#   2026-11-19 — a truncated file is a loud failure, never a silent gap).
+#   Same per-variable flat layout + naming as phase 1.
 #   NOTE: a full historical mirror also exists at D:/Websites/die-data/cmip6/Hist
 #   (24/22-model, 1981-2014) — kept as the Owner's copy; production historical
-#   continues to be sourced from raw_root (outdir).
+#   continues to be sourced from raw_root (Hist).
 # Step routing (M2.13): step 02/01 select the raw root PER EXPERIMENT —
 # historical -> raw_root; ssp* -> raw_root_ssp (merge with raw_root fallback).
 raw_root_ssp: "D:/Websites/die-data/cmip6/SSP"

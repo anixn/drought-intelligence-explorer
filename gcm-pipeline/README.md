@@ -18,7 +18,7 @@ reproducible from this directory with the commands below.
 |---|---|
 | Python | `C:\Users\deshm\miniconda3\envs\drought\python.exe` (conda `drought` env, NOT on PATH) |
 | PROJ/GDAL fix | PostGIS sets global `PROJ_LIB`/`GDAL_DATA` to unusable locations. Per-run fix: `$env:PROJ_LIB='C:\Users\deshm\miniconda3\envs\drought\Lib\site-packages\rasterio\proj_data'; $env:GDAL_DATA='C:\Users\deshm\miniconda3\envs\drought\Lib\site-packages\rasterio\gdal_data'` (only needed for scripts importing rasterio/pyproj: 06; `run_ssp_chain.py` and `selftest_gcm.py` apply it automatically) |
-| Data roots | `paths.yaml` → `raw_root` = `D:/Websites/die-data/cmip6/Hist` (historical 1981–2014), `raw_root_ssp` = `D:/Websites/die-data/cmip6/SSP` (ssp245+ssp585 2015–2050) |
+| Data roots | `paths.yaml` → `raw_root` = `D:/Websites/die-data/cmip6/Hist` (historical 1981–2014), `raw_root_ssp` = `D:/Websites/die-data/cmip6/SSP` (ssp245+ssp585 **2015–2100**, 4,128 files, 25.2 GB) |
 | Config dir | `config/*.yaml`; every step honours `DIE_CONFIG_DIR` (test override; default unchanged) |
 | Branch/CI | `v2-dev`; `.github/workflows/ci.yml` runs `data-pipeline/selftest.py` + `scripts/regression_check.py` + `selftest_gcm.py` on every push |
 
@@ -96,17 +96,46 @@ IMD daily ─ 03 --prepare-reference → work/reference/imd_*.nc (1981–2020)
 
 Period labels are derived from the data everywhere (never hard-coded): the
 record ends where the download ends and every surface reports the truncation
-honestly (R3). Current reality: ssp245+ssp585 end 2050 (2051–2100 pending);
-`models.yaml` keeps the full 2100 contract.
+honestly (R3). Current reality (2026-11-19): ssp245+ssp585 run **2015–2100**
+(complete; 4,128 raw files), so the published era-C record is the full
+2015–2100 simulation window and `dir_agreement` uses its configured
+2081–2100 window.
 
-## 4. Measured sizes (2026-11-17, real run)
+### 3.1 Record extension (raw record grows → full-record recompute)
+
+A partial-record product is **superseded**, never concatenated (register D7):
+
+```
+python 01_inventory_check.py                      # coverage gate
+python scan_nc_health.py --root-sub SSP           # byte-level raw health (finds truncation)
+python 02_regrid_025.py --experiments ssp245,ssp585   # period-aware reuse: shorter stored outputs recomputed
+python prune_stale_periods.py --period 2015-2100      # dry run per stage…
+python prune_stale_periods.py --period 2015-2100 --apply
+python 03_qdm_bias_correct.py --mode ssp --experiments ssp245,ssp585
+python prune_stale_periods.py --period 2015-2100 --apply   # after EACH stage
+… 04, 05, 06, 07 (prune between stages), 08, 09 --mode ssp
+09_export_parquet.py --mode ssp --publish          # replaces the partition tree wholesale
+```
+
+Why pruning is mandatory: every downstream step discovers inputs by glob
+(`<var>_*.nc`), so a leftover `2015-2050` file next to `2015-2100` would be
+picked first (03), make the "exactly one file" check ambiguous (04), or export
+overlapping partitions (09). QDM is deliberately refitted on the extended
+projection period — τ is a within-projection-period probability, so earlier
+ssp-year values legitimately change; one fit per model–scenario is the only
+coherent product.
+
+## 4. Measured sizes (2026-11-17 real run; raw record extended 2026-11-19)
 
 | Item | Measured |
 |---|---|
 | Raw historical (24 models × 3 vars × 34 y) | 16.78 GB (`cmip6/Hist`) |
-| Raw ssp (8 models × 3 vars × 2 scenarios × 36 y) | 12.64 GB (`cmip6/SSP`), 1,728 files, 0 gaps |
+| Raw ssp (8 models × 3 vars × 2 scenarios × 86 y) | 25.20 GB (`cmip6/SSP`), 4,128 files, 0 gaps |
+| Raw ssp health scan | 4,128 files opened in 51 s; 4 truncated CanESM5/ssp585/tasmin year files caught + re-downloaded before any compute |
 | World selftest tree | ~60 MB (`work/test-output/gcm-world/`, gitignored) |
-| *work/ chain sizes for the ssp run* | *Owner appends after the first full ssp chain completes (docs/v2/03 §3.10: estimates → measured)* |
+| **work/ chain sizes, full-record ssp run 2026-11-19 (2015–2100)** | regrid 2,378.9 MB · qdm 1,310.9 MB · pet 463.9 MB · indices 3,734.0 MB · aggregate 502.6 MB · ensemble 147.8 MB |
+| Staged/published era-C store (2015–2100) | **19,904 partitions, 853.1 MB** (was 8,064 / 355.4 MB at 2015–2050); step 02→07 ran ~2.5× the 2015–2050 wall-clock (indices step ~2 h) |
+| Pruned superseded 2015-2050 stage files (D7) | 48 regrid + 16 pet + 128 indices + 128 aggregate + 16 ensemble = 336 files, ~1.72 GB freed |
 
 ## 5. Key config files (all science parameters live here, never in code)
 
@@ -129,5 +158,6 @@ honestly (R3). Current reality: ssp245+ssp585 end 2050 (2051–2100 pending);
   monthly-scale QDM; mask-renormalised conservative remap (F9).
 - Genealogy-correlated pooling is an OPEN Owner decision (F3/OD1) — the gate
   pools models as if independent until signed otherwise.
-- `dir_agreement_drier` declared in export.yaml but not yet written by 07 ssp
-  mode (F10) — registered, fails loudly, never silently absent.
+- `dir_agreement_drier` / `dir_agreement_n` are emitted by 07 ssp mode (F10
+  closed in code 2026-11-18) over the effective window recorded in the NC
+  attrs; since the full record landed the effective window is 2081–2100.

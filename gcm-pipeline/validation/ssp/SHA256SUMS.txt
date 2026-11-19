@@ -1,2 +1,4 @@
-74c9b27bc0ea12952cf80861c3a2072455870943df6979608a7c4b06e8576c52  validation_report_ssp.json
-3dde46c0c12d25c99b744905a04d62fcd654de97dc11417131c9ea1354e80b43  README.md
+# SHA-256 of the committed ssp-mode gate evidence (regenerated 2026-11-19, full-record recompute)
+
+7cec4d61caefe0db551fa621e5a74011773d9f4220991fef059cf3a783444951  validation_report_ssp.json
+a6ef40e79af1268b6d20e034947d7b579222e0b9d3a6c255e6ea1f7cd59c7c90  README.md

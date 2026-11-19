@@ -41,8 +41,18 @@ SPI–SPEI divergence, per-model signed mean offsets.
 ## Provenance
 
 - Produced by `08_validate_gcm.py --mode ssp` on the real phase-2 chain
-  (8-model committed subset, corrected ssp245+ssp585 2015–2050, IMD-anchored
-  reference), run 2026-11-17.
+  (8-model committed subset, corrected ssp245+ssp585 **2015–2100**, IMD-anchored
+  reference), re-run 2026-11-19 after the record extension (register D7):
+  the QDM refit over the full 2015–2100 projection period revises every
+  ssp-year value, so the gate evidence is regenerated with the full-record
+  product. Enforcing-gate results (snapshot of 2026-11-19):
+  distribution-shape regional breaches ssp245 173/1360 (12.7 %), ssp585
+  165/1360 (12.1 %) — both against the 20 % tolerance, zero national
+  breaches; seam continuity 0/24 per scenario. (Previous snapshot,
+  2015–2050 record, 2026-11-17: 173/1360 = 12.7 % and 156/1360 = 11.5 %,
+  0/24 — the ssp585 shape cell moved by 9 regional cells, well inside
+  tolerance; the small change is a legitimate consequence of the D7 refit,
+  recorded in PROGRESS.md.)
 - Source of the snapshot: `work/validation/validation_report_ssp.json`
   (owner-local, gitignored per X9).
 - The canonical report the 09 publish gate reads is

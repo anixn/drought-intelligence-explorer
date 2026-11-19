@@ -1997,9 +1997,7 @@
                   <select id="projWindow" class="panel-ctl" aria-label="Time window">
                     <option value="near" selected>Near term (2026–2040)</option>
                     <option value="mid">Mid century (2041–2060)</option>
-                    <option value="late" disabled>
-                      Late century (2081–2100) — 2051–2100 inputs pending
-                    </option>
+                    <option value="late">Late century (2081–2100)</option>
                     <option value="custom">Custom range</option>
                   </select>
                   <span class="proj-custom-years" id="projCustomYears" hidden>
@@ -2007,7 +2005,7 @@
                       type="number"
                       id="projFromYear"
                       min="2015"
-                      max="2050"
+                      max="2100"
                       value="2026"
                       aria-label="Custom window from year"
                     />
@@ -2016,7 +2014,7 @@
                       type="number"
                       id="projToYear"
                       min="2015"
-                      max="2050"
+                      max="2100"
                       value="2040"
                       aria-label="Custom window to year"
                     />
@@ -2194,8 +2192,8 @@
               </div>
             </div>
             <ul class="proj-roadmap">
-              <li><span class="proj-ms">SSP</span> 2051–2100 subset download unlocks the late-century window (2081–2100) and the full record to 2100</li>
-              <li><span class="proj-ms">07→09</span> <code>dir_agreement_drier</code> + <code>dir_agreement_n</code> are coded and self-tested; this statistic enables itself only after the Owner re-runs 07 (ssp) and 09 <code>--publish</code> (M5.4 / F10)</li>
+              <li><span class="proj-ms">SSP</span> 2015–2100 download <strong>complete</strong> (8 models × 2 scenarios × 3 variables, 4,128 files) — full-record recompute (02→09) in progress; the late-century window (2081–2100) enables itself when the store is republished</li>
+              <li><span class="proj-ms">07→09</span> <code>dir_agreement_drier</code> + <code>dir_agreement_n</code> are coded and self-tested; this statistic enables itself only after the full-record recompute passes 08 and 09 <code>--publish</code> (M5.4 / F10)</li>
               <li><span class="proj-ms">M6.8</span> era A↔B cross-validation delivers per-district <code>seam_uncertainty</code> for tooltips (X7)</li>
               <li><span class="proj-ms">O14</span> optional standardisation-baseline sensitivity (fixed 1981–2020 vs rolling) — memo section, not a UI default</li>
               <li><span class="proj-ms">M7</span> release: era-C store hosting decision (commit vs R2 + Zenodo)</li>

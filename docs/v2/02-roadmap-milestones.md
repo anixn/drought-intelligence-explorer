@@ -84,7 +84,7 @@ Added by the Owner's amendments memo; tracked with the same one-task-per-session
 | O13 | Alternate-reference QDM sensitivity product: QDM chain with CHIRPS/ERA5-Land reference (register D) alongside IMD-primary; divergence as downloadable sensitivity product + methodology paragraph | 2 **[Owner: compute]** | 3 | M (Owner) | M2 chain | Schema unchanged; `reference_id` column or parallel partition root |
 | O14 | Standardisation-baseline sensitivity for era C: fixed 1981–2020 (C2) vs rolling/era-specific baseline on a subset — separates climate signal from baseline-definition effect | 3 | 3 | S | E14 optional | One memo section; not a UI default |
 | O15 | ENSO/IOD conditioning panels (existing O07 promoted): ONI + DMI association with district drought frequency; association only, never causal; JJAS-conditioned composites | 2 | 3 | M | index data verified | Keep out of any projection claim |
-| E19 | **`#summary` tab (Owner request 2026-11-18): "how drought changes from now to 2100"** — ensemble-vs-observed shift per district on the **1981–2014 baseline (register D6)**: drought-frequency/duration/severity change (era C windows vs observed baseline), share of models agreeing on drying (`dir_agreement_drier`), area share in moderate-or-worse drought, per-state summary table, scenario toggle (SSP2-4.5 / SSP5-8.5) | 1 (candidate) | 5 | M | era C 2051–2100 download (Owner, in progress); E14 event machinery; M5.4 agreement layer | New hash `#summary` (R8); era labels + honest ensemble n (X3); agreement-first default (X2); numbers only from validated era C products past the §6 release gate — never fixtures (R3). Proposed in M8 below |
+| E19 | **`#summary` tab (Owner request 2026-11-18): "how drought changes from now to 2100"** — ensemble-vs-observed shift per district on the **1981–2014 baseline (register D6)**: drought-frequency/duration/severity change (era C windows vs observed baseline), share of models agreeing on drying (`dir_agreement_drier`), area share in moderate-or-worse drought, per-state summary table, scenario toggle (SSP2-4.5 / SSP5-8.5) | 1 (candidate) | 5 | M | era C 2051–2100 download (Owner, **complete 2026-11-19**); E14 event machinery; M5.4 agreement layer | New hash `#summary` (R8); era labels + honest ensemble n (X3); agreement-first default (X2); numbers only from validated era C products past the §6 release gate — never fixtures (R3). Proposed in M8 below |
 
 **Promotions within the existing backlog (amendment memo §1):**
 
@@ -216,7 +216,7 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 Work Tier 2 (O01–O12) in worth order; Tier 3 items only when their data/licence gates are satisfied. Each item still follows one-task-per-session with tracker updates.
 
 ### M9 — `#summary` tab: drought change now → 2100 (E19, Owner request 2026-11-18)
-*Suggested: after M5.8 + the Owner's 2051–2100 SSP download lands. Depends on: validated era C past the register §6 gate; E14 event machinery.*
+*Suggested: after M5.8 + the Owner's 2051–2100 SSP download (COMPLETE 2026-11-19: 8-model subset × 2 scenarios × 3 variables × 2015–2100, 4,128 files) and the full-record era-C recompute. Depends on: validated era C past the register §6 gate; E14 event machinery.*
 
 | Task | Content | Gate |
 |---|---|---|

@@ -576,13 +576,13 @@ def update_metadata(path: Path, cfg: dict, years: list[int] | None = None,
         else {}
     labels = cfg["export"]["labels"]
     # R2/R3 era honesty: the label states the years ACTUALLY published
-    # (scanned from the staged tree), never an aspirational span. The
-    # 2015-2050 record is a deliberate truncation (2051-2100 inputs
-    # pending, documented in PROGRESS.md); a hard-coded "2026-2100"
-    # label would overstate the record.
+    # (scanned from the staged tree), never an aspirational span. While the
+    # SSP inputs stop short of 2100 the label carries an explicit
+    # "(... inputs pending)" suffix; once the full 2015-2100 record is
+    # published the suffix disappears (2026-11-19: SSP 2015-2100 landed).
     if years:
         label = f"Projections {years[0]}-{years[-1]}"
-        if (years[0], years[-1]) != (2026, 2100):
+        if years[-1] < 2100:
             label += f" ({years[-1] + 1}-2100 inputs pending)"
     else:
         label = "Projections"
@@ -602,13 +602,14 @@ def update_metadata(path: Path, cfg: dict, years: list[int] | None = None,
                      "ensemble n recorded, never assumed (X3)"]),
     ])
     if dir_block:
-        # R2/R3: the EFFECTIVE window is stated verbatim (it is currently a
-        # record-end truncation, not the configured 2081-2100 window). The
-        # statistic is a count of models, never a probability (R9).
+        # R2/R3: the EFFECTIVE window is stated verbatim (the configured
+        # 2081-2100 window once the record reaches 2100; otherwise an explicit
+        # record-end truncation). The statistic is a count of models, never a
+        # probability (R9). Base = 1981-2014 per register D6.
         md["era_c"]["dir_agreement"] = OrderedDict([
             ("definition",
              "fraction of subset models whose effective-window mean is drier "
-             "(lower z) than their own 1981-2020 base mean; window-constant "
+             "(lower z) than their own 1981-2014 base mean; window-constant "
              "per district; a count of models, never a probability"),
             ("base", dir_block.get("base")),
             ("base_years", dir_block.get("base_years")),

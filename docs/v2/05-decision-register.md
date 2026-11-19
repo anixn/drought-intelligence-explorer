@@ -14,6 +14,7 @@
 | **D4** | Scenarios & uncertainty | **SSP2-4.5 + SSP5-8.5** at launch with median + 25–75 % band + agreement layers; schema ready for SSP1-2.6 / SSP3-7.0 |
 | **D5** | Open-science posture | **Versioned download portal** + Zenodo DOI + citation line in UI |
 | **D6** | **Window discipline (Owner instruction 2026-11-18: "make the validation period similar to GCM, 1981-2014; too much dangling between 1981-2025 / 1981-2020").** Three DISTINCT window roles, never conflated: (1) **Record windows** — what each era actually contains (era A 1901–2025, era B 1981–2025, era C corrected-historical 1981–2014 + ssp 2015–2100): facts, labelled, never spliced (R2). (2) **Standardisation baselines** — era B 1981–2020 (frozen published v1.0 semantics, R1) and era C model own-base 1981–2020 via the AS6 stitch (C2, already computed): NOT changed — a 40-year fit is statistically stronger than 34-year, and changing them would invalidate the published era-B indices and force a full 03–07 Owner re-run for no scientific gain. (3) **Comparison/validation window = 1981–2014** (the GCM-native historical window) — used by ALL cross-era comparisons: the 08 validation gate (already `[1981, 2014]`), `dir_agreement` base (changed from `[1981, 2020]` to `[1981, 2014]` in `config/ensemble.yaml` — scientifically better: the model baseline now comes purely from the observed-forced historical-corrected record; ssp-segment years 2015–2020 are projections and must never sit inside a model baseline), the E14/M9 events baseline (rebuilt as `baseline_1981_2014.json`), the M4 IMD benchmark, and M6.6/E17 cross-validation (era A↔B uses 1981–2014 primary with the full 1981–2025 overlap as sensitivity). Calibration windows (QDM/IMD 1981–2020) remain fitting choices, not comparison windows. Implementation landed BEFORE the Owner's pending step-07/09 re-run, so the pending run picks the new base up with no extra compute |
+| **D7** | **Record-extension recomputation (Owner instruction 2026-11-19: "all the data downloaded from 2015-2100 … keep populating the data")** | When a raw record grows, the affected era is **recomputed as one consistent product over the full record and republished atomically**. Partial-record products are **superseded**, never concatenated, and never mixed with full-record products. For era C this is methodologically required rather than a convenience: QDM's τ is the **within-projection-period** non-exceedance probability (Cannon 2015), so extending the SSP record from 2015–2050 to 2015–2100 legitimately revises every ssp-year corrected value; one QDM fit per model–scenario (2015–2100) is therefore the only coherent product. Implementation consequences (2026-11-19): step 02 reuses a stored output **only when its period equals the declared `models.yaml` window** (the period is part of the reuse contract — a shorter output is recomputed); superseded period files are removed from the stage by `gcm-pipeline/prune_stale_periods.py` before the next stage consumes them (downstream steps discover inputs by glob); step 09 replaces the published partition tree wholesale, so no orphan partition survives; the revision is recorded in PROGRESS.md + manuscript and the regression baseline is re-blessed after review |
 
 **Amendment cross-references (Owner memo docs/v2/06, 2026-11-15):** E14 extends the D1/D4 projections module with event analytics (Tier-1 confirmation = OD9); E16 is a sensitivity study *under* C3, never a replacement; O13 is a sensitivity run *under* D (IMD primary unchanged); E18/O14/O15 are analytical layers under safeguard rules (association ≠ causation; definitions registered before shipping). Task amendments: M2.1 `genealogy:` field (family-collapsed agreement display), M2.11 tail checks (Q–Q + p90/p95 by region/season), M2.9 sub-pixel transparency list (≤ 2 grid cells flagged + CSV), M4.3 FDR view mandatory. Backlog promotions: O02, O03 → Tier 1; F08 superseded by E18; O07 → O15. Process amendments: CI gate, per-era Zenodo deposits (software DOI stays one deposit), README freshness badge, `scripts/reproduce_figures.py`.
 
@@ -32,18 +33,20 @@
 **C5 note — direction-of-change agreement (F10, implemented 2026-11-18).**
 `dir_agreement_drier` is the per-district **fraction of models whose
 future-window mean z is lower (drier) than that same model's own base mean**.
-The base is `[1981, 2020]` of the **AS6-stitched** series (historical-corrected
-1981–2014 + ssp 2015–…), never the ssp segment alone; a model missing either
-window leaves both numerator and denominator, and the companion
-`dir_agreement_n` records the exact denominator. **Effective-window rule**
-(declared in `gcm-pipeline/config/ensemble.yaml`, recorded verbatim in the NC
-attrs → export manifest → `metadata.json` → UI): the overlap of the configured
+The base is `[1981, 2014]` (register D6 — the GCM-native historical window)
+of the **AS6-stitched** series (historical-corrected 1981–2014 + ssp 2015–…),
+never the ssp segment alone; a model missing either window leaves both
+numerator and denominator, and the companion `dir_agreement_n` records the
+exact denominator. **Effective-window rule** (declared in
+`gcm-pipeline/config/ensemble.yaml`, recorded verbatim in the NC attrs →
+export manifest → `metadata.json` → UI): the overlap of the configured
 `[2081, 2100]` with the record when it holds ≥ `dir_agreement_min_window_years`
 (10) distinct years, otherwise the **latest 10 years available** (2041–2050
-today, because the record ends 2050) — an explicit, labelled record-end
+while the record ended at 2050) — an explicit, labelled record-end
 truncation, never a silent shortening; a record shorter than 10 years emits no
-statistic. The statistic is **window-constant** per district and is presented
-as a **model count, never a probability** (R9).
+statistic. **Since the full 2015–2100 record landed (2026-11-19) the effective
+window is the configured 2081–2100.** The statistic is **window-constant** per
+district and is presented as a **model count, never a probability** (R9).
 
 ## 3. Architecture decisions (locked — measured, not argued)
 

@@ -1099,7 +1099,7 @@
   "disclaimer": "Research build: values are derived from the cited public datasets and gridded sources, aggregated to administrative districts. They are model/reanalysis-based estimates, not official drought declarations, and must not be used as the sole basis for operational decisions.",
   "era_c": {
     "id": "projections",
-    "label": "Projections 2015-2050 (2051-2100 inputs pending)",
+    "label": "Projections 2015-2100",
     "banner": "PROJECTIONS (era C) - QDM-bias-corrected CMIP6, SSP2-4.5 / SSP5-8.5, IMD-calibrated (reference 1981-2020). Simulations, never forecasts; never spliced with observed data; presented with ensemble spread and agreement (X2/X3), never the median alone.",
     "status": "bias-corrected CMIP6 simulations - never forecasts",
     "scenarios": [
@@ -1130,6 +1130,15 @@
       "never spliced with observed data (R2)",
       "spread + agreement shown alongside the median (X2/X3)",
       "ensemble n recorded, never assumed (X3)"
-    ]
+    ],
+    "dir_agreement": {
+      "definition": "fraction of subset models whose effective-window mean is drier (lower z) than their own 1981-2014 base mean; window-constant per district; a count of models, never a probability",
+      "base": "1981-2014",
+      "base_years": 34,
+      "window_configured": "2081-2100",
+      "window_effective": "2081-2100",
+      "window_note": "overlap of the configured window 2081-2100 with the record 2015-2100",
+      "min_window_years": 10
+    }
   }
 }

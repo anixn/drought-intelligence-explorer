@@ -4,7 +4,13 @@
 
 OWNER-EXECUTION SCRIPT (R4). Writes ONLY under gcm-pipeline/work/ (X9
 convention, docs/v2/06 §5) — never data/, never out/. Resumable + idempotent:
-existing verified outputs are skipped.
+existing verified outputs are skipped — but ONLY when the stored record covers
+exactly the DECLARED window (models.yaml start/end). A shorter stored output
+(e.g. 2015-2050 after the raw SSP record grew to 2015-2100) is SUPERSEDED and
+is recomputed, never reused: the period is part of the reuse contract.
+Superseded files then have to be removed from the stage directory
+(gcm-pipeline/prune_stale_periods.py) because downstream steps glob their
+inputs by ``<var>_*.nc``.
 
 Reality of the raw store (verified 2026-11-16 on ACCESS-CM2): the Owner's
 R-generated year files are ALREADY at 0.25° (ACCESS-CM2 day data regridded
@@ -623,15 +629,26 @@ def main() -> int:
             for exp in args.experiments.split(","):
                 yrs = row.get(exp) or {}
                 years = range(int(yrs.get("start", 1981)), int(yrs.get("end", 2014)) + 1)
+                # Declared record window (models.yaml) — part of the reuse
+                # contract: only an output covering EXACTLY this window is a
+                # reusable product; a shorter one is superseded (record
+                # extension, e.g. SSP 2015-2050 -> 2015-2100).
+                expected_period = f"{years.start}-{years.stop - 1}"
                 existing = [k for k in manifest["files"]
                             if k.startswith(f"{model}/{exp}/{var}_")]
                 if existing and not args.force:
-                    rec = manifest["files"][existing[0]]
-                    p = work_root / rec["out"]
-                    if p.exists() and hashlib.sha256(p.read_bytes()).hexdigest() == rec["sha256"]:
-                        print(f"  SKIP {model}/{exp}/{var}: verified output exists")
-                        n_skip += 1
-                        continue
+                    rec = next((manifest["files"][k] for k in existing
+                                if manifest["files"][k].get("period") == expected_period),
+                               None)
+                    if rec is None:
+                        print(f"  RECOMPUTE {model}/{exp}/{var}: stored record "
+                              f"does not cover the declared window {expected_period}")
+                    else:
+                        p = work_root / rec["out"]
+                        if p.exists() and hashlib.sha256(p.read_bytes()).hexdigest() == rec["sha256"]:
+                            print(f"  SKIP {model}/{exp}/{var}: verified output exists")
+                            n_skip += 1
+                            continue
                 try:
                     root = raw_root if exp == "historical" else raw_root_ssp
                     rec = regrid_model_var(model, exp, var, root, work_root, tgt, years)
