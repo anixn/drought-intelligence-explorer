@@ -120,6 +120,22 @@
     const n = parseInt(h.slice(1), 16);
     return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
   }
+  /**
+   * Readable ink for text set on a filled class swatch. Uses the WCAG
+   * relative-luminance formula so warm-light classes (mild drought) get dark
+   * ink and the darkest extremes get paper. Chrome accents never enter here:
+   * this reads the DATA colour it is given.
+   */
+  DIE.inkOn = function (hex) {
+    if (typeof hex !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(hex)) return '#FBF7EE';
+    const lin = (c) => {
+      const s = c / 255;
+      return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+    };
+    const [r, g, b] = hexToRgb(hex);
+    const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    return L > 0.42 ? '#211C15' : '#FBF7EE';
+  };
   function lerpRgb(a, b, t) {
     return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
   }
@@ -140,7 +156,7 @@
       return { t: (centre - lo) / (hi - lo), rgb: hexToRgb(c.color) };
     }).sort((a, b) => a.t - b.t);
     return function (value) {
-      if (!Number.isFinite(value)) return '#D7DEE7';
+      if (!Number.isFinite(value)) return '#E8E1D2';
       const t = Math.min(1, Math.max(0, (value - lo) / (hi - lo)));
       if (t <= anchors[0].t) return rgbToCss(anchors[0].rgb);
       if (t >= anchors[anchors.length - 1].t) return rgbToCss(anchors[anchors.length - 1].rgb);
@@ -178,10 +194,10 @@
   };
   /** Colour for a district value under the current display mode. */
   DIE.colorFor = function (value, indicator, mode) {
-    if (!Number.isFinite(value)) return '#D7DEE7';
+    if (!Number.isFinite(value)) return '#E8E1D2';
     if (mode === 'continuous') return DIE.ramp(indicator)(value);
     const c = classify(value, indicator);
-    return c ? c.color : '#D7DEE7';
+    return c ? c.color : '#E8E1D2';
   };
 
   /* ------------------------------------------------------------ loaders -- */

@@ -375,7 +375,7 @@
         () => null,
         (id) => {
           const r = byId.get(id);
-          return r ? (changeColor(r) || "#D7DEE7") : "#D7DEE7";
+          return r ? (changeColor(r) || "#E8E1D2") : "#E8E1D2";
         });
       if (mySeq !== seq) return;
       const indLabel = DIE.indicatorById && DIE.indicatorById.get(state.variable)

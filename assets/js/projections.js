@@ -390,7 +390,7 @@
 
   // agreement stat colours: share of models agreeing on the drought class,
   // 5 fraction bins; honest-n note ("x of 8 models") lives in the legend
-  const AGREEMENT_COLORS = ["#EDF2F7", "#C3D4E3", "#84A9C9", "#41729E", "#14263D"];
+  const AGREEMENT_COLORS = ["#EDF2F7", "#C3D4E3", "#84A9C9", "#41729E", "#211C15"];
   const AGREEMENT_BINS = [
     { test: (f) => f <= 0, label: "0 of 8 models", range: "0" },
     { test: (f) => f <= 0.25, label: "1–2 of 8 models", range: "(0, 0.25]" },
@@ -636,17 +636,17 @@
       ];
 
       const layout = {
-        font: { family: "Inter, IBM Plex Sans, sans-serif", size: 11, color: "#1F2937" },
+        font: { family: "Inter, IBM Plex Sans, sans-serif", size: 11, color: "#2E2820" },
         margin: { l: 52, r: 16, t: 14, b: 34 },
         hovermode: "x unified",
         showlegend: true,
         legend: { orientation: "h", y: 1.14, font: { size: 10 } },
         shapes: [],
         annotations: [],
-        xaxis: { gridcolor: "#F0F3F7", linecolor: "#CBD5E1", tickfont: { size: 9.5 } },
+        xaxis: { gridcolor: "#EFE8D8", linecolor: "#CFC2A8", tickfont: { size: 9.5 } },
         yaxis: {
-          title: { text: ind.label + " (" + ind.units + ")", font: { size: 10.5, color: "#687588" } },
-          gridcolor: "#F0F3F7", linecolor: "#CBD5E1", tickfont: { size: 10 },
+          title: { text: ind.label + " (" + ind.units + ")", font: { size: 10.5, color: "#6E6250" } },
+          gridcolor: "#EFE8D8", linecolor: "#CFC2A8", tickfont: { size: 10 },
         },
       };
       const fam = familyOf(state.variable);
@@ -816,7 +816,7 @@
         for (const c of ind.classes) row(c.color, c.label, classRange(c));
       }
     }
-    row("#D7DEE7", "No data", "missing month");
+    row("#E8E1D2", "No data", "missing month");
   }
 
   function classRange(c) {
@@ -946,12 +946,12 @@
       if (statKey === "dir_agreement_drier") {
         colorFn = (id) => {
           const b = dirBin(lastMapValues.get(id));
-          return b ? DIR_COLORS[DIR_BINS.indexOf(b)] : "#D7DEE7";
+          return b ? DIR_COLORS[DIR_BINS.indexOf(b)] : "#E8E1D2";
         };
       } else if (statKey.indexOf("agreement") === 0) {
         colorFn = (id) => {
           const b = agreementBin(lastMapValues.get(id));
-          return b ? AGREEMENT_COLORS[AGREEMENT_BINS.indexOf(b)] : "#D7DEE7";
+          return b ? AGREEMENT_COLORS[AGREEMENT_BINS.indexOf(b)] : "#E8E1D2";
         };
       } else {
         const ind = metaIndicator(state.variable);
@@ -959,7 +959,7 @@
           const c = ind && Number.isFinite(lastMapValues.get(id))
             ? DIE.classify(lastMapValues.get(id), ind)
             : null;
-          return c ? c.color : "#D7DEE7";
+          return c ? c.color : "#E8E1D2";
         };
       }
       mapApi.applyData(null, 0, null, selectedId,
@@ -1156,7 +1156,7 @@
     const nd = document.createElement("div");
     nd.className = "legend-row";
     nd.innerHTML =
-      '<span class="legend-swatch" style="background:#D7DEE7"></span>' +
+      '<span class="legend-swatch" style="background:#E8E1D2"></span>' +
       "<span>No data</span>" +
       '<span class="legend-range">missing month</span>';
     el.appendChild(nd);
@@ -1215,7 +1215,7 @@
       }, (id) => {
         const f = divValues.get(id);
         const bin = f && divBin(f.d);
-        return bin ? bin.color : "#D7DEE7";
+        return bin ? bin.color : "#E8E1D2";
       });
       renderDivLegend();
 

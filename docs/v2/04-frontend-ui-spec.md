@@ -191,3 +191,52 @@ New panels (in the existing `doc-*` panel system): **Methodology v2** (every for
 6. Any UI change ships with the verification line in PROGRESS.md ("tabs cycled, zero console errors, mobile pass").
 
 **Definition of success for this doc:** a user who never opens the new surfaces notices nothing except the currency banner — and a user who opens them gets three honest eras with their seams visible.
+
+---
+
+## 9. Sepia Paper re-baseline (2026-11-20 — decision D10, M10.1–M10.3 built)
+
+*This section is the current source of truth for the dashboard's visual system; §1–§8 above remain valid for behaviour, routing and engine integration.*
+
+### 9.1 The design language
+
+The dashboard is a **reading surface for a long climatological record**, not an app dashboard. The Sepia Paper system (Owner showcase, adopted verbatim as tokens):
+
+| Role | Token | Value |
+|---|---|---|
+| Page base | `--paper` | `#F6F1E6` |
+| Panel / card | `--surface` | `#FBF7EE` |
+| Control rail / wells | `--surface-2` | `#EFE8D8` |
+| Pressed wells | `--surface-3` | `#E8DFCC` |
+| Hairline / strong | `--hairline`, `--hairline-strong` | `#E1D7C3`, `#CFC2A8` |
+| Ink ramp | `--ink / --ink-strong / --ink-soft / --ink-faint` | `#2E2820 / #211C15 / #6E6250 / #6F6350` |
+| Status | `--ok / --warn / --danger` | `#4A7A5A / #B08947 / #A6452F` |
+| Severity ramp (data) | `--sev-*` | unchanged from the published v1.0 metadata palette |
+
+Working rules (binding for every future surface):
+
+1. **60/30/10** — paper dominates, ink carries structure, one accent speaks.
+2. **One accent per view** — `body[data-accent]` sets exactly one chrome accent; the muted per-tab band colours (Overview `#4E6B5A`, Historical `#44586E`, Events `#8A5A2B`, Propagation `#6B4E6E`, Engine `#4F5D3A`, Projections `#8A4430`, Summary `#74425E`, Atlas `#6E6238`) still identify each workspace.
+3. **Tone, not shadow** — hairline rules and surface steps before drop shadows (panels are flat; only the tooltip and mobile drawer keep elevation).
+4. **Texture ≤ 5 %** — one faint grain, visible only in the paper gutters.
+5. **Severity darkens** — the class ramp is luminance-ordered and never re-themed.
+6. **Accent never paints data** — maps, legends, class chips and chart traces read the data palette, never `--accent`.
+7. **Warm ink, never black.**
+
+### 9.2 Accent themes
+
+Four persisted paper accents selected from the sidebar "Paper accent" control (Reading Room `#6B2B1F` default, Field Notes `#55612F`, Drafting Table `#31506B`, Hydrograph `#14594F`). They re-point `--accent*` chrome tokens only, persist in `localStorage['die.accent']`, and never touch the severity ramp, so a class colour quoted in a report means the same thing after the reader changes their paper. Reset filters does not reset the accent.
+
+### 9.3 Depth-1 answer layer
+
+- **"Ask the record"** band at the top of `#overview`: four question cards (now / trend / events / future) plus an Atlas deep link. Cards are `<button>`s (keyboard + screen-reader equivalent), route via `switchTab`, and `latest` additionally snaps the shared date cursor to the most recent available month. Cards never state a number — they point at where the number and its receipt live.
+- **Receipts line** under the summary cards: `era · product · window · baseline · n`, filled by `renderEvidence()` from `metadata.json` and the computed region statistics — never hand-typed, and it reports `n = 0` honestly.
+- **Era pill** in the topbar: standing `Era A/B/C` label per tab ("C − B · Delta to 2100" on `#summary`), colour-coded by era, with the no-splice wording in its accessible label. This is R2 made visible on every surface without adding a banner to each view.
+
+### 9.4 What must not regress
+
+1. All nine hash routes and the docs deep-links unchanged (R8); the era pill is a label, never a filter.
+2. Data colours, class boundaries, event rules and every analytic result identical to v1.0.0 (R1) — the theme is chrome-only.
+3. Keyboard operability: accent swatches and ask cards are real buttons; the era pill is focusable with its full era statement as the accessible name.
+4. Lighthouse accessibility ≥ 95 (measured 100 after the ink-faint darkening to `#6F6350` for ≥ 4.5:1 on `--surface-2`); zero console errors across all surfaces.
+5. Any new surface ships with its era pill mapping (add to `ERA_BY_TAB`), accent-neutral styling and a receipts-capable meta line.

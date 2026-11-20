@@ -227,6 +227,23 @@ Work Tier 2 (O01–O12) in worth order; Tier 3 items only when their data/licenc
 
 **Exit gate M9:** `#summary` live on real era C data with the same ship gate as M5 (register §6), after `#crossval` (M6.6) is live (build-order constraint X1).
 
+### M10 — "Sepia Paper" UI/UX re-baseline (Owner instruction 2026-11-20, decision D10)
+*Suggested: Nov–Dec 2026 (runs alongside M6.6, which it does not block). Depends on: nothing data-side — this is the design-system and information-architecture layer. Governing constraints: R2 (era honesty on every surface), R8 (stable hash routes, keyboard + ARIA), R9 (interpretation guardrails), R1 (v1.0.0 semantics untouched — the published site is not modified; the Owner has granted layout redesign permission for the v2 dashboard). The theme lives in the `SEPIA PAPER THEME LAYER` section of `assets/css/style.css`; tokens + the seven working rules are recorded in register D10.*
+
+| Task | Content | Gate |
+|---|---|---|
+| M10.1 ✅ 2026-11-20 | **Sepia Paper theme across all nine surfaces**: token layer (paper/surface/hairline/ink ramp/status), paper control rail replacing the navy sidebar, muted per-tab identity band, warm footer; severity/class colours unchanged (data, not theme) | all tabs cycled, zero console errors; selftest + regression green |
+| M10.2 ✅ 2026-11-20 | **Depth-1 answers**: "Ask the record" band on `#overview` (4 question cards + Atlas link, each routing to the evidence surface), receipts line (era · product · window · baseline · n) under the summary cards, standing topbar era pill (Era A/B/C per tab; "C − B · Delta to 2100" on `#summary`) | every quoted number carries its era + n; R2 copy verified on all eras |
+| M10.3 ✅ 2026-11-20 | **Four accent themes** (Reading Room / Field Notes / Drafting Table / Hydrograph) with the persisted sidebar "Paper accent" control; chrome-only, severity ramp identical in all four; `DIE.inkOn()` WCAG ink on data chips | Lighthouse accessibility ≥ 95 (measured 100) |
+| M10.4 | State-encoding permalinks: "Copy link" (and a per-panel share control) writes indicator + geography + period + date + era-relevant settings into the hash; `routeFromHash` restores them | round-trip restore test on every tab; R8 routes still work |
+| M10.5 | DOI/citation plumbing: era C + era A source blocks in `metadata.json` (review finding), DOI in the citation box, CSV/PNG export headers, copy-as-citation + share card | every downloadable asset carries the citation header (X6) |
+| M10.6 | District profile pages `#/district/<id>`: headline answer + indicator strip + trend + events + era context for one district | deep-link + keyboard operable; era labels on every block |
+| M10.7 | Evidence surfaces: living anchored methodology page, public governance/licence page, reality-check boxes on interpretive claims (with M6.6 `#crossval`) | review items 3–9 closed or explicitly deferred |
+| M10.8 | Claim verifier: `scripts/reproduce_figures.py` + a "how this number is made" trail from every headline figure | verifier reproduces ≥ 3 published figures exactly |
+| M10.9 | Optional: lamplight night mode (documented in D10, deliberately not shipped with M10.1–M10.3) | contrast pass in the dark paper palette; never auto-forced |
+
+**Exit gate M10:** the theme + Depth-1 layer are the default experience on `v2-dev` with Lighthouse accessibility 100 and zero console errors; the deferred credibility surfaces (M10.4–M10.8) are scheduled, not silently dropped.
+
 ## 4. Feature → milestone map
 
 | Milestone | Features delivered |
@@ -240,6 +257,7 @@ Work Tier 2 (O01–O12) in worth order; Tier 3 items only when their data/licenc
 | M7 | E09, E10, E11, E12 |
 | M8+ | O01–O12, O13–O15 (amendment backlog, docs/v2/06), then Tier 3 |
 | M9 | E19 (`#summary`) |
+| M10 | "Sepia Paper" theme + Depth-1 answer layer (register D10); M10.4–M10.8 cover the review's credibility backlog |
 
 ## 5. Owner-executed compute register (what OpenCode must never assume is done)
 

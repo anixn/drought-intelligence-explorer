@@ -169,7 +169,7 @@
         (id) => {
           const v = vals.get(id);
           const c = ind && Number.isFinite(v) ? DIE.classify(v, ind) : null;
-          return c ? c.color : "#D7DEE7";
+          return c ? c.color : "#E8E1D2";
         });
       if (mySeq !== seq) return;
 

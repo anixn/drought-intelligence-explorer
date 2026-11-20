@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-18a" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-20g" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -149,6 +149,17 @@
       </nav>
 
       <div class="topbar-status" id="topbarStatus" aria-live="polite">
+        <span
+          class="era-pill"
+          id="eraPill"
+          data-era="b"
+          role="note"
+          tabindex="0"
+          aria-label="Era B: Gridded Multi-Source Product, 1981 to 2025"
+          title="Era B — Gridded Multi-Source Product (CHIRPS, ERA5-Land, MODIS), 1981–2025. Eras are labelled and never spliced."
+          ><span class="era-dot" aria-hidden="true"></span>Era <b>B</b>
+          &middot; Gridded Product</span
+        >
         <span
           class="chip chip-static"
           id="chipDataMode"
@@ -445,6 +456,52 @@
               <span>Hide</span>
             </button>
           </div>
+          <div class="appearance" id="appearance">
+            <span class="appearance-label" id="appearanceLabel"
+              >Paper accent</span
+            >
+            <div
+              class="appearance-swatches"
+              role="group"
+              aria-labelledby="appearanceLabel"
+            >
+              <button
+                type="button"
+                class="appearance-swatch"
+                data-theme="reading"
+                aria-pressed="true"
+                aria-label="Reading Room accent (oxblood)"
+                title="Reading Room"
+              ></button>
+              <button
+                type="button"
+                class="appearance-swatch"
+                data-theme="field"
+                aria-pressed="false"
+                aria-label="Field Notes accent (olive)"
+                title="Field Notes"
+              ></button>
+              <button
+                type="button"
+                class="appearance-swatch"
+                data-theme="drafting"
+                aria-pressed="false"
+                aria-label="Drafting Table accent (slate blue)"
+                title="Drafting Table"
+              ></button>
+              <button
+                type="button"
+                class="appearance-swatch"
+                data-theme="hydro"
+                aria-pressed="false"
+                aria-label="Hydrograph accent (deep teal)"
+                title="Hydrograph"
+              ></button>
+            </div>
+            <div class="appearance-name" id="appearanceName">
+              Reading Room
+            </div>
+          </div>
           <div class="foot-line" id="footPeriod">—</div>
           <div class="foot-line" id="footRes">—</div>
           <div class="foot-line" id="footMode">—</div>
@@ -719,6 +776,54 @@
             </div>
           </div>
 
+          <!-- Answers first: one question per card, each routing to the
+               workspace that holds the evidence. The cards never re-state a
+               number — they point at where the number, its window and its
+               sample size live. -->
+          <section class="ask-band" aria-labelledby="askHeading">
+            <div class="ask-head">
+              <h2 id="askHeading">Ask the record</h2>
+              <p>
+                Every answer carries its era, window and sample size.
+                <button type="button" class="ask-more" data-ask="atlas">
+                  Or go back to 1901 &rarr;
+                </button>
+              </p>
+            </div>
+            <button type="button" class="ask-card" data-ask="latest">
+              <span class="q">Where is drought biting right now?</span>
+              <span class="a"
+                >Area-weighted severity for the selected month, district by
+                district.</span
+              >
+              <span class="go">Read the map &rarr;</span>
+            </button>
+            <button type="button" class="ask-card" data-ask="historical">
+              <span class="q">Has drought become more frequent here?</span>
+              <span class="a"
+                >Mann&ndash;Kendall trend, Sen slope and FDR-corrected
+                significance for this region.</span
+              >
+              <span class="go">Open Historical Analysis &rarr;</span>
+            </button>
+            <button type="button" class="ask-card" data-ask="events">
+              <span class="q">Which droughts were the worst on record?</span>
+              <span class="a"
+                >Runs analysis: duration, severity and recovery for every
+                qualifying event.</span
+              >
+              <span class="go">Open Drought Events &rarr;</span>
+            </button>
+            <button type="button" class="ask-card" data-ask="projections">
+              <span class="q">How do the scenarios diverge after 2026?</span>
+              <span class="a"
+                >Bias-corrected CMIP6 ensemble median and spread &mdash;
+                projections, never forecasts.</span
+              >
+              <span class="go">Open Future Projections &rarr;</span>
+            </button>
+          </section>
+
           <!-- Workspace scope strip: the observation date drives every
                Overview panel (summary cards, map, time series, ranking,
                evolution), so it sits directly above them as one bar. -->
@@ -838,6 +943,15 @@
             </div>
           </section>
 
+          <!-- Receipts for the four cards above: era · product · window ·
+               baseline · n. Filled by renderKPIs(); never hand-typed. -->
+          <div
+            class="evidence"
+            id="evidenceLine"
+            aria-live="polite"
+            aria-label="Evidence for the summary statistics"
+          ></div>
+
           <!-- Main map -->
           <section class="panel map-panel" id="mapPanel">
             <div class="panel-head">
@@ -946,7 +1060,9 @@
                 </div>
                 <div class="rail-box" id="regionBox">
                   <h3 class="rail-title">Regional summary</h3>
-                  <div id="regionSummary"><p class="side-note">—</p></div>
+                  <div class="region-summary" id="regionSummary">
+                    <p class="side-note">-</p>
+                  </div>
                 </div>
               </aside>
             </div>
@@ -3836,7 +3952,6 @@
       class="toast-stack"
       id="toastStack"
       aria-live="polite"
-      aria-label="Notifications"
     ></div>
 
     <!-- boot overlay -->
@@ -3906,7 +4021,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-20b";
+        var ASSET_VERSION = "2026-11-20c";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

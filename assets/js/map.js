@@ -18,7 +18,7 @@
   const DIE = (window.DIE = window.DIE || {});
   const $ = (id) => document.getElementById(id);
 
-  const NO_DATA_COLOR = "#D7DEE7";
+  const NO_DATA_COLOR = "#E8E1D2";
   // const BASEMAPS = {
   //   light: {
   //     url: "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
@@ -81,10 +81,12 @@
 
   function classChip(c) {
     if (!c)
-      return '<span class="mini-chip" style="background:#9AA7B5">no data</span>';
+      return '<span class="mini-chip" style="background:#6F6350;color:#FBF7EE">no data</span>';
     return (
       '<span class="mini-chip" style="background:' +
       c.color +
+      ";color:" +
+      DIE.inkOn(c.color) +
       '">' +
       c.label +
       "</span>"
@@ -208,7 +210,7 @@
 
     const districtsLayer = L.geoJSON(DIE.boundaries.districts, {
       style: () => ({
-        color: "#FFFFFF",
+        color: "#FBF7EE",
         weight: 0.6,
         fillColor: NO_DATA_COLOR,
         fillOpacity: 0.92,
@@ -216,10 +218,10 @@
       onEachFeature: (feature, layer) => {
         const id = feature.properties.id;
         layer.on("mouseover", () =>
-          layer.setStyle({ weight: 1.4, color: "#14263D" }),
+          layer.setStyle({ weight: 1.4, color: "#211C15" }),
         );
         layer.on("mouseout", () =>
-          layer.setStyle({ weight: 0.6, color: "#FFFFFF" }),
+          layer.setStyle({ weight: 0.6, color: "#FBF7EE" }),
         );
         // Owner UX directive (2026-11-20): clicking a district zooms it to
         // fill the map's own container (opt-out with zoomOnDistrictClick).
@@ -250,7 +252,7 @@
 
     const statesLayer = L.geoJSON(DIE.boundaries.states, {
       style: () => ({
-        color: "#8C9BAD",
+        color: "#968A74",
         weight: 1.1,
         fill: false,
         opacity: 0.9,
@@ -260,7 +262,7 @@
 
     const outlineLayer = L.geoJSON(DIE.boundaries.outline, {
       style: () => ({
-        color: "#14263D",
+        color: "#211C15",
         weight: 2,
         fill: false,
         opacity: 0.95,
@@ -370,7 +372,7 @@
         layer.setStyle({
           fillColor: color,
           fillOpacity: Number.isFinite(v) ? 0.92 : 0.75,
-          color: isSelected ? "#14263D" : "#FFFFFF",
+          color: isSelected ? "#211C15" : "#FBF7EE",
           weight: isSelected ? 2.4 : 0.6,
         });
         if (isSelected) layer.bringToFront();
@@ -621,7 +623,7 @@
       const canvas = await html2canvas(el, {
         useCORS: true,
         logging: false,
-        backgroundColor: "#EDF1F5",
+        backgroundColor: "#EFE8D8",
         scale: 2,
       });
       const a = document.createElement("a");

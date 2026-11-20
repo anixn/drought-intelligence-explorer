@@ -285,6 +285,114 @@
       };
       lbl.textContent = titles[tabId] || 'Export';
     }
+    renderEraPill(tabId);
+  }
+
+  /* ================================================= APPEARANCE THEMES ===
+   * Sepia Paper accent themes (decision D10). They retint chrome only; the
+   * severity ramp, class boundaries and every analytic result are identical
+   * in all four, so a colour quoted in a report means the same thing after
+   * the reader changes their paper. */
+  const ACCENT_THEMES = {
+    reading: 'Reading Room',
+    field: 'Field Notes',
+    drafting: 'Drafting Table',
+    hydro: 'Hydrograph'
+  };
+  function applyAccent(name, persist) {
+    const key = Object.prototype.hasOwnProperty.call(ACCENT_THEMES, name)
+      ? name
+      : 'reading';
+    document.body.dataset.accent = key;
+    document.querySelectorAll('.appearance-swatch').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.theme === key));
+    });
+    const label = $('appearanceName');
+    if (label) label.textContent = ACCENT_THEMES[key];
+    if (persist) {
+      try { localStorage.setItem('die.accent', key); } catch (e) {}
+      if (DIE.Telemetry) DIE.Telemetry.track('appearance_accent', { accent: key });
+    }
+  }
+
+  /* ======================================================== ERA PILL =====
+   * A standing, honest statement of which record the current surface reads.
+   * Era A (reconstruction), B (gridded product) and C (projections) are never
+   * silently spliced; the pill is the always-visible receipt for that rule. */
+  const ERA_BY_TAB = { atlas: 'a', projections: 'c', summary: 'c' };
+  const ERA_COPY = {
+    a: {
+      short: 'Era <b>A</b> &middot; Atlas 1901&ndash;2025',
+      long:
+        'Era A — Drought Atlas of India reconstruction (SPEI), 1901–2025. ' +
+        'A reconstruction, served at district level; never spliced with the ' +
+        '1981–2025 gridded product.'
+    },
+    b: {
+      short: 'Era <b>B</b> &middot; Gridded Product',
+      long:
+        'Era B — Gridded Multi-Source Product (CHIRPS, ERA5-Land, MODIS), ' +
+        '1981–2025. Observation-based gridded sources; each indicator family ' +
+        'reads its own source and they are never merged.'
+    },
+    c: {
+      short: 'Era <b>C</b> &middot; Projections',
+      long:
+        'Era C — Bias-corrected CMIP6 projections under SSP2-4.5 and ' +
+        'SSP5-8.5. Simulations, never forecasts; never spliced with era B.'
+    },
+    'c-minus-b': {
+      short: 'Era <b>C</b> &minus; B &middot; Delta to 2100',
+      long:
+        'A per-era delta: era-C projections compared against the era-B ' +
+        '1981–2014 baseline. Two eras are computed separately and shown ' +
+        'side by side — never as one continuous series.'
+    }
+  };
+  function renderEraPill(tabId) {
+    const pill = $('eraPill');
+    if (!pill) return;
+    const key = tabId === 'summary' ? 'c-minus-b' : ERA_BY_TAB[tabId] || 'b';
+    const copy = ERA_COPY[key];
+    pill.dataset.era = key === 'c-minus-b' ? 'c' : key;
+    pill.innerHTML = '<span class="era-dot" aria-hidden="true"></span>' + copy.short;
+    pill.title = copy.long;
+    pill.setAttribute('aria-label', copy.long);
+  }
+
+  /* ===================================================== ASK THE RECORD ==
+   * Depth-1 answers: the question cards route to the workspace that holds the
+   * evidence. "latest" additionally snaps the shared date cursor to the most
+   * recent available month, so the answer describes now rather than wherever
+   * the slider was left. */
+  function runAsk(which) {
+    const target = {
+      latest: 'overview',
+      historical: 'historical',
+      events: 'events',
+      projections: 'projections',
+      atlas: 'atlas'
+    }[which] || 'overview';
+    switchTab(target);
+    if (which === 'latest') {
+      const ds = currentDataset();
+      if (ds) {
+        const idx = ds.availableEndIndex >= 0
+          ? ds.availableEndIndex
+          : ds.dates.length - 1;
+        if (idx !== DIE.state.dateIdx) {
+          DIE.Filters.set({ dateIdx: idx });
+        }
+      }
+      const mapPanel = $('mapPanel');
+      if (mapPanel && mapPanel.scrollIntoView) {
+        const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        mapPanel.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+    if (DIE.Telemetry) DIE.Telemetry.track('ask_open', { question: which, tab: target });
   }
 
   function routeFromHash() {
@@ -415,6 +523,25 @@
       if (btn) btn.addEventListener('click', () => switchTab(t.id));
     });
     window.addEventListener('hashchange', routeFromHash);
+
+    /* ------------------------------------------------ appearance (D10) --- */
+    // Four paper accents. Chrome only — the severity ramp is untouched, so a
+    // quoted class colour means the same thing in every theme. Persisted per
+    // browser; resetting the filters never changes it.
+    let savedAccent = 'reading';
+    try { savedAccent = localStorage.getItem('die.accent') || 'reading'; } catch (e) {}
+    applyAccent(savedAccent, false);
+    document.querySelectorAll('.appearance-swatch').forEach((b) => {
+      b.addEventListener('click', () => applyAccent(b.dataset.theme, true));
+    });
+
+    /* --------------------------------------- "Ask the record" entry ------ */
+    // Each card is a question, not a chart title. The handler routes to the
+    // surface that holds the evidence; "latest" also snaps to the most recent
+    // available month so the answer is about now, not about a stale cursor.
+    document.querySelectorAll('[data-ask]').forEach((btn) => {
+      btn.addEventListener('click', () => runAsk(btn.dataset.ask));
+    });
 
     // fullscreen
     $('fullscreenBtn').addEventListener('click', () => {
@@ -873,7 +1000,10 @@
     $('kpiIntensity').querySelector('[data-value]').textContent = DIE.fmt.val(s.mean, ind);
     $('kpiIntensity').querySelector('[data-value]').classList.toggle('is-na', !Number.isFinite(s.mean));
     $('kpiIntensity').querySelector('[data-class]').innerHTML =
-      (c ? '<span class="cat-chip" style="background:' + c.color + '">' + c.label + '</span>' : '—') +
+      (c
+        ? '<span class="cat-chip" style="background:' + c.color +
+          ';color:' + DIE.inkOn(c.color) + '">' + c.label + '</span>'
+        : '—') +
       ' <span class="small">(' + ind.label + ', ' + ind.units + ')</span>';
     $('kpiIntensity').querySelector('[data-agg]').textContent =
       'Area-weighted mean · ' + (Number.isFinite(s.n) ? Math.round(s.n) : 0) + '/' + s.districtsTotal +
@@ -883,12 +1013,59 @@
     dVal.querySelector('[data-value]').textContent =
       (Number.isFinite(s.nDrought) ? Math.round(s.nDrought) : 'N/A') + ' / ' + s.districtsTotal;
     dVal.querySelector('[data-severe]').innerHTML =
-      '<b style="color:#8F252F">' + (Number.isFinite(s.nSevere) ? Math.round(s.nSevere) : 'N/A') +
+      '<b style="color:var(--danger)">' + (Number.isFinite(s.nSevere) ? Math.round(s.nSevere) : 'N/A') +
       '</b> under severe or extreme drought';
     dVal.querySelector('[data-coverage]').textContent =
       'districts in drought · ' + ymLabel;
 
     $('mapPanelMeta').textContent = ind.label + ' · ' + DIE.Filters.regionLabel() + ' · ' + ymLabel;
+    renderEvidence(s, ind);
+  }
+
+  /* ===================================================== EVIDENCE LINE ===
+   * Every quoted number needs its receipt: which era, which product, which
+   * window, which baseline, how many districts actually carry data. Values
+   * come from the loaded metadata and the computed region statistics — the
+   * line is never hand-typed and reports n = 0 honestly. */
+  const PRODUCT_BY_INDICATOR = [
+    { test: /^spi_/, label: 'CHIRPS v2.0 precipitation' },
+    { test: /^spei_/, label: 'CHIRPS + ERA5-Land PET' },
+    { test: /^soil_moisture/, label: 'ERA5-Land 0–100 cm soil water' },
+    { test: /^vci/, label: 'MODIS MOD13A3 NDVI' }
+  ];
+  function productLabel(indicator) {
+    const id = (indicator && indicator.id) || '';
+    const hit = PRODUCT_BY_INDICATOR.find((p) => p.test.test(id));
+    return hit ? hit.label : 'Gridded Multi-Source Product';
+  }
+  function baselineLabel(indicator) {
+    if (indicator && /^vci/.test(indicator.id || '')) return 'VCI 2000–present';
+    const text = (DIE.meta && DIE.meta.reference_period) || '';
+    const m = text.match(/(\d{4})\D{1,6}(\d{4})/);
+    return m ? m[1] + '–' + m[2] : '1981–2020';
+  }
+  function renderEvidence(s, ind) {
+    const box = $('evidenceLine');
+    if (!box) return;
+    const st = DIE.state;
+    const season = st.period && st.period.season && st.period.season !== 'all'
+      ? ' · ' + st.period.season
+      : '';
+    const windowText = st.period && st.period.from && st.period.to
+      ? st.period.from + '–' + st.period.to + season
+      : (DIE.meta && DIE.meta.period
+        ? DIE.meta.period.start + ' to ' + DIE.meta.period.end : '—');
+    const n = Number.isFinite(s.n) ? Math.round(s.n) : 0;
+    const nText = n + ' of ' + s.districtsTotal + ' districts with data';
+    const chip = (k, v) =>
+      '<span class="ev"><b>' + k + '</b><i class="ev-sep" aria-hidden="true">&middot;</i>' + v + '</span>';
+    box.innerHTML =
+      '<span class="ev-k">Receipts</span>' +
+      chip('Era B', 'Gridded Multi-Source Product') +
+      chip('Product', productLabel(ind)) +
+      chip('Window', windowText) +
+      chip('Baseline', baselineLabel(ind)) +
+      chip('n', nText);
   }
 
   function setKpi(id, o) {
@@ -1042,7 +1219,7 @@
       const c = DIE.classify(r.v, ds.indicator);
       return {
         name: r.d.name, value: r.v, area: r.d.area,
-        color: c ? c.color : '#9AA7B5',
+        color: c ? c.color : '#968A74',
         classLabel: c ? c.label : 'no data'
       };
     });
@@ -1262,11 +1439,11 @@
             marker: { color: '#B94747' },
             hovertemplate: '<b>%{x}%</b><br>%{y} districts<extra></extra>'
           }], {
-            font: { family: 'Inter, sans-serif', size: 11, color: '#1F2937' },
+            font: { family: 'Inter, sans-serif', size: 11, color: '#2E2820' },
             margin: { l: 34, r: 10, t: 8, b: 30 },
-            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: '#FFFFFF',
-            xaxis: { title: { text: '% of valid months in drought', font: { size: 10, color: '#687588' } }, gridcolor: '#F0F3F7', linecolor: '#CBD5E1', tickfont: { size: 9 } },
-            yaxis: { title: { text: 'districts', font: { size: 9.5, color: '#687588' } }, gridcolor: '#E2E7EE', linecolor: '#CBD5E1', rangemode: 'tozero' }
+            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+            xaxis: { title: { text: '% of valid months in drought', font: { size: 10, color: '#6E6250' } }, gridcolor: '#EFE8D8', linecolor: '#CFC2A8', tickfont: { size: 9 } },
+            yaxis: { title: { text: 'districts', font: { size: 9.5, color: '#6E6250' } }, gridcolor: '#E1D7C3', linecolor: '#CFC2A8', rangemode: 'tozero' }
           }, { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'] });
         }
       }
@@ -1978,7 +2155,7 @@
         return r ? r.lag : NaN;
       }, (id) => {
         const r = results.get(id);
-        if (!r) return '#D7DEE7';
+        if (!r) return '#E8E1D2';
         const t = hi === lo ? 0 : (r.lag - lo) / (hi - lo);
         const blue = [42, 95, 133], white = [255, 255, 255], red = [185, 71, 71];
         const c = t < 0.5
@@ -1990,9 +2167,9 @@
         ' · ' + periodLabel();
       $('propMapFoot').innerHTML = 'Optimal lag per district (only districts with |r| ≥ 0.40 and ≥ 60 matched months are coloured). ' +
         '<span class="legend-swatch" style="background:rgb(42,95,133)"></span> A leads by ' + Math.abs(lo) + ' mo &nbsp; ' +
-        '<span class="legend-swatch" style="background:#FFFFFF"></span> synchronous &nbsp; ' +
+        '<span class="legend-swatch" style="background:#FBF7EE"></span> synchronous &nbsp; ' +
         '<span class="legend-swatch" style="background:rgb(185,71,71)"></span> B lags by ' + hi + ' mo' +
-        ' · <span class="legend-swatch" style="background:#D7DEE7"></span> no robust relationship (' +
+        ' · <span class="legend-swatch" style="background:#E8E1D2"></span> no robust relationship (' +
         (regionIds.length - results.size) + ' districts)';
     },
 
@@ -2018,7 +2195,7 @@
       this.mapB.map.on('moveend', sync(this.mapB.map, this.mapA.map));
 
       const diffRamp = (v) => {
-        if (!Number.isFinite(v)) return '#D7DEE7';
+        if (!Number.isFinite(v)) return '#E8E1D2';
         const t = Math.max(-1, Math.min(1, v / 3));
         const lerp = (a, b, u) => a + (b - a) * u;
         const dry = [143, 37, 47], mid = [255, 255, 255], wet = [42, 95, 133];
@@ -2078,7 +2255,7 @@
             statsAnnotation: {
               x: 0.02, xref: 'paper', y: 0.97, yref: 'paper', showarrow: false,
               text: 'r = ' + (Number.isFinite(st.r) ? st.r.toFixed(2) : '—') + ' · n = ' + st.n,
-              font: { family: 'IBM Plex Mono, monospace', size: 11, color: '#687588' }
+              font: { family: 'IBM Plex Mono, monospace', size: 11, color: '#6E6250' }
             }
           });
           $('cmpFoot').textContent = 'Matched date: ' + DIE.dates.label(dsA.dates[idx]) +
