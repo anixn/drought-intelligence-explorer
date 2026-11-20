@@ -132,9 +132,17 @@
       const s = c / 255;
       return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
     };
-    const [r, g, b] = hexToRgb(hex);
-    const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-    return L > 0.42 ? '#211C15' : '#FBF7EE';
+    const lum = (h) => {
+      const [r, g, b] = hexToRgb(h);
+      return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    };
+    const ratio = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+    const L = lum(hex);
+    // Pick whichever theme ink actually has the higher contrast. A fixed
+    // luminance threshold failed on mid-tone class colours (e.g. #D97745
+    // "moderate drought" got paper text at 3.0:1); comparing both ratios
+    // handles every warm class and keeps the WCAG guarantee.
+    return ratio(L, lum('#211C15')) >= ratio(L, lum('#FBF7EE')) ? '#211C15' : '#FBF7EE';
   };
   function lerpRgb(a, b, t) {
     return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];

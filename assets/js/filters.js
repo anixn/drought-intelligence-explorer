@@ -27,7 +27,29 @@
 
   DIE.state = DEFAULTS();
 
+  /* Default reading position (register D12, Owner instruction 2026-11-20).
+   * July 2002 is the documented 2002 monsoon failure — the month behind the
+   * platform's Rajasthan reality check — with 410 of 724 districts at or below
+   * −1.0 and 151 at or below −2.0. The newest month (Dec 2025) is a wet month,
+   * so opening there made the dashboard look like drought had disappeared.
+   * "Latest" stays one click away; this only changes the landing position. */
+  const DEFAULT_DATE = '2002-07';
+
+  /** Resolve the default observation index against the loaded dataset.
+   *  Falls back to the newest available month if the indicator does not cover
+   *  the anchor (honest: never invents a date). */
+  function resolveDefaultDate(ds) {
+    if (!ds || !Array.isArray(ds.dates) || !ds.dates.length) return -1;
+    const hit = ds.dates.indexOf(DEFAULT_DATE);
+    if (hit >= 0) return hit;
+    return ds.availableEndIndex >= 0 ? ds.availableEndIndex : ds.dates.length - 1;
+  }
+
   const Filters = (DIE.Filters = {
+    /** Default observation index (see DEFAULT_DATE above). */
+    defaultDateIdx(ds) {
+      return resolveDefaultDate(ds);
+    },
     /* -------------------------------------------------------------- query -- */
     /** District ids currently in scope for the geographic selection.
      *  A selected district always takes precedence (map click or dropdown). */
@@ -99,7 +121,7 @@
       DIE.state = DEFAULTS();
       DIE.state.indicator = indicator;
       const ds = DIE.datasets.get(indicator);
-      if (ds) DIE.state.dateIdx = ds.availableEndIndex >= 0 ? ds.availableEndIndex : ds.dates.length - 1;
+      if (ds) DIE.state.dateIdx = resolveDefaultDate(ds);
       DIE.state.period.from = ds && ds.availableFrom
         ? +ds.availableFrom.slice(0, 4) : +DIE.meta.period.start.slice(0, 4);
       DIE.state.period.to = ds && ds.availableTo

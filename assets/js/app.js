@@ -187,8 +187,7 @@
       await DIE.loader.indicator(DIE.state.indicator);
 
       const ds0 = currentDataset();
-      DIE.state.dateIdx = ds0.availableEndIndex >= 0
-        ? ds0.availableEndIndex : ds0.dates.length - 1;
+      DIE.state.dateIdx = DIE.Filters.defaultDateIdx(ds0);
       DIE.state.period.from = +(ds0.availableFrom || DIE.meta.period.start).slice(0, 4);
       DIE.state.period.to = +(ds0.availableTo || DIE.meta.period.end).slice(0, 4);
 

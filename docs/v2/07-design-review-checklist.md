@@ -56,7 +56,7 @@ An item counts as done only when every applicable line passes.
 - [ ] **Era clarity.** Every era-facing surface states which era it draws from and links the *Why three eras?* explainer.
 - [ ] **Single source.** Every change to copy derives from metadata, never hand-typed, so banners cannot drift from data.
 
-Additional DIE-only checks: keyboard + ARIA on new controls; mobile 44 px targets; zero console errors; `data-pipeline/selftest.py` and `scripts/regression_check.py` green before commit.
+Additional DIE-only checks: keyboard + ARIA on new controls; mobile 44 px targets; zero console errors; `data-pipeline/selftest.py` and `scripts/regression_check.py` green before commit. The landing observation must be a documented drought month (D12), with **Latest** one click away.
 
 ## 4. Review findings → DIE work map
 

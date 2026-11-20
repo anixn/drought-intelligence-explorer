@@ -251,6 +251,7 @@ Four persisted paper accents selected from the sidebar "Paper accent" control (R
 - **"Ask the record"** band at the top of `#overview`: four question cards (now / trend / events / future) plus an Atlas deep link. Cards are `<button>`s (keyboard + screen-reader equivalent), route via `switchTab`, and `latest` additionally snaps the shared date cursor to the most recent available month. Cards never state a number — they point at where the number and its receipt live.
 - **Receipts line** under the summary cards: `era · product · window · baseline · n`, filled by `renderEvidence()` from `metadata.json` and the computed region statistics — never hand-typed, and it reports `n = 0` honestly.
 - **Era pill** in the topbar: standing `Era A/B/C` label per tab ("C − B · Delta to 2100" on `#summary`), colour-coded by era, with the no-splice wording in its accessible label. This is R2 made visible on every surface without adding a banner to each view.
+- **Default reading position (D12):** boot and Reset open on **July 2002**, the documented monsoon failure (410/724 districts ≤ −1.0; 151 ≤ −2.0; 76.8 % area in drought; 23.3 % extreme), not the newest month — December 2025 is wet and made the landing view look as if drought had disappeared. Implemented in `filters.js` (`DEFAULT_DATE`, `resolveDefaultDate`); **Latest** still snaps to the newest observation, and indicators that do not cover 2002 fall back to latest.
 
 ### 9.5 Product-first navigation (M10.3c)
 
