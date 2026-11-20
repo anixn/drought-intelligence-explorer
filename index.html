@@ -38,7 +38,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&display=swap"
       rel="stylesheet"
     />
     <link
@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-20j" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-20o" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -512,210 +512,273 @@
 
       <!-- ======================= WORKSPACE ======================= -->
       <main class="workspace" id="workspace">
-        <!-- Four primary workspaces; documentation lives in the sidebar
-             footer (book icon) and deep-links to #data or #docs. -->
-        <div class="tabs" role="tablist" aria-label="Analytical workspaces">
-          <button
-            type="button"
-            role="tab"
-            id="tabOverview"
-            aria-selected="true"
-            aria-controls="viewOverview"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+        <!-- Product-first navigation (M10.3c): one top-level destination per
+             era/product, with its analytical lenses beneath. The four era-B
+             lenses are four questions about ONE gridded record — never four
+             datasets — so they no longer compete as peer top-level tabs. -->
+        <div class="tab-nav">
+          <nav class="tab-groups" aria-label="Workspace groups">
+            <a
+              class="tab-group"
+              href="#overview"
+              data-group="record"
+              aria-current="page"
             >
-              <path d="M1 6l7-3 8 3 7-3v15l-7 3-8-3-7 3z" />
-              <path d="M8 3v15M16 6v15" />
-            </svg>
-            Overview
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabHistorical"
-            aria-selected="false"
-            aria-controls="viewHistorical"
-            tabindex="-1"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+              <span class="tg-name">Record</span
+              ><span class="tg-years">1981–2025</span>
+            </a>
+            <a class="tab-group" href="#projections" data-group="projections">
+              <span class="tg-name">Projections</span
+              ><span class="tg-years">2015–2100</span>
+            </a>
+            <a class="tab-group" href="#atlas" data-group="atlas">
+              <span class="tg-name">Atlas</span
+              ><span class="tg-years">1901–2025</span>
+            </a>
+            <a class="tab-group" href="#data" data-group="docs">
+              <span class="tg-name">Documentation</span
+              ><span class="tg-years">Methods &amp; downloads</span>
+            </a>
+            <a class="tab-group" href="#engine" data-group="tools">
+              <span class="tg-name">Engine Lab</span
+              ><span class="tg-years">SQL over the record</span>
+            </a>
+          </nav>
+          <div class="tab-lenses" id="tabLenses">
+            <span class="lens-label" aria-hidden="true">Views</span>
+            <div
+              class="tabs"
+              role="tablist"
+              aria-label="Record views"
+              data-group-panel="record"
             >
-              <path d="M18 20V10M12 20V4M6 20v-6" />
-            </svg>
-            Historical Analysis
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabEvents"
-            aria-selected="false"
-            aria-controls="viewEvents"
-            tabindex="-1"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+              <button
+                type="button"
+                role="tab"
+                id="tabOverview"
+                aria-selected="true"
+                aria-controls="viewOverview"
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M1 6l7-3 8 3 7-3v15l-7 3-8-3-7 3z" />
+                  <path d="M8 3v15M16 6v15" />
+                </svg>
+                Overview
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabHistorical"
+                aria-selected="false"
+                aria-controls="viewHistorical"
+                tabindex="-1"
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M18 20V10M12 20V4M6 20v-6" />
+                </svg>
+                Historical Analysis
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabEvents"
+                aria-selected="false"
+                aria-controls="viewEvents"
+                tabindex="-1"
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+                Drought Events
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabPropagation"
+                aria-selected="false"
+                aria-controls="viewPropagation"
+                tabindex="-1"
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="6" r="3" />
+                  <path d="M6 15V9a3 3 0 0 1 3-3h6" />
+                </svg>
+                Propagation &amp; Relationships
+              </button>
+            </div>
+            <div
+              class="tabs"
+              role="tablist"
+              aria-label="Projection views"
+              data-group-panel="projections"
+              hidden
             >
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-            Drought Events
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabPropagation"
-            aria-selected="false"
-            aria-controls="viewPropagation"
-            tabindex="-1"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+              <button
+                type="button"
+                role="tab"
+                id="tabProjections"
+                aria-selected="false"
+                aria-controls="viewProjections"
+                tabindex="-1"
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                  <polyline points="16 7 22 7 22 13" />
+                </svg>
+                Future Projections
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabSummary"
+                aria-selected="false"
+                aria-controls="viewSummary"
+                tabindex="-1"
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="4" y1="20" x2="20" y2="20" />
+                  <rect x="6" y="12" width="3" height="8" />
+                  <rect x="12" y="7" width="3" height="13" />
+                  <rect x="18" y="3" width="3" height="17" />
+                </svg>
+                Drought to 2100
+              </button>
+            </div>
+            <div
+              class="tabs"
+              role="tablist"
+              aria-label="Atlas view"
+              data-group-panel="atlas"
+              hidden
             >
-              <circle cx="6" cy="18" r="3" />
-              <circle cx="18" cy="6" r="3" />
-              <path d="M6 15V9a3 3 0 0 1 3-3h6" />
-            </svg>
-            Propagation &amp; Relationships
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabEngine"
-            aria-selected="false"
-            aria-controls="viewEngine"
-            tabindex="-1"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+              <button
+                type="button"
+                role="tab"
+                id="tabAtlas"
+                aria-selected="false"
+                aria-controls="viewAtlas"
+                tabindex="-1"
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5l3 3" />
+                </svg>
+                Atlas 1901–2025
+              </button>
+            </div>
+            <div
+              class="tabs"
+              role="tablist"
+              aria-label="Engine Lab"
+              data-group-panel="tools"
+              hidden
             >
-              <ellipse cx="12" cy="5" rx="9" ry="3" />
-              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-              <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
-            </svg>
-            Engine Lab
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabProjections"
-            aria-selected="false"
-            aria-controls="viewProjections"
-            tabindex="-1"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-              <polyline points="16 7 22 7 22 13" />
-            </svg>
-            Future Projections
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabSummary"
-            aria-selected="false"
-            aria-controls="viewSummary"
-            tabindex="-1"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <line x1="4" y1="20" x2="20" y2="20" />
-              <rect x="6" y="12" width="3" height="8" />
-              <rect x="12" y="7" width="3" height="13" />
-              <rect x="18" y="3" width="3" height="17" />
-            </svg>
-            Drought to 2100
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabAtlas"
-            aria-selected="false"
-            aria-controls="viewAtlas"
-            tabindex="-1"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 7v5l3 3" />
-            </svg>
-            Atlas 1901–2025
-          </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabEngine"
+                aria-selected="false"
+                aria-controls="viewEngine"
+                tabindex="-1"
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <ellipse cx="12" cy="5" rx="9" ry="3" />
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                  <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+                </svg>
+                Engine Lab
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- ============ VIEW 1: OVERVIEW ============ -->
@@ -4021,7 +4084,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-20c";
+        var ASSET_VERSION = "2026-11-20e";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

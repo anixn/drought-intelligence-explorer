@@ -67,19 +67,19 @@
     0 1px 4px rgba(62, 52, 38, 0.035);
   --radius: 4px;
   --radius-lg: 6px;
-  /* --- Type system (M10.3b) --------------------------------------------- *
+  /* --- Type system (M10.3b/M10.3c) --------------------------------------- *
    * Three voices, three jobs: Inter carries the dense analytical UI,
-   * Source Serif 4 is the editorial voice (display headings, key figures,
-   * long-form reading), IBM Plex Mono carries data, units and timestamps.
-   * The serif is self-describing with optical sizing, so it stays crisp at
-   * 15 px headings and does not need a display cut at 400. */
+   * Literata is the editorial voice (display headings, key figures,
+   * long-form reading). Literata was designed for screen reading: large
+   * x-height, open apertures, quiet personality — it holds a 19 px title and
+   * 13.5 px prose without the cramped rhythm of a print display serif.
+   * IBM Plex Mono carries data, units and timestamps. */
   --font:
     "Inter", "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Arial, sans-serif;
   --serif:
-    "Source Serif 4", "Source Serif Pro", "Iowan Old Style",
-    "Palatino Linotype", "Book Antiqua", Palatino, Georgia, "Times New Roman",
-    serif;
+    "Literata", "Source Serif 4", "Iowan Old Style", "Palatino Linotype",
+    "Book Antiqua", Palatino, Georgia, "Times New Roman", serif;
   --mono:
     "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --font-display: var(--serif);
@@ -756,7 +756,7 @@ input[type="range"] {
   background: transparent;
   cursor: pointer;
   padding: 9px 16px;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--ink-2);
   border-bottom: 2px solid transparent;
@@ -5030,6 +5030,126 @@ input[type="range"] {
   opacity: 0.55;
 }
 
+/* ---------------------- 4b. product-first navigation (M10.3c) ---------- *
+ * One top-level destination per era/product; the analytical lenses sit
+ * beneath it. The four era-B lenses are four questions about one gridded
+ * record, not four datasets, so they stop competing as peer tabs. Fixed
+ * group tokens keep the product identity stable across its lenses. */
+.tab-nav {
+  position: sticky;
+  top: var(--topbar-h);
+  z-index: 46;
+  background: var(--paper);
+  border-bottom: 1px solid var(--hairline);
+  box-shadow:
+    0 1px 0 var(--hairline),
+    0 4px 12px rgba(62, 52, 38, 0.04);
+}
+.tab-nav .tabs {
+  position: static;
+  z-index: auto;
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border-bottom: 0;
+  box-shadow: none;
+}
+.tab-groups {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  padding: 3px 6px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--hairline);
+}
+.tab-groups::-webkit-scrollbar {
+  display: none;
+}
+.tab-group {
+  --tg: var(--ink-soft);
+  --tg-ink: var(--ink);
+  --tg-soft: rgba(110, 98, 80, 0.1);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  flex: 0 0 auto;
+  padding: 7px 12px 8px;
+  border-radius: 3px 3px 0 0;
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+.tab-group:hover {
+  color: var(--ink-strong);
+  background: rgba(239, 232, 216, 0.7);
+}
+.tab-group[aria-current="page"] {
+  color: var(--tg-ink);
+  background: var(--tg-soft);
+  box-shadow: inset 0 -2px 0 var(--tg);
+}
+.tab-group[data-group="record"] {
+  --tg: #4e6b5a;
+  --tg-ink: #3d5748;
+  --tg-soft: rgba(78, 107, 90, 0.11);
+}
+.tab-group[data-group="projections"] {
+  --tg: #8a4430;
+  --tg-ink: #733827;
+  --tg-soft: rgba(138, 68, 48, 0.11);
+}
+.tab-group[data-group="atlas"] {
+  --tg: #6e6238;
+  --tg-ink: #554b2a;
+  --tg-soft: rgba(110, 98, 56, 0.12);
+}
+.tab-group[data-group="docs"] {
+  --tg: #6e6250;
+  --tg-ink: #554b3d;
+  --tg-soft: rgba(110, 98, 80, 0.12);
+}
+.tab-group[data-group="tools"] {
+  --tg: #4f5d3a;
+  --tg-ink: #3e4a2c;
+  --tg-soft: rgba(79, 93, 58, 0.12);
+}
+.tg-years {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.tab-group[aria-current="page"] .tg-years {
+  color: var(--tg-ink);
+}
+.tab-lenses {
+  display: flex;
+  align-items: stretch;
+}
+.lens-label {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px 0 12px;
+  margin-right: 6px;
+  border-right: 1px solid var(--hairline);
+  font-family: var(--mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
 /* ------------------------------------- 5. panels, cards and intros ------ */
 .workspace {
   padding: 16px 22px 0;
@@ -5519,7 +5639,19 @@ input[type="range"] {
 
 /* --------------------------------- 9. per-workspace identity, muted ------ *
  * The eight band colours of the showcase, dark enough for 11-13 px text on
- * paper and quiet enough to sit beside a severity map. */
+ * paper and quiet enough to sit beside a severity map. The plain-body block
+ * is the pre-boot / Documentation fallback: without it, the old v1 wet-blue
+ * defaults (#3a7ba3) briefly paint the chrome and fail contrast before the
+ * router sets body[data-tab]. */
+body {
+  --ws: #6e6250;
+  --ws-ink: #554b3d;
+  --ws-soft: rgba(110, 98, 80, 0.1);
+  --ws-line: rgba(110, 98, 80, 0.38);
+  --ws-bright: #9c8f7c;
+  --ws-soft-dark: rgba(110, 98, 80, 0.16);
+  --ws-line-dark: rgba(110, 98, 80, 0.45);
+}
 body[data-tab="overview"] {
   --ws: #4e6b5a;
   --ws-ink: #3d5748;
@@ -5602,8 +5734,8 @@ body[data-tab="data"] {
   --ws-line-dark: rgba(110, 98, 80, 0.45);
 }
 
-/* ------------------------------- 10. typography (M10.3b, 2026-11-20) --- *
- * Editorial voice for a scientific record: Source Serif 4 for display and
+/* ------------------------------- 10. typography (M10.3b/M10.3c) -------- *
+ * Editorial voice for a scientific record: Literata for display and
  * long-form reading, Inter for the analytical chrome, Plex Mono for data.
  * Rules: one optical serif (no display/text cut mismatch), tabular figures
  * wherever numbers are compared, balance on headings, pretty on prose. */
@@ -5627,9 +5759,9 @@ body {
   text-wrap: balance;
 }
 .brand-title {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 600;
-  letter-spacing: -0.008em;
+  letter-spacing: -0.006em;
   line-height: 1.2;
 }
 .panel-title {
@@ -5766,13 +5898,21 @@ body {
 }
 
 /* --------------------------------------- 11. responsive fine-tuning ----- */
+@media (max-width: 1200px) {
+  .tg-years {
+    display: none;
+  }
+}
 @media (max-width: 1400px) {
   .brand-author {
     display: none;
   }
+  .tab-group {
+    padding: 7px 10px;
+  }
   .tabs button {
     padding: 10px 10px;
-    font-size: 12px;
+    font-size: 13px;
   }
   .tabs button {
     gap: 5px;
@@ -5782,11 +5922,18 @@ body {
   .workspace {
     padding: 12px 12px 0;
   }
+  .tab-group {
+    padding: 7px 10px;
+  }
+  .tg-years,
+  .lens-label {
+    display: none;
+  }
   .ask-band {
     grid-template-columns: 1fr;
   }
   .brand-title {
-    font-size: 15px;
+    font-size: 16px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

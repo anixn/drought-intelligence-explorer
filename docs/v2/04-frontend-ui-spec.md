@@ -194,7 +194,7 @@ New panels (in the existing `doc-*` panel system): **Methodology v2** (every for
 
 ---
 
-## 9. Sepia Paper re-baseline (2026-11-20 — decision D10, M10.1–M10.3 built)
+## 9. Sepia Paper re-baseline (2026-11-20 — decision D10, M10.1–M10.3c built)
 
 *This section is the current source of truth for the dashboard's visual system; §1–§8 above remain valid for behaviour, routing and engine integration.*
 
@@ -230,16 +230,16 @@ Three voices, three jobs — one family per job, never mixed:
 | Role | Family | Weights | Used for |
 |---|---|---|---|
 | UI | **Inter** (Google Fonts) | 400 / 500 / 600 / 700 | controls, labels, tabs, tables, chart axes, chips, dense chrome |
-| Display & reading | **Source Serif 4** (Google Fonts; variable optical 8–60, italic 400) | 400 / 600 | brand, panel and view titles, "Ask the record" questions, KPI figures, workspace intros, Documentation prose |
+| Display & reading | **Literata** (Google Fonts; variable optical 7–72, italic 400) | 400 / 600 | brand, panel and view titles, "Ask the record" questions, KPI figures, workspace intros, Documentation prose |
 | Data | **IBM Plex Mono** | 400 / 500 | units, z-scores, timestamps, metadata chips, SQL editor, result cells |
 
 Rules (binding for future surfaces):
 
-1. **One optical serif at every size.** Source Serif 4 is loaded as a variable font with `font-optical-sizing: auto`; there is no separate display/text cut, so a 15 px panel title and a 27 px KPI figure come from the same family.
+1. **One optical serif at every size.** Literata is loaded as a variable font with `font-optical-sizing: auto`; there is no separate display/text cut, so a 15 px panel title and a 27 px KPI figure come from the same family. It was chosen for its large x-height and open apertures: the first pass (Source Serif 4) read as cramped at title size on sepia paper.
 2. **Key figures read like print.** `.kpi-value` uses the serif with `lining-nums tabular-nums`; every comparable number (KPIs, stat cells, tables, evidence chips, legend ranges) is tabular so columns do not jump when a value changes.
 3. **Body 14 px / 1.55.** Prose is capped at 88 ch with `text-wrap: pretty`; headings use `text-wrap: balance`. Mono stays for data only — never for sentences.
 4. **Type never encodes data.** Class colours and the severity ramp are unchanged; the serif is a reading voice, not a semantic one.
-5. **Fallbacks are deliberate.** The serif chain continues to Iowan Old Style → Palatino Linotype → Book Antiqua → Georgia, so a blocked font CDN degrades to the previous system serif without layout breakage; the UI chain keeps Inter → system UI.
+5. **Fallbacks are deliberate.** The serif chain continues to Source Serif 4 → Iowan Old Style → Palatino Linotype → Book Antiqua → Georgia, so a blocked font CDN degrades to the previous system serif without layout breakage; the UI chain keeps Inter → system UI.
 6. `meta[name="theme-color"]` follows the paper base (`#F6F1E6`), not the retired navy.
 
 ### 9.3 Accent themes
@@ -252,7 +252,17 @@ Four persisted paper accents selected from the sidebar "Paper accent" control (R
 - **Receipts line** under the summary cards: `era · product · window · baseline · n`, filled by `renderEvidence()` from `metadata.json` and the computed region statistics — never hand-typed, and it reports `n = 0` honestly.
 - **Era pill** in the topbar: standing `Era A/B/C` label per tab ("C − B · Delta to 2100" on `#summary`), colour-coded by era, with the no-splice wording in its accessible label. This is R2 made visible on every surface without adding a banner to each view.
 
-### 9.5 What must not regress
+### 9.5 Product-first navigation (M10.3c)
+
+The review's "question-first, not technique-first" principle is implemented as a two-tier navigation, not by renaming workspaces:
+
+- **Top row — products/eras.** `Record 1981–2025` (era B), `Projections 2015–2100` (era C), `Atlas 1901–2025` (era A), `Documentation`, `Engine Lab`. Each is a hash link, so routes stay stable and no custom click handler is needed.
+- **Second row — lenses.** The analytical tabs of the active product: four record lenses (Overview, Historical Analysis, Drought Events, Propagation & Relationships), two projection lenses (Future Projections, Drought to 2100). Single-surface groups hide the lens strip.
+- The active product link carries `aria-current="page"`; each lens row remains a real `role="tablist"` with `role="tab"` buttons and roving tabindex. `syncNavGroup()` in `app.js` owns the reveal logic.
+- The four era-B lenses are **not** merged: they answer different questions (current state, statistics/trends, individual events, cross-indicator lag) about one gridded multi-source record. The structure makes that relationship visible instead of presenting four peer products.
+- Fixed group tokens preserve product identity across lenses; the paper accent is not used for the band.
+
+### 9.6 What must not regress
 
 1. All nine hash routes and the docs deep-links unchanged (R8); the era pill is a label, never a filter.
 2. Data colours, class boundaries, event rules and every analytic result identical to v1.0.0 (R1) — the theme is chrome-only.

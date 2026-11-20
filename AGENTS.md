@@ -123,6 +123,7 @@ drought-intelligence-explorer/
 | `docs/v2/04-frontend-ui-spec.md` | UI surfaces, engine integration, rendering, exports, accessibility, regression protection |
 | `docs/v2/05-decision-register.md` | Committed decisions (D1–D5, C1–C7), conflict resolutions, open decisions, safeguards |
 | `docs/v2/06-amendments.md` | Owner amendments memo (2026-11-15): new backlog E14–E18, O13–O15; task amendments M2.1/M2.6/M2.9/M2.11/M4.3/M5.8; process amendments (CI, DOI strategy, README badge, figure script); promotions O02/O03 → Tier 1, F08 → E18 |
+| `docs/v2/07-design-review-checklist.md` | Standing design workflow (review of 2026-11-19, PDF archived in `docs/v2/reference/`): three reading depths, the ten-item quote/provenance checklist, the review-finding → milestone map, and the product-first navigation decision D11 |
 | `PROGRESS.md` | Live tracker — status flag, tasks, files, decisions, next task (updated every session) |
 
 ## 7. Key reference facts (from the v1.0.0 audit — cite, don't re-derive)

@@ -52,6 +52,20 @@
     atlas: 'Atlas 1901–2025',
     data: 'Documentation'
   };
+  // Product-first navigation (M10.3c): one top-level destination per
+  // era/product; its analytical lenses are the existing tab buttons beneath.
+  const TAB_GROUP = {
+    overview: 'record',
+    historical: 'record',
+    events: 'record',
+    propagation: 'record',
+    projections: 'projections',
+    summary: 'projections',
+    atlas: 'atlas',
+    data: 'docs',
+    engine: 'tools'
+  };
+  const GROUP_WITH_LENSES = { record: true, projections: true };
   let currentTab = 'overview';
   // Tabs are marked dirty on state changes while hidden and re-render only
   // when entered. This avoids updating 5 workspaces on every slider tick.
@@ -259,8 +273,26 @@
       }
     }, 60);
     document.body.dataset.tab = tab.id;
+    syncNavGroup(tab.id);
     syncSidebar(tab.id);
     if (DIE.Telemetry) DIE.Telemetry.track('tab_view', { tab: tab.id });
+  }
+
+  /** Product-first navigation state: mark the owning era/product destination
+   *  and reveal only that product's lenses. The Documentation and Engine Lab
+   *  groups own a single surface, so their lens strip stays out of the way. */
+  function syncNavGroup(tabId) {
+    const group = TAB_GROUP[tabId] || 'record';
+    document.querySelectorAll('.tab-group').forEach((a) => {
+      if (a.dataset.group === group) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+    const hasLenses = !!GROUP_WITH_LENSES[group];
+    const wrap = $('tabLenses');
+    if (wrap) wrap.hidden = !hasLenses;
+    document.querySelectorAll('[data-group-panel]').forEach((panel) => {
+      panel.hidden = !hasLenses || panel.dataset.groupPanel !== group;
+    });
   }
 
   /** Contextual sidebar sync: badge, footer export label, and keeping the
@@ -271,7 +303,7 @@
     if (badge) badge.textContent = TAB_LABELS[tabId] || 'Filters';
     const entry = TABS.find((t) => t.id === tabId);
     const btn = entry && $(entry.btn);
-    if (btn && btn.scrollIntoView) {
+    if (btn && btn.scrollIntoView && btn.offsetParent !== null) {
       try { btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); }
       catch (e) { /* older browsers: leave the tab bar as-is */ }
     }
@@ -459,10 +491,15 @@
         goDoc('doc-i-guide');
         e.preventDefault();
       }
-      // arrow-key tab navigation on the tablist (documentation has no tab
-      // button, so it is not part of the tablist cycle)
+      // arrow-key tab navigation stays inside the active product's lens row
+      // (the Documentation group has no lens button, and single-surface
+      // products hide their lens strip entirely)
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-        const navTabs = TABS.filter((t) => $(t.btn));
+        const group = TAB_GROUP[currentTab];
+        const navTabs = TABS.filter((t) => {
+          const b = $(t.btn);
+          return b && TAB_GROUP[t.id] === group && b.offsetParent !== null;
+        });
         const idx = navTabs.findIndex((t) => t.id === currentTab);
         if (idx >= 0 && document.activeElement && document.activeElement.role === 'tab') {
           const next = navTabs[(idx + (e.key === 'ArrowRight' ? 1 : navTabs.length - 1)) % navTabs.length];
@@ -516,8 +553,8 @@
       setFiltersCollapsed(true, true);
     });
 
-    // tabs (the documentation workspace has no primary tab button — it
-    // opens from the sidebar footer — so btn can be null)
+    // lens tabs (the Documentation group has no lens button — it opens from
+    // the product row or the sidebar footer — so btn can be null)
     TABS.forEach((t) => {
       const btn = $(t.btn);
       if (btn) btn.addEventListener('click', () => switchTab(t.id));
