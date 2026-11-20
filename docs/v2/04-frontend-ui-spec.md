@@ -223,17 +223,36 @@ Working rules (binding for every future surface):
 6. **Accent never paints data** — maps, legends, class chips and chart traces read the data palette, never `--accent`.
 7. **Warm ink, never black.**
 
-### 9.2 Accent themes
+### 9.2 Typography (M10.3b)
+
+Three voices, three jobs — one family per job, never mixed:
+
+| Role | Family | Weights | Used for |
+|---|---|---|---|
+| UI | **Inter** (Google Fonts) | 400 / 500 / 600 / 700 | controls, labels, tabs, tables, chart axes, chips, dense chrome |
+| Display & reading | **Source Serif 4** (Google Fonts; variable optical 8–60, italic 400) | 400 / 600 | brand, panel and view titles, "Ask the record" questions, KPI figures, workspace intros, Documentation prose |
+| Data | **IBM Plex Mono** | 400 / 500 | units, z-scores, timestamps, metadata chips, SQL editor, result cells |
+
+Rules (binding for future surfaces):
+
+1. **One optical serif at every size.** Source Serif 4 is loaded as a variable font with `font-optical-sizing: auto`; there is no separate display/text cut, so a 15 px panel title and a 27 px KPI figure come from the same family.
+2. **Key figures read like print.** `.kpi-value` uses the serif with `lining-nums tabular-nums`; every comparable number (KPIs, stat cells, tables, evidence chips, legend ranges) is tabular so columns do not jump when a value changes.
+3. **Body 14 px / 1.55.** Prose is capped at 88 ch with `text-wrap: pretty`; headings use `text-wrap: balance`. Mono stays for data only — never for sentences.
+4. **Type never encodes data.** Class colours and the severity ramp are unchanged; the serif is a reading voice, not a semantic one.
+5. **Fallbacks are deliberate.** The serif chain continues to Iowan Old Style → Palatino Linotype → Book Antiqua → Georgia, so a blocked font CDN degrades to the previous system serif without layout breakage; the UI chain keeps Inter → system UI.
+6. `meta[name="theme-color"]` follows the paper base (`#F6F1E6`), not the retired navy.
+
+### 9.3 Accent themes
 
 Four persisted paper accents selected from the sidebar "Paper accent" control (Reading Room `#6B2B1F` default, Field Notes `#55612F`, Drafting Table `#31506B`, Hydrograph `#14594F`). They re-point `--accent*` chrome tokens only, persist in `localStorage['die.accent']`, and never touch the severity ramp, so a class colour quoted in a report means the same thing after the reader changes their paper. Reset filters does not reset the accent.
 
-### 9.3 Depth-1 answer layer
+### 9.4 Depth-1 answer layer
 
 - **"Ask the record"** band at the top of `#overview`: four question cards (now / trend / events / future) plus an Atlas deep link. Cards are `<button>`s (keyboard + screen-reader equivalent), route via `switchTab`, and `latest` additionally snaps the shared date cursor to the most recent available month. Cards never state a number — they point at where the number and its receipt live.
 - **Receipts line** under the summary cards: `era · product · window · baseline · n`, filled by `renderEvidence()` from `metadata.json` and the computed region statistics — never hand-typed, and it reports `n = 0` honestly.
 - **Era pill** in the topbar: standing `Era A/B/C` label per tab ("C − B · Delta to 2100" on `#summary`), colour-coded by era, with the no-splice wording in its accessible label. This is R2 made visible on every surface without adding a banner to each view.
 
-### 9.4 What must not regress
+### 9.5 What must not regress
 
 1. All nine hash routes and the docs deep-links unchanged (R8); the era pill is a label, never a filter.
 2. Data colours, class boundaries, event rules and every analytic result identical to v1.0.0 (R1) — the theme is chrome-only.
