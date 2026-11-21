@@ -564,8 +564,10 @@
     const w = WINDOWS[state.window];
     const ind = DIE.indicatorById && DIE.indicatorById.get(state.variable);
     const L = [];
-    L.push("# DIE v2.0 #summary — drought change vs observed baseline");
-    L.push("# generated: " + new Date().toISOString());
+    if (DIE.App && DIE.App.citationLines) {
+      DIE.App.citationLines().forEach((l) => L.push(l));
+    }
+    L.push("# panel: #summary — drought change vs observed baseline");
     L.push("# scenario: " + state.scenario + " (" + SCENARIO_LABEL[state.scenario] + ")");
     L.push("# indicator: " + state.variable + (ind ? " (" + ind.label + ")" : ""));
     L.push("# future window: " + w.from + "-" + w.to + " (era C ensemble median series)");

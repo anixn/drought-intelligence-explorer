@@ -610,6 +610,10 @@ def update_metadata(path: Path, cfg: dict, years: list[int] | None = None,
         ("honesty", ["never spliced with observed data (R2)",
                      "spread + agreement shown alongside the median (X2/X3)",
                      "ensemble n recorded, never assumed (X3)"]),
+        # Provenance block (M10.5 review finding): the era-C source chain is
+        # stated in the data contract, never only in prose elsewhere. The
+        # v2.0.0 application DOI is NOT claimed here; it is minted at release.
+        ("source", _era_c_source()),
     ])
     if dir_block:
         # R2/R3: the EFFECTIVE window is stated verbatim (the configured
@@ -630,6 +634,57 @@ def update_metadata(path: Path, cfg: dict, years: list[int] | None = None,
         ])
     path.write_text(json.dumps(md, indent=2, ensure_ascii=False) + "\n",
                     encoding="utf-8")
+
+
+def _era_c_source() -> dict:
+    """Era-C provenance chain (M10.5). Kept here so a re-publish always
+    carries it; the application DOI is deliberately absent (minted at M7.2)."""
+    return OrderedDict([
+        ("title", "CMIP6 historical and SSP simulations, bias-corrected"),
+        ("archive", "CMIP6 (ESGF / Pangeo cloud archive)"),
+        ("experiments", ["historical", "ssp245", "ssp585"]),
+        ("models", "22-model archive; 8-model committed subset recorded in "
+                   "era_c.ensemble"),
+        ("reference_dataset",
+         "IMD 0.25-degree gridded rainfall (Pai et al., 2014) and "
+         "temperature (Srivastava et al., 2009)"),
+        ("methods", [
+            "QDM bias correction (Cannon et al., 2015)",
+            "Hargreaves-Samani PET (1985) applied identically to reference "
+            "and model temperature",
+            "gamma SPI / log-logistic SPEI on the 0.25-degree grid, "
+            "aggregated to the 724-district fabric",
+        ]),
+        ("citations", [
+            "Eyring, V., Bony, S., Meehl, G. A., Senior, C. A., Stevens, B., "
+            "Stouffer, R. J., & Taylor, K. E. (2016). Overview of the Coupled "
+            "Model Intercomparison Project Phase 6 (CMIP6) experimental design "
+            "and organization. Geoscientific Model Development, 9, 1937-1958. "
+            "https://doi.org/10.5194/gmd-9-1937-2016",
+            "O'Neill, B. C., Tebaldi, C., van Vuuren, D. P., Eyring, V., "
+            "Friedlingstein, P., Hurtt, G., et al. (2016). The Scenario Model "
+            "Intercomparison Project (ScenarioMIP) for CMIP6. Geoscientific "
+            "Model Development, 9, 3461-3482. "
+            "https://doi.org/10.5194/gmd-9-3461-2016",
+            "Cannon, A. J., Sobie, S. R., & Murdock, T. Q. (2015). Bias "
+            "correction of GCM precipitation by quantile mapping: How well do "
+            "methods preserve changes in quantiles and extremes? Journal of "
+            "Climate, 28, 6938-6959. https://doi.org/10.1175/JCLI-D-14-00754.1",
+            "Pai, D. S., Sridhar, L., Rajeevan, M., Sreejith, O. P., "
+            "Satbhai, N. S., & Mukhopadhyay, B. (2014). Development of a new "
+            "high spatial resolution (0.25 x 0.25 degree) long period "
+            "(1901-2010) daily gridded rainfall data set over India. Mausam, "
+            "65(1), 1-18.",
+            "Srivastava, A. K., Rajeevan, M., & Kshirsagar, S. R. (2009). "
+            "Development of a high resolution daily gridded temperature data "
+            "set for the Indian region. Atmospheric Science Letters, 10(4), "
+            "249-254.",
+        ]),
+        ("licence",
+         "CMIP6 model output is subject to each model's terms of use (see the "
+         "ESGF record); IMD reference data per IMD terms. Derived DIE products "
+         "are redistributed with attribution; the application code is MIT."),
+    ])
 
 
 def _subset_block() -> dict:

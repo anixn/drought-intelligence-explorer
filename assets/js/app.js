@@ -2543,6 +2543,128 @@
       ' Methodology version ' + DIE.meta.methodology_version + '.';
   }
 
+  /* ---- citation plumbing (M10.5) ---------------------------------------- *
+   * One citation string, one export header, one share card. The DOI in the
+   * metadata is the archived v1.0.0 release; the v2.0.0 DOI is minted at
+   * release (M7.2) and is never pre-claimed (R3). */
+  function citationText() {
+    const m = DIE.meta || {};
+    return String(m.citation || 'Drought Intelligence Explorer') +
+      '\nAccessed: ' + new Date().toISOString().slice(0, 10) + '.';
+  }
+
+  /** `#`-comment lines prepended to every CSV/text export (X6). */
+  function citationLines(extra) {
+    const m = DIE.meta || {};
+    const L = [
+      '# Drought Intelligence Explorer v2.0 development - research export' +
+        ' (data v' + (m.version || '?') + ')',
+      '# Cite: ' + (m.citation || 'see Documentation > Downloads and citation'),
+      '# Licence: application code MIT; datasets per their source terms (data/metadata.json > sources)',
+      '# Generated (UTC): ' + new Date().toISOString() +
+        ' | methodology ' + (m.methodology_version || '-') +
+        ' | data mode ' + (m.data_mode || '-'),
+    ];
+    (extra || []).forEach((l) => L.push('# ' + l));
+    return L;
+  }
+
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+    const words = String(text).split(/\s+/);
+    let line = '';
+    let lines = 0;
+    for (const word of words) {
+      const test = line ? line + ' ' + word : word;
+      if (ctx.measureText(test).width > maxWidth && line) {
+        ctx.fillText(line, x, y + lines * lineHeight);
+        lines += 1;
+        line = word;
+        if (maxLines && lines >= maxLines - 1) break;
+      } else {
+        line = test;
+      }
+    }
+    if (line && (!maxLines || lines < maxLines)) {
+      ctx.fillText(line, x, y + lines * lineHeight);
+    }
+  }
+
+  /** Social-ready citation card for the current view (M10.5). */
+  function shareCard() {
+    const W = 1200, H = 630;
+    const c = document.createElement('canvas');
+    c.width = W;
+    c.height = H;
+    const ctx = c.getContext('2d');
+    const m = DIE.meta || {};
+    if (!ctx) return;
+    ctx.fillStyle = '#FBF7EE';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#6B2B1F';
+    ctx.fillRect(0, 0, W, 14);
+    ctx.fillStyle = '#211C15';
+    ctx.font = '600 46px Georgia, "Times New Roman", serif';
+    ctx.fillText('Drought Intelligence Explorer', 64, 104);
+    ctx.fillStyle = '#6E6250';
+    ctx.font = '500 19px Inter, Arial, sans-serif';
+    ctx.fillText('INDIA  ·  HYDROCLIMATIC ANALYTICS  ·  v2.0 development build',
+      66, 138);
+
+    const ind = DIE.indicatorById && DIE.indicatorById.get(DIE.state.indicator);
+    const ym = DIE.Filters.dateYm();
+    const region = DIE.Filters.regionLabel();
+    const period = DIE.state.period || {};
+    ctx.fillStyle = '#2E2820';
+    ctx.font = '600 34px Georgia, "Times New Roman", serif';
+    ctx.fillText(TAB_LABELS[currentTab] || currentTab, 64, 220);
+    ctx.font = '400 24px Inter, Arial, sans-serif';
+    ctx.fillText((ind ? ind.label : DIE.state.indicator) + '  ·  ' + region +
+      (ym ? '  ·  ' + DIE.dates.label(ym) : ''), 64, 262);
+    ctx.fillStyle = '#6E6250';
+    ctx.font = '400 18px Inter, Arial, sans-serif';
+    const refShort = String(m.reference_period || '—').split(';')[0].trim();
+    const baseMeta = 'Analysis ' + (period.from != null ? period.from : '—') + '–' +
+      (period.to != null ? period.to : '—') +
+      (period.season && period.season !== 'all' ? '  ·  season ' + period.season : '') +
+      '  ·  reference ' + refShort;
+    let meta = baseMeta;
+    while (ctx.measureText(meta).width > W - 128 && meta.length > 20) {
+      meta = meta.slice(0, -2);
+    }
+    if (meta !== baseMeta) meta += '…';
+    ctx.fillText(meta, 64, 298);
+
+    ctx.strokeStyle = '#E1D7C3';
+    ctx.beginPath();
+    ctx.moveTo(64, 340);
+    ctx.lineTo(W - 64, 340);
+    ctx.stroke();
+
+    ctx.fillStyle = '#6E6250';
+    ctx.font = '600 15px Inter, Arial, sans-serif';
+    ctx.fillText('CITE', 64, 388);
+    ctx.fillStyle = '#2E2820';
+    ctx.font = '400 20px Georgia, "Times New Roman", serif';
+    wrapText(ctx, citationText(), 64, 422, W - 128, 28, 4);
+
+    ctx.fillStyle = '#6E6250';
+    ctx.font = '400 15px Inter, Arial, sans-serif';
+    ctx.fillText('Archived v1.0.0 DOI: 10.5281/zenodo.24113364  ·  ' +
+      'v2.0.0 DOI minted at release  ·  check licence/terms before reuse',
+      64, 560);
+    ctx.fillText('drought.ankitdeshmukh.com  ·  generated ' +
+      new Date().toISOString().slice(0, 10), 64, 590);
+
+    const a = document.createElement('a');
+    a.download = 'die-share-card-' + (ym || 'view') + '.png';
+    a.href = c.toDataURL('image/png');
+    a.click();
+    if (DIE.Telemetry) {
+      try { DIE.Telemetry.track('export_data', { file_type: 'png', file_name: a.download, card: true }); } catch (e) {}
+    }
+    toast('Share card saved', 'Citation card for the current view downloaded as PNG.');
+  }
+
   function renderDownloads(container) {
     if (!container || container.dataset.ready) return;
     container.dataset.ready = '1';
@@ -2603,8 +2725,9 @@
       '<button class="btn" data-dl="datasources">Download docs/data-sources.md</button></div></div>' +
 
       '<div class="dl-group-title">Citation</div>' +
-      '<div class="cite-box">' + DIE.meta.citation + '\n' + datasetCitation() + '</div>' +
-      '<div class="dl-actions"><button class="btn" data-dl="cite">Copy citation</button></div>';
+      '<div class="cite-box">' + citationText() + '\n' + datasetCitation() + '</div>' +
+      '<div class="dl-actions"><button class="btn" data-dl="cite">Copy citation</button>' +
+      '<button class="btn" data-dl="sharecard">Share card (PNG)</button></div>';
 
     container.addEventListener('click', async (e) => {
       const btn = e.target.closest('[data-dl]');
@@ -2640,7 +2763,7 @@
           A().toText(file.split('/').pop(), text, 'text/markdown;charset=utf-8');
           toast('Documentation saved', file);
         } else if (kind === 'cite') {
-          const text = DIE.meta.citation + '\n' + datasetCitation();
+          const text = citationText();
           try {
             await navigator.clipboard.writeText(text);
             toast('Citation copied', 'Pasted-ready citation is on your clipboard.');
@@ -2648,6 +2771,8 @@
             A().toText('CITATION.txt', text);
             toast('Citation saved', 'Clipboard unavailable — downloaded as CITATION.txt instead.');
           }
+        } else if (kind === 'sharecard') {
+          shareCard();
         }
       } catch (err) {
         toast('Export failed', String(err.message || err), 'error');
@@ -2681,7 +2806,10 @@
   }
 
   /* ------------------------------------------------------------- public -- */
-  DIE.App = { init, toast, renderAll, switchTab, Views };
+  DIE.App = {
+    init, toast, renderAll, switchTab, Views,
+    citationText, citationLines, shareCard,
+  };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

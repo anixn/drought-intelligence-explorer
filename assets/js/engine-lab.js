@@ -273,8 +273,10 @@
       const s = v === null || v === undefined ? "" : String(v);
       return /[",\n]/.test(s) ? "\"" + s.replace(/"/g, "\"\"") + "\"" : s;
     };
-    const lines = [
-      "# Drought Intelligence Explorer \u2014 Engine Lab export (v2.0)",
+    const lines = (DIE.App && DIE.App.citationLines
+      ? DIE.App.citationLines()
+      : ["# Drought Intelligence Explorer \u2014 Engine Lab export (v2.0)"]
+    ).concat([
       "# exported (UTC): " + new Date().toISOString(),
       "# query: " + r.sql.replace(/\s+/g, " "),
       "# engine: DuckDB-WASM " + (DIE.Engine && DIE.Engine.version || "") +
@@ -282,7 +284,7 @@
       "# source: data/parquet/* per data/parquet/catalog.json (era labels in catalog)",
       "# missing values: empty cells (never imputed \u2014 R10)",
       ""
-    ];
+    ]);
     lines.push(r.cols.map(csvCell).join(","));
     r.rows.forEach((row) => lines.push(r.cols.map((c) => csvCell(row[c])).join(",")));
     const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });

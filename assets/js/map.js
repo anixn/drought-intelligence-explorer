@@ -626,6 +626,57 @@
         backgroundColor: "#EFE8D8",
         scale: 2,
       });
+      // X6/M10.5: the PNG carries the citation too. A caption strip is added
+      // below the captured map so the file is self-describing when shared.
+      const scale = canvas.width / Math.max(1, el.clientWidth || canvas.width / 2);
+      const capH = Math.round(104 * scale);
+      const out = document.createElement("canvas");
+      out.width = canvas.width;
+      out.height = canvas.height + capH;
+      const ctx = out.getContext("2d");
+      ctx.drawImage(canvas, 0, 0);
+      ctx.fillStyle = "#FBF7EE";
+      ctx.fillRect(0, canvas.height, out.width, capH);
+      ctx.fillStyle = "#6B2B1F";
+      ctx.fillRect(0, canvas.height, out.width, Math.max(2, Math.round(3 * scale)));
+      const ind = DIE.indicatorById && DIE.indicatorById.get(DIE.state.indicator);
+      const ym = DIE.Filters.dateYm();
+      const title = "Drought Intelligence Explorer v2.0 development" +
+        "  ·  " + (ind ? ind.label : DIE.state.indicator) +
+        (ym ? "  ·  " + DIE.dates.label(ym) : "") +
+        "  ·  " + DIE.Filters.regionLabel();
+      const cite = (DIE.App && DIE.App.citationText)
+        ? DIE.App.citationText().split("\n")[0]
+        : (DIE.meta.citation || "");
+      const foot = "Archived v1.0.0 DOI 10.5281/zenodo.24113364  ·  " +
+        "methodology " + (DIE.meta.methodology_version || "") +
+        "  ·  generated " + new Date().toISOString().slice(0, 10);
+      const pad = Math.round(16 * scale);
+      ctx.fillStyle = "#2E2820";
+      ctx.font = "600 " + Math.round(14 * scale) + "px Georgia, 'Times New Roman', serif";
+      ctx.fillText(title, pad, canvas.height + Math.round(26 * scale), out.width - 2 * pad);
+      ctx.fillStyle = "#6E6250";
+      ctx.font = "400 " + Math.round(10.5 * scale) + "px Inter, Arial, sans-serif";
+      // two-line wrap for the citation
+      const maxW = out.width - 2 * pad;
+      const words = String(cite).split(/\s+/);
+      let line = "";
+      let lineNo = 0;
+      const baseY = canvas.height + Math.round(48 * scale);
+      const lh = Math.round(15 * scale);
+      for (const word of words) {
+        const test = line ? line + " " + word : word;
+        if (ctx.measureText(test).width > maxW && line) {
+          ctx.fillText(line, pad, baseY + lineNo * lh);
+          lineNo += 1;
+          line = word;
+          if (lineNo >= 2) break;
+        } else {
+          line = test;
+        }
+      }
+      if (line && lineNo < 3) ctx.fillText(line, pad, baseY + lineNo * lh);
+      ctx.fillText(foot, pad, canvas.height + Math.round(92 * scale), maxW);
       const a = document.createElement("a");
       a.download =
         "drought-map-" +
@@ -633,7 +684,7 @@
         "-" +
         DIE.state.indicator +
         ".png";
-      a.href = canvas.toDataURL("image/png");
+      a.href = out.toDataURL("image/png");
       a.click();
       try {
         if (DIE.Telemetry)

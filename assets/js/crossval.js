@@ -412,8 +412,10 @@
     if (!rowsCache || !rowsCache.length) return;
     const m = METRICS[state.metric];
     const L = [];
-    L.push("# DIE v2.0 #crossval — era A vs era B agreement");
-    L.push("# generated: " + new Date().toISOString());
+    if (DIE.App && DIE.App.citationLines) {
+      DIE.App.citationLines().forEach((l) => L.push(l));
+    }
+    L.push("# panel: #crossval — era A vs era B agreement");
     L.push("# indicator: " + state.variable + " (" +
       VAR_LABEL[state.variable] + ")");
     L.push("# window: 1981-2014 (register D6 comparison window)");
