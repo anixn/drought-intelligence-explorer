@@ -21,6 +21,7 @@ What it snapshots (baseline JSON, blessed explicitly):
   7. era A <-> era B cross-validation fingerprint (M6.6): file checksums,
      district counts, median r, mean bias, median seam SD (X7/M6.8) and
      overlap/monthly row counts
+  8. reality-check artifact checksum (M10.7)
 
 Usage:
   python scripts/regression_check.py            # compare against baseline
@@ -172,6 +173,9 @@ def compute() -> dict:
         out["sha256"]["csv/" + var_id] = sha256(REPO / rel)
         out["sha256"]["parquet/" + var_id] = sha256(parquet_file(var_id))
     out["sha256"]["catalog.json"] = sha256(REPO / "data" / "parquet" / "catalog.json")
+    reality = REPO / "data" / "reality_checks.json"
+    if reality.exists():
+        out["sha256"]["reality_checks.json"] = sha256(reality)
     national_path = REPO / "data" / "parquet" / "_national_monthly.parquet"
     if national_path.exists():
         out["sha256"]["national"] = sha256(national_path)

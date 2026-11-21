@@ -3145,6 +3145,9 @@
               <button type="button" data-doc="doc-e-limits">E &middot; Uncertainty &amp; limitations</button>
               <button type="button" data-doc="doc-f-repro">F &middot; Reproducibility</button>
               <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citations</button>
+              <button type="button" data-doc="doc-k-methodology">K &middot; Living methodology (v2)</button>
+              <button type="button" data-doc="doc-l-governance">L &middot; Governance &amp; licences</button>
+              <button type="button" data-doc="doc-m-reality">M &middot; Reality checks</button>
               <button type="button" data-doc="doc-h-versions">H &middot; Version history</button>
             </div>
             <span class="doc-nav-title">Handbook</span>
@@ -4222,6 +4225,203 @@
             </button>
           </details>
 
+          <!-- K/L/M: living evidence surfaces (M10.7) -->
+          <details class="panel acc-panel doc-sec" id="doc-k-methodology">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">K</span>Living methodology (v2)</h2>
+                <span class="panel-meta" id="methodRevision">versioned · anchored · every block dated</span>
+              </div>
+            </summary>
+            <div class="meth-body">
+              <p class="panel-note">
+                The citable everyday reference for the methods this platform applies.
+                It consolidates the v1 methodology (section&nbsp;C) with the era A/B/C
+                pipelines; the manuscript remains the archival descriptor and the two
+                cross-reference each other. Each block has a stable anchor
+                (<code>#data/k-methodology/&lt;anchor&gt;</code>) and carries the
+                methodology version and page revision drawn from
+                <code>data/metadata.json</code>.
+              </p>
+              <div class="ev-jump" role="group" aria-label="Method anchors">
+                <button type="button" data-jump="method-indicators">Indicators</button>
+                <button type="button" data-jump="method-standardisation">Standardisation</button>
+                <button type="button" data-jump="method-classification">Classification</button>
+                <button type="button" data-jump="method-aggregation">Aggregation</button>
+                <button type="button" data-jump="method-events">Events</button>
+                <button type="button" data-jump="method-trends">Trends</button>
+                <button type="button" data-jump="method-correlation">Correlation</button>
+                <button type="button" data-jump="method-era-c">Era C chain</button>
+                <button type="button" data-jump="method-crossval">Era A↔B</button>
+                <button type="button" data-jump="method-missing">Missing data</button>
+              </div>
+
+              <article class="ev-method" id="method-indicators">
+                <h3>Indicators and accumulation windows <button type="button" class="ev-anchor" data-anchor="method-indicators">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>Ten district-level indicators: SPI and SPEI at 1, 3, 6 and 12 months, a root-zone Soil Moisture Anomaly (SMA) and the Vegetation Condition Index (VCI). SPI standardises accumulated CHIRPS precipitation; SPEI standardises the water balance P − PET with ERA5-Land PET; SMA is the percent departure of ERA5-Land 0–100 cm soil water; VCI rescales MODIS NDVI between its historical stress and optimum. The reference period is fixed (<span id="methodReference">—</span>), because standardised values are only comparable within one climatology.</p>
+              </article>
+
+              <article class="ev-method" id="method-standardisation">
+                <h3>Standardisation and fit gates <button type="button" class="ev-anchor" data-anchor="method-standardisation">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>SPI uses a two-parameter gamma fitted by maximum likelihood with a mixed-distribution treatment of zeros; SPEI uses a three-parameter log-logistic fitted by L-moments. Fits are per district and calendar month over the reference period, with at least 20 base years. A fit must keep the base mean within ±0.2 and the base standard deviation within 0.75–1.3; otherwise the Gringorten plotting-position fallback is applied to the whole district–calendar-month series. The reference fit is a <strong>40-year</strong> window (1981–2020), not a WMO 30-year normal; values after 2020 are intentionally out-of-sample and are not re-fitted.</p>
+              </article>
+
+              <article class="ev-method" id="method-classification">
+                <h3>Classification thresholds <button type="button" class="ev-anchor" data-anchor="method-classification">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>SPI/SPEI use the nine-class McKee convention (extreme ≤ −2.0; severe −2.0 to −1.5; moderate −1.5 to −1.0; mild −1.0 to −0.5; near-normal −0.5 to +0.5; then three wet classes). SMA uses ±5 % / ±15 % / ±30 % / ±50 % classes; VCI uses the Kogan percentile bands. Every class boundary is read from <code>data/metadata.json</code>, so the interface, exports and this page cannot drift apart.</p>
+              </article>
+
+              <article class="ev-method" id="method-aggregation">
+                <h3>Spatial aggregation and areas <button type="button" class="ev-anchor" data-anchor="method-aggregation">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>Google Earth Engine aggregates native pixels to the 724-district fabric with <code>ee.Image.pixelArea()</code> weights; a documented buffer fallback (6/16/16/2 km) is used only when a district has zero source pixels, and the affected units are flagged. Areas use the Lambert Azimuthal Equal-Area projection centred at 22.5° N, 79.5° E. Areal statistics renormalise weights over valid districts each month and report the valid count.</p>
+              </article>
+
+              <article class="ev-method" id="method-events">
+                <h3>Drought events (runs analysis) <button type="button" class="ev-anchor" data-anchor="method-events">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>Events are runs at or below the truncation level (the upper bound of the moderate class: −1.00 z, −15 % SMA, 30 % VCI) lasting at least three consecutive months (Yevjevich 1967). Severity is the sum of (truncation − value) over the event; intensity is the event minimum; recovery is months to the first value ≥ 0 for signed families (not defined for VCI). Events touching the record or period edge are <strong>censored</strong> and excluded from duration/severity rankings; missing months break runs. The sensitivity panel re-runs the catalogue at durations 4/6/9/12 and truncations −0.50/−1.50/−2.00.</p>
+              </article>
+
+              <article class="ev-method" id="method-trends">
+                <h3>Trend tests <button type="button" class="ev-anchor" data-anchor="method-trends">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>The inferential test is Mann–Kendall with tie-corrected variance, reported as S, Z and two-sided p, with Sen's slope (median pairwise slope) and its rank-based 90 % confidence interval. When significant serial autocorrelation exists at lags 1–12, the Hamed–Rao variance correction is applied and the effective sample size reported. The default input is annual means requiring at least nine valid months; tests need at least four values. District trend maps are exploratory until a multiple-testing correction is applied.</p>
+              </article>
+
+              <article class="ev-method" id="method-correlation">
+                <h3>Correlation and propagation <button type="button" class="ev-anchor" data-anchor="method-correlation">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>Temporal cross-correlation is Pearson r over lags −12 to +12 months on matched months, requiring at least 30 pairs; the optimal lag maximises |r|. Its 95 % interval uses a moving-block bootstrap (1,000 resamples, block n<sup>1/3</sup> capped 4–24, seed 20261103). Correlation is association, never causation; nested SPI/SPEI windows correlate by construction. Streamflow and groundwater propagation are marked unavailable because the record contains no such observations.</p>
+              </article>
+
+              <article class="ev-method" id="method-era-c">
+                <h3>Era C projection chain <button type="button" class="ev-anchor" data-anchor="method-era-c">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>CMIP6 historical and SSP simulations are interpolated to 0.25°, bias-corrected with monthly quantile mapping (QDM; Cannon et al. 2015) against IMD 0.25° reference data over 1981–2020, and bounded to [−5, +5] with clip counts reported. PET uses Hargreaves–Samani identically on reference and model temperature (the era seam with era B ERA5-Land PET is documented, never bridged). SPI/SPEI are computed on the grid, aggregated to districts, and summarised as ensemble median, p25/p75, threshold-agreement counts and direction-of-change counts over the honest 8-model subset. Projections are simulations, never forecasts.</p>
+              </article>
+
+              <article class="ev-method" id="method-crossval">
+                <h3>Era A ↔ era B cross-validation <button type="button" class="ev-anchor" data-anchor="method-crossval">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>The Atlas reconstruction (era A) and the Gridded Multi-Source Product (era B) are compared over their <strong>1981–2014</strong> overlap (register D6) for the two shared timescales, SPEI-1 and SPEI-12. Metrics are Pearson r, bias (B − A), RMSD, drought-state agreement, both-drought co-occurrence and McKee-class agreement. The per-district SD of the difference is the X7 seam uncertainty: a measured historical disagreement, never a projection confidence interval. The two records are never averaged or spliced.</p>
+              </article>
+
+              <article class="ev-method" id="method-missing">
+                <h3>Missing data and uncertainty <button type="button" class="ev-anchor" data-anchor="method-missing">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>Missing district-months are never imputed, interpolated or carried forward. Gaps are rendered as no-data, break event runs, and are reported with every statistic's sample size; comparisons use pairwise deletion and state the excluded count. VCI has no history before 2000 and the interface clamps its analysis window. Censoring, fixed-climatology effects, spatial dependence and the PET seam are stated limitations, not hidden assumptions.</p>
+              </article>
+
+              <p class="ev-verify">
+                Verify: <code>python data-pipeline/selftest.py</code> (pipeline semantics),
+                <code>python scripts/regression_check.py</code> (shipped-data baseline) and
+                <code>python scripts/verify_reality_checks.py --check</code> (external checks).
+                The full narrative is in <a href="manuscript/main_v2.tex">manuscript/main_v2.tex</a>
+                and <a href="docs/v2/03-scientific-pipelines.md">docs/v2/03-scientific-pipelines.md</a>.
+              </p>
+            </div>
+          </details>
+
+          <details class="panel acc-panel doc-sec" id="doc-l-governance">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">L</span>Governance &amp; licences</h2>
+                <span class="panel-meta" id="govRevision">decisions · gates · terms of use</span>
+              </div>
+            </summary>
+            <div class="meth-body">
+              <p class="panel-note">
+                How this platform decides what to publish. The full typed decision
+                register and the append-only progress log are public repository
+                documents; this is the curated view.
+              </p>
+              <div class="table-scroll">
+                <table class="comp-table">
+                  <thead><tr><th>Decision</th><th>Date</th><th>What changed</th><th>Why it matters</th></tr></thead>
+                  <tbody>
+                    <tr><td>D6 · Window discipline</td><td>2026-11-18</td><td>Comparisons between eras use <strong>1981–2014</strong>; standardisation stays 1981–2020.</td><td>The model-native historical window, without project years inside a baseline.</td></tr>
+                    <tr><td>D8 · Era-B naming</td><td>2026-11-20</td><td>Era B is the <strong>Gridded Multi-Source Product</strong>, not “observed”.</td><td>CHIRPS, ERA5-Land and MODIS are observation-based gridded sources, not in-situ observations.</td></tr>
+                    <tr><td>D9 · Map interaction</td><td>2026-11-20</td><td>Click zooms to a district; zoom-out stops at the fitted national view.</td><td>One consistent, keyboard-operable map contract.</td></tr>
+                    <tr><td>D10 · Design system</td><td>2026-11-20</td><td>Sepia Paper theme, Depth-1 answers with receipts.</td><td>Chrome may change; published data colours may not.</td></tr>
+                    <tr><td>D11 · Product-first navigation</td><td>2026-11-20</td><td>Products/eras on top, analytical lenses beneath.</td><td>Visitors meet the record, not the internal taxonomy.</td></tr>
+                    <tr><td>D13 · Seam uncertainty</td><td>2026-11-21</td><td>X7 `sd_diff` published once in the cross-validation artifact.</td><td>A measured historical disagreement, never a projection error bar.</td></tr>
+                    <tr><td>D14 · Permalinks</td><td>2026-11-21</td><td>The URL carries shared and panel state.</td><td>Every figure is citable and re-openable.</td></tr>
+                    <tr><td>D15 · Citation &amp; DOI</td><td>2026-11-21</td><td>Archived v1.0.0 DOI is real; v2.0.0 stays unclaimed until release.</td><td>No DOI is invented or pre-claimed.</td></tr>
+                    <tr><td>D16 · District profiles</td><td>2026-11-21</td><td>Districts get a dedicated route and page.</td><td>The highest-value public entry point.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="table-help">
+                Full register: <a href="docs/v2/05-decision-register.md">docs/v2/05-decision-register.md</a> ·
+                progress log: <a href="PROGRESS.md">PROGRESS.md</a> ·
+                citation metadata: <a href="CITATION.cff">CITATION.cff</a>.
+                Gates before every commit: the 82-assertion pipeline self-test and
+                the numeric regression baseline.
+              </p>
+
+              <h3 class="gov-h">Licences</h3>
+              <div class="table-scroll">
+                <table class="comp-table">
+                  <thead><tr><th>Artefact</th><th>Licence</th><th>Notes</th></tr></thead>
+                  <tbody>
+                    <tr><td>Application code</td><td>MIT</td><td><a href="LICENSE">LICENSE</a></td></tr>
+                    <tr><td>Archived v1.0.0 bundle</td><td>CC BY 4.0</td><td><a href="https://doi.org/10.5281/zenodo.24113364" target="_blank" rel="noopener">10.5281/zenodo.24113364</a>; v2.0.0 at release</td></tr>
+                    <tr><td>CHIRPS v2.0 precipitation</td><td>Public domain</td><td>Climate Hazards Center; see <a href="docs/data-sources.md">data sources</a></td></tr>
+                    <tr><td>ERA5-Land reanalysis</td><td>Copernicus licence (attribution)</td><td>ECMWF/Copernicus; PET and 0–100 cm soil water</td></tr>
+                    <tr><td>MODIS MOD13A3 NDVI</td><td>NASA open data</td><td>LP DAAC; VCI input, 2000 onward</td></tr>
+                    <tr><td>District boundaries</td><td>Community source, no explicit redistribution licence</td><td>Attribution + source disclaimer; separable layer (<a href="docs/data-sources.md">data sources</a>)</td></tr>
+                    <tr><td>Drought Atlas of India v2</td><td>CC BY 4.0</td><td>Era A source; <a href="https://doi.org/10.5281/zenodo.20368514" target="_blank" rel="noopener">10.5281/zenodo.20368514</a></td></tr>
+                    <tr><td>CMIP6 model output</td><td>Per-model terms (ESGF)</td><td>Era C; see <code>metadata.json → era_c.source</code></td></tr>
+                    <tr><td>IMD reference data</td><td>Per IMD terms</td><td>Bias-correction reference; not redistributed</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 class="gov-h">What this platform is — and is not</h3>
+              <p class="small" id="govDisclaimer">—</p>
+              <p class="small">
+                It is a historical and analytical explorer with a reproducible pipeline
+                and a labelled era model. It is <strong>not</strong> an operational or
+                real-time monitoring system, and its values are not official drought
+                declarations or a substitute for IMD or government bulletins.
+                No LLM-generated or unverified finding is published; the decision
+                register and the gates are the proof.
+              </p>
+            </div>
+          </details>
+
+          <details class="panel acc-panel doc-sec" id="doc-m-reality">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">M</span>Reality checks</h2>
+                <span class="panel-meta" id="realityMeta">external consistency · re-derived from the shipped record</span>
+              </div>
+            </summary>
+            <div class="meth-body">
+              <p class="panel-note">
+                Three independent consistency checks, computed from the shipped
+                district matrices with the platform's own definitions — no
+                event-specific tuning. Each box states the claim, the numbers, the
+                window and what it is checked against. Values are re-derived from the
+                released matrices; small differences from the preprint's Table&nbsp;5
+                reflect the released build, not a change in the event record.
+              </p>
+              <div class="reality-grid" id="realityBoxes" aria-live="polite">
+                <p class="table-help">Loading the committed reality checks…</p>
+              </div>
+              <p class="ev-verify">
+                Re-derive in one command:
+                <code>python scripts/verify_reality_checks.py --check</code>.
+                The machine-readable record is
+                <a href="data/reality_checks.json">data/reality_checks.json</a>.
+              </p>
+            </div>
+          </details>
+
           <!-- H: version history -->
           <details class="panel acc-panel doc-sec" id="doc-h-versions">
             <summary class="panel-head">
@@ -4422,7 +4622,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-21o";
+        var ASSET_VERSION = "2026-11-21r";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

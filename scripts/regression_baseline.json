@@ -27,6 +27,7 @@
     "csv/vci": "53b0ac80999affc2d6153e51db56e6cbebbea54a1d730c471c2262263a644b9f",
     "parquet/vci": "c7a7913e9d968f40b9b7ee8be1378aef489e26623c53c63fa8c871b2a64652fe",
     "catalog.json": "560fffd489b4c2e76d1a4b524d483842ed530c6171793eee983dcb698c70e637",
+    "reality_checks.json": "8d97238214256894a7dccca68c441fe7b34ec87a4e5831e677d3095cf2cbe738",
     "national": "f925a3601c715a46482079214ea099a188b521dec109c67cf53549127e83aeb4"
   },
   "catalog": {

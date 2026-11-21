@@ -511,9 +511,15 @@
         try { await DIE.Permalink.applyTab(routed, parsed.params); }
         catch (err) { console.warn('[permalink] tab state not applied:', err); }
       }
-      // deep link to a documentation section: #data/<section-id-suffix>
-      if (routed === 'data' && doc && DOC_SECTIONS.includes('doc-' + doc)) {
-        goDoc('doc-' + doc);
+      // deep link to a documentation section (optionally a method anchor):
+      // #data/k-methodology/method-events
+      if (routed === 'data' && doc) {
+        const parts = String(doc).split('/');
+        const sec = parts[0];
+        const anchor = parts[1];
+        if (DOC_SECTIONS.includes('doc-' + sec)) {
+          goDoc('doc-' + sec, anchor);
+        }
       }
     } finally {
       if (DIE.Permalink) DIE.Permalink.endRoute();
@@ -526,10 +532,11 @@
    * the relevant section instead of opening a duplicated dialog. */
   const DOC_SECTIONS = [
     'doc-a-about', 'doc-b-dataset', 'doc-c-methods', 'doc-d-quality',
-    'doc-e-limits', 'doc-f-repro', 'doc-g-downloads', 'doc-h-versions',
-    'doc-i-guide', 'doc-j-glossary'
+    'doc-e-limits', 'doc-f-repro', 'doc-g-downloads',
+    'doc-k-methodology', 'doc-l-governance', 'doc-m-reality',
+    'doc-h-versions', 'doc-i-guide', 'doc-j-glossary'
   ];
-  function goDoc(sec) {
+  function goDoc(sec, anchor) {
     if (DIE.Telemetry) DIE.Telemetry.track('docs_open', { section: sec });
     switchTab('data');
     // Applied immediately (deep links must work even in an unfocused tab,
@@ -543,14 +550,20 @@
       const el = $(sec);
       if (!el) return;
       el.open = true;
+      const target = (anchor && /^[a-z0-9-]+$/i.test(anchor))
+        ? (document.getElementById(anchor) || el) : el;
       // instant landing: smooth page-scroll would race the measurement and
       // feel laggy for anchor-style navigation
-      el.scrollIntoView({ behavior: 'instant', block: 'start' });
-      el.classList.remove('doc-flash');
+      target.scrollIntoView({ behavior: 'instant', block: 'start' });
+      target.classList.remove('doc-flash');
       // restart the highlight animation
-      void el.offsetWidth;
-      el.classList.add('doc-flash');
-      setTimeout(() => el.classList.remove('doc-flash'), 1800);
+      void target.offsetWidth;
+      target.classList.add('doc-flash');
+      setTimeout(() => target.classList.remove('doc-flash'), 1800);
+      if (target !== el) {
+        target.setAttribute('tabindex', '-1');
+        try { target.focus({ preventScroll: true }); } catch (e) {}
+      }
     };
     apply();
     requestAnimationFrame(apply);
@@ -561,6 +574,34 @@
     // documentation navigation (Data & Methods is the single doc centre)
     document.querySelectorAll('[data-doc]').forEach((btn) => {
       btn.addEventListener('click', () => goDoc(btn.dataset.doc));
+    });
+
+    // Living methodology anchors (M10.7): jump + copy a citable sub-anchor.
+    document.querySelectorAll('[data-jump]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const el = document.getElementById(btn.dataset.jump);
+        if (!el) return;
+        el.scrollIntoView({ behavior: 'instant', block: 'start' });
+        el.classList.remove('doc-flash');
+        void el.offsetWidth;
+        el.classList.add('doc-flash');
+        setTimeout(() => el.classList.remove('doc-flash'), 1800);
+      });
+    });
+    document.querySelectorAll('[data-anchor]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const anchor = btn.dataset.anchor;
+        const url = location.href.split('#')[0] + '#data/k-methodology/' + anchor;
+        try {
+          await navigator.clipboard.writeText(url);
+          toast('Anchor copied', 'Citable method link is on your clipboard.');
+        } catch (err) {
+          toast('Could not copy automatically', url, 'warn');
+        }
+        if (DIE.Telemetry) {
+          try { DIE.Telemetry.track('method_anchor_copy', { anchor }); } catch (e) {}
+        }
+      });
     });
     document.addEventListener('keydown', (e) => {
       // "?" jumps to the user guide section unless the user is typing.
@@ -980,6 +1021,72 @@
   }
 
   /* ===================================================== STATIC TEXTS === */
+  function escHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  /** Reality-check boxes (M10.7) — rendered from the committed JSON so the
+   * numbers cannot drift from the shipped record. */
+  async function renderRealityChecks() {
+    const el = $('realityBoxes');
+    if (!el || el.dataset.loaded === '1') return;
+    let data;
+    try {
+      const text = await DIE.loader.fetchText('data/reality_checks.json');
+      data = JSON.parse(text);
+    } catch (err) {
+      console.warn('[evidence] reality checks unavailable:', err);
+      el.innerHTML = '<p class="table-help">Reality checks are unavailable in this ' +
+        'checkout; no placeholder numbers are shown (R3). Re-run ' +
+        '<code>python scripts/verify_reality_checks.py</code>.</p>';
+      return;
+    }
+    const n2 = (v) => (Number.isFinite(v) ? v.toFixed(2).replace('-', '−') : '—');
+    const n1 = (v) => (Number.isFinite(v) ? v.toFixed(1).replace('-', '−') : '—');
+    const pct = (v) => (Number.isFinite(v) ? Math.round(v * 100) + '%' : '—');
+    const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthLabel = (ym) => MON[Number(ym.slice(5, 7)) - 1] || ym;
+    const boxes = (data.checks || []).map((c) => {
+      let nums = '';
+      if (c.id === 'rajasthan-2002') {
+        const m = c.numbers.months;
+        nums = m.map((x) => monthLabel(x.date) + ': ' + x.n_drought + '/' + x.n +
+          ' districts ≤ −1.00 (mean ' + n2(x.mean_area_weighted) + ')').join(' · ');
+      } else if (c.id === 'all-india-spi3') {
+        nums = c.numbers.n_at_or_below + ' of ' + c.numbers.n_months +
+          ' months ≤ −1.00 — ' + c.numbers.months.map((x) =>
+            monthLabel(x.date) + ' ' + x.date.slice(0, 4) + ' (' +
+            n2(x.value) + ')').join(', ') + '.';
+      } else if (c.id === 'marathwada-2015') {
+        const n = c.numbers;
+        nums = 'Sep 2015 SPI-3 mean ' + n2(n.spi3_2015_09.mean) + ' (' +
+          pct(n.spi3_2015_09.share_le_minus1) + ' ≤ −1.00); ' +
+          'Nov 2015 VCI mean ' + n1(n.vci_2015_11.mean) + ' (' +
+          pct(n.vci_2015_11.share_below_30) + ' < 30); ' +
+          'Jan 2016 mean ' + n1(n.vci_2016_01.mean) + ' (' +
+          pct(n.vci_2016_01.share_below_30) + ' < 30).';
+      }
+      return '<article class="reality-box"><h3>' + escHtml(c.title) + '</h3>' +
+        '<p>' + escHtml(c.claim) + '</p>' +
+        '<div class="reality-num">' + escHtml(nums) + '</div>' +
+        '<p class="reality-src"><b>Window:</b> ' + escHtml(c.window) +
+        ' · <b>Checked against:</b> ' + escHtml(c.checked_against) + '</p>' +
+        '<p class="reality-src"><b>Source:</b> <span class="mono">' +
+        escHtml(c.source) + '</span></p></article>';
+    }).join('');
+    el.innerHTML = boxes;
+    el.dataset.loaded = '1';
+    if ($('realityMeta')) {
+      $('realityMeta').textContent = 'external consistency · data v' +
+        (data.data_version || '?') + ' · methodology ' +
+        (data.methodology_version || '?') + ' · ' +
+        (data.checks || []).length + ' checks';
+    }
+  }
+
   function renderStaticText() {
     $('chipUpdated').textContent = 'Updated · ' + DIE.meta.last_updated;
 
@@ -1019,6 +1126,22 @@
     $('methCitation').textContent = DIE.meta.citation;
     $('methReferencePeriod').textContent = DIE.meta.reference_period;
     $('aboutCitation').textContent = DIE.meta.citation;
+
+    // Living evidence surfaces (M10.7). Version/date come from metadata; the
+    // page revision is this build's date, stated explicitly.
+    const mv = DIE.meta.methodology_version || '—';
+    document.querySelectorAll('[data-method-version]').forEach((el) => {
+      el.textContent = mv;
+    });
+    if ($('methodReference')) $('methodReference').textContent = DIE.meta.reference_period;
+    if ($('methodRevision')) {
+      $('methodRevision').textContent = 'methodology ' + mv + ' · page revised 2026-11-21';
+    }
+    if ($('govRevision')) {
+      $('govRevision').textContent = 'methodology ' + mv + ' · register current to 2026-11-21';
+    }
+    if ($('govDisclaimer')) $('govDisclaimer').textContent = DIE.meta.disclaimer;
+    renderRealityChecks();
     // footer provenance is a COMPACT pointer; the full data_provenance text
     // stays in data/metadata.json and renders live in Docs section B
     $('footerDisclaimer').textContent = DIE.meta.disclaimer;

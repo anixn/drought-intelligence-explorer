@@ -67,7 +67,7 @@ Additional DIE-only checks: keyboard + ARIA on new controls; mobile 44 px target
 | State-encoding permalinks | M10.4 | built 2026-11-21 |
 | DOI in metadata, exports and citation box | M10.5 | built 2026-11-21 |
 | District profile pages `#/district/<id>` | M10.6 | built 2026-11-21 |
-| Living methodology + governance + reality-check surfaces | M10.7 | scheduled |
+| Living methodology + governance + reality-check surfaces | M10.7 | built 2026-11-21 |
 | Claim verifier + `reproduce_figures.py` | M10.8 | scheduled |
 | Era A ↔ B cross-validation as a public trust surface | M6.6 `#crossval` (+ M6.8 seam uncertainty) | next build task |
 | Era-C citation block in `metadata.json` | M10.5 | scheduled |
