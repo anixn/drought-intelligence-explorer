@@ -6144,3 +6144,52 @@ body {
 }
 .reality-src { font-size: 11px; color: var(--ink-2); }
 .gov-h { margin: 16px 0 6px; font-size: 15px; }
+
+
+/* Data status panel (M3.2) */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin: 10px 0 4px;
+}
+.status-card {
+  border: 1px solid var(--hairline);
+  border-left: 3px solid #4E6B5A;
+  border-radius: 5px;
+  background: var(--surface);
+  padding: 10px 12px;
+}
+.status-card .k {
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.status-card .v { font-family: var(--mono); font-size: 15px; margin-top: 3px; }
+.status-card .s { font-size: 11px; color: var(--ink-2); margin-top: 3px; }
+.status-card .s.is-amber { color: #8A5A2B; font-weight: 600; }
+.status-card .s.is-ok { color: #4A7A5A; }
+.status-issues { margin: 6px 0 4px; padding-left: 18px; font-size: 12.5px; line-height: 1.5; }
+.status-issues li { margin-bottom: 5px; }
+.issue-sev {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.issue-amber { background: #F2E2C6; color: #6B4A1F; }
+.issue-info { background: #E8EDF2; color: #44586E; }
+.issue-known-limitation { background: #EFE8D8; color: #554B2A; }
+
+
+/* M3.3 currency chip: data month + lag, amber beyond 45 days */
+.chip.chip-warn {
+  color: var(--amber-ink, #6B4A1F);
+  border-color: var(--amber-line, #D8B581);
+  background: var(--amber-bg, #F2E2C6);
+  font-weight: 600;
+}

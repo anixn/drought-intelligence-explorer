@@ -534,6 +534,7 @@
     'doc-a-about', 'doc-b-dataset', 'doc-c-methods', 'doc-d-quality',
     'doc-e-limits', 'doc-f-repro', 'doc-g-downloads',
     'doc-k-methodology', 'doc-l-governance', 'doc-m-reality',
+    'doc-n-status',
     'doc-h-versions', 'doc-i-guide', 'doc-j-glossary'
   ];
   function goDoc(sec, anchor) {
@@ -1087,6 +1088,92 @@
     }
   }
 
+  /** Public data-status panel (M3.2), rendered from data/status.json. */
+  async function renderStatusPanel() {
+    const cards = $('statusCards');
+    if (!cards || cards.dataset.loaded === '1') return;
+    let st;
+    try {
+      st = JSON.parse(await DIE.loader.fetchText('data/status.json'));
+    } catch (err) {
+      console.warn('[status] unavailable:', err);
+      cards.innerHTML = '<p class="table-help">Status record unavailable in this ' +
+        'checkout; rebuild it with <code>python scripts/build_status.py</code>.</p>';
+      return;
+    }
+    const d = st.data || {};
+    const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const ym = (s) => {
+      if (!s) return '—';
+      const m = /^(\d{4})-(\d{2})$/.exec(s);
+      return m ? MON[+m[2] - 1] + ' ' + m[1] : s;
+    };
+    const era = d.eras || {};
+    const eraList = ['observed', 'atlas', 'projections']
+      .map((k) => era[k] && era[k].available ? (k === 'observed' ? 'B'
+        : k === 'atlas' ? 'A' : 'C') : null)
+      .filter(Boolean).join(' · ') || '—';
+    const lagCls = d.lag_status === 'amber' ? ' is-amber' : ' is-ok';
+    cards.innerHTML =
+      '<div class="status-card"><div class="k">Data current to</div>' +
+        '<div class="v">' + escHtml(ym(d.data_month)) + '</div>' +
+        '<div class="s' + lagCls + '">' + (Number.isFinite(d.lag_days)
+          ? d.lag_days + ' days behind · target ≤ ' + d.lag_threshold_days
+          : 'lag unknown') + '</div></div>' +
+      '<div class="status-card"><div class="k">Record</div>' +
+        '<div class="v">' + escHtml(ym(d.period && d.period.start)) + ' – ' +
+        escHtml(ym(d.period && d.period.end)) + '</div>' +
+        '<div class="s">' + (d.indicators ? d.indicators.length : 0) +
+        ' indicators · one fix per calendar month</div></div>' +
+      '<div class="status-card"><div class="k">Version</div>' +
+        '<div class="v">data v' + escHtml(d.version || '?') + '</div>' +
+        '<div class="s">' + escHtml(d.methodology_version || '') +
+        ' · pipeline ' + escHtml(d.pipeline_version || '?') + '</div></div>' +
+      '<div class="status-card"><div class="k">Last pipeline run</div>' +
+        '<div class="v">' + escHtml(st.run && st.run.last_run || '—') + '</div>' +
+        '<div class="s">data updated ' + escHtml(d.updated || '—') + '</div></div>' +
+      '<div class="status-card"><div class="k">Eras available</div>' +
+        '<div class="v">' + escHtml(eraList) + '</div>' +
+        '<div class="s">labelled, never spliced</div></div>';
+
+    const indBody = $('statusIndicators').querySelector('tbody');
+    indBody.innerHTML = (d.indicators || []).map((i) => (
+      '<tr><td>' + escHtml(i.label || i.id) + '</td><td>' + escHtml(i.from) +
+      '</td><td>' + escHtml(i.to) + '</td><td class="num">' + (i.months || '—') +
+      '</td><td class="num">' + (Number.isFinite(i.completeness_pct)
+        ? i.completeness_pct.toFixed(2) + '%' : '—') + '</td></tr>'
+    )).join('');
+
+    $('statusIssues').innerHTML = (st.known_issues || []).map((it) => (
+      '<li><span class="issue-sev issue-' + escHtml(it.severity || 'info') +
+      '">' + escHtml(it.severity || 'info') + '</span> ' + escHtml(it.text) + '</li>'
+    )).join('') || '<li>No known issues recorded.</li>';
+
+    const checkBody = $('statusChecks').querySelector('tbody');
+    checkBody.innerHTML = (st.verification || []).map((c) => (
+      '<tr><td>' + escHtml(c.label) + '</td><td>' + escHtml(c.detail) +
+      '</td><td><code>' + escHtml(c.command) + '</code></td></tr>'
+    )).join('');
+
+    if ($('statusAsOf')) {
+      $('statusAsOf').textContent = 'status as of ' + (st.as_of || '—') +
+        ' · lag ' + (d.lag_days ?? '—') + ' d';
+    }
+    // M3.3 currency chip: data month + lag on every page, amber >45 days.
+    const chip = $('chipUpdated');
+    if (chip) {
+      chip.textContent = 'Data · ' + ym(d.data_month) +
+        (Number.isFinite(d.lag_days) ? ' · ' + d.lag_days + ' d lag' : '');
+      chip.classList.toggle('chip-warn', d.lag_status === 'amber');
+      chip.title = 'Data current to ' + (d.data_month || '—') +
+        ' · ' + (Number.isFinite(d.lag_days) ? d.lag_days + ' days behind' : 'lag unknown') +
+        ' (target ≤ ' + (d.lag_threshold_days || 45) + ' days) · build updated ' +
+        (d.updated || '—');
+    }
+    cards.dataset.loaded = '1';
+  }
+
   function renderStaticText() {
     $('chipUpdated').textContent = 'Updated · ' + DIE.meta.last_updated;
 
@@ -1142,6 +1229,7 @@
     }
     if ($('govDisclaimer')) $('govDisclaimer').textContent = DIE.meta.disclaimer;
     renderRealityChecks();
+    renderStatusPanel();
     // footer provenance is a COMPACT pointer; the full data_provenance text
     // stays in data/metadata.json and renders live in Docs section B
     $('footerDisclaimer').textContent = DIE.meta.disclaimer;

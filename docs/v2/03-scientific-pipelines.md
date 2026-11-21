@@ -54,7 +54,7 @@ One command: `python data-pipeline/run.py refresh [--offline]` (GEE route by def
 2. `export_app.py` rewrites the wide CSVs with the extended period and bumps `metadata.json` (`last_updated`, availability windows) and `pipeline_manifest.json` (checksums).
 3. `scripts/convert_to_parquet.py --incremental --verify 5` reconverts **only** variables whose wide CSV SHA-256 changed (small files — rewrite is safer than append), embeds `source_csv`/`source_sha256`/`era` in Parquet metadata, and round-trip-verifies every changed variable.
 4. `scripts/build_national.py` rebuilds `_national_monthly.parquet` with an independent `fsum` verification; `scripts/generate_catalog.py` regenerates the exact-path catalog (preserving published era blocks).
-5. `data/status.json` and the currency banner are **M3.2/M3.3**, not part of M3.1.
+5. `scripts/build_status.py` writes `data/status.json` (record, data month, lag, versions, known issues); the topbar currency chip and Documentation section N read it. (M3.2/M3.3, built 2026-11-21.)
 
 `validate.py` runs before publication in the existing flow; non-zero exit blocks release. The converter `--selftest` proves incremental output is byte-identical to a full recompute, and a real-data full conversion was compared byte-for-byte. **The 45-day lag target is enforced by the banner (docs/v2/04 §2.3), amber beyond it.**
 

@@ -7,27 +7,26 @@
 ## 1. Status flag
 
 ```
-| STATUS:        ACTIVE - M3.1 MONTHLY REFRESH LIVE (session 55):        |
-|        run.py refresh [--offline] = fetch/extend + export + incremental  |
-|        Parquet (SHA-256 gate) + national aggregate + catalog. Converter  |
-|        embeds source metadata; --selftest proves incremental == full.    |
-|        Next: M3.2 status.json + status panel, then M3.3 currency banner.  |
+| STATUS:        ACTIVE - M3 COMPLETE (session 56):                       |
+|        M3.2 status.json + Documentation N panel; M3.3 topbar currency    |
+|        chip ("Data · Dec 2025 · 325 d lag", amber >45) both driven by    |
+|        the derived status artifact. Next: M7 release gate.               |
 | PHASE:         M6 complete; M5 complete; M9 MVP complete; M10 complete;  |
-|                M3 in progress (M3.1 done, M3.2/M3.3 next); M7 after M3.  |
-| ROADMAP:       M0-M2 complete. M5.2-M5.8 done. M6.1-M6.8 done. D6-D19    |
-|                committed. M9 MVP done. M10 complete. M3 in progress.     |
+|                M3 complete (M3.1/M3.2/M3.3); M7 next                     |
+| ROADMAP:       M0-M2 complete. M5.2-M5.8 done. M6.1-M6.8 done. D6-D20    |
+|                committed. M9 MVP done. M10 complete. M3 complete. M7 next.|
 | PHASE:         M6 complete in practice (M6.1-M6.3/6.6/6.8 done); M5      |
 |                complete + era-C 2015-2100 (D7); M9 MVP complete;         |
 |                M10.1-M10.8 done (M10.9 optional)                        |
 | ROADMAP:       M0-M2 complete. M5.2-M5.8 done. M6.1/M6.2/M6.2b/M6.3/     |
 |                M6.6/M6.8 done. D6-D18 committed. M9 MVP done. M10 close. |
-| LAST SESSION:  2026-11-21 (row 55 - M3.1 monthly refresh; row 54 - M10 gate) |
+| LAST SESSION:  2026-11-21 (row 56 - M3.2/M3.3 status + currency; row 55 - M3.1) |
 | BLOCKERS:      none technical. Pending Owner: nothing blocking; era-C   |
 |                hosting (at release); OD10/OD11                          |
 | BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)              |
 ```
 
-Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ◐ (M3.1 ✅ 2026-11-21 — monthly refresh) · M4 ⬜ · M5 ✅ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2–M5.8 all ✅; M5.8/E14 OD9 resolved 2026-11-18) · M6 ◐ (M6.1 ✅ + M6.2 ✅ + M6.2b ✅ + M6.3 ✅ 2026-11-20 + M6.6 ✅ + M6.8 ✅ 2026-11-21 — era A promoted, `#atlas` scrubber, `#crossval` agreement lens and the X7 seam layer live) · M7 ⬜ · M8+ ⬜ · M9 ◐ · M10 ✅ (M10.1–M10.8 done 2026-11-20/21 — theme, Depth-1 answers, typography, product-first navigation, default observation, permalinks, citation/DOI, district profiles, evidence surfaces and the claim verifier; M10.9 lamplight optional)** (definitions: `docs/v2/02-roadmap-milestones.md`).
+Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ✅ (M3.1/M3.2/M3.3 ✅ 2026-11-21 — refresh, status, currency) · M4 ⬜ · M5 ✅ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2–M5.8 all ✅; M5.8/E14 OD9 resolved 2026-11-18) · M6 ◐ (M6.1 ✅ + M6.2 ✅ + M6.2b ✅ + M6.3 ✅ 2026-11-20 + M6.6 ✅ + M6.8 ✅ 2026-11-21 — era A promoted, `#atlas` scrubber, `#crossval` agreement lens and the X7 seam layer live) · M7 ⬜ · M8+ ⬜ · M9 ◐ · M10 ✅ (M10.1–M10.8 done 2026-11-20/21 — theme, Depth-1 answers, typography, product-first navigation, default observation, permalinks, citation/DOI, district profiles, evidence surfaces and the claim verifier; M10.9 lamplight optional)** (definitions: `docs/v2/02-roadmap-milestones.md`).
 
 ## 2. Current phase
 
@@ -205,18 +204,19 @@ v1.0.0 site is untouched.
 
 | **M3.1** | 2026-11-21 | **Monthly-increment mode BUILT (register D19).** (a) `python data-pipeline/run.py refresh [--offline]` runs the existing update/extract + indicator/export flow, then `scripts/convert_to_parquet.py --incremental --verify 5`, `scripts/build_national.py` and `scripts/generate_catalog.py` — no fork, no auto-bless. (b) The Parquet writer now uses `table.schema` so `source_csv`/`source_sha256`/era metadata is actually persisted (the old `ParquetWriter(SCHEMA)` silently dropped it — the incremental gate could never have worked); all ten observed files re-converted once and re-blessed after review. (c) `--incremental` skips variables whose CSV SHA-256 matches, round-trip-verifies changed variables only; `--selftest` proves incremental == full recompute, and a full real-data conversion matched the incremental output byte-for-byte. (d) Runbook and pipeline docs updated. | scripts/convert_to_parquet.py, data-pipeline/run.py, data/parquet/observed/*.parquet, scripts/regression_baseline.json, .github/workflows/ci.yml, docs/v2/{02,03,05}, data-pipeline/docs/data-update-guide.md, PROGRESS.md | converter --selftest 4/4 PASS; first incremental run converted 10 vars + verified 5 cells each; second run skipped all 10; full recompute byte-identical; `_publish_parquet()` integration (national + catalog) PASS; regression PASS 699 after --bless; selftest PASS | M3.2 status.json + status panel |
 
+| **M3.2/M3.3** | 2026-11-21 | **Status artifact + public status panel + currency chip BUILT (register D20).** (a) `scripts/build_status.py` derives `data/status.json` from metadata/manifest/catalog/baseline/reality checks: record, data month, lag days (amber >45), per-indicator coverage, era coverage, last run, versions, verification gates, curated known issues; `--check` validates consistency and runs in CI. (b) Documentation section N renders the status (cards, indicator table, issues, gates) with the machine-readable link. (c) The topbar chip now reads “Data · Dec 2025 · 325 d lag” on every page, amber >45, full statement in the tooltip — filled from status.json, not hand-typed. (d) `run.py refresh` regenerates status after publication. | scripts/build_status.py (new), data/status.json (new), index.html (N section + chip), assets/js/app.js, assets/css/style.css, data-pipeline/run.py, .github/workflows/ci.yml, docs/v2/{02,03,04,05}, PROGRESS.md | `build_status.py` write + --check PASS; panel renders 5 cards, 10 indicators, 5 issues, 4 gates; chip shows Dec 2025 / 325 d lag / amber; all 11 hashes 0 console errors; Lighthouse A11y 100 / BP 100; regression PASS 699; selftest PASS | M7 release gate |
+
 ## 4. In progress
 
-- (none — M10.8 claim verifier shipped complete in session 52, verified)
+- (none — M3.2/M3.3 status + currency shipped complete in session 56, verified)
 
 ## 5. Pending (next up)
 
 | Order | Task | Milestone | Depends on | Notes |
 |---|---|---|---|---|
-| **1** | **M3.2 `data/status.json` + status panel** → **M3.3 currency banner** | M3 | current record (build first); live numbers update after each refresh | M3.1 is built; status numbers must match the pipeline manifest |
-| 2 | **M7 release**: era-C hosting, DOI minting, CITATION.cff/late-deposit mapping, README/manuscript sync, download bundles | M7 | M3-M6 | Owner decisions at the gate |
-| 2 | M3 freshness/status (M3.x) · M4 IMD validation framework (M4.1 acquisition is Owner-side) | M3/M4 | — | queueable anytime |
-| 3 | M7 release (era-C hosting decision resolves here: commit vs R2 + Zenodo) | M7 | M3–M6 | — |
+| **1** | **M7 release gate**: era-C hosting decision, v2.0 DOI minting, CITATION.cff references (software/dataset/era-A/era-C), README/manuscript sync, versioned download bundles, final Lighthouse/console sweep | M7 | M3-M6 (all done) | Owner decisions required at the gate (hosting, DOI deposit); M10.9 lamplight optional |
+| 2 | M4 IMD validation framework (M4.1 acquisition is Owner-side) | M4 | IMD data | independent queueable task |
+| — | **M9 exit-gate ship review** | M9 | — | MVP live; X7 measured |
 | — | **E19 / M9 — `#summary` tab** — **MVP LIVE 2026-11-19** (agreement-first map, change metrics, per-state table, national figures, CSV export); X7 seam caveat now measured (M6.8 ✅); remaining: the M9 exit-gate ship review | M9 | era C 2015–2100 published ✅; E14 ✅; X7 ✅ | Owner arbitration 2026-11-19 supersedes the X1 "after #crossval" build-order note for this surface (register + roadmap noted) |
 | — | M6.8 `seam_uncertainty` — **BUILT 2026-11-21 (session 47)**: `sd_diff` live in `#projections` / `#summary` / `#crossval` | M6 | M6.6 ✅ | X7 ✅ |
 
@@ -250,6 +250,7 @@ v1.0.0 site is untouched.
 - **Session-47 addition (M6.8/D13):** the X7 seam uncertainty is computed from already-published local stores and ships in the committed cross-validation artifact, so no Owner compute is required and no era-C file was touched. The memo's 1981–2020 window is superseded by D6's 1981–2014 (documented in D13 and docs/v2/03 §6). Reported for transparency: the SPEI-12 area-weighted bias is **+0.008 z** and area-weighted exact-class agreement **34.5 %**; session 46 briefly recorded the unweighted mean (+0.039 z) and pooled class share (32.5 %) under those labels — corrected this session, with no change to any shipped value.
 - **Session-48 addition (M10.4/D14):** the URL is a presentation of validated state, not a second source of truth; every restored value passes through the same catalog/registry/metadata checks as the UI. The docs section is preserved (`#data/<section>?…`), and a copy failure shows the URL rather than failing silently. No analysis semantics or data change.
 - **Session-49 addition (M10.5/D15):** the era-C provenance block is now authoritative in `metadata.json` and is re-emitted by step 09 on every publish, so it cannot be lost in a monthly/era-C refresh. The only claimed DOI is the archived v1.0.0 release; the v2.0.0 DOI stays `null` until M7.2. Dataset licences are stated per source and never collapsed into the application's MIT licence.
+- **Session-56 addition (M3.2/M3.3/D20):** `data/status.json` is the single freshness artifact; the panel and the topbar chip read it, so they cannot disagree. The status shows the honest 325-day lag to 2025-12 and amber styling; it will drop as soon as the Owner runs a monthly refresh and `run.py refresh` regenerates it. Known issues are curated in `build_status.py` and must be edited when a blocker changes.
 - **Session-55 addition (M3.1/D19):** the monthly refresh now publishes Parquet/catalog in one command. The observed Parquet files were re-converted once to embed their source SHA-256 (values unchanged); the regression baseline was re-blessed after reviewing that only those checksums moved. The refresh command never auto-blesses — a legitimate monthly data change still requires a reviewed `--bless`.
 - **Session-52 addition (M10.8/D18):** the figure verifier reproduces figure *data* and the quantitative claims, not the archival browser screenshots (those are screenshots by design). Fig 6 reproduces the manuscript's r=0.874, n=538 and CI exactly; Fig 5 reproduces 4/538 months and one qualifying event; Fig 2 is re-drawn deterministically from metadata. CI now gates both `verify_reality_checks.py --check` and `reproduce_figures.py --check`.
 - **Session-51 addition (M10.7/D17):** the reality-check boxes are generated from `data/reality_checks.json`, which is re-derived from the shipped matrices by one command and fingerprinted by the regression harness. The Marathwada numbers re-derived from the released matrices differ slightly from the preprint's Table 5 (Sep SPI-3 −0.97 vs −0.95; Nov VCI 13.5 vs 14.6; Jan 2016 8.4 vs 9.6); the box shows the released-record values and says so. This is a documentation drift finding for the M7 README/manuscript sync, not a data change.
@@ -257,6 +258,20 @@ v1.0.0 site is untouched.
 - Recorded for the Owner (not blocking): (1) the Engine Lab catalog table still says eras `observed` for era-B variables — the catalog's `eras` vocabulary predates D8's "Gridded Multi-Source Product" wording; renaming it is a catalog-contract change (M10.5/next catalog regeneration), never a silent edit; (2) lamplight night mode is specified (roadmap M10.9) but deliberately not shipped; state-encoding permalinks shipped this session (M10.4).
 
 ## 7. Files created or modified
+
+**Session 56 (2026-11-21, M3.2/M3.3 status + currency):**
+
+| File | Change |
+|---|---|
+| `scripts/build_status.py` (new) | Derives `data/status.json` from metadata/manifest/catalog/baseline/reality checks; lag math (amber >45); curated known issues; `--check` consistency gate |
+| `data/status.json` (new) | Record/data month/lag, indicator coverage, era coverage, versions, verification gates, known issues, links |
+| `index.html` | Documentation section N (status cards, indicator table, issues, gates); nav entry; `ASSET_VERSION 2026-11-21w` |
+| `assets/js/app.js` | `renderStatusPanel()`; topbar currency chip from status.json (data month + lag, amber class, full tooltip); fixed the merged `renderStaticText` line |
+| `assets/css/style.css` | Status cards/issues and `.chip-warn` styles |
+| `data-pipeline/run.py` | `refresh` also rebuilds `data/status.json` after publication |
+| `.github/workflows/ci.yml` | CI runs `build_status.py --check` |
+| `docs/v2/{02,03,04,05}` | M3.2/M3.3 built; status/currency contract; **D20** |
+| `PROGRESS.md` | Status, board (M3 ✅), phase, M3.2/M3.3 completed row, pending queue, files table, session-log row 56 |
 
 **Session 55 (2026-11-21, M3.1 monthly refresh):**
 
@@ -701,12 +716,12 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-> **Updated 2026-11-21 (session 55):** M3.1 is DONE (row 55): one-command
-> monthly refresh publishes only changed Parquet variables, the national
-> aggregate and the catalog, with incremental == full recompute proven. The
-> next task is **M3.2 `data/status.json` + status panel**, then **M3.3 currency
-> banner**, then the **M7 release** (era-C hosting, DOI minting, README/
-> manuscript sync). The historical M6.2 note below is kept for the record.
+> **Updated 2026-11-21 (session 56):** M3 is COMPLETE — M3.1 refresh, M3.2
+> `status.json` + status panel, and M3.3 currency chip are built and verified.
+> The next gate is **M7 release** (era-C hosting, DOI minting, CITATION.cff
+> references, README/manuscript sync, download bundles), which needs Owner
+> decisions; **M4 IMD** and the **M9 exit-gate review** remain independent.
+> The historical M6.2 note below is kept for the record.
 
 ### M6.2 – Atlas ingestion (next task; M6.1 gate PASSED 2026-11-18)
 
@@ -838,3 +853,4 @@ X1 refusal. WORLD SELFTEST PASS.
 | 53 | 2026-11-21 | **BUGFIX: Atlas SPEI-1/SPEI-4 maps were all grey (Owner report "in drought atlas spei 1 and spei 4 is not showing any map").** Root cause: `atlas.js -> classifyFn()` looked up catalog ids `spei_01`/`spei_04` in `DIE.indicatorById` (keyed by metadata ids `spei_1`/`spei_12`), so `DIE.classify()` got `undefined` and every district fell to the no-data colour; the fallbacks were also padded ids. Fixed by mapping `spei_0N -> spei_N` and falling back to the identical SPEI class table for SPEI-4 (no era-B twin). Also added honest empty-frame guidance: SPEI-4 starts in April, SPEI-12 is December-only; an early-month frame now says why it is empty (never placeholder values). | assets/js/atlas.js, index.html, docs/v2/04, PROGRESS.md | browser: SPEI-1 Aug-1901 and SPEI-4 Aug-1901 fill 718 districts with class colours; SPEI-12 Dec-1901 fills 718; SPEI-12 Aug shows the December rule; 0 console errors; regression PASS 699; selftest PASS | M10 exit-gate review / M3.1 / M7 |
 | 54 | 2026-11-21 | **M10 EXIT GATE PASSED.** Boot audit: Overview, July 2002, SPI-3, Reading Room accent, Era B pill, Record product + six lenses, no horizontal overflow. Lighthouse Accessibility 100 / Best Practices 100 on Overview, District profile, Cross-validation, Drought to 2100 and the evidence surfaces (SEO 75 only on hash-link routes, `crawlable-anchors`, SPA property, not a gate). Zero console errors across all 11 routes. Permalink round-trip restored crossval state. M10.4-M10.8 all built; M10.9 lamplight optional. | docs/v2/02-roadmap-milestones.md, docs/v2/07-design-review-checklist.md, PROGRESS.md | Lighthouse sweep (5 surfaces), boot/overflow/permalink audit, all-route console sweep; regression PASS 699; selftest PASS | M3.1 monthly-increment mode |
 | 55 | 2026-11-21 | **M3.1 monthly-increment mode BUILT (register D19).** (a) `python data-pipeline/run.py refresh [--offline]` = existing fetch/extend + indicator/export, then `scripts/convert_to_parquet.py --incremental --verify 5`, `scripts/build_national.py`, `scripts/generate_catalog.py`; no fork, no auto-bless. (b) Fixed a real latent bug: `ParquetWriter(SCHEMA)` silently dropped the source CSV SHA-256 metadata, so an incremental gate could never work; writer now uses `table.schema`, all ten observed files re-converted once (+785 bytes each, values unchanged) and regression re-blessed after review. (c) `--incremental` skips variables with matching source SHA-256 and verifies only changed ones; `--selftest` proves incremental output is byte-identical to a full recompute; a full real-data conversion matched the incremental output byte-for-byte. (d) Runbook/pipeline docs updated; CI runs the converter selftest. | scripts/convert_to_parquet.py, data-pipeline/run.py, data/parquet/observed/*.parquet, scripts/regression_baseline.json, .github/workflows/ci.yml, docs/v2/{02,03,05}, data-pipeline/docs/data-update-guide.md, PROGRESS.md | converter --selftest 4/4 PASS; first incremental run converted 10 vars + 5-cell verify each; second run skipped all 10; full recompute byte-identical; _publish_parquet integration PASS; regression PASS 699 after --bless; data-pipeline selftest PASS | M3.2 status.json + status panel |
+| 56 | 2026-11-21 | **M3.2 status artifact + panel and M3.3 currency chip BUILT (register D20; M3 COMPLETE).** (a) `scripts/build_status.py` derives `data/status.json` from metadata/manifest/catalog/baseline/reality checks: record, data month, lag (amber >45 d), indicator/era coverage, versions, verification gates, curated known issues; `--check` in CI. (b) Documentation section N renders 5 cards, 10-indicator coverage, known issues and 4 gates; machine-readable link. (c) Topbar chip now shows 'Data · Dec 2025 · 325 d lag' on every page, amber, full tooltip; driven by status.json. (d) `run.py refresh` regenerates status after publication. | scripts/build_status.py (new), data/status.json (new), index.html, assets/js/app.js, assets/css/style.css, data-pipeline/run.py, .github/workflows/ci.yml, docs/v2/{02,03,04,05}, PROGRESS.md | build_status write + --check PASS; panel 5 cards/10 indicators/5 issues/4 gates; chip Dec 2025/325 d lag/amber; 11 hashes 0 console errors; Lighthouse A11y 100 / BP 100; regression PASS 699; selftest PASS | M7 release gate |

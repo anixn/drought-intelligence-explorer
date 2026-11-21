@@ -149,8 +149,8 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 | Task | Content | Gate |
 |---|---|---|
 | M3.1 | **Monthly-increment mode — BUILT 2026-11-21:** `python data-pipeline/run.py refresh [--offline]` runs the monthly fetch/extend + export, then incrementally publishes only variables whose CSV SHA-256 changed (`scripts/convert_to_parquet.py --incremental --verify 5`), rebuilds the national pre-aggregate and regenerates the catalog. The converter now embeds the source CSV SHA-256 in Parquet metadata (the old writer silently dropped it); `--selftest` proves incremental output is byte-identical to a full recompute. | one incremental run verified vs full recompute |
-| M3.2 | `data/status.json` + public status panel (last run, current data month, lag days, known issues, pipeline version) | status numbers match manifest |
-| M3.3 | Currency banner on every page ("Data current to [YYYY-MM], [N] days lag"; amber > 45 days) | banner math verified against status.json |
+| M3.2 | **`data/status.json` + public status panel — BUILT 2026-11-21:** `scripts/build_status.py` derives the status artifact from metadata/manifest/catalog (record, data month, lag days, per-indicator coverage, era coverage, pipeline versions, verification gates, curated known issues); Documentation section N renders it. Numbers match the manifest; `--check` is in CI. | status numbers match manifest |
+| M3.3 | **Currency banner — BUILT 2026-11-21:** the topbar chip shows "Data · Dec 2025 · N d lag" on every page, amber beyond 45 days, with the full date/window/build in the tooltip; it is driven by `status.json`, not hand-typed. | banner math verified against status.json |
 
 **Exit gate M3:** a simulated month increments era B end-to-end; banner + status correct; v1.0 numbers unchanged (regression harness).
 

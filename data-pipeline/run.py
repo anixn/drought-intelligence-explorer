@@ -141,6 +141,8 @@ def _publish_parquet() -> int:
          [sys.executable, str(root / "scripts" / "build_national.py")]),
         ("Catalog contract",
          [sys.executable, str(root / "scripts" / "generate_catalog.py")]),
+        ("Public status artifact",
+         [sys.executable, str(root / "scripts" / "build_status.py")]),
     ]
     for label, cmd in steps:
         common.banner(label)

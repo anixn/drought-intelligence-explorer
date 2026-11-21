@@ -55,5 +55,8 @@ jobs:
       - name: Parquet incremental selftest (monthly refresh)
         run: python scripts/convert_to_parquet.py --selftest
 
+      - name: Status artifact consistency
+        run: python scripts/build_status.py --check
+
       - name: GCM pipeline selftests (steps 02-09)
         run: python gcm-pipeline/selftest_gcm.py

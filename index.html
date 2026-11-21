@@ -3168,6 +3168,7 @@
               <button type="button" data-doc="doc-k-methodology">K &middot; Living methodology (v2)</button>
               <button type="button" data-doc="doc-l-governance">L &middot; Governance &amp; licences</button>
               <button type="button" data-doc="doc-m-reality">M &middot; Reality checks</button>
+              <button type="button" data-doc="doc-n-status">N &middot; Data status</button>
               <button type="button" data-doc="doc-h-versions">H &middot; Version history</button>
             </div>
             <span class="doc-nav-title">Handbook</span>
@@ -4442,6 +4443,46 @@
             </div>
           </details>
 
+          <details class="panel acc-panel doc-sec" id="doc-n-status">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">N</span>Data status</h2>
+                <span class="panel-meta" id="statusAsOf">loading status.json…</span>
+              </div>
+            </summary>
+            <div class="meth-body">
+              <p class="panel-note">
+                The public freshness record, derived from the committed contract
+                by <code>scripts/build_status.py</code>: what the record covers,
+                how far it lags, which pipeline produced it, and the standing
+                known issues. The same artifact drives the currency banner.
+              </p>
+              <div class="status-grid" id="statusCards" aria-live="polite">
+                <p class="table-help">Loading the status record…</p>
+              </div>
+              <h3 class="gov-h">Indicator coverage</h3>
+              <div class="table-scroll">
+                <table class="comp-table" id="statusIndicators">
+                  <thead><tr><th>Indicator</th><th>From</th><th>To</th><th class="num">Months</th><th class="num">Completeness</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <h3 class="gov-h">Known issues</h3>
+              <ul class="status-issues" id="statusIssues"></ul>
+              <h3 class="gov-h">Verification</h3>
+              <div class="table-scroll">
+                <table class="comp-table" id="statusChecks">
+                  <thead><tr><th>Gate</th><th>Detail</th><th>Command</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <p class="ev-verify">
+                Machine-readable record: <a href="data/status.json">data/status.json</a> ·
+                rebuild with <code>python scripts/build_status.py</code> after every refresh.
+              </p>
+            </div>
+          </details>
+
           <!-- H: version history -->
           <details class="panel acc-panel doc-sec" id="doc-h-versions">
             <summary class="panel-head">
@@ -4642,7 +4683,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-21u";
+        var ASSET_VERSION = "2026-11-21w";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
