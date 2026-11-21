@@ -7,27 +7,27 @@
 ## 1. Status flag
 
 ```
-| STATUS:        ACTIVE - M10 EXIT GATE PASSED (session 54):             |
-|        Boot = July 2002 + Record product + era pill; Lighthouse A11y 100 |
-|        / BP 100 on Overview, District, Crossval, Summary, Evidence; zero |
-|        console errors on all 11 routes; M10.4-M10.8 built. M10.9 optional.|
-|        Next: M3.1 monthly-increment mode, then M3.2/M3.3 status + M7.     |
-| PHASE:         M6 complete in practice; M5 complete; M9 MVP complete;    |
-|                M10 complete (exit gate passed); M3 next                  |
-| ROADMAP:       M0-M2 complete. M5.2-M5.8 done. M6.1-M6.8 done. D6-D18    |
-|                committed. M9 MVP done. M10 complete. M3/M7 next.         |
+| STATUS:        ACTIVE - M3.1 MONTHLY REFRESH LIVE (session 55):        |
+|        run.py refresh [--offline] = fetch/extend + export + incremental  |
+|        Parquet (SHA-256 gate) + national aggregate + catalog. Converter  |
+|        embeds source metadata; --selftest proves incremental == full.    |
+|        Next: M3.2 status.json + status panel, then M3.3 currency banner.  |
+| PHASE:         M6 complete; M5 complete; M9 MVP complete; M10 complete;  |
+|                M3 in progress (M3.1 done, M3.2/M3.3 next); M7 after M3.  |
+| ROADMAP:       M0-M2 complete. M5.2-M5.8 done. M6.1-M6.8 done. D6-D19    |
+|                committed. M9 MVP done. M10 complete. M3 in progress.     |
 | PHASE:         M6 complete in practice (M6.1-M6.3/6.6/6.8 done); M5      |
 |                complete + era-C 2015-2100 (D7); M9 MVP complete;         |
 |                M10.1-M10.8 done (M10.9 optional)                        |
 | ROADMAP:       M0-M2 complete. M5.2-M5.8 done. M6.1/M6.2/M6.2b/M6.3/     |
 |                M6.6/M6.8 done. D6-D18 committed. M9 MVP done. M10 close. |
-| LAST SESSION:  2026-11-21 (row 54 - M10 exit gate PASSED; row 53 - Atlas fix) |
+| LAST SESSION:  2026-11-21 (row 55 - M3.1 monthly refresh; row 54 - M10 gate) |
 | BLOCKERS:      none technical. Pending Owner: nothing blocking; era-C   |
 |                hosting (at release); OD10/OD11                          |
 | BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)              |
 ```
 
-Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ⬜ · M4 ⬜ · M5 ✅ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2–M5.8 all ✅; M5.8/E14 OD9 resolved 2026-11-18) · M6 ◐ (M6.1 ✅ + M6.2 ✅ + M6.2b ✅ + M6.3 ✅ 2026-11-20 + M6.6 ✅ + M6.8 ✅ 2026-11-21 — era A promoted, `#atlas` scrubber, `#crossval` agreement lens and the X7 seam layer live) · M7 ⬜ · M8+ ⬜ · M9 ◐ · M10 ✅ (M10.1–M10.8 done 2026-11-20/21 — theme, Depth-1 answers, typography, product-first navigation, default observation, permalinks, citation/DOI, district profiles, evidence surfaces and the claim verifier; M10.9 lamplight optional)** (definitions: `docs/v2/02-roadmap-milestones.md`).
+Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ◐ (M3.1 ✅ 2026-11-21 — monthly refresh) · M4 ⬜ · M5 ✅ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2–M5.8 all ✅; M5.8/E14 OD9 resolved 2026-11-18) · M6 ◐ (M6.1 ✅ + M6.2 ✅ + M6.2b ✅ + M6.3 ✅ 2026-11-20 + M6.6 ✅ + M6.8 ✅ 2026-11-21 — era A promoted, `#atlas` scrubber, `#crossval` agreement lens and the X7 seam layer live) · M7 ⬜ · M8+ ⬜ · M9 ◐ · M10 ✅ (M10.1–M10.8 done 2026-11-20/21 — theme, Depth-1 answers, typography, product-first navigation, default observation, permalinks, citation/DOI, district profiles, evidence surfaces and the claim verifier; M10.9 lamplight optional)** (definitions: `docs/v2/02-roadmap-milestones.md`).
 
 ## 2. Current phase
 
@@ -109,6 +109,16 @@ r = 0.8743, n = 538, bootstrap [0.8353, 0.9018]) and Table 5 (via the
 reality-check artifact) from the shipped record; `--check` verifies the
 committed references and runs in CI. Every headline surface now carries a
 “How this is made” link to its anchored method block. Register D18.
+
+**M3.1 monthly refresh (session 55, 2026-11-21):** `python data-pipeline/run.py
+refresh [--offline]` is the one-command monthly flow: existing fetch/extend and
+indicator/export stages, then `scripts/convert_to_parquet.py --incremental
+--verify 5` (only variables whose CSV SHA-256 changed), `build_national.py` and
+`generate_catalog.py`. The converter now embeds `source_csv`/`source_sha256`/era
+metadata (the old writer silently dropped it) and its `--selftest` proves
+incremental output is byte-identical to a full recompute; a real-data full
+conversion matched byte-for-byte. Register D19. Next: M3.2 `data/status.json` +
+status panel, then M3.3 currency banner.
 
 **Design-system phase (session 42, 2026-11-20):** on the Owner's instruction the
 dashboard's visual system was re-baselined to the "Sepia Paper" theme and the
@@ -193,6 +203,8 @@ v1.0.0 site is untouched.
 | **M10.3d** | 2026-11-20 | **Documented default observation (Owner: "put the default one some month with extreme drought; Dec 2025 is not a drought month").** Boot and Reset now open on **July 2002**, the documented 2002 monsoon failure behind the Rajasthan reality check: verified from the shipped era-B record at **410/724 districts ≤ −1.0, 151 ≤ −2.0**, 76.8 % of area in drought and 23.3 % in the extreme class (the KPI row now lands on a real drought, not a wet month). Implemented once in `filters.js` (`DEFAULT_DATE = '2002-07'`, `resolveDefaultDate`) and used by app boot + Reset; **Latest** still snaps to 2025-12; indicators that do not cover the anchor fall back to the newest month (never an invented date). Overview intro copy changed to "A documented drought month…" so the landing statement matches the data. Verified: fresh boot = 2002-07; Latest → 2025-12; Reset → 2002-07; zero console errors; Lighthouse Accessibility 100 / Best Practices 100; selftest + regression green. The new default also exposed a real data-chip contrast bug: `DIE.inkOn()` used a fixed luminance threshold and chose paper text on the mid-tone "moderate drought" chip (#D97745, 3.0:1); it now compares the WCAG contrast of both theme inks and picks the higher (dark ink, 7.1:1). No data or analytic change (R1/R10) | assets/js/filters.js, assets/js/data-loader.js, assets/js/app.js, index.html, docs/v2/02, docs/v2/04, docs/v2/05 (D12), docs/v2/07, PROGRESS.md | browser boot/Latest/Reset battery, Lighthouse 100/100, selftest PASS, regression PASS 683 | M6.6 `#crossval` (unblocked) or M10.4 permalinks |
 | **M9.1–M9.4** | 2026-11-19 | **`#summary` tab MVP built (E19; Owner "how drought changes from now to 2100" + "I prefer summary and crossover" — `#atlas` deliberately NOT a Drought-Atlas re-portal).** ONE primary map, DEFAULT statistic = `dir_agreement_drier` share (X2 — the median never leads); median-based change metrics (drought-month share pp / mean duration / mean severity per event) one click away, labelled MEDIAN-BASED with the concentration warning; frozen v1.0 runs analysis (τ=−1.0, min 3, censoring flagged) on era-C ensemble-median series vs the committed `data/events/baseline_1981_2014.json` (era B 34 y, D6); dir partitions read at the EFFECTIVE-window midpoint (window-constant, metadata-recorded) so every selected window works; per-state area-weighted table (n per row, LAEA areas, agreement "x.x / 8"); national area-weighted baseline→future shares + Δpp; CSV export with X6 reproducibility headers. **Measured finding shipped as UI copy**: era-C median drought-month share ≈0 (0.2 % late-century SPI-3 national; Jul-2090 median sd 0.41, 0 months ≤ −1) while the per-model members keep 10.7 % — ground-truth verified against the partitions BEFORE shipping; the X2 default exists for exactly this. M9 exit-gate note: Owner arbitration 2026-11-19 supersedes the X1 "after #crossval" build-order note for this surface; `seam_uncertainty` (X7) pending M6.6/M6.8, labelled in the caveat block, never fabricated | index.html (nav `tabSummary` + `viewSummary` + caveats), assets/js/summary.js (new), assets/js/app.js (TABS/LABELS/DIRTY/Views/invalidate/export label), assets/css/style.css (summary tokens + sidebar rule), PROGRESS.md | browser battery: agreement view renders 720 districts; all 4 map statistics × 2 scenarios × 8 indicators × 3 windows exercised; state table 34 rows; CSV downloaded (correct filename); tab cycles clean; 0 console errors; store-faithfulness spot-checked in Python (dir mean 0.048, median Jul-2090 share 0.0000, members 10.7 %) | M6.2b promotion (era A) → M6.6 #crossval |
 
+| **M3.1** | 2026-11-21 | **Monthly-increment mode BUILT (register D19).** (a) `python data-pipeline/run.py refresh [--offline]` runs the existing update/extract + indicator/export flow, then `scripts/convert_to_parquet.py --incremental --verify 5`, `scripts/build_national.py` and `scripts/generate_catalog.py` — no fork, no auto-bless. (b) The Parquet writer now uses `table.schema` so `source_csv`/`source_sha256`/era metadata is actually persisted (the old `ParquetWriter(SCHEMA)` silently dropped it — the incremental gate could never have worked); all ten observed files re-converted once and re-blessed after review. (c) `--incremental` skips variables whose CSV SHA-256 matches, round-trip-verifies changed variables only; `--selftest` proves incremental == full recompute, and a full real-data conversion matched the incremental output byte-for-byte. (d) Runbook and pipeline docs updated. | scripts/convert_to_parquet.py, data-pipeline/run.py, data/parquet/observed/*.parquet, scripts/regression_baseline.json, .github/workflows/ci.yml, docs/v2/{02,03,05}, data-pipeline/docs/data-update-guide.md, PROGRESS.md | converter --selftest 4/4 PASS; first incremental run converted 10 vars + verified 5 cells each; second run skipped all 10; full recompute byte-identical; `_publish_parquet()` integration (national + catalog) PASS; regression PASS 699 after --bless; selftest PASS | M3.2 status.json + status panel |
+
 ## 4. In progress
 
 - (none — M10.8 claim verifier shipped complete in session 52, verified)
@@ -201,7 +213,7 @@ v1.0.0 site is untouched.
 
 | Order | Task | Milestone | Depends on | Notes |
 |---|---|---|---|---|
-| **1** | **M3.1 monthly-increment mode** (`run.py` extend rather than fork; new months → CSV + Parquet append, catalog/metadata bump; one incremental run verified vs full recompute) → **M3.2 `data/status.json` + status panel** → **M3.3 currency banner** | M3 | GEE/Source new months (Owner-executed) for a live increment | M3.2/M3.3 can be built against the current record first; M3.1 needs a real or fixture increment to verify |
+| **1** | **M3.2 `data/status.json` + status panel** → **M3.3 currency banner** | M3 | current record (build first); live numbers update after each refresh | M3.1 is built; status numbers must match the pipeline manifest |
 | 2 | **M7 release**: era-C hosting, DOI minting, CITATION.cff/late-deposit mapping, README/manuscript sync, download bundles | M7 | M3-M6 | Owner decisions at the gate |
 | 2 | M3 freshness/status (M3.x) · M4 IMD validation framework (M4.1 acquisition is Owner-side) | M3/M4 | — | queueable anytime |
 | 3 | M7 release (era-C hosting decision resolves here: commit vs R2 + Zenodo) | M7 | M3–M6 | — |
@@ -238,12 +250,28 @@ v1.0.0 site is untouched.
 - **Session-47 addition (M6.8/D13):** the X7 seam uncertainty is computed from already-published local stores and ships in the committed cross-validation artifact, so no Owner compute is required and no era-C file was touched. The memo's 1981–2020 window is superseded by D6's 1981–2014 (documented in D13 and docs/v2/03 §6). Reported for transparency: the SPEI-12 area-weighted bias is **+0.008 z** and area-weighted exact-class agreement **34.5 %**; session 46 briefly recorded the unweighted mean (+0.039 z) and pooled class share (32.5 %) under those labels — corrected this session, with no change to any shipped value.
 - **Session-48 addition (M10.4/D14):** the URL is a presentation of validated state, not a second source of truth; every restored value passes through the same catalog/registry/metadata checks as the UI. The docs section is preserved (`#data/<section>?…`), and a copy failure shows the URL rather than failing silently. No analysis semantics or data change.
 - **Session-49 addition (M10.5/D15):** the era-C provenance block is now authoritative in `metadata.json` and is re-emitted by step 09 on every publish, so it cannot be lost in a monthly/era-C refresh. The only claimed DOI is the archived v1.0.0 release; the v2.0.0 DOI stays `null` until M7.2. Dataset licences are stated per source and never collapsed into the application's MIT licence.
+- **Session-55 addition (M3.1/D19):** the monthly refresh now publishes Parquet/catalog in one command. The observed Parquet files were re-converted once to embed their source SHA-256 (values unchanged); the regression baseline was re-blessed after reviewing that only those checksums moved. The refresh command never auto-blesses — a legitimate monthly data change still requires a reviewed `--bless`.
 - **Session-52 addition (M10.8/D18):** the figure verifier reproduces figure *data* and the quantitative claims, not the archival browser screenshots (those are screenshots by design). Fig 6 reproduces the manuscript's r=0.874, n=538 and CI exactly; Fig 5 reproduces 4/538 months and one qualifying event; Fig 2 is re-drawn deterministically from metadata. CI now gates both `verify_reality_checks.py --check` and `reproduce_figures.py --check`.
 - **Session-51 addition (M10.7/D17):** the reality-check boxes are generated from `data/reality_checks.json`, which is re-derived from the shipped matrices by one command and fingerprinted by the regression harness. The Marathwada numbers re-derived from the released matrices differ slightly from the preprint's Table 5 (Sep SPI-3 −0.97 vs −0.95; Nov VCI 13.5 vs 14.6; Jan 2016 8.4 vs 9.6); the box shows the released-record values and says so. This is a documentation drift finding for the M7 README/manuscript sync, not a data change.
 - **Session-50 addition (M10.6/D16):** district profiles read the committed observed Parquet for the ten-indicator strip (one query) and the loaded CSV for the active indicator's trend/events; no new data product or Owner compute. The `#/district/<id>` path is authoritative over query state, and the route suppresses URL sync while applying so a hash-change cannot rewrite a permalink mid-restore (a real race found in verification).
 - Recorded for the Owner (not blocking): (1) the Engine Lab catalog table still says eras `observed` for era-B variables — the catalog's `eras` vocabulary predates D8's "Gridded Multi-Source Product" wording; renaming it is a catalog-contract change (M10.5/next catalog regeneration), never a silent edit; (2) lamplight night mode is specified (roadmap M10.9) but deliberately not shipped; state-encoding permalinks shipped this session (M10.4).
 
 ## 7. Files created or modified
+
+**Session 55 (2026-11-21, M3.1 monthly refresh):**
+
+| File | Change |
+|---|---|
+| `scripts/convert_to_parquet.py` | `--incremental` (SHA-256 source gate, skip unchanged), `--csv-dir/--out-dir`, `--selftest` (incremental == full recompute), writer now uses `table.schema` so source metadata persists |
+| `data-pipeline/run.py` | New `refresh [--offline]` command: existing update/extract + export, then incremental Parquet → national aggregate → catalog; `--offline` flag; usage text |
+| `data/parquet/observed/*.parquet` | Re-converted once to embed `source_csv`/`source_sha256`/era metadata (values unchanged; +785 bytes/file) |
+| `scripts/regression_baseline.json` | Re-blessed after review (only observed-Parquet checksums changed) |
+| `.github/workflows/ci.yml` | CI runs `convert_to_parquet.py --selftest` |
+| `docs/v2/02-roadmap-milestones.md` | M3.1 marked BUILT |
+| `docs/v2/03-scientific-pipelines.md` | §1.4 rewritten as the built refresh flow |
+| `docs/v2/05-decision-register.md` | New **D19** monthly-refresh contract |
+| `data-pipeline/docs/data-update-guide.md` | Runbook uses `run.py refresh` + incremental publication |
+| `PROGRESS.md` | Status, board (M3 ◐), phase, M3.1 completed row, pending queue, files table, session-log row 55 |
 
 **Session 52 (2026-11-21, M10.8 claim verifier):**
 
@@ -673,13 +701,12 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-> **Updated 2026-11-21 (session 52):** M10.8 is DONE (row 52) and **M10 is
-> complete** (M10.9 lamplight optional). The figure/claim verifier reproduces
-> Fig 2/5/6 and Table 5 from the shipped record and is gated in CI, and every
-> headline surface links to its method anchor. Next: the **M10 exit-gate
-> review**, then **M3.1 monthly refresh** and the **M7 release** (era-C hosting,
-> DOI minting, README/manuscript sync). The historical M6.2 note below is kept
-> for the record.
+> **Updated 2026-11-21 (session 55):** M3.1 is DONE (row 55): one-command
+> monthly refresh publishes only changed Parquet variables, the national
+> aggregate and the catalog, with incremental == full recompute proven. The
+> next task is **M3.2 `data/status.json` + status panel**, then **M3.3 currency
+> banner**, then the **M7 release** (era-C hosting, DOI minting, README/
+> manuscript sync). The historical M6.2 note below is kept for the record.
 
 ### M6.2 – Atlas ingestion (next task; M6.1 gate PASSED 2026-11-18)
 
@@ -810,3 +837,4 @@ X1 refusal. WORLD SELFTEST PASS.
 | 52 | 2026-11-21 | **M10.8 claim verifier BUILT (Owner: "Next: M10.8 start"; register D18) - M10 COMPLETE.** (a) `scripts/reproduce_figures.py` reproduces three published figures/claims from the shipped record into committed refs (`manuscript/figures/reproduced/`): Fig 2 coverage (deterministic SVG + plotted bars from metadata); Fig 5 all-India SPI-3 (538 months, 4 <= -1.00, one 3-month event, minimum 2002-09 -1.2957); Fig 6 propagation (n=538, r=0.8743, block-bootstrap [0.8353,0.9018], seed 20261103); Table 5 via the reality-check artifact hash. `--check` verifies; CI now runs it plus `verify_reality_checks.py --check`. (b) 'How this is made' links now sit on every headline surface (Overview receipts, Summary caveats, Crossval note, District receipts, Projections note, Historical trend, Events, Propagation, Atlas caveats), pointing at the matching K anchors. Fixed a CSS edit that had temporarily detached the `.ev-k` selector; verified restored. | scripts/reproduce_figures.py (new), manuscript/figures/reproduced/* (new), .github/workflows/ci.yml, index.html, assets/js/{app,projections,crossval,district-profile}.js, assets/css/style.css, docs/v2/{02,04,05,07}, PROGRESS.md | reproduce_figures write + --check PASS (5 artifacts); SVG well-formed; Fig 6 matches manuscript; Fig 5 4/538 + one event; links verified on Overview/Summary/Crossval/District; 11 hashes 0 console errors; Lighthouse A11y 100 / BP 100 / SEO 75 (hash-only anchors); data-pipeline selftest PASS; regression PASS 699 | M10 exit-gate review (M10.9 optional) / M3.1 refresh / M7 release |
 | 53 | 2026-11-21 | **BUGFIX: Atlas SPEI-1/SPEI-4 maps were all grey (Owner report "in drought atlas spei 1 and spei 4 is not showing any map").** Root cause: `atlas.js -> classifyFn()` looked up catalog ids `spei_01`/`spei_04` in `DIE.indicatorById` (keyed by metadata ids `spei_1`/`spei_12`), so `DIE.classify()` got `undefined` and every district fell to the no-data colour; the fallbacks were also padded ids. Fixed by mapping `spei_0N -> spei_N` and falling back to the identical SPEI class table for SPEI-4 (no era-B twin). Also added honest empty-frame guidance: SPEI-4 starts in April, SPEI-12 is December-only; an early-month frame now says why it is empty (never placeholder values). | assets/js/atlas.js, index.html, docs/v2/04, PROGRESS.md | browser: SPEI-1 Aug-1901 and SPEI-4 Aug-1901 fill 718 districts with class colours; SPEI-12 Dec-1901 fills 718; SPEI-12 Aug shows the December rule; 0 console errors; regression PASS 699; selftest PASS | M10 exit-gate review / M3.1 / M7 |
 | 54 | 2026-11-21 | **M10 EXIT GATE PASSED.** Boot audit: Overview, July 2002, SPI-3, Reading Room accent, Era B pill, Record product + six lenses, no horizontal overflow. Lighthouse Accessibility 100 / Best Practices 100 on Overview, District profile, Cross-validation, Drought to 2100 and the evidence surfaces (SEO 75 only on hash-link routes, `crawlable-anchors`, SPA property, not a gate). Zero console errors across all 11 routes. Permalink round-trip restored crossval state. M10.4-M10.8 all built; M10.9 lamplight optional. | docs/v2/02-roadmap-milestones.md, docs/v2/07-design-review-checklist.md, PROGRESS.md | Lighthouse sweep (5 surfaces), boot/overflow/permalink audit, all-route console sweep; regression PASS 699; selftest PASS | M3.1 monthly-increment mode |
+| 55 | 2026-11-21 | **M3.1 monthly-increment mode BUILT (register D19).** (a) `python data-pipeline/run.py refresh [--offline]` = existing fetch/extend + indicator/export, then `scripts/convert_to_parquet.py --incremental --verify 5`, `scripts/build_national.py`, `scripts/generate_catalog.py`; no fork, no auto-bless. (b) Fixed a real latent bug: `ParquetWriter(SCHEMA)` silently dropped the source CSV SHA-256 metadata, so an incremental gate could never work; writer now uses `table.schema`, all ten observed files re-converted once (+785 bytes each, values unchanged) and regression re-blessed after review. (c) `--incremental` skips variables with matching source SHA-256 and verifies only changed ones; `--selftest` proves incremental output is byte-identical to a full recompute; a full real-data conversion matched the incremental output byte-for-byte. (d) Runbook/pipeline docs updated; CI runs the converter selftest. | scripts/convert_to_parquet.py, data-pipeline/run.py, data/parquet/observed/*.parquet, scripts/regression_baseline.json, .github/workflows/ci.yml, docs/v2/{02,03,05}, data-pipeline/docs/data-update-guide.md, PROGRESS.md | converter --selftest 4/4 PASS; first incremental run converted 10 vars + 5-cell verify each; second run skipped all 10; full recompute byte-identical; _publish_parquet integration PASS; regression PASS 699 after --bless; data-pipeline selftest PASS | M3.2 status.json + status panel |

@@ -46,17 +46,17 @@ The v1.0.0 pipeline (`data-pipeline/`) produced the released record (`research-g
 
 `data/parquet/_national_monthly.parquet`: area-weighted national monthly series per variable (LAEA weights from the v1.0 district areas), ~42 KB on prototype data — serves every default national view. `_tehsil_national_monthly.parquet` follows when era A lands. Regional (state) pre-aggregates may follow the same pattern if default views need them.
 
-### 1.4 Monthly refresh mode (task M3.1)
+### 1.4 Monthly refresh mode (task M3.1 — BUILT 2026-11-21)
 
-Extend `data-pipeline/run.py` with a monthly-increment mode (new flag, e.g. `run.py monthly --end 2026-01`):
+One command: `python data-pipeline/run.py refresh [--offline]` (GEE route by default; `--offline` uses the local download route). Steps:
 
-1. Owner runs the GEE extraction for the new month(s) (same chunk/checkpoint machinery).
-2. `indicators.py` recomputes only affected district-month fits (fixed 1981–2020 parameters — no refitting, by design).
-3. `export_app.py` appends new columns to the wide CSVs, bumps `metadata.json` (`last_updated`, availability windows) and `pipeline_manifest.json` (checksums).
-4. `scripts/convert_to_parquet.py --incremental` rewrites the affected variable files (small files — rewrite is safer than append) and regenerates `catalog.json`.
-5. Writes `data/status.json`: last successful run timestamp, current data month, lag in days, pipeline version, known issues.
+1. Runs the existing monthly extraction/extension (GEE `gee_export.py` or the offline download/prepare/zonal chain) and the indicator step; fixed 1981–2020 standardisation parameters are reused, never refitted.
+2. `export_app.py` rewrites the wide CSVs with the extended period and bumps `metadata.json` (`last_updated`, availability windows) and `pipeline_manifest.json` (checksums).
+3. `scripts/convert_to_parquet.py --incremental --verify 5` reconverts **only** variables whose wide CSV SHA-256 changed (small files — rewrite is safer than append), embeds `source_csv`/`source_sha256`/`era` in Parquet metadata, and round-trip-verifies every changed variable.
+4. `scripts/build_national.py` rebuilds `_national_monthly.parquet` with an independent `fsum` verification; `scripts/generate_catalog.py` regenerates the exact-path catalog (preserving published era blocks).
+5. `data/status.json` and the currency banner are **M3.2/M3.3**, not part of M3.1.
 
-`validate.py` runs at the end; non-zero exit blocks release. **The 45-day lag target is enforced by the banner (docs/v2/04 §2.3), amber beyond it.**
+`validate.py` runs before publication in the existing flow; non-zero exit blocks release. The converter `--selftest` proves incremental output is byte-identical to a full recompute, and a real-data full conversion was compared byte-for-byte. **The 45-day lag target is enforced by the banner (docs/v2/04 §2.3), amber beyond it.**
 
 ## 2. Era A — Atlas ingestion (`atlas-pipeline/`)
 

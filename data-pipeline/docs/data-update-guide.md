@@ -216,10 +216,21 @@ each run typically adds 2–3 new months):
 cd drought-intelligence-explorer/data-pipeline
 source .venv/bin/activate
 
-python run.py update                    # fetch missing months, recompute, export
+# GEE route (monthly): fetch/extend, export, then incrementally publish
+# Parquet + national aggregate + catalog in one command.
+python run.py refresh --end YYYY-MM
+
+# Offline route equivalent:
+python run.py refresh --offline --end YYYY-MM
+
 python run.py status                    # inventory sanity check
 python run.py validate                  # contract + science QA (must be 0 errors)
 ```
+
+`refresh` runs the existing update/extract + indicator/export steps, then
+`scripts/convert_to_parquet.py --incremental --verify 5` (only variables whose
+CSV SHA-256 changed), `scripts/build_national.py` and
+`scripts/generate_catalog.py`. It never auto-blesses the regression baseline.
 
 Review the console output, then:
 

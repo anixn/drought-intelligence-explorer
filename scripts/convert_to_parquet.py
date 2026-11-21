@@ -80,7 +80,7 @@ def sha256_of(path: Path) -> str:
     return h.hexdigest()
 
 
-def convert_one(csv_path: Path, var_id: str) -> dict:
+def convert_one(csv_path: Path, var_id: str, out_dir: Path = OUT_DIR) -> dict:
     """Wide CSV -> long Parquet for one variable. Returns stats dict."""
     df = pd.read_csv(csv_path, dtype={"district_id": "string",
                                       "district_name": "string",
@@ -134,10 +134,10 @@ def convert_one(csv_path: Path, var_id: str) -> dict:
               .to_numpy())
     if len(counts) != n_districts:
         raise AssertionError("district row-count decomposition failed")
-    out_dir = OUT_DIR / f"variable={var_id}"
+    out_dir = out_dir / f"variable={var_id}"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / "part-0.parquet"
-    with pq.ParquetWriter(out_path, SCHEMA, compression="zstd",
+    with pq.ParquetWriter(out_path, table.schema, compression="zstd",
                           compression_level=ZSTD_LEVEL,
                           use_dictionary=True) as writer:
         start = 0           # row index
@@ -156,12 +156,13 @@ def convert_one(csv_path: Path, var_id: str) -> dict:
             "bytes": size, "groups": (len(counts) + ROW_GROUP_DISTRICTS - 1) // ROW_GROUP_DISTRICTS}
 
 
-def verify_one(var_id: str, csv_path: Path, n_cells: int, rng: random.Random) -> dict:
+def verify_one(var_id: str, csv_path: Path, n_cells: int, rng: random.Random,
+               out_dir: Path = OUT_DIR) -> dict:
     """Round-trip check: random cells stored in Parquet must equal the CSV cell
     parsed to float32 (exact at the contract dtype - M1.4 gate)."""
     df = pd.read_csv(csv_path, dtype={"district_id": "string"})
     month_cols = [c for c in df.columns if MONTH_RE.match(c)]
-    pq_file = pq.ParquetFile(OUT_DIR / f"variable={var_id}" / "part-0.parquet")
+    pq_file = pq.ParquetFile(out_dir / f"variable={var_id}" / "part-0.parquet")
     stored = pq_file.read().to_pandas()  # small enough (single variable)
     key = {(d, y, m): v for d, y, m, v in zip(stored["district_id"], stored["year"], stored["month"], stored["value"])}
 
@@ -192,42 +193,141 @@ def verify_one(var_id: str, csv_path: Path, n_cells: int, rng: random.Random) ->
             "absent_confirmed": absent_confirmed, "max_abs_diff_vs_text": max_abs}
 
 
+def _parquet_is_current(csv_path: Path, var_id: str, out_dir: Path) -> bool:
+    """True when the Parquet metadata records this CSV's current SHA-256."""
+    p = out_dir / f"variable={var_id}" / "part-0.parquet"
+    if not p.exists():
+        return False
+    try:
+        meta = pq.read_metadata(p).metadata or {}
+        recorded = meta.get(b"source_sha256", b"").decode() if isinstance(
+            meta.get(b"source_sha256"), (bytes, bytearray)) else ""
+        return bool(recorded) and recorded == sha256_of(csv_path)
+    except Exception:
+        return False
+
+
+def _selftest() -> int:
+    """Incremental conversion must equal a full recompute (M3.1 gate)."""
+    import tempfile
+    import shutil
+
+    tmp = Path(tempfile.mkdtemp(prefix="die-parquet-inc-"))
+    try:
+        csv_dir = tmp / "csv"
+        out_inc = tmp / "out-inc"
+        out_full = tmp / "out-full"
+        csv_dir.mkdir()
+        months = [f"2000-{m:02d}" for m in range(1, 13)] + \
+                 [f"2001-{m:02d}" for m in range(1, 13)]
+        rows = [
+            {"district_id": "d1", "district_name": "D1", "state_name": "S"},
+            {"district_id": "d2", "district_name": "D2", "state_name": "S"},
+        ]
+        for i, row in enumerate(rows):
+            for j, ym in enumerate(months):
+                row[ym] = round((i + 1) * 0.1 + j * 0.01, 4)
+        csv_a = csv_dir / "spi_01.csv"
+        csv_b = csv_dir / "spei_12.csv"
+        pd.DataFrame(rows).to_csv(csv_a, index=False)
+        pd.DataFrame(rows).to_csv(csv_b, index=False)
+
+        convert_one(csv_a, "spi_01", out_inc)
+        convert_one(csv_b, "spei_12", out_inc)
+        before_b = (out_inc / "variable=spei_12/part-0.parquet").read_bytes()
+        before_a = (out_inc / "variable=spi_01/part-0.parquet").read_bytes()
+
+        # Append one month to spi_01 only.
+        df = pd.read_csv(csv_a)
+        df["2002-01"] = [0.5, 0.6]
+        df.to_csv(csv_a, index=False)
+
+        changed = []
+        for stem, var_id in (("spi_01", "spi_01"), ("spei_12", "spei_12")):
+            path = csv_dir / f"{stem}.csv"
+            if _parquet_is_current(path, var_id, out_inc):
+                continue
+            convert_one(path, var_id, out_inc)
+            changed.append(var_id)
+
+        after_b = (out_inc / "variable=spei_12/part-0.parquet").read_bytes()
+        after_a = (out_inc / "variable=spi_01/part-0.parquet").read_bytes()
+        convert_one(csv_a, "spi_01", out_full)
+        full_a = (out_full / "variable=spi_01/part-0.parquet").read_bytes()
+
+        checks = [
+            ("only the changed variable reconverted", changed == ["spi_01"]),
+            ("unchanged parquet is byte-identical", before_b == after_b),
+            ("changed parquet actually changed", before_a != after_a),
+            ("incremental == full recompute (bytes)", after_a == full_a),
+        ]
+        ok = True
+        for name, passed in checks:
+            print(f"  [{'PASS' if passed else 'FAIL'}] {name}")
+            ok = ok and passed
+        print("INCREMENTAL SELFTEST " + ("PASSED" if ok else "FAILED"))
+        return 0 if ok else 1
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def main() -> int:
-    ap = argparse.ArgumentParser(description="era B wide CSVs -> long Parquet (M1.3/M1.4)")
+    ap = argparse.ArgumentParser(description="era B wide CSVs -> long Parquet (M1.3/M1.4/M3.1)")
     ap.add_argument("--convert", action="store_true", help="run the conversion (default if no other mode given)")
+    ap.add_argument("--incremental", action="store_true",
+                    help="reconvert only variables whose CSV SHA-256 changed (M3.1 monthly refresh)")
     ap.add_argument("--verify", type=int, metavar="N", help="round-trip check with N random cells per variable (M1.4)")
+    ap.add_argument("--csv-dir", default=str(CSV_DIR), help="source wide-CSV directory")
+    ap.add_argument("--out-dir", default=str(OUT_DIR), help="destination Parquet directory")
+    ap.add_argument("--selftest", action="store_true", help="synthetic incremental-vs-full equivalence test")
     args = ap.parse_args()
-    if not args.convert and args.verify is None:
+    if args.selftest:
+        return _selftest()
+    if not args.convert and not args.incremental and args.verify is None:
         args.convert = True
+    csv_dir = Path(args.csv_dir)
+    out_dir = Path(args.out_dir)
 
     ok = True
-    if args.convert:
-        print(f"Converting {len(SOURCE_MAP)} variables -> {OUT_DIR}")
+    changed_vars = []
+    if args.convert or args.incremental:
+        print(f"Converting {len(SOURCE_MAP)} variables -> {out_dir}"
+              + (" (incremental)" if args.incremental else ""))
         total_bytes = 0
         for stem, var_id in SOURCE_MAP.items():
-            csv_path = CSV_DIR / f"{stem}.csv"
+            csv_path = csv_dir / f"{stem}.csv"
             if not csv_path.exists():
                 print(f"MISSING SOURCE: {csv_path}")
                 ok = False
                 continue
-            s = convert_one(csv_path, var_id)
+            if args.incremental and _parquet_is_current(csv_path, var_id, out_dir):
+                print(f"  [SKIP] {var_id:<8} unchanged (source SHA-256 matches)")
+                continue
+            s = convert_one(csv_path, var_id, out_dir)
+            changed_vars.append(var_id)
             total_bytes += s["bytes"]
             flag = "OK " if s["bytes"] <= 600 * 1024 else "BIG"
             print(f"  [{flag}] {s['var']:<8} rows={s['rows']:>7,} of {s['cells']:>7,} cells "
                   f"({s['districts']} districts x {s['months']} months) "
                   f"groups={s['groups']:>2}  size={s['bytes'] / 1024:>7.1f} KB  src={s['csv']}")
-        print(f"TOTAL: {total_bytes / 1024 / 1024:.2f} MB "
-              f"({'WITHIN' if total_bytes <= 30 * 1024 * 1024 else 'OVER'} the ~30 MB era B gate)")
+        if changed_vars:
+            print(f"CONVERTED: {', '.join(changed_vars)}")
+        else:
+            print("CONVERTED: none (store already current)")
 
     if args.verify is not None:
         if args.verify < 5:
             print("--verify N must be >= 5 (M1.4 gate)")
             return 2
-        print(f"Round-trip verification: {args.verify} random cells per variable (seed {SEED})")
+        targets = changed_vars if (args.incremental and changed_vars) else list(SOURCE_MAP.values())
+        print(f"Round-trip verification: {args.verify} random cells per variable "
+              f"(seed {SEED}; {len(targets)} variable(s))")
         rng = random.Random(SEED)
         worst = 0.0
-        for stem, var_id in SOURCE_MAP.items():
-            v = verify_one(var_id, CSV_DIR / f"{stem}.csv", args.verify, rng)
+        inv = {v: k for k, v in SOURCE_MAP.items()}
+        for var_id in targets:
+            csv_path = csv_dir / f"{inv[var_id]}.csv"
+            v = verify_one(var_id, csv_path, args.verify, rng, out_dir)
             worst = max(worst, v["max_abs_diff_vs_text"])
             status = "PASS" if v["mismatch"] == 0 else "FAIL"
             ok = ok and v["mismatch"] == 0
