@@ -70,7 +70,8 @@ Additional DIE-only checks: keyboard + ARIA on new controls; mobile 44 px target
 | Living methodology + governance + reality-check surfaces | M10.7 | built 2026-11-21 |
 | Claim verifier + `reproduce_figures.py` | M10.8 | built 2026-11-21 |
 | Era A ↔ B cross-validation as a public trust surface | M6.6 `#crossval` (+ M6.8 seam uncertainty) | next build task |
-| Era-C citation block in `metadata.json` | M10.5 | scheduled |
+| Era-C citation block in `metadata.json` | M10.5 | built 2026-11-21 |
+| **M10 exit gate** | M10 | PASSED 2026-11-21 (A11y 100 / BP 100, 0 console errors, all routes) |
 | README / manuscript currency sync | M7 release hygiene | scheduled |
 
 **Not adopted:** two websites, a simplified mode, or an AI question box. They fragment the single evidence engine and violate the layering principle.

@@ -245,7 +245,7 @@ Work Tier 2 (O01–O12) in worth order; Tier 3 items only when their data/licenc
 | M10.8 | **Claim verifier — BUILT 2026-11-21:** `scripts/reproduce_figures.py` regenerates three published figures/claims from the shipped record (Fig 2 coverage SVG + data, Fig 5 All-India SPI-3 4/538 + one event, Fig 6 propagation r=0.8743/n=538/CI [0.8353,0.9018]) and Table 5 by hashing the reality-check artifact; `--check` compares committed references and runs in CI. Every headline surface now links "How this is made" to the relevant method anchor | verifier reproduces ≥ 3 published figures exactly |
 | M10.9 | Optional: lamplight night mode (documented in D10, deliberately not shipped with M10.1–M10.3) | contrast pass in the dark paper palette; never auto-forced |
 
-**Exit gate M10:** the theme + Depth-1 layer are the default experience on `v2-dev` with Lighthouse accessibility 100 and zero console errors; the deferred credibility surfaces (M10.4–M10.8) are scheduled, not silently dropped.
+**Exit gate M10 (PASSED 2026-11-21):** the theme + Depth-1 layer are the default experience on `v2-dev` (boot = July 2002, Record product, era pill visible), Lighthouse accessibility **100** and Best Practices **100** on Overview, District profile, Cross-validation, Drought to 2100 and the evidence surfaces, **zero console errors** across all 11 routes, and the deferred credibility surfaces M10.4–M10.8 are built (M10.9 lamplight remains optional). SEO is 75 on routes that use hash-only in-app links (`crawlable-anchors`, an SPA property), not an M10 gate.
 
 ## 4. Feature → milestone map
 
