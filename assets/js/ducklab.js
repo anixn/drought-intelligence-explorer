@@ -362,6 +362,50 @@
       ' ORDER BY month, district_id'));
   }
 
+  /* Era A vs era B cross-validation (task M6.6). The product is a built
+   * artifact (validation-studies/crossval/01_build_overlap.py), not an
+   * on-the-fly join: the UI reads the precomputed per-district metrics (the
+   * map/table source) and the area-weighted monthly agreement series. The
+   * street-level overlap file is available for drill-down/download but is
+   * never fetched for a first paint (7.7 MB). */
+  async function crossval(opts) {
+    const cat = state.catalog || (await ensureCatalog());
+    const cv = cat.crossval;
+    if (!cv) {
+      throw newEngineError('no-crossval',
+        'cross-validation product not built yet (task M6.6).');
+    }
+    const part = opts.part === 'monthly' ? 'monthly' : 'per_district';
+    const file = cv.files && cv.files[part];
+    if (!file) {
+      throw newEngineError('no-crossval-file', 'crossval file missing: ' + part);
+    }
+    let where = '';
+    if (opts.variable) {
+      const allowed = cv.variables || [];
+      if (allowed.indexOf(opts.variable) === -1) {
+        throw newEngineError('bad-variable',
+          'not a cross-validated variable: ' + opts.variable);
+      }
+      where = " WHERE variable = '" + opts.variable + "'";
+    }
+    const double = (c) => c + '::DOUBLE AS ' + c;
+    const cols = part === 'monthly'
+      ? ['variable', 'date', 'n_districts', 'mean_a', 'mean_b', 'diff',
+         'state_agree', 'both_drought', 'class_exact', 'class_near']
+      : ['variable', 'district_id', 'n', 'n_window', 'coverage', 'r', 'bias',
+         'rmsd', 'state_agree', 'both_drought', 'severe_agree', 'class_exact',
+         'class_near', 'a_drought_share', 'b_drought_share', 'a_mean', 'b_mean'];
+    const proj = cols.map((c) => (c === 'variable' || c === 'district_id' ||
+      c === 'date' || c === 'n' || c === 'n_window' || c === 'n_districts')
+      ? c : double(c)).join(', ');
+    const order = part === 'monthly' ? ' ORDER BY variable, date'
+      : ' ORDER BY variable, district_id';
+    return toRows(await query(
+      'SELECT ' + proj + ' FROM read_parquet([\'' + absPath(file) + '\'])' +
+      where + order));
+  }
+
   async function national(opts) {
     const cat = state.catalog || (await ensureCatalog());
     if (!cat.national) {
@@ -443,7 +487,7 @@
 
   DIE.Engine = {
     ensureEngine, ensureCatalog, query, slice, mapMonth, national, ensemble,
-    atlasYear,
+    atlasYear, crossval,
     bytes, lastMs,
     version: DUCKDB_VERSION,
     catalog: () => state.catalog,

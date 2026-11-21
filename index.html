@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-20o" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-21a" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -649,6 +649,30 @@
                   <path d="M6 15V9a3 3 0 0 1 3-3h6" />
                 </svg>
                 Propagation &amp; Relationships
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabCrossval"
+                aria-selected="false"
+                aria-controls="viewCrossval"
+                tabindex="-1"
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 7h13l-3-3M21 17H8l3 3" />
+                </svg>
+                Cross-validation
               </button>
             </div>
             <div
@@ -2735,7 +2759,171 @@
           </div>
         </div>
 
-        <!-- ============ VIEW 9: DATA, METHODOLOGY & DOWNLOADS ============ -->
+        <!-- ============ VIEW 9: ERA A vs ERA B CROSS-VALIDATION ============
+             A lens on the Record product (D11): the same 1981-2014 window
+             read from two independent records and compared, never spliced. -->
+        <div id="viewCrossval" role="tabpanel" aria-labelledby="tabCrossval" hidden>
+          <div class="view-intro is-compact" id="introCrossval" aria-label="Workspace introduction">
+            <span class="vi-step">9</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                Cross-validation <span class="vi-tag">era A &harr; B</span>
+                <span class="vi-hint"
+                  >Two independent records over the same 1981&ndash;2014
+                  window, compared &mdash; never merged into one series.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-banner" id="cvBanner" role="note"></div>
+
+          <div class="panel-grid">
+            <section class="panel" id="cvControlPanel" aria-label="Cross-validation selection controls">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Selection</h2>
+                  <span class="panel-meta" id="cvStatMeta">&mdash;</span>
+                </div>
+              </div>
+              <div class="proj-controls">
+                <div class="proj-field">
+                  <label class="proj-label" for="cvVariable">Timescale</label>
+                  <select id="cvVariable" class="panel-ctl" aria-label="Cross-validated timescale">
+                    <option value="spei_01" selected>SPEI-1 (monthly)</option>
+                    <option value="spei_12">SPEI-12 (annual accumulation)</option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="cvMetric">Map statistic</label>
+                  <select id="cvMetric" class="panel-ctl" aria-label="Map statistic">
+                    <option value="bias" selected>Bias &mdash; era B minus era A (default)</option>
+                    <option value="state_agree">Drought-state agreement</option>
+                    <option value="r">Correlation r</option>
+                    <option value="class_near">Severity class (within one)</option>
+                    <option value="rmsd">RMSD</option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Download</span>
+                  <button type="button" class="btn btn-ghost" id="cvCsvBtn">
+                    Export CSV
+                  </button>
+                </div>
+              </div>
+              <p class="table-help" id="cvStatNote">Loading the comparison store&hellip;</p>
+            </section>
+
+            <section class="panel" id="cvKpiPanel" aria-label="Agreement summary">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Agreement at a glance</h2>
+                  <span class="panel-meta">every figure carries its sample size</span>
+                </div>
+              </div>
+              <dl class="el-status">
+                <div><dt>Districts compared</dt><dd id="cvDistricts">&mdash;</dd></div>
+                <div><dt>Matched district-months</dt><dd id="cvMonths">&mdash;</dd></div>
+                <div><dt>Median r (unweighted)</dt><dd id="cvMedianR">&mdash;</dd></div>
+                <div><dt>Area-weighted bias</dt><dd id="cvBias">&mdash;</dd></div>
+                <div><dt>Median RMSD</dt><dd id="cvRmsd">&mdash;</dd></div>
+                <div><dt>Area-weighted drought-state agreement</dt><dd id="cvState">&mdash;</dd></div>
+                <div><dt>Area-weighted within-one-class</dt><dd id="cvClass">&mdash;</dd></div>
+                <div><dt>Area-weighted both-drought</dt><dd id="cvBoth">&mdash;</dd></div>
+              </dl>
+            </section>
+
+            <section class="panel" id="cvMapPanel" aria-label="Agreement and divergence map">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Where the two records diverge</h2>
+                  <span class="panel-meta" id="cvMapMeta">&mdash;</span>
+                </div>
+              </div>
+              <div id="cvMap" class="proj-map" style="height: 440px" role="img" aria-label="Choropleth map of era A versus era B agreement by district"></div>
+              <div id="cvLegend" class="proj-legend" aria-hidden="true"></div>
+              <p class="table-help" id="cvMapNote">loading&hellip;</p>
+            </section>
+
+            <section class="panel" id="cvMonthlyPanel" aria-label="Monthly agreement series">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Agreement through time</h2>
+                  <span class="panel-meta">area-weighted national series, 1981&ndash;2014</span>
+                </div>
+              </div>
+              <div class="chart-box" id="cvMonthlyChart" style="height: 230px" role="img" aria-label="Line chart of monthly agreement"></div>
+              <p class="chart-foot" id="cvMonthlyNote">loading&hellip;</p>
+            </section>
+
+            <section class="panel" id="cvTablePanel" aria-label="District agreement table">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">District evidence</h2>
+                  <span class="panel-meta" id="cvTableMeta">&mdash;</span>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table class="comp-table" id="cvTable">
+                  <thead>
+                    <tr>
+                      <th>District</th>
+                      <th>State / UT</th>
+                      <th class="num">n months</th>
+                      <th class="num">r</th>
+                      <th class="num">Bias (z)</th>
+                      <th class="num">State agree</th>
+                      <th class="num">Exact class</th>
+                      <th class="num">Within one</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <p class="table-help" id="cvTableNote"></p>
+            </section>
+
+            <section class="panel" id="cvCaveatPanel" aria-label="Reading guide and caveats">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">How to read this workspace</h2>
+                  <span class="panel-meta">interpretation guardrails</span>
+                </div>
+              </div>
+              <ul class="table-help" id="cvCaveats" style="margin: 10px 16px; padding-left: 18px">
+                <li>
+                  <b>Disagreement is expected and is the content.</b> The two
+                  records use different precipitation and PET chains and are
+                  standardised against their own fitting baselines, so a
+                  systematic offset is a property of the inputs, not an error
+                  in either record.
+                </li>
+                <li>
+                  <b>Compared, never merged</b> (R2): no district-month is
+                  averaged into a single "consensus" value, and the overlap is
+                  never spliced into the 1981&ndash;2025 record.
+                </li>
+                <li>
+                  <b>Missing stays missing</b> (R10): a district-month present
+                  in only one era is absent from every metric; the six island
+                  districts with no Atlas grid cells stay grey.
+                </li>
+                <li>
+                  <b>Correlation is not agreement</b> (R9): r measures
+                  co-movement only. Read it with the bias map; a district can
+                  track closely and still sit half a class away.
+                </li>
+                <li>
+                  <b>Window</b>: 1981&ndash;2014 (register D6, the GCM-native
+                  comparison window). The full 1981&ndash;2025 overlap is a
+                  sensitivity variant and is not part of this build.
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+
+        <!-- ============ VIEW 10: DATA, METHODOLOGY & DOWNLOADS ============ -->
         <div id="viewData" role="tabpanel" aria-label="Documentation and Resources" hidden>
           <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step" aria-hidden="true">
@@ -4084,7 +4272,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-20g";
+        var ASSET_VERSION = "2026-11-21c";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
@@ -4119,6 +4307,7 @@
           "projections",
           "summary",
           "atlas",
+          "crossval",
         ];
         var inflight = {};
 

@@ -24,7 +24,7 @@ New surfaces (added in dependency order; each keeps its own stable hash):
 | Future Projections | `#projections` | C | M5 |
 | Drought to 2100 (agreement-first change summary) | `#summary` | B vs C | M9 (built 2026-11-19) |
 | Atlas Context | `#atlas` | A | M6 |
-| Cross-Validation | `#crossval` | A + B | M6 |
+| Cross-Validation (Record lens, D11) | `#crossval` | A + B | M6 (built 2026-11-21) |
 | Monthly Brief (Tier 2) | `#brief` | B | M8+ |
 
 Dirty-tab rendering pattern (mark tabs dirty on state change, re-render only on entry) is the v1.0 lifecycle — new tabs adopt it. Documentation stays a secondary control, never a main analytical tab.
@@ -130,9 +130,20 @@ Status line (`ready · DuckDB-WASM 1.32.0 · N Parquet tables`), SQL editor with
 
 Era-labelled scrubber (1901→end; per-year tile fetch only), seasonal composites (JJAS, ONDJ, water year, calendar year), drought-frequency climatology across eras, category-share summary ("X % of units in moderate-or-worse drought"), and the historical-event anchors (1918, 1965, 1972, 1987, 2002) as pre-set view links. District-level first; tehsil layer only after the geometry gate (register).
 
-### 4.4 Cross-Validation (`#crossval`, M6)
+### 4.4 Cross-Validation (`#crossval`, M6 — BUILT 2026-11-21, Record lens)
 
-Era A ↔ Era B panel at 1981–2020: agreement time-series, event-match table, per-district discrepancy map, and the headline statistics (r, class agreement, event-match rate) with the interpretation guardrail text from docs/v2/03 §6. IMD benchmark results are surfaced in the Documentation centre (§5), not here — this panel is specifically the Atlas↔Observed seam.
+A **lens on the Record product** (D11), not a new top-level era: it asks a question about the existing record, so it sits in the record lens strip after Propagation.
+
+- **Window:** 1981–2014, register D6 (the GCM-native comparison window). The full 1981–2025 overlap is documented as the sensitivity variant and is not built here.
+- **Timescales:** SPEI-1 and SPEI-12 only — the two accumulation definitions shared by era A (Atlas ships 1/4/12) and era B (ships 1/3/6/12). SPEI-4 is era-A-only.
+- **Selection panel:** timescale, map statistic (default **bias**, the divergence map; then drought-state agreement, r, within-one-class agreement, RMSD), and a CSV export with `#` reproducibility headers.
+- **KPIs (`Agreement at a glance`):** districts compared (n), matched district-months, median r (unweighted), area-weighted bias, median RMSD, area-weighted state agreement, within-one-class agreement, both-drought co-occurrence. Every figure names its sample.
+- **Map:** per-district choropleth from `per_district_1981_2014.parquet`; diverging ramp for bias (brown = era B drier, blue = era B wetter), sequential warm ramp for the agreement metrics; six island districts with no Atlas grid cells stay grey (R10).
+- **Time series:** area-weighted national monthly agreement from `monthly_1981_2014.parquet`, with the time-mean marked and the matched-area caveat in the note.
+- **Table:** worst-30 district evidence, sorted worst-first, with exhaustive n and class columns; the full 718-district table is the CSV.
+- **Era pill:** `Era A ↔ B · Compared` (split dot) — the standing receipt that two records are compared, never merged.
+- **Copy guardrails:** disagreement is expected and is the content (different P/PET chains and fitting windows); compared never merged (R2); missing stays missing (R10); correlation is not agreement (R9); exact nine-class agreement is low by construction, so within-one-class leads.
+- IMD benchmark results are surfaced in the Documentation centre (§5), not here — this panel is specifically the Atlas↔Gridded seam.
 
 ### 4.5 Drought to 2100 (`#summary`, M9 — BUILT 2026-11-19, MVP live)
 The headline "so what" surface (Owner request: "how drought changes from now to 2100"; Owner preference: the differentiating view, NOT an Atlas re-portal):

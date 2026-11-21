@@ -12,7 +12,7 @@
  Era A (atlas)      │  atlas/variable=…/year=…/part-0.parquet                   │
  Era B (observed)   │  observed/variable=…/part-0.parquet        ───► catalog.json
  Era C (projections)│  projections/scenario=…/stat=…/variable=…/year=…/…        │
- Cross-validation   │  cross_validation/overlap_1981_2020.parquet               │
+ Cross-validation   │  cross_validation/overlap_1981_2014.parquet               │
                     └──────────────────────────────────────────────────────────┘
                         ▲                    ▲                      ▲
      atlas-pipeline/ ───┘   data-pipeline/ ───┘   gcm-pipeline/ ─────┘
@@ -298,9 +298,13 @@ Deliverables: `validation_report.json` + a validation memo (Markdown) + the Meth
 
 Standing panel at the **1981–2014 primary window (register D6 — the GCM-native historical window; the full 1981–2025 overlap is the sensitivity variant)** (task M6.6):
 
-- Input: era A SPEI (Atlas) vs era B SPEI (v1.0), matched district-months, matched timescale (the Atlas timescales govern; if the Atlas provides SPEI-12 only at matching definition, compare that; document all mismatches).
-- Metrics: r, bias, RMSD, class agreement, event match rate, severity-class match; per-district discrepancy map (`era_b − era_a` diverging ramp).
-- Output: `data/parquet/cross_validation/overlap_1981_2014.parquet` (schema: `district_id, date, era_a_value, era_b_value, diff, event_match, class_match`).
+- Input: era A SPEI (Atlas) vs era B SPEI (v1.0), matched district-months, matched timescale. The Atlas ships SPEI-1/4/12 and era B ships SPEI-1/3/6/12, so only SPEI-1 and SPEI-12 are compared (identical accumulation definitions); SPEI-4 is era-A-only and is never compared against a different timescale. The builder is `validation-studies/crossval/01_build_overlap.py` (config `config.yaml`, `--selftest` on a synthetic world; a deterministic build over already-published local stores, not an external compute job).
+- Metrics: r, bias (`era_b − era_a`), RMSD, state agreement (share of months on the same side of the −1.0 truncation), both-drought co-occurrence, severity-class match (exact and within one McKee class); per-district discrepancy map (diverging ramp).
+- Outputs (built 2026-11-21; 718 districts, 6 island districts absent — no Atlas grid cells, never imputed):
+  - `data/parquet/cross_validation/overlap_1981_2014.parquet` — one row per matched district-month: `variable, district_id, date, era_a_value, era_b_value, diff, flag_a, flag_b, event_match, class_a, class_b, class_match, class_near`. **Schema extension (documented here):** the original spec omitted `variable`; two comparable timescales require it. `class_a/class_b` index the shipped `data/metadata.json` class table; `class_near` = within one class.
+  - `data/parquet/cross_validation/per_district_1981_2014.parquet` — the map/table source: `variable, district_id, n, n_window, coverage, r, bias, rmsd, state_agree, both_drought, severe_agree, class_exact, class_near, a_drought_share, b_drought_share, a_mean, b_mean`. Districts with no overlap are absent, never zero-filled.
+  - `data/parquet/cross_validation/monthly_1981_2014.parquet` — area-weighted national monthly agreement: `variable, date, n_districts, mean_a, mean_b, diff, state_agree, both_drought, class_exact, class_near`.
+- Measured headline (SPEI-1 / SPEI-12, 1981–2014): 718 districts, 292,925 / 285,046 matched district-months; median r 0.717 / 0.667; area-weighted bias +0.044 / +0.039 z; area-weighted state agreement 83.6 % / 82.9 %; within-one-class agreement 78.1 % / 75.8 %. Exact nine-class agreement is 36 % / 32 % — dominated by the near-normal bin, so the UI leads with state agreement and within-one-class.
 - Interpretation guardrail: differences are expected and *are the content* — different P/PET chains (Atlas vs CHIRPS/ERA5-Land), different PET methods (§3.5), different fitting windows. The panel documents them; it does not average them away. Era A and era B are never spliced into one series.
 
 ## 7. QA and validation standards (global)
@@ -346,7 +350,17 @@ Era-optional columns added only where needed (DuckDB handles missing columns per
                  "projections": { "ssp245": ["…"], "ssp585": ["…"] } } }
   ],
   "national": "data/parquet/_national_monthly.parquet",
-  "crossval": "data/parquet/cross_validation/overlap_1981_2020.parquet",
+  "crossval": {
+    "label": "Era A vs Era B agreement, 1981-2014",
+    "window": [1981, 2014],
+    "variables": ["spei_01", "spei_12"],
+    "method": "docs/v2/03-scientific-pipelines.md#6",
+    "files": {
+      "overlap":      "data/parquet/cross_validation/overlap_1981_2014.parquet",
+      "per_district": "data/parquet/cross_validation/per_district_1981_2014.parquet",
+      "monthly":      "data/parquet/cross_validation/monthly_1981_2014.parquet"
+    }
+  },
   "status": "data/status.json"
 }
 ```

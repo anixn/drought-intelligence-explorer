@@ -1,0 +1,58 @@
+# ===========================================================================
+# Era A <-> Era B cross-validation — build configuration (task M6.6)
+# ---------------------------------------------------------------------------
+# Standing panel spec: docs/v2/03-scientific-pipelines.md section 6.
+# Window roles: register D6 — comparison window 1981-2014 (GCM-native primary);
+# the full 1981-2025 overlap is the sensitivity variant, never spliced.
+#
+# Every scientific parameter lives here (AGENTS.md section 8): no hidden
+# constants in the builder.
+# ===========================================================================
+version: 1
+
+# Primary comparison window (register D6). The builder only reads this window.
+primary_window: [1981, 2014]
+
+# Sensitivity window — recorded for the roadmap, not built here (the era-A
+# QA already covers 1981-2025; a full sensitivity build is a separate run).
+sensitivity_window: [1981, 2025]
+
+# Timescales comparable across the two eras. The Atlas ships SPEI-1/4/12 and
+# era B ships SPEI-1/3/6/12: only 1 and 12 are defined identically in both
+# (accumulation window), so only those are compared. SPEI-4 is era-A-only and
+# is never compared against a different timescale.
+variables:
+  spei_01: "SPEI-1"
+  spei_12: "SPEI-12"
+
+# Drought-state thresholds (frozen v1.0 class boundaries, McKee 1993):
+# the truncation used by the runs-analysis event machinery is the upper bound
+# of the moderate class; the severe boundary is reported as a secondary state.
+drought_threshold: -1.0
+severe_threshold: -1.5
+
+# Classification table is read from the shipped metadata contract (never
+# re-typed): data/metadata.json -> indicators[id=spei_1|spei_12].classes
+metadata: data/metadata.json
+registry: data/districts.csv
+
+paths:
+  era_a: data/parquet/atlas
+  era_b: data/parquet/observed
+  out_dir: data/parquet/cross_validation
+
+outputs:
+  # Street-level evidence: one row per matched district-month (both finite).
+  overlap: overlap_1981_2014.parquet
+  # One row per comparable district and variable (the map/table source).
+  per_district: per_district_1981_2014.parquet
+  # Area-weighted national monthly agreement series (evidence over time).
+  monthly: monthly_1981_2014.parquet
+
+# Row-group alignment: 60 districts x ~408 months, matching the era-B
+# storage contract so chunked reads behave the same way.
+row_group_districts: 60
+
+# Deterministic sampling seed for the built-in verification (same constant
+# family as the v1.0 bootstrap seed).
+verify_seed: 20261103

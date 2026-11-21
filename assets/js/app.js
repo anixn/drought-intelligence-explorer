@@ -35,6 +35,7 @@
     { id: 'historical', btn: 'tabHistorical', view: 'viewHistorical' },
     { id: 'events', btn: 'tabEvents', view: 'viewEvents' },
     { id: 'propagation', btn: 'tabPropagation', view: 'viewPropagation' },
+    { id: 'crossval', btn: 'tabCrossval', view: 'viewCrossval' },
     { id: 'engine', btn: 'tabEngine', view: 'viewEngine' },
     { id: 'projections', btn: 'tabProjections', view: 'viewProjections' },
     { id: 'summary', btn: 'tabSummary', view: 'viewSummary' },
@@ -46,6 +47,7 @@
     historical: 'Historical',
     events: 'Events',
     propagation: 'Propagation',
+    crossval: 'Cross-validation',
     engine: 'Engine Lab',
     projections: 'Projections',
     summary: 'Drought to 2100',
@@ -59,6 +61,7 @@
     historical: 'record',
     events: 'record',
     propagation: 'record',
+    crossval: 'record',
     projections: 'projections',
     summary: 'projections',
     atlas: 'atlas',
@@ -69,7 +72,7 @@
   let currentTab = 'overview';
   // Tabs are marked dirty on state changes while hidden and re-render only
   // when entered. This avoids updating 5 workspaces on every slider tick.
-  const DIRTY = { overview: true, historical: true, events: true, propagation: true, engine: true, projections: true, summary: true, atlas: true, data: true };
+  const DIRTY = { overview: true, historical: true, events: true, propagation: true, crossval: true, engine: true, projections: true, summary: true, atlas: true, data: true };
   const markDirty = (tab) => { DIRTY[tab] = true; };
 
   /** Run work when the browser is idle (never blocks interaction). */
@@ -269,6 +272,8 @@
         DIE.Summary.invalidate();
       } else if (tab.id === 'atlas' && DIE.AtlasView) {
         DIE.AtlasView.invalidate();
+      } else if (tab.id === 'crossval' && DIE.CrossvalView) {
+        DIE.CrossvalView.invalidate();
       }
     }, 60);
     document.body.dataset.tab = tab.id;
@@ -312,7 +317,8 @@
       const titles = {
         overview: 'Map PNG', historical: 'Ranking CSV',
         events: 'Events CSV', propagation: 'Downloads', engine: 'Results CSV',
-        projections: 'Downloads', summary: 'Summary CSV', data: 'Downloads'
+        projections: 'Downloads', summary: 'Summary CSV',
+        crossval: 'Comparison CSV', data: 'Downloads'
       };
       lbl.textContent = titles[tabId] || 'Export';
     }
@@ -378,14 +384,24 @@
         'A per-era delta: era-C projections compared against the era-B ' +
         '1981–2014 baseline. Two eras are computed separately and shown ' +
         'side by side — never as one continuous series.'
+    },
+    'a-vs-b': {
+      short: 'Era <b>A</b> &harr; B &middot; Compared',
+      long:
+        'Era A (Drought Atlas reconstruction, station-based SPEI) and era B ' +
+        '(Gridded Multi-Source Product, CHIRPS precipitation with ERA5-Land ' +
+        'PET) compared over their 1981–2014 overlap. Two independent records ' +
+        'read side by side — never merged, never spliced into one series.'
     }
   };
   function renderEraPill(tabId) {
     const pill = $('eraPill');
     if (!pill) return;
-    const key = tabId === 'summary' ? 'c-minus-b' : ERA_BY_TAB[tabId] || 'b';
+    const key = tabId === 'summary' ? 'c-minus-b'
+      : tabId === 'crossval' ? 'a-vs-b' : ERA_BY_TAB[tabId] || 'b';
     const copy = ERA_COPY[key];
-    pill.dataset.era = key === 'c-minus-b' ? 'c' : key;
+    pill.dataset.era = key === 'c-minus-b' ? 'c'
+      : key === 'a-vs-b' ? 'ab' : key;
     pill.innerHTML = '<span class="era-dot" aria-hidden="true"></span>' + copy.short;
     pill.title = copy.long;
     pill.setAttribute('aria-label', copy.long);
@@ -2654,6 +2670,7 @@
     historical() { Historical.ready ? Historical.renderAll() : Historical.init(); },
     events() { EventsView.ready ? EventsView.refresh() : EventsView.init(); },
     propagation() { Propagation.ready ? Propagation.refresh() : Propagation.init(); },
+    crossval() { DIE.CrossvalView.init(); },
     engine() { DIE.EngineLab.init(); },
     projections() { DIE.Projections.init(); },
     summary() { DIE.Summary.init(); },

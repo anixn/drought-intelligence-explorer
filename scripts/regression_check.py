@@ -16,7 +16,10 @@ What it snapshots (baseline JSON, blessed explicitly):
      must equal float32(csv value) exactly (the documented storage contract)
   5. numeric anchors computed with math.fsum (bit-identical across
      platforms/CPUs): national area-weighted mean per era-B indicator over
-     1981-2020, and per-state finite counts + weighted means for SPI-3
+     1981-2020, and per-state finite counts/means for SPI-3
+  6. national pre-aggregate fingerprint (_national_monthly.parquet)
+  7. era A <-> era B cross-validation fingerprint (M6.6): file checksums,
+     district counts, median r, mean bias and overlap/monthly row counts
 
 Usage:
   python scripts/regression_check.py            # compare against baseline
@@ -255,6 +258,46 @@ def compute() -> dict:
                 ("mean_1981_2020", math.fsum(num) / len(num) if num else None),
             ])
         out["national"] = per_var
+
+    # --- 7. era A <-> era B cross-validation product (M6.6) ---------------
+    cv_files = OrderedDict([
+        ("overlap", "data/parquet/cross_validation/overlap_1981_2014.parquet"),
+        ("per_district", "data/parquet/cross_validation/per_district_1981_2014.parquet"),
+        ("monthly", "data/parquet/cross_validation/monthly_1981_2014.parquet"),
+    ])
+    if all((REPO / p).exists() for p in cv_files.values()):
+        cv = OrderedDict()
+        for key, rel in cv_files.items():
+            cv["sha256/" + key] = sha256(REPO / rel)
+        per = pq.read_table(REPO / cv_files["per_district"])
+        dist_vars = per.column("variable").to_pylist()
+        dist_r = per.column("r").to_pylist()
+        dist_bias = per.column("bias").to_pylist()
+        for var_id in ("spei_01", "spei_12"):
+            rs = sorted(v for k, v in zip(dist_vars, dist_r)
+                        if k == var_id and v is not None and math.isfinite(v))
+            bs = [v for k, v in zip(dist_vars, dist_bias)
+                  if k == var_id and v is not None and math.isfinite(v)]
+            if not rs:
+                continue
+            mid = len(rs) // 2
+            median_r = rs[mid] if len(rs) % 2 else (rs[mid - 1] + rs[mid]) / 2
+            cv[var_id] = OrderedDict([
+                ("districts", sum(1 for k in dist_vars if k == var_id)),
+                ("median_r", median_r),
+                ("mean_bias", math.fsum(bs) / len(bs)),
+            ])
+        ov = pq.read_table(REPO / cv_files["overlap"], columns=["variable"])
+        ov_vars = ov.column("variable").to_pylist()
+        cv["overlap_rows"] = OrderedDict(
+            (v, sum(1 for k in ov_vars if k == v))
+            for v in ("spei_01", "spei_12"))
+        mon = pq.read_table(REPO / cv_files["monthly"], columns=["variable"])
+        mon_vars = mon.column("variable").to_pylist()
+        cv["monthly_rows"] = OrderedDict(
+            (v, sum(1 for k in mon_vars if k == v))
+            for v in ("spei_01", "spei_12"))
+        out["crossval"] = cv
     return out
 
 

@@ -26,7 +26,7 @@
     "parquet/sma": "c6166e495f20af337d4090b880eea3ddf43fab0264150b9ec6168a31c97f7662",
     "csv/vci": "53b0ac80999affc2d6153e51db56e6cbebbea54a1d730c471c2262263a644b9f",
     "parquet/vci": "c7a7913e9d968f40b9b7ee8be1378aef489e26623c53c63fa8c871b2a64652fe",
-    "catalog.json": "e9f5c070414f8825a0ba11b8b7456212e11020ec0494c6dbb0fa65c931dde6d0",
+    "catalog.json": "560fffd489b4c2e76d1a4b524d483842ed530c6171793eee983dcb698c70e637",
     "national": "f925a3601c715a46482079214ea099a188b521dec109c67cf53549127e83aeb4"
   },
   "catalog": {
@@ -1034,6 +1034,29 @@
         12
       ],
       "mean_1981_2020": 43.957132973993915
+    }
+  },
+  "crossval": {
+    "sha256/overlap": "4ca520687a1a89a02695aaff479a192d57373b81dbea67b6b33f23b7c4b337aa",
+    "sha256/per_district": "b3ea401bbc1df80bbb5f3cf4ed6e74c55d4004082b1d99d18b46c790f983206d",
+    "sha256/monthly": "43102b7abe9fca8eb987cdfe5858c61fe8665695ddb9312407941c51f0e05b3c",
+    "spei_01": {
+      "districts": 718,
+      "median_r": 0.7173323911173077,
+      "mean_bias": 0.043061706772766474
+    },
+    "spei_12": {
+      "districts": 718,
+      "median_r": 0.6672192308559306,
+      "mean_bias": 0.038673582692143965
+    },
+    "overlap_rows": {
+      "spei_01": 292925,
+      "spei_12": 285046
+    },
+    "monthly_rows": {
+      "spei_01": 408,
+      "spei_12": 397
     }
   }
 }

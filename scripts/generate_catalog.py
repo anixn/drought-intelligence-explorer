@@ -26,6 +26,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import sys
 from collections import OrderedDict
@@ -111,7 +112,41 @@ def build() -> dict:
     national_path = "data/parquet/_national_monthly.parquet"
     if (REPO / national_path).exists():
         catalog["national"] = national_path
+    # era A <-> era B cross-validation product (task M6.6): same exact-path
+    # rule - the block appears only when the built files exist.
+    cv = crossval_block()
+    if cv:
+        catalog["crossval"] = cv
     return catalog
+
+
+def crossval_block(repo: Path | None = None) -> dict | None:
+    """Catalog block for the M6.6 cross-validation product.
+
+    Files are exact repo-relative paths (no globbing). The UI reads
+    per_district (the map/table source) and monthly (the agreement series);
+    overlap is the street-level evidence product and is fetched only when a
+    caller asks for district-month detail or downloads it.
+    """
+    repo = repo or REPO
+    d = repo / "data" / "parquet" / "cross_validation"
+    names = OrderedDict([
+        ("overlap", "overlap_1981_2014.parquet"),
+        ("per_district", "per_district_1981_2014.parquet"),
+        ("monthly", "monthly_1981_2014.parquet"),
+    ])
+    if not all((d / n).exists() for n in names.values()):
+        return None
+    return OrderedDict([
+        ("label", "Era A vs Era B agreement, 1981-2014"),
+        ("window", [1981, 2014]),
+        ("variables", ["spei_01", "spei_12"]),
+        ("method", "docs/v2/03-scientific-pipelines.md#6"),
+        ("files", OrderedDict([
+            (k, f"data/parquet/cross_validation/{v}")
+            for k, v in names.items()
+        ])),
+    ])
 
 
 def apply_projections(catalog: dict, info: dict) -> None:
@@ -186,6 +221,9 @@ def preserve_era_blocks(catalog: dict, existing: dict | None,
     projections block once already). After build(), re-apply every era in
     `keys` from the existing catalog: the era block itself (label/years/
     available) and each variable's files[key] entry + eras membership.
+    Variables that exist ONLY in a preserved era (e.g. era-A SPEI-4) are
+    carried over whole - a bare rebuild must never delete a published
+    variable entry.
     Callers still overwrite the blocks they own (e.g. 09 re-applies
     projections via apply_projections AFTER calling this).
     """
@@ -198,7 +236,12 @@ def preserve_era_blocks(catalog: dict, existing: dict | None,
             catalog["eras"][key].update(src_era)
         for var in existing.get("variables", []):
             files = var.get("files") or {}
-            if key in files and var["id"] in by_var_new:
+            if var["id"] not in by_var_new:
+                if key in files:
+                    catalog["variables"].append(copy.deepcopy(var))
+                    by_var_new[var["id"]] = catalog["variables"][-1]
+                continue
+            if key in files:
                 nv = by_var_new[var["id"]]
                 nv["files"][key] = files[key]
                 if key not in nv["eras"]:
@@ -239,7 +282,16 @@ def validate(catalog: dict, repo: Path | None = None) -> list[str]:
                     problems.append(f"variable path missing: {f}")
     if "national" in catalog and not (repo / catalog["national"]).exists():
         problems.append(f"national path missing: {catalog['national']}")
+    for f in crossval_paths(catalog):
+        if not (repo / f).exists():
+            problems.append(f"crossval path missing: {f}")
     return problems
+
+
+def crossval_paths(catalog: dict) -> list[str]:
+    block = catalog.get("crossval") or {}
+    files = block.get("files") or {}
+    return [p for p in files.values() if isinstance(p, str)]
 
 
 def check_urls(base: str, catalog: dict) -> int:
@@ -248,6 +300,7 @@ def check_urls(base: str, catalog: dict) -> int:
     paths = [era["path"] for era in catalog["eras"].values() if era["available"]]
     if "national" in catalog:
         paths.append(catalog["national"])
+    paths.extend(crossval_paths(catalog))
     for var in catalog["variables"]:
         for era_files in var["files"].values():
             paths.extend(_iter_era_paths(era_files))
@@ -274,6 +327,16 @@ def main() -> int:
     args = ap.parse_args()
 
     catalog = build()
+    # A bare rebuild must not delete eras published by other steps (atlas,
+    # projections) or variables that only those eras carry (era-A SPEI-4).
+    # This makes `python scripts/generate_catalog.py` safe at any time.
+    existing = None
+    if CATALOG.exists():
+        try:
+            existing = json.loads(CATALOG.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            existing = None
+    preserve_era_blocks(catalog, existing, keys=("atlas", "projections"))
     problems = validate(catalog)
     if problems:
         for p in problems:

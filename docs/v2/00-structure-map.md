@@ -39,7 +39,7 @@ drought-intelligence-explorer/          ← your existing repo (branch: v2-dev a
 │   │   ├── observed/variable=<id>/part-0.parquet
 │   │   ├── atlas/variable=<id>/year=<yyyy>/part-0.parquet          (M6)
 │   │   ├── projections/scenario=<s>/stat=<st>/variable=<id>/year=<yyyy>/…  (M5)
-│   │   ├── cross_validation/overlap_1981_2020.parquet              (M6)
+│   │   ├── cross_validation/overlap_1981_2014.parquet              (M6)
 │   │   └── _national_monthly.parquet    pre-aggregate (~42 KB)
 │   ├── fixtures/                        NEW (M5 dev only) — SYNTHETIC, never shipped
 │   └── geo/*.pmtiles                    NEW (M6) — PMTiles geometry

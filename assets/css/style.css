@@ -4759,6 +4759,15 @@ body {
 .era-pill[data-era="c"] .era-dot {
   background: #8a4430;
 }
+/* Two records compared (a <-> b): a split dot, neutral chrome. */
+.era-pill[data-era="ab"] {
+  border-color: rgba(90, 80, 60, 0.45);
+  background: rgba(90, 80, 60, 0.08);
+  color: #4a4433;
+}
+.era-pill[data-era="ab"] .era-dot {
+  background: linear-gradient(90deg, #6e6238 0 50%, #4e6b5a 50% 100%);
+}
 
 /* --------------------------------------------------- 3. the control rail -- *
  * One warm-paper rail for every workspace. The per-tab identity is carried by
