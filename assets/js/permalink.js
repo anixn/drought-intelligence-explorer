@@ -76,6 +76,7 @@
 
   let syncTimer = null;
   let wired = false;
+  let routing = 0;
 
   const OWNERS = {
     projections: () => DIE.Projections,
@@ -87,13 +88,23 @@
   /* ---- parsing ---------------------------------------------------------- */
   function parse(hash) {
     const raw = String(hash || "").replace(/^#/, "");
+    // District profiles have a dedicated path route: #/district/<id>
+    const dm = /^\/district\/([^?/]+)(?:\?(.*))?$/.exec(raw);
+    if (dm) {
+      return {
+        tab: "district",
+        doc: null,
+        district: decodeURIComponent(dm[1]),
+        params: new URLSearchParams(dm[2] || ""),
+      };
+    }
     const q = raw.indexOf("?");
     const path = q >= 0 ? raw.slice(0, q) : raw;
     const params = new URLSearchParams(q >= 0 ? raw.slice(q + 1) : "");
     const slash = path.indexOf("/");
     const tab = slash > 0 ? path.slice(0, slash) : path;
     const doc = slash > 0 ? path.slice(slash + 1) : null;
-    return { tab, doc, params };
+    return { tab, doc, params, district: null };
   }
 
   /* ---- validation helpers ---------------------------------------------- */
@@ -229,7 +240,9 @@
         if (v !== null && v !== undefined && v !== "") q.set(k, String(v));
       });
     }
-    const path = id + (id === "data" && doc ? "/" + doc : "");
+    const path = id === "district"
+      ? "/district/" + (DIE.state.districtId || "gujarat-ahmedabad")
+      : id + (id === "data" && doc ? "/" + doc : "");
     const qs = q.toString();
     return path + (qs ? "?" + qs : "");
   }
@@ -252,6 +265,7 @@
     }
   }
   function scheduleSync() {
+    if (routing) return;             // a permalink is being applied
     if (syncTimer) clearTimeout(syncTimer);
     syncTimer = setTimeout(() => {
       syncTimer = null;
@@ -322,6 +336,8 @@
   DIE.Permalink = {
     parse, build, urlFor, copy, sync, init,
     applyShared, applyTab,
+    beginRoute: () => { routing += 1; if (syncTimer) { clearTimeout(syncTimer); syncTimer = null; } },
+    endRoute: () => { routing = Math.max(0, routing - 1); },
     /* test hooks */
     modules: MODULES,
     sharedKeys: SHARED_KEYS.slice(),

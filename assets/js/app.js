@@ -36,6 +36,7 @@
     { id: 'events', btn: 'tabEvents', view: 'viewEvents' },
     { id: 'propagation', btn: 'tabPropagation', view: 'viewPropagation' },
     { id: 'crossval', btn: 'tabCrossval', view: 'viewCrossval' },
+    { id: 'district', btn: 'tabDistrict', view: 'viewDistrict' },
     { id: 'engine', btn: 'tabEngine', view: 'viewEngine' },
     { id: 'projections', btn: 'tabProjections', view: 'viewProjections' },
     { id: 'summary', btn: 'tabSummary', view: 'viewSummary' },
@@ -48,6 +49,7 @@
     events: 'Events',
     propagation: 'Propagation',
     crossval: 'Cross-validation',
+    district: 'District profile',
     engine: 'Engine Lab',
     projections: 'Projections',
     summary: 'Drought to 2100',
@@ -62,6 +64,7 @@
     events: 'record',
     propagation: 'record',
     crossval: 'record',
+    district: 'record',
     projections: 'projections',
     summary: 'projections',
     atlas: 'atlas',
@@ -72,7 +75,7 @@
   let currentTab = 'overview';
   // Tabs are marked dirty on state changes while hidden and re-render only
   // when entered. This avoids updating 5 workspaces on every slider tick.
-  const DIRTY = { overview: true, historical: true, events: true, propagation: true, crossval: true, engine: true, projections: true, summary: true, atlas: true, data: true };
+  const DIRTY = { overview: true, historical: true, events: true, propagation: true, crossval: true, district: true, engine: true, projections: true, summary: true, atlas: true, data: true };
   const markDirty = (tab) => { DIRTY[tab] = true; };
 
   /** Run work when the browser is idle (never blocks interaction). */
@@ -288,6 +291,17 @@
     if (DIE.Telemetry) DIE.Telemetry.track('tab_view', { tab: tab.id });
   }
 
+  /** Open the dedicated district profile route (#/district/<id>, M10.6). */
+  function openDistrict(id) {
+    const did = id || DIE.state.districtId || 'gujarat-ahmedabad';
+    const next = '#/district/' + did;
+    if (location.hash === next) {
+      routeFromHash();
+      return;
+    }
+    location.hash = '/district/' + did;   // hashchange routes + keeps Back working
+  }
+
   /** Product-first navigation state: mark the owning era/product destination
    *  and reveal only that product's lenses. The Documentation and Engine Lab
    *  groups own a single surface, so their lens strip stays out of the way. */
@@ -324,7 +338,7 @@
         overview: 'Map PNG', historical: 'Ranking CSV',
         events: 'Events CSV', propagation: 'Downloads', engine: 'Results CSV',
         projections: 'Downloads', summary: 'Summary CSV',
-        crossval: 'Comparison CSV', data: 'Downloads'
+        crossval: 'Comparison CSV', district: 'District CSV', data: 'Downloads'
       };
       lbl.textContent = titles[tabId] || 'Export';
     }
@@ -449,30 +463,60 @@
   }
 
   async function routeFromHash() {
-    const parsed = DIE.Permalink
-      ? DIE.Permalink.parse(location.hash)
-      : { tab: (location.hash || '').replace('#', ''), doc: null, params: null };
-    const h = parsed.tab || '';
-    const slash = h.indexOf('/');
-    const tab = slash > 0 ? h.slice(0, slash) : h;
-    const doc = parsed.doc || (slash > 0 ? h.slice(slash + 1) : null);
-    // '#docs' and '#documentation' are friendly aliases for the
-    // Documentation & Resources workspace (whose router id stays 'data').
-    const routed = { docs: 'data', documentation: 'data' }[tab] || tab;
-    // Shared study-context state is applied BEFORE the tab renders, so the
-    // first paint of a permalink is already the linked view.
-    if (parsed.params && DIE.Permalink) {
-      try { await DIE.Permalink.applyShared(parsed.params); }
-      catch (err) { console.warn('[permalink] shared state not applied:', err); }
-    }
-    switchTab(TABS.some((t) => t.id === routed) ? routed : 'overview', false);
-    if (parsed.params && DIE.Permalink) {
-      try { await DIE.Permalink.applyTab(routed, parsed.params); }
-      catch (err) { console.warn('[permalink] tab state not applied:', err); }
-    }
-    // deep link to a documentation section: #data/<section-id-suffix>
-    if (routed === 'data' && doc && DOC_SECTIONS.includes('doc-' + doc)) {
-      goDoc('doc-' + doc);
+    if (DIE.Permalink) DIE.Permalink.beginRoute();
+    try {
+      const parsed = DIE.Permalink
+        ? DIE.Permalink.parse(location.hash)
+        : { tab: (location.hash || '').replace('#', ''), doc: null, params: null };
+      const h = parsed.tab || '';
+      const slash = h.indexOf('/');
+      const tab = slash > 0 ? h.slice(0, slash) : h;
+      const doc = parsed.doc || (slash > 0 ? h.slice(slash + 1) : null);
+      // '#docs' and '#documentation' are friendly aliases for the
+      // Documentation & Resources workspace (whose router id stays 'data').
+      const routed = { docs: 'data', documentation: 'data' }[tab] || tab;
+      // Shared study-context state is applied BEFORE the tab renders, so the
+      // first paint of a permalink is already the linked view.
+      if (parsed.params && DIE.Permalink) {
+        try { await DIE.Permalink.applyShared(parsed.params); }
+        catch (err) { console.warn('[permalink] shared state not applied:', err); }
+      }
+      // District profile route (#/district/<id>). The path id is authoritative
+      // after shared params, so a crafted link cannot land on the wrong district.
+      if (parsed.district) {
+        const d = DIE.registry && DIE.registry.districts.get(parsed.district);
+        if (d) {
+          DIE.Filters.set({ extent: 'district', stateId: d.sid, districtId: d.id });
+          switchTab('district', false);
+          if (DIE.DistrictProfile) DIE.DistrictProfile.refresh();
+          return;
+        }
+        switchTab('overview', false);
+        return;
+      }
+      if (routed === 'district') {
+        const id = DIE.state.districtId || 'gujarat-ahmedabad';
+        const d = DIE.registry &&
+          (DIE.registry.districts.get(id) ||
+           DIE.registry.districts.get('gujarat-ahmedabad'));
+        if (d) {
+          DIE.Filters.set({ extent: 'district', stateId: d.sid, districtId: d.id });
+        }
+        switchTab('district', false);
+        if (DIE.DistrictProfile) DIE.DistrictProfile.refresh();
+        return;
+      }
+      switchTab(TABS.some((t) => t.id === routed) ? routed : 'overview', false);
+      if (parsed.params && DIE.Permalink) {
+        try { await DIE.Permalink.applyTab(routed, parsed.params); }
+        catch (err) { console.warn('[permalink] tab state not applied:', err); }
+      }
+      // deep link to a documentation section: #data/<section-id-suffix>
+      if (routed === 'data' && doc && DOC_SECTIONS.includes('doc-' + doc)) {
+        goDoc('doc-' + doc);
+      }
+    } finally {
+      if (DIE.Permalink) DIE.Permalink.endRoute();
     }
   }
 
@@ -565,11 +609,18 @@
       setFiltersCollapsed(true, true);
     });
 
-    // lens tabs (the Documentation group has no lens button — it opens from
-    // the product row or the sidebar footer — so btn can be null)
+    // lens tabs (the Documentation group has no lens button - it opens from
+    // the product row or the sidebar footer - so btn can be null)
     TABS.forEach((t) => {
       const btn = $(t.btn);
-      if (btn) btn.addEventListener('click', () => switchTab(t.id));
+      if (btn) btn.addEventListener('click', () => {
+        if (t.id === 'district') {
+          // dedicated path route: #/district/<id>
+          openDistrict(DIE.state.districtId);
+          return;
+        }
+        switchTab(t.id);
+      });
     });
     window.addEventListener('hashchange', routeFromHash);
 
@@ -853,6 +904,16 @@
         if (Propagation.ready) {
           if (currentTab === 'propagation') run(() => Propagation.refresh());
           else markDirty('propagation');
+        }
+      }
+
+      // District profile follows the selected district, indicator, date and
+      // analysis period (M10.6).
+      if (needsGeo || needsDate || needsPeriod) {
+        if (currentTab === 'district' && DIE.DistrictProfile) {
+          run(() => DIE.DistrictProfile.refresh());
+        } else {
+          markDirty('district');
         }
       }
 
@@ -1165,7 +1226,8 @@
       '<div><div class="k">District area</div><div class="v">' + DIE.fmt.int.format(Math.round(d.area)) + ' km²</div></div>' +
       '<div><div class="k">Availability</div><div class="v">' + (comp * 100).toFixed(0) + '%</div></div>' +
       '</div>' +
-      '<p class="rail-note">All tabs now focus on this district.</p>';
+      '<p class="rail-note">All tabs now focus on this district.</p>' +
+      '<a class="btn btn-ghost sel-profile-link" href="#/district/' + id + '">Open district profile →</a>';
     btn.hidden = false;
   }
 
@@ -2793,6 +2855,7 @@
     events() { EventsView.ready ? EventsView.refresh() : EventsView.init(); },
     propagation() { Propagation.ready ? Propagation.refresh() : Propagation.init(); },
     crossval() { DIE.CrossvalView.init(); },
+    district() { DIE.DistrictProfile.init(); },
     engine() { DIE.EngineLab.init(); },
     projections() { DIE.Projections.init(); },
     summary() { DIE.Summary.init(); },

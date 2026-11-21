@@ -381,14 +381,22 @@
       throw newEngineError('no-crossval-file', 'crossval file missing: ' + part);
     }
     let where = '';
+    const conds = [];
     if (opts.variable) {
       const allowed = cv.variables || [];
       if (allowed.indexOf(opts.variable) === -1) {
         throw newEngineError('bad-variable',
           'not a cross-validated variable: ' + opts.variable);
       }
-      where = " WHERE variable = '" + opts.variable + "'";
+      conds.push("variable = '" + opts.variable + "'");
     }
+    if (opts.district) {
+      if (!/^[a-z0-9-]+$/.test(String(opts.district))) {
+        throw newEngineError('bad-district', 'district id rejected');
+      }
+      conds.push("district_id = '" + opts.district + "'");
+    }
+    if (conds.length) where = ' WHERE ' + conds.join(' AND ');
     const double = (c) => c + '::DOUBLE AS ' + c;
     const cols = part === 'monthly'
       ? ['variable', 'date', 'n_districts', 'mean_a', 'mean_b', 'diff',
@@ -431,6 +439,35 @@
         });
     }
     return seamPromise;
+  }
+
+  /* One district, one month, every era-B indicator — the district-profile
+   * strip (M10.6). Reads the committed observed Parquet files directly so a
+   * direct permalink does not have to download ten wide CSVs first. */
+  async function observedAt(opts) {
+    const cat = state.catalog || (await ensureCatalog());
+    const did = String(opts.district || '');
+    if (!/^[a-z0-9-]+$/.test(did)) {
+      throw newEngineError('bad-district', 'district id rejected');
+    }
+    const m = /^(\d{4})-(\d{2})$/.exec(String(opts.date || ''));
+    if (!m) throw newEngineError('bad-date', 'date must be YYYY-MM');
+    const files = [];
+    const seen = new Set();
+    for (const v of cat.variables || []) {
+      const list = (v.files && v.files.observed) || [];
+      for (const f of list) {
+        if (!seen.has(f)) { seen.add(f); files.push(absPath(f)); }
+      }
+    }
+    if (!files.length) {
+      throw newEngineError('no-observed', 'no observed Parquet files in catalog');
+    }
+    const sql = "SELECT variable, value::DOUBLE AS value FROM read_parquet([" +
+      files.map((f) => "'" + f + "'").join(',') + "]) WHERE district_id = '" +
+      did + "' AND year = " + Number(m[1]) + " AND month = " + Number(m[2]) +
+      " ORDER BY variable";
+    return toRows(await query(sql));
   }
 
   async function national(opts) {
@@ -514,7 +551,7 @@
 
   DIE.Engine = {
     ensureEngine, ensureCatalog, query, slice, mapMonth, national, ensemble,
-    atlasYear, crossval, seamUncertainty,
+    atlasYear, crossval, seamUncertainty, observedAt,
     bytes, lastMs,
     version: DUCKDB_VERSION,
     catalog: () => state.catalog,

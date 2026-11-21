@@ -5952,3 +5952,95 @@ body {
     transition: none;
   }
 }
+
+/* ===========================================================================
+   District profile (#/district/<id>, v2.0 task M10.6)
+   One district: headline, indicator strip, trend, events, era context.
+   Chrome only; data colours still come from data/metadata.json (R1).
+   =========================================================================== */
+.panel-span-all { grid-column: 1 / -1; }
+.dp-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin: -2px 0 14px;
+}
+.dp-headline {
+  margin: 8px 16px 4px;
+  font-family: var(--font-reading, var(--serif));
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.dp-headline b { font-weight: 700; }
+.dp-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 8px;
+  padding: 10px 14px 4px;
+}
+.dp-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.dp-chip:hover { border-color: var(--hairline-strong); }
+.dp-chip:focus-visible { outline: 2px solid var(--focus, #2563eb); outline-offset: 2px; }
+.dp-chip[aria-pressed="true"] {
+  border-color: var(--accent, #6B2B1F);
+  box-shadow: inset 0 0 0 1px var(--accent, #6B2B1F);
+}
+.dp-chip .dp-name { font-size: 11px; letter-spacing: 0.02em; color: var(--ink-2); }
+.dp-chip .dp-val { font-family: var(--mono); font-size: 15px; }
+.dp-chip .dp-class {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+.dp-chip .dp-class.is-nodata { background: #E8E1D2; color: #2E2820; }
+.dp-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px 16px;
+  padding: 4px 14px 8px;
+}
+.dp-stats .k {
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.dp-stats .v { font-family: var(--mono); font-size: 14px; }
+.dp-era {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 10px 14px 4px;
+}
+.dp-era-card {
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--hairline-strong);
+  border-radius: 5px;
+  padding: 10px 12px;
+  background: var(--surface);
+}
+.dp-era-card[data-era="a"] { border-left-color: #6E6238; }
+.dp-era-card[data-era="b"] { border-left-color: #4E6B5A; }
+.dp-era-card[data-era="c"] { border-left-color: #8A4430; }
+.dp-era-card h3 { margin: 0 0 6px; font-size: 13px; }
+.dp-era-card p { margin: 0 0 6px; font-size: 12px; line-height: 1.45; color: var(--ink-2); }
+.dp-era-card a { font-size: 12px; }
+.sel-profile-link { margin-top: 8px; display: inline-block; }

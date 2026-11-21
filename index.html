@@ -674,6 +674,31 @@
                 </svg>
                 Cross-validation
               </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabDistrict"
+                aria-selected="false"
+                aria-controls="viewDistrict"
+                tabindex="-1"
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                District profile
+              </button>
             </div>
             <div
               class="tabs"
@@ -2946,7 +2971,104 @@
           </div>
         </div>
 
-        <!-- ============ VIEW 10: DATA, METHODOLOGY & DOWNLOADS ============ -->
+        <!-- ============ VIEW 10: DISTRICT PROFILE (#/district/<id>, M10.6) ==== -->
+        <div id="viewDistrict" role="tabpanel" aria-labelledby="tabDistrict" hidden>
+          <div class="view-intro is-compact" aria-label="Workspace introduction">
+            <span class="vi-step">10</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                District profile <span class="vi-tag">era B</span>
+                <span class="vi-hint"
+                  >One district: the headline answer, all ten indicators for
+                  the selected month, its long-term trend, drought events and
+                  the era context &mdash; deep-linkable and never spliced.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-banner" id="dpBanner" role="note"></div>
+
+          <div class="dp-toolbar">
+            <a class="btn btn-ghost" href="#overview">&larr; Back to the record</a>
+            <button type="button" class="btn btn-ghost" id="dpShareBtn">Copy link</button>
+          </div>
+
+          <div class="panel-grid">
+            <section class="panel panel-span-all" id="dpHeadlinePanel" aria-label="District headline">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title" id="dpTitle">District profile</h2>
+                  <span class="panel-meta" id="dpSub">&mdash;</span>
+                </div>
+              </div>
+              <p class="dp-headline" id="dpHeadline">Loading the district record&hellip;</p>
+              <p class="table-help" id="dpReceipts"></p>
+            </section>
+
+            <section class="panel panel-span-all" id="dpStripPanel" aria-label="All indicators this month">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">All indicators this month</h2>
+                  <span class="panel-meta" id="dpStripMeta">&mdash;</span>
+                </div>
+              </div>
+              <div class="dp-strip" id="dpStrip" role="group" aria-label="Indicators for the selected month"></div>
+              <p class="table-help" id="dpStripNote"></p>
+            </section>
+
+            <section class="panel panel-span-all" id="dpTrendPanel" aria-label="Long-term trend">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Long-term trend</h2>
+                  <span class="panel-meta" id="dpTrendMeta">&mdash;</span>
+                </div>
+              </div>
+              <div class="chart-box" id="dpTrendChart" style="height: 300px" role="img" aria-label="Annual series with Sen trend for this district"></div>
+              <div class="dp-stats" id="dpTrendStats"></div>
+              <p class="chart-foot" id="dpTrendFoot"></p>
+            </section>
+
+            <section class="panel" id="dpEventPanel" aria-label="Drought events for this district">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Drought events</h2>
+                  <span class="panel-meta" id="dpEventMeta">&mdash;</span>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table class="comp-table" id="dpEventTable">
+                  <thead>
+                    <tr>
+                      <th>Start</th>
+                      <th>End</th>
+                      <th class="num">Duration (mo)</th>
+                      <th class="num">Peak (z)</th>
+                      <th class="num">Severity</th>
+                      <th class="num">Recovery (mo)</th>
+                      <th>Edge</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <p class="table-help" id="dpEventNote"></p>
+            </section>
+
+            <section class="panel" id="dpEraPanel" aria-label="Era context">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Era context</h2>
+                  <span class="panel-meta">labelled, never spliced</span>
+                </div>
+              </div>
+              <div class="dp-era" id="dpEra"></div>
+              <p class="table-help" id="dpEraNote"></p>
+            </section>
+          </div>
+        </div>
+
+        <!-- ============ VIEW 11: DATA, METHODOLOGY & DOWNLOADS ============ -->
         <div id="viewData" role="tabpanel" aria-label="Documentation and Resources" hidden>
           <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step" aria-hidden="true">
@@ -4300,7 +4422,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-21k";
+        var ASSET_VERSION = "2026-11-21o";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
@@ -4336,6 +4458,7 @@
           "summary",
           "atlas",
           "crossval",
+          "district-profile",
           "permalink",
         ];
         var inflight = {};

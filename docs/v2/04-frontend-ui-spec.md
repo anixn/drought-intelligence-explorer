@@ -184,6 +184,18 @@ One URL grammar for every workspace: `#<tab>?<shared state>&<panel state>`.
 - **Safety:** values are validated against the loaded catalog/registry/metadata before use; an unknown indicator, district, year, season or statistic is ignored and the existing/default value retained (graceful fallback, never a broken or fabricated view). Documentation section links are preserved (`#data/c-methods?…`).
 - **Compatibility:** plain `#overview`, `#data`, `#data/<section>` and all R8 hashes keep working; panel keys are namespaced so no shared key can be shadowed.
 
+### 4.9 District profile (`#/district/<id>`, M10.6 — BUILT 2026-11-21)
+
+A dedicated path route and a Record lens: one district read as a page, without leaving the shared study context.
+
+- **Route:** `#/district/<id>` (the path id is authoritative). `DIE.Permalink.parse/build` understands it, so Copy link and the shared state keys still work; `#district` falls back to the selected district (default Ahmedabad), and an unknown id falls back to the overview. The selected-info rail on `#overview` links here.
+- **Headline answer:** the selected month's class/value for the active indicator, the share of the district's valid months that were as dry or drier, and the drought share over the analysis period. Missing months are stated, never imputed.
+- **Indicator strip:** all ten era-B indicators for the selected month in **one observed-Parquet query** (`DIE.Engine.observedAt`, not ten wide-CSV downloads). Each chip is a button that makes that indicator active across the dashboard; no data is rendered as no-data.
+- **Trend:** annual means over the shared period/season with Mann–Kendall (tie-corrected, Hamed–Rao when needed), Sen slope + 90% CI, and the Plotly series. Text statistics render even if Plotly is unavailable.
+- **Events:** the frozen v1.0 runs analysis for the district (threshold = upper bound of the moderate class, min 3 months, censoring flagged), most recent first, with the summary note.
+- **Era context:** three labelled cards — era B record/coverage, era A overlap (r, bias, RMSD, X7 seam SD) or the documented ocean-mask absence, era C projection link for this district. Eras are never spliced.
+- **Sharing:** Copy link uses the district route; the cards link into `#crossval` and `#projections` with this district and the shared state pre-applied.
+
 ## 5. Documentation & Resources centre extensions
 
 New panels (in the existing `doc-*` panel system): **Methodology v2** (every formula, window, threshold, seam — era table, QDM + Hargreaves + fitting chain, event rules, uncertainty statements; content owner: task M4.4/M7.4), **Status page** (from `data/status.json`; last run, current month, lag, known issues), **Validation** (IMD benchmark memo + cross-validation summary, discrepancies published), **Data model & schema** (Parquet schema, catalog, partitioning), **Provenance** (pipeline manifests, checksums, model list, retrieval dates). Existing panels (About, Data Sources, Methods, Validation & Data Quality, Uncertainty & Limits, Reproducibility, Downloads, Version History, How-to-use, Glossary) are preserved and versioned forward.
