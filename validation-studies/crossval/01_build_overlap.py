@@ -18,8 +18,9 @@ What this builds (all deterministic, no imputation):
 
   .../per_district_1981_2014.parquet
       one row per comparable district x variable (the map/table source):
-      n, n_window, coverage, r, bias, rmsd, state_agree, both_drought,
+      n, n_window, coverage, r, bias, rmsd, sd_diff, state_agree, both_drought,
       class_exact, class_near, a_drought_share, b_drought_share, a_mean, b_mean
+      (sd_diff is the X7 seam uncertainty: population SD of era B - era A)
 
   .../monthly_1981_2014.parquet
       area-weighted national monthly agreement series (evidence over time).
@@ -183,6 +184,11 @@ def per_district_metrics(matched: pd.DataFrame, classes: list[dict],
             ("r", _pearson(a, b)),
             ("bias", float(d.mean())),
             ("rmsd", float(np.sqrt(np.mean(d * d)))),
+            # X7 seam uncertainty (task M6.8): population SD of the era B - era A
+            # difference. Sign-invariant, so this is also the SD of era A - era B
+            # as worded in the X7 memo. Not a confidence interval: it measures how
+            # far the two historical records disagree, district by district.
+            ("sd_diff", float(np.std(d))),
             ("state_agree", float(g["state_agree"].mean())),
             ("both_drought", float(g["both_drought"].mean())),
             ("severe_agree", float(g["severe_agree"].mean())),
@@ -274,6 +280,7 @@ def write_outputs(cfg: dict, matched: pd.DataFrame, per_district: pd.DataFrame,
         ("r", pa.float64()),
         ("bias", pa.float64()),
         ("rmsd", pa.float64()),
+        ("sd_diff", pa.float64()),
         ("state_agree", pa.float64()),
         ("both_drought", pa.float64()),
         ("severe_agree", pa.float64()),
@@ -382,6 +389,7 @@ def build(cfg: dict, repo: Path, quiet: bool = False) -> dict:
             ("months", int(m.groupby(["year", "month"]).ngroups)),
             ("median_r", float(per["r"].median(skipna=True))),
             ("median_rmsd", float(per["rmsd"].median())),
+            ("median_sd_diff", float(per["sd_diff"].median())),
             ("area_bias", float(np.dot(w[ok], (m["era_b_value"] -
                                                m["era_a_value"])[ok]) / wt)),
             ("area_state_agree", float(np.dot(w[ok], m["state_agree"][ok]) / wt)),
@@ -470,6 +478,7 @@ def verify(cfg: dict, result: dict, repo: Path) -> list[str]:
             ("n", float(len(g)), float(row["n"])),
             ("bias", float(dd.mean()), float(row["bias"])),
             ("rmsd", float(np.sqrt(np.mean(dd * dd))), float(row["rmsd"])),
+            ("sd_diff", float(np.std(dd)), float(row["sd_diff"])),
         ]
         for name, want, got in checks:
             if abs(want - got) > 1e-9:
@@ -504,13 +513,16 @@ def selftest() -> int:
         (tmp / "data/parquet/atlas").mkdir(parents=True)
         (tmp / "data/parquet/observed").mkdir(parents=True)
         (tmp / "data").mkdir(exist_ok=True)
-        # registry: d1 and d2 equal area; d3 has era-A data only
+        # registry: d1 and d2 equal area; d3 has era-A data only; d4 carries a
+        # zero-mean alternating difference (the X7 SD test)
         pd.DataFrame([
             {"district_id": "d1", "district_name": "D1", "state_name": "S",
              "state_id": "s", "area_km2": 100.0},
             {"district_id": "d2", "district_name": "D2", "state_name": "S",
              "state_id": "s", "area_km2": 100.0},
             {"district_id": "d3", "district_name": "D3", "state_name": "S",
+             "state_id": "s", "area_km2": 100.0},
+            {"district_id": "d4", "district_name": "D4", "state_name": "S",
              "state_id": "s", "area_km2": 100.0},
         ]).to_csv(tmp / "data/districts.csv", index=False)
         classes = [
@@ -540,6 +552,7 @@ def selftest() -> int:
         (tmp / "data/metadata.json").write_text(json.dumps(meta), encoding="utf-8")
 
         # 24 months, 2 years. d1: identical. d2: +0.5 bias. d3: era A only.
+        # d4: alternating +0.5 / -0.5 — zero bias, population SD = 0.5.
         rows_a, rows_b = [], []
         for y in (1981, 1982):
             for mo in range(1, 13):
@@ -547,9 +560,14 @@ def selftest() -> int:
                 for did, delta in (("d1", 0.0), ("d2", 0.5), ("d3", 0.0)):
                     rows_a.append({"district_id": did, "year": y, "month": mo,
                                    "value": float(np.float32(v))})
+                rows_a.append({"district_id": "d4", "year": y, "month": mo,
+                               "value": float(np.float32(v))})
                 for did, delta in (("d1", 0.0), ("d2", 0.5)):
                     rows_b.append({"district_id": did, "year": y, "month": mo,
                                    "value": float(np.float32(v + delta))})
+                rows_b.append({"district_id": "d4", "year": y, "month": mo,
+                               "value": float(np.float32(
+                                   v + (0.5 if mo % 2 == 0 else -0.5)))})
         a = pd.DataFrame(rows_a)
         b = pd.DataFrame(rows_b)
         for y in (1981, 1982):
@@ -590,14 +608,22 @@ def selftest() -> int:
                        per.loc["d2", "class_exact"] < 1.0))
         checks.append(("d2 class_near = 1",
                        per.loc["d2", "class_near"] == 1.0))
-        checks.append(("overlap rows = 48", len(ov) == 48))
+        checks.append(("d1 sd_diff = 0", abs(per.loc["d1", "sd_diff"]) < 1e-12))
+        checks.append(("d2 sd_diff = 0 (constant bias)",
+                       abs(per.loc["d2", "sd_diff"]) < 1e-6))
+        checks.append(("d4 bias = 0", abs(per.loc["d4", "bias"]) < 1e-6))
+        checks.append(("d4 sd_diff = 0.5 (X7 definition)",
+                       abs(per.loc["d4", "sd_diff"] - 0.5) < 1e-6))
+        checks.append(("overlap rows = 72", len(ov) == 72))
         # d2's +0.5 shift moves some months one class, never more
         checks.append(("class_near >= class_exact",
                        (ov["class_near"] >= ov["class_match"]).all()))
         mon = result["monthly"]
         checks.append(("monthly rows = 24", len(mon) == 24))
-        checks.append(("monthly bias = 0.25",
-                       abs(mon["diff"].iloc[0] - 0.25) < 1e-9))
+        checks.append(("monthly bias Jan = 0 (d1 0, d2 +0.5, d4 −0.5)",
+                       abs(mon["diff"].iloc[0]) < 1e-6))
+        checks.append(("monthly bias Feb = 1/3 (d2 +0.5, d4 +0.5)",
+                       abs(mon["diff"].iloc[1] - (1.0 / 3)) < 1e-6))
         problems = verify(cfg, result, tmp)
         checks.append(("verify clean", not problems))
         ok = True

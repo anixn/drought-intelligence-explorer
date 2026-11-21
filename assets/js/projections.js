@@ -85,6 +85,7 @@
   let divSeq = 0;           // stale-render guard for the divergence map
   let rankingData = null;   // parsed data/ranking.json (M5.5)
   let baselineEvents = null; // parsed data/events/baseline_1981_2014.json (M5.8, window per register D6)
+  let seamSd = null;         // X7: Map district_id -> SD(era B - era A) SPEI-12 (M6.8)
 
   const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -868,9 +869,39 @@
             : "no data (rendered, never imputed)";
         }
         return "<strong>" + esc(d.name) + "</strong><br>" + esc(d.state) +
-          "<br>" + esc(label) + ": " + line2;
+          "<br>" + esc(label) + ": " + line2 + seamTooltipLine(id);
       }, { sticky: true });
     }
+  }
+
+  /* X7 seam uncertainty (M6.8). Quoted only for SPEI-12: that is the series
+   * the X7 memo names and the one the cross-validation builder measures. It is
+   * the measured SD of the era A - era B difference over 1981-2014 — a
+   * historical disagreement, never a projection confidence interval. */
+  function seamTooltipLine(id) {
+    if (lastMapVar !== "spei_12" || !seamSd || !seamSd.has(id)) return "";
+    return "<br>seam SD ±" + seamSd.get(id).toFixed(2) +
+      " z (era A − era B, 1981–2014; not a confidence interval)";
+  }
+
+  async function ensureSeam() {
+    if (seamSd) return seamSd;
+    try {
+      seamSd = await DIE.Engine.seamUncertainty();
+    } catch (err) {
+      console.warn("[projections] seam uncertainty unavailable:", err);
+      seamSd = new Map();   // no line; never a placeholder value
+    }
+    return seamSd;
+  }
+
+  function seamStats() {
+    if (!seamSd || !seamSd.size) return null;
+    const vals = Array.from(seamSd.values()).sort((a, b) => a - b);
+    const mid = Math.floor(vals.length / 2);
+    const median = vals.length % 2
+      ? vals[mid] : (vals[mid - 1] + vals[mid]) / 2;
+    return { n: vals.length, median };
   }
 
   async function renderMap() {
@@ -902,6 +933,7 @@
         bindMapTooltips();
       }
       populateMapPeriods();
+      await ensureSeam();
       meta.textContent = "era C · " + SCENARIO_LABEL[state.scenario] + " · " +
         (STAT_LABEL[statKey] || statKey) + " · " + state.mapYear + "-" +
         MONTH_NAMES[state.mapMonth - 1];
@@ -985,12 +1017,22 @@
         noteText +=
           "Agreement = count of the honest 8-model subset with the index ≤ " +
           (statKey === "agreement_severe" ? "−1.5 (severe)" : "−1.0 (moderate)") +
-          " in this month — a count, not a probability. " +
-          "Per-district seam uncertainty (X7) arrives with era A↔B " +
-          "cross-validation (M6.8); it is not fabricated here.";
+          " in this month — a count, not a probability. ";
       } else {
         noteText += "Median across the honest 8-model subset; era C " +
-          "projection, not a forecast.";
+          "projection, not a forecast. ";
+      }
+      const seam = seamStats();
+      if (seam) {
+        noteText += "Historical seam uncertainty (X7): per-district SD of era " +
+          "A − era B SPEI-12 over 1981–2014, median ±" +
+          seam.median.toFixed(2) + " z across " + seam.n + " districts; shown " +
+          "in tooltips when SPEI-12 is selected. It measures disagreement " +
+          "between the two historical records — not a projection confidence " +
+          "interval.";
+      } else {
+        noteText += "Historical seam uncertainty is unavailable in this " +
+          "checkout; no placeholder value is shown (R3).";
       }
       note.textContent = noteText;
     } catch (err) {

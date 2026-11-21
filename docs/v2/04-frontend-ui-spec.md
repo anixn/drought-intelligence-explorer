@@ -124,6 +124,7 @@ Status line (`ready · DuckDB-WASM 1.32.0 · N Parquet tables`), SQL editor with
 - **Views:** (a) ensemble time-series with median + shaded 25–75 % band per district/region; (b) choropleth of the selected statistic for the selected month/year; (c) agreement layer (fraction of models ≤ −1.0 / ≤ −1.5; direction-of-change map per window) with exact definitions in tooltips; (d) model ranking panel (multi-metric composite from `08_validate_gcm.py`, best-subset selectable — **no single-metric ranking**); (e) SPI vs SPEI divergence map (warming fingerprint).
 - **Copy anchors:** projection banner (§2.4); divergence framing: "Rainfall alone does not decide India's drought future; demand does half the work."
 - **Seams:** when a user extends a district series across 2025→2026, the chart draws the era boundary marker and the seam note (§2.2).
+- **Seam uncertainty (X7, M6.8):** the main-map tooltip appends the per-district `sd_diff` for SPEI-12 — "seam SD ±X z (era A − era B, 1981–2014; not a confidence interval)" — and the map note prints the median across districts with n. It is a measured historical disagreement, never a projection error bar.
 - **Data rule:** this tab renders only validated era C products. During UI development it runs on `data/fixtures/` with a permanent `FIXTURE — SYNTHETIC, NOT FOR RELEASE` banner; fixtures never ship to the live site.
 
 ### 4.3 Atlas Context (`#atlas`, M6)
@@ -140,7 +141,7 @@ A **lens on the Record product** (D11), not a new top-level era: it asks a quest
 - **KPIs (`Agreement at a glance`):** districts compared (n), matched district-months, median r (unweighted), area-weighted bias, median RMSD, area-weighted state agreement, within-one-class agreement, both-drought co-occurrence. Every figure names its sample.
 - **Map:** per-district choropleth from `per_district_1981_2014.parquet`; diverging ramp for bias (brown = era B drier, blue = era B wetter), sequential warm ramp for the agreement metrics; six island districts with no Atlas grid cells stay grey (R10).
 - **Time series:** area-weighted national monthly agreement from `monthly_1981_2014.parquet`, with the time-mean marked and the matched-area caveat in the note.
-- **Table:** worst-30 district evidence, sorted worst-first, with exhaustive n and class columns; the full 718-district table is the CSV.
+- **Table:** worst-30 district evidence, sorted worst-first, with exhaustive n and class columns plus **Seam SD** (the X7 `sd_diff`); the full 718-district table is the CSV.
 - **Era pill:** `Era A ↔ B · Compared` (split dot) — the standing receipt that two records are compared, never merged.
 - **Copy guardrails:** disagreement is expected and is the content (different P/PET chains and fitting windows); compared never merged (R2); missing stays missing (R10); correlation is not agreement (R9); exact nine-class agreement is low by construction, so within-one-class leads.
 - IMD benchmark results are surfaced in the Documentation centre (§5), not here — this panel is specifically the Atlas↔Gridded seam.
@@ -153,7 +154,7 @@ The headline "so what" surface (Owner request: "how drought changes from now to 
 - **Baseline:** observed 1981–2014 era-B metrics from the committed `data/events/baseline_1981_2014.json` (register D6 window); frozen v1.0 runs analysis on both sides; the eras are never spliced — only their per-district difference is shown.
 - **Per-state table:** area-weighted (v1.0 LAEA areas) with n per row (R10); national area-weighted baseline→future drought-share figures with Δpp.
 - **Export:** CSV with `#` reproducibility headers (X6): selection, windows, machinery, sources.
-- **Caveat block (M9.4):** simulations-not-forecasts (R2); median-based + concentration warning; `seam_uncertainty` (X7) pending M6.6/M6.8, labelled, never fabricated; PET-seam note (era C Hargreaves vs era B ERA5-Land).
+- **Caveat block (M9.4):** simulations-not-forecasts (R2); median-based + concentration warning; **X7 seam uncertainty is measured** — median per-district SD of era A − era B SPEI-12 over 1981–2014, printed with its district count, labelled a historical disagreement rather than a confidence interval; PET-seam note (era C Hargreaves vs era B ERA5-Land).
 
 ### 4.6 Atlas 1901–2025 (`#atlas`, M6.3 — BUILT 2026-11-20, live)
 

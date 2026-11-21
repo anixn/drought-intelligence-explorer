@@ -304,6 +304,7 @@
       '<td class="num">' + r.n + "</td>" +
       '<td class="num">' + fmt(r.r, 3) + "</td>" +
       '<td class="num">' + fmt(r.bias, 3) + "</td>" +
+      '<td class="num">' + fmt(r.sd_diff, 3) + "</td>" +
       '<td class="num">' + pct(r.state_agree) + "</td>" +
       '<td class="num">' + pct(r.class_exact) + "</td>" +
       '<td class="num">' + pct(r.class_near) + "</td></tr>"
@@ -312,10 +313,14 @@
       rows.length + " districts · sorted by " +
       (state.metric === "bias" ? "|bias|" : m.short);
     $("cvTableNote").textContent =
-      "Worst-first ordering, not a ranking of district performance. Exact " +
-      "class agreement is shown for transparency; it is low by construction " +
-      "(nine classes, a dominant near-normal bin) and the within-one-class " +
-      "column is the fairer summary. Full 718-district table in the CSV.";
+      "Worst-first ordering, not a ranking of district performance. Seam SD is " +
+      "the per-district population SD of the era B − era A difference over " +
+      "1981–2014 — the X7 seam uncertainty quoted in projection tooltips for " +
+      "SPEI-12. It measures historical disagreement between the two records, " +
+      "not a confidence interval. Exact class agreement is shown for " +
+      "transparency; it is low by construction (nine classes, a dominant " +
+      "near-normal bin) and the within-one-class column is the fairer summary. " +
+      "Full 718-district table in the CSV.";
   }
 
   /* ---- monthly agreement chart ------------------------------------------ */
@@ -415,12 +420,13 @@
     L.push("# era A: Drought Atlas of India reconstruction (station-based SPEI)");
     L.push("# era B: Gridded Multi-Source Product (CHIRPS precipitation, ERA5-Land PET)");
     L.push("# drought threshold: -1.0 z (v1.0 moderate-class upper bound); class table from data/metadata.json");
+    L.push("# seam SD (sd_diff): per-district population SD of era B - era A over 1981-2014; the X7 seam uncertainty, not a confidence interval");
     L.push("# built by validation-studies/crossval/01_build_overlap.py; per-district file");
     L.push("# areas: LAEA km2 (v1.0 registry); missing pairs are absent, never imputed (R10)");
     L.push("# map statistic at export time: " + m.short);
     L.push("district_id,district_name,state,area_km2,n_months,n_window,coverage," +
-      "r,bias,rmsd,state_agree,both_drought,severe_agree,class_exact,class_near," +
-      "era_a_drought_share,era_b_drought_share,era_a_mean,era_b_mean");
+      "r,bias,rmsd,sd_diff,state_agree,both_drought,severe_agree,class_exact," +
+      "class_near,era_a_drought_share,era_b_drought_share,era_a_mean,era_b_mean");
     const cell = (v, dp) => (Number.isFinite(v) ? v.toFixed(dp) : "");
     for (const r of rowsCache) {
       L.push([
@@ -428,7 +434,8 @@
         '"' + String(r.stateName).replace(/"/g, '""') + '"',
         Number.isFinite(r.area) ? r.area.toFixed(2) : "",
         r.n, r.n_window, cell(r.coverage, 4), cell(r.r, 4), cell(r.bias, 4),
-        cell(r.rmsd, 4), cell(r.state_agree, 4), cell(r.both_drought, 4),
+        cell(r.rmsd, 4), cell(r.sd_diff, 4), cell(r.state_agree, 4),
+        cell(r.both_drought, 4),
         cell(r.severe_agree, 4), cell(r.class_exact, 4), cell(r.class_near, 4),
         cell(r.a_drought_share, 4), cell(r.b_drought_share, 4),
         cell(r.a_mean, 4), cell(r.b_mean, 4),

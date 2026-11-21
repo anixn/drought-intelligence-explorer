@@ -19,7 +19,8 @@ What it snapshots (baseline JSON, blessed explicitly):
      1981-2020, and per-state finite counts/means for SPI-3
   6. national pre-aggregate fingerprint (_national_monthly.parquet)
   7. era A <-> era B cross-validation fingerprint (M6.6): file checksums,
-     district counts, median r, mean bias and overlap/monthly row counts
+     district counts, median r, mean bias, median seam SD (X7/M6.8) and
+     overlap/monthly row counts
 
 Usage:
   python scripts/regression_check.py            # compare against baseline
@@ -273,19 +274,26 @@ def compute() -> dict:
         dist_vars = per.column("variable").to_pylist()
         dist_r = per.column("r").to_pylist()
         dist_bias = per.column("bias").to_pylist()
+        dist_sd = per.column("sd_diff").to_pylist()
         for var_id in ("spei_01", "spei_12"):
             rs = sorted(v for k, v in zip(dist_vars, dist_r)
                         if k == var_id and v is not None and math.isfinite(v))
             bs = [v for k, v in zip(dist_vars, dist_bias)
                   if k == var_id and v is not None and math.isfinite(v)]
+            sds = sorted(v for k, v in zip(dist_vars, dist_sd)
+                         if k == var_id and v is not None and math.isfinite(v))
             if not rs:
                 continue
             mid = len(rs) // 2
             median_r = rs[mid] if len(rs) % 2 else (rs[mid - 1] + rs[mid]) / 2
+            smid = len(sds) // 2
+            median_sd = (sds[smid] if len(sds) % 2
+                         else (sds[smid - 1] + sds[smid]) / 2)
             cv[var_id] = OrderedDict([
                 ("districts", sum(1 for k in dist_vars if k == var_id)),
                 ("median_r", median_r),
                 ("mean_bias", math.fsum(bs) / len(bs)),
+                ("median_sd_diff", median_sd),
             ])
         ov = pq.read_table(REPO / cv_files["overlap"], columns=["variable"])
         ov_vars = ov.column("variable").to_pylist()

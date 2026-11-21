@@ -30,8 +30,9 @@
  *  - Sample sizes reported everywhere (R10); missing districts rendered
  *    grey, never imputed (R10). The 6 island districts absent from the
  *    IMD-anchored era-C reference stay absent (documented ocean mask).
- *  - Per-district seam uncertainty (X7) arrives with M6.6/M6.8 and is
- *    explicitly marked pending in the caveat block — never fabricated.
+ *  - Historical seam uncertainty (X7, M6.8) is measured once from the era
+ *    A - era B overlap and quoted in the caveat with its n; it is a record
+ *    disagreement, not a projection confidence interval.
  * ------------------------------------------------------------------------- */
 (function () {
   "use strict";
@@ -146,6 +147,31 @@
     // recorded verbatim by the pipeline in metadata.json → era_c.dir_agreement
     const da = DIE.meta && DIE.meta.era_c && DIE.meta.era_c.dir_agreement;
     return (da && da.window_effective) || "2081-2100";
+  }
+
+  /* ---- X7 seam note (M6.8) ----------------------------------------------
+   * The per-district SD of era A - era B SPEI-12 over the D6 window, computed
+   * once by the cross-validation builder. The caveat quotes the median across
+   * districts; it is a measured record disagreement, never a confidence
+   * interval. If the product is absent, the copy says so (R3). */
+  async function loadSeamNote() {
+    const val = $("sumSeamVal");
+    const nEl = $("sumSeamN");
+    if (!val || !nEl) return;
+    try {
+      const m = await DIE.Engine.seamUncertainty();
+      const vals = Array.from(m.values()).sort((a, b) => a - b);
+      if (!vals.length) throw new Error("no seam values");
+      const mid = Math.floor(vals.length / 2);
+      const median = vals.length % 2
+        ? vals[mid] : (vals[mid - 1] + vals[mid]) / 2;
+      val.textContent = "±" + median.toFixed(2);
+      nEl.textContent = String(vals.length);
+    } catch (err) {
+      console.warn("[summary] seam uncertainty unavailable:", err);
+      val.textContent = "unavailable in this checkout";
+      nEl.textContent = "0";
+    }
   }
 
   /* ---- controls ---------------------------------------------------------- */
@@ -607,6 +633,7 @@
     }
     renderBanner();
     renderVariableOptions();
+    await loadSeamNote();
     await renderAll();
   }
 

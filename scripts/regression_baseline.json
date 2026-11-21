@@ -1038,17 +1038,19 @@
   },
   "crossval": {
     "sha256/overlap": "4ca520687a1a89a02695aaff479a192d57373b81dbea67b6b33f23b7c4b337aa",
-    "sha256/per_district": "b3ea401bbc1df80bbb5f3cf4ed6e74c55d4004082b1d99d18b46c790f983206d",
+    "sha256/per_district": "6f4a2ee50f815a8a499cee0bfff3cb51e2da9ce591e9806f6a7bc45df55b16ed",
     "sha256/monthly": "43102b7abe9fca8eb987cdfe5858c61fe8665695ddb9312407941c51f0e05b3c",
     "spei_01": {
       "districts": 718,
       "median_r": 0.7173323911173077,
-      "mean_bias": 0.043061706772766474
+      "mean_bias": 0.043061706772766474,
+      "median_sd_diff": 0.751116886388576
     },
     "spei_12": {
       "districts": 718,
       "median_r": 0.6672192308559306,
-      "mean_bias": 0.038673582692143965
+      "mean_bias": 0.038673582692143965,
+      "median_sd_diff": 0.7754185766404297
     },
     "overlap_rows": {
       "spei_01": 292925,

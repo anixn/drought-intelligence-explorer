@@ -195,7 +195,7 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 | M6.5 | Historical-event anchoring: 1918, 1965, 1972, 1987, 2002 identifiable | events reproduce against Atlas documentation |
 | M6.6 | Cross-validation panel `#crossval`: era A vs era B, **1981–2014 primary window (register D6; full 1981–2025 overlap as sensitivity)** (r, bias, class agreement, event match rate, discrepancy map) | table + map render; discrepancies visible |
 | M6.7 | Era A tab initially district-level; tehsil layer (O01) only after boundary-source verification | boundary decision recorded |
-| M6.8 | **seam_uncertainty (X7):** per district, SD of (era A − era B) SPEI-12 over the 1981–2020 overlap, computed once at cross-validation, stored with the projections store, surfaced in projection tooltips as "±X SPEI units" | column present; tooltip copy matches computed value |
+| M6.8 | **seam_uncertainty (X7) — BUILT 2026-11-21:** per district, SD of (era A − era B) SPEI-12 over the **1981–2014** overlap (D6; the memo's 1981–2020 wording is superseded), computed once at cross-validation and stored as `sd_diff` in `data/parquet/cross_validation/per_district_1981_2014.parquet` (D13 — not duplicated into the local era-C store), surfaced in SPEI-12 projection tooltips as "seam SD ±X z", in the `#crossval` table/CSV, and as a median-with-n caveat on `#summary` | column present; tooltip copy matches computed value |
 
 **Exit gate M6:** Atlas era live with era labels; cross-validation published; known events identifiable.
 

@@ -2613,8 +2613,14 @@
                   shown by the agreement statistic, never hidden.
                 </li>
                 <li>
-                  <b>Per-district seam uncertainty (X7) is pending</b> the era
-                  A↔B cross-validation (M6.6/M6.8) and is not fabricated here.
+                  <b>Historical seam uncertainty (X7):</b> the two historical
+                  records disagree by a median <span id="sumSeamVal">&hellip;</span> z
+                  per district (1 SD of era A &minus; era B SPEI-12 over
+                  1981&ndash;2014, <span id="sumSeamN">&hellip;</span> districts).
+                  This is a measured disagreement between the records, not a
+                  projection confidence interval; per-district values are in
+                  the projection SPEI-12 tooltips and the cross-validation
+                  table.
                 </li>
                 <li>
                   <b>PET seam:</b> era C SPEI uses Hargreaves PET on corrected
@@ -2872,6 +2878,7 @@
                       <th class="num">n months</th>
                       <th class="num">r</th>
                       <th class="num">Bias (z)</th>
+                      <th class="num">Seam SD (z)</th>
                       <th class="num">State agree</th>
                       <th class="num">Exact class</th>
                       <th class="num">Within one</th>
@@ -4272,7 +4279,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-21c";
+        var ASSET_VERSION = "2026-11-21e";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

@@ -394,8 +394,9 @@
       ? ['variable', 'date', 'n_districts', 'mean_a', 'mean_b', 'diff',
          'state_agree', 'both_drought', 'class_exact', 'class_near']
       : ['variable', 'district_id', 'n', 'n_window', 'coverage', 'r', 'bias',
-         'rmsd', 'state_agree', 'both_drought', 'severe_agree', 'class_exact',
-         'class_near', 'a_drought_share', 'b_drought_share', 'a_mean', 'b_mean'];
+         'rmsd', 'sd_diff', 'state_agree', 'both_drought', 'severe_agree',
+         'class_exact', 'class_near', 'a_drought_share', 'b_drought_share',
+         'a_mean', 'b_mean'];
     const proj = cols.map((c) => (c === 'variable' || c === 'district_id' ||
       c === 'date' || c === 'n' || c === 'n_window' || c === 'n_districts')
       ? c : double(c)).join(', ');
@@ -404,6 +405,32 @@
     return toRows(await query(
       'SELECT ' + proj + ' FROM read_parquet([\'' + absPath(file) + '\'])' +
       where + order));
+  }
+
+  /* X7 seam uncertainty (task M6.8): the per-district population SD of the
+   * era B - era A difference, computed ONCE by the cross-validation builder
+   * over the D6 window (1981-2014). SPEI-12 is the series named by the X7
+   * memo; it is the value every projection tooltip quotes. Cached: the map
+   * tooltip re-evaluates on every hover and must not issue a query each time. */
+  let seamPromise = null;
+  function seamUncertainty(reload) {
+    if (reload) seamPromise = null;
+    if (!seamPromise) {
+      seamPromise = crossval({ variable: 'spei_12', part: 'per_district' })
+        .then((rows) => {
+          const out = new Map();
+          for (const r of rows) {
+            const v = Number(r.sd_diff);
+            if (Number.isFinite(v)) out.set(r.district_id, v);
+          }
+          return out;
+        })
+        .catch((err) => {
+          seamPromise = null;   // allow a retry after a transient failure
+          throw err;
+        });
+    }
+    return seamPromise;
   }
 
   async function national(opts) {
@@ -487,7 +514,7 @@
 
   DIE.Engine = {
     ensureEngine, ensureCatalog, query, slice, mapMonth, national, ensemble,
-    atlasYear, crossval,
+    atlasYear, crossval, seamUncertainty,
     bytes, lastMs,
     version: DUCKDB_VERSION,
     catalog: () => state.catalog,
