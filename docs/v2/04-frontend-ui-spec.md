@@ -161,6 +161,7 @@ The headline "so what" surface (Owner request: "how drought changes from now to 
 The era-A scrubber surface (Owner: "start the M6.3"), deliberately an *era surface* of DIE — not an Atlas re-portal:
 
 - **Time scrubber:** year slider 1901–2025 + month selector (default August, the JJAS core) + timescale select (SPEI-1/4/12). **Per-year tile fetch only** (M6.3 rule): one partition query per frame (`DIE.Engine.atlasYear`), cached per (timescale, year) with a bounded LRU.
+- **Accumulation months:** SPEI-1 is defined for every month; SPEI-4 from April to December; SPEI-12 only in December. An empty frame states the reason and never draws placeholder values. (The class table for every Atlas timescale comes from the shared SPEI metadata table; the variable-id mapping is `spei_01 → spei_1`, with SPEI-4 falling back to the identical SPEI class table.)
 - **Drought anchors:** 1918 / 1965 / 1972 / 1987 / 2002 as one-click pre-set views (documented historical episodes; setting a view is not a claim about any single month).
 - **Map:** McKee-class choropleth of the selected frame; class palette from the shared era-B SPEI classification table (the Atlas z-scores use the same class definitions).
 - **Class shares:** area-weighted (v1.0 LAEA registry) share of moderate-or-worse / severe-or-worse / extreme / wetter-than-normal for the displayed month, with n.

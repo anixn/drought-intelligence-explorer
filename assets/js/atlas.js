@@ -61,11 +61,16 @@
     return catalog && catalog.eras && catalog.eras.atlas;
   }
   function classifyFn() {
-    // era A z-scores share the McKee 9-class table with the era-B SPEI family
+    // era A z-scores share the McKee 9-class table with the era-B SPEI family.
+    // The Atlas variable ids are catalog ids (spei_01/spei_04/spei_12), while
+    // DIE.indicatorById is keyed by metadata ids (spei_1/spei_12). SPEI-4 has
+    // no era-B twin at all; its class table is identical to the SPEI family's.
+    const m = /^([a-z]+)_0?(\d+)$/.exec(state.variable);
+    const metaId = m ? m[1] + "_" + Number(m[2]) : state.variable;
     return DIE.indicatorById &&
-      (DIE.indicatorById.get(state.variable) ||
-       DIE.indicatorById.get("spei_03") ||
-       DIE.indicatorById.get("spi_03"));
+      (DIE.indicatorById.get(metaId) ||
+       DIE.indicatorById.get("spei_3") ||
+       DIE.indicatorById.get("spi_3"));
   }
 
   /* ---- controls ---------------------------------------------------------- */
@@ -183,6 +188,23 @@
         "district to zoom it into the frame. A reconstruction, not an " +
         "observation: pre-1951 station density is lower (quantified in " +
         "#crossval).";
+      if (!n) {
+        // Honest empty-frame guidance: the Atlas defines these accumulations
+        // only after their warm-up within the calendar year, so some month
+        // selections legitimately have no values.
+        let why = "No era-A values exist for this frame.";
+        if (state.variable === "spei_12") {
+          why = "SPEI-12 is a 12-month accumulation and the Atlas series is " +
+            "defined only in December — choose December to see this map.";
+        } else if (state.variable === "spei_04") {
+          why = "SPEI-4 needs four months of the calendar year; the Atlas " +
+            "series is defined from April to December — choose one of those months.";
+        } else if (state.variable === "spei_01") {
+          why = "SPEI-1 is defined for every month; this frame is empty in the " +
+            "shipped store (the six island districts never have Atlas cells).";
+        }
+        mapNote.textContent = why + " No placeholder values are drawn (R3).";
+      }
 
       // class shares (area-weighted, v1.0 LAEA registry areas)
       let area = 0, mod = 0, sev = 0, ext = 0, wet = 0;

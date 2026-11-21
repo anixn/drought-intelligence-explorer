@@ -2809,6 +2809,12 @@
                   cross-validation panel).
                 </li>
                 <li>
+                  <b>Accumulation months are real:</b> SPEI-4 is defined from
+                  April to December and SPEI-12 only in December in this
+                  reconstruction; selecting an earlier month is genuinely empty
+                  (not missing data, and never filled).
+                </li>
+                <li>
                   <a href="#data/k-methodology/method-crossval">How the era A↔B comparison is made →</a>
                 </li>
               </ul>
@@ -4636,7 +4642,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-21s";
+        var ASSET_VERSION = "2026-11-21u";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
