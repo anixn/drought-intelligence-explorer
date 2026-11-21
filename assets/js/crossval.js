@@ -275,10 +275,11 @@
           m.colors[i] + '"></span><span class="legend-range">' + esc(lab) +
           "</span></span>").join("");
       const shown = rows.filter((r) => Number.isFinite(m.value(r))).length;
-      note.textContent = m.note + " n = " + shown + " districts with a " +
+      note.innerHTML = esc(m.note + " n = " + shown + " districts with a " +
         "calculable value; the six island districts have no Atlas grid cells " +
         "and stay grey, never imputed (R10). Click any district to zoom it " +
-        "into the frame.";
+        "into the frame.") +
+      ' <a class="ev-how" href="#data/k-methodology/method-crossval">How this comparison is made &rarr;</a>';
     } catch (err) {
       console.warn("[crossval] map failed:", err);
       note.textContent = "Map unavailable: " + String(err && err.message || err);

@@ -1,0 +1,10 @@
+{
+  "figure": "table5_reality",
+  "artifact": "data/reality_checks.json",
+  "sha256": "8d97238214256894a7dccca68c441fe7b34ec87a4e5831e677d3095cf2cbe738",
+  "checks": [
+    "rajasthan-2002",
+    "all-india-spi3",
+    "marathwada-2015"
+  ]
+}

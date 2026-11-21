@@ -1496,7 +1496,8 @@
               <div class="chart-box trend-chart" id="trendChart"></div>
               <div class="trend-stats" id="trendStats"></div>
             </div>
-            <p class="chart-foot" id="trendFoot">—</p>
+            <p class="chart-foot" id="trendFoot">-</p>
+            <p class="ev-verify"><a href="#data/k-methodology/method-trends">How the trend test is made &rarr;</a></p>
           </section>
 
           <!-- E: recurrence -->
@@ -1769,6 +1770,9 @@
               <div class="pager" id="evtPager"></div>
             </div>
             <p class="panel-note" id="evtNote">—</p>
+            <p class="ev-verify">
+              <a href="#data/k-methodology/method-events">How events are defined &rarr;</a>
+            </p>
           </section>
 
           <!-- Event visualisations -->
@@ -1941,7 +1945,8 @@
               <div class="prop-stats" id="propStats"></div>
             </div>
             <div class="chart-box prop-ts-chart" id="propTsChart"></div>
-            <p class="chart-foot" id="propFoot">—</p>
+            <p class="chart-foot" id="propFoot">-</p>
+            <p class="ev-verify"><a href="#data/k-methodology/method-correlation">How the lag correlation is made &rarr;</a></p>
           </section>
 
           <!-- Correlation heatmap -->
@@ -2662,6 +2667,12 @@
                   follow-up (O14/E16).
                 </li>
               </ul>
+              <p class="ev-verify" style="margin: 4px 16px 12px">
+                How these numbers are made:
+                <a href="#data/k-methodology/method-era-c">era-C chain</a> ·
+                <a href="#data/k-methodology/method-events">event rule</a> ·
+                <a href="#data/k-methodology/method-crossval">era A↔B seam</a>
+              </p>
             </section>
           </div>
         </div>
@@ -2796,6 +2807,9 @@
                   century station density is lower; treat pre-1951 values
                   with correspondingly wider uncertainty (quantified in the
                   cross-validation panel).
+                </li>
+                <li>
+                  <a href="#data/k-methodology/method-crossval">How the era A↔B comparison is made →</a>
                 </li>
               </ul>
             </section>
@@ -4622,7 +4636,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-21r";
+        var ASSET_VERSION = "2026-11-21s";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

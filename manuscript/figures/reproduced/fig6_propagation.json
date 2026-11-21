@@ -1,0 +1,18 @@
+{
+  "figure": "fig6_propagation",
+  "pair": [
+    "spi_03",
+    "spei_03"
+  ],
+  "n": 538,
+  "r": 0.8743,
+  "ci95": [
+    0.8353,
+    0.9018
+  ],
+  "bootstrap": {
+    "resamples": 1000,
+    "block": 8,
+    "seed": 20261103
+  }
+}

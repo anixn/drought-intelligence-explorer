@@ -179,7 +179,10 @@
       " · area " + DIE.fmt.int.format(Math.round(d.area)) + " km²" +
       " · district id " + d.id +
       " · analysis " + DIE.state.period.from + "–" + DIE.state.period.to +
-      " (" + (SEASON_LABEL[DIE.state.period.season] || DIE.state.period.season) + ")";
+      " (" + (SEASON_LABEL[DIE.state.period.season] || DIE.state.period.season) + ")" +
+      " · ";
+    $("dpReceipts").insertAdjacentHTML("beforeend",
+      '<a class="ev-how" href="#data/k-methodology/method-trends">How this page is made →</a>');
   }
 
   /* ---- trend ------------------------------------------------------------ */

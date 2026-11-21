@@ -1298,7 +1298,8 @@
       chip('Product', productLabel(ind)) +
       chip('Window', windowText) +
       chip('Baseline', baselineLabel(ind)) +
-      chip('n', nText);
+      chip('n', nText) +
+      '<a class="ev-how" href="#data/k-methodology/method-indicators">How this is made &rarr;</a>';
   }
 
   function setKpi(id, o) {

@@ -1034,7 +1034,8 @@
         noteText += "Historical seam uncertainty is unavailable in this " +
           "checkout; no placeholder value is shown (R3).";
       }
-      note.textContent = noteText;
+    note.innerHTML = esc(noteText) +
+      ' <a class="ev-how" href="#data/k-methodology/method-era-c">How projections are made &rarr;</a>';
     } catch (err) {
       console.warn("[projections] map failed:", err);
       note.textContent = "Choropleth unavailable: " + String(err && err.message || err);

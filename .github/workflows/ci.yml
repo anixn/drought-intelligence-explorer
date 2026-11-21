@@ -46,5 +46,11 @@ jobs:
       - name: Regression harness (shipped-data baseline)
         run: python scripts/regression_check.py
 
+      - name: Reality checks (re-derived from the shipped record)
+        run: python scripts/verify_reality_checks.py --check
+
+      - name: Reproduce published figures/tables
+        run: python scripts/reproduce_figures.py --check
+
       - name: GCM pipeline selftests (steps 02-09)
         run: python gcm-pipeline/selftest_gcm.py

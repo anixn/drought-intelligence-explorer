@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520" viewBox="0 0 1000 520">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<rect x="277.38" y="40" width="585.94" height="420" fill="#E8EEF2"/>
+<text x="281.78" y="58" font-family="sans-serif" font-size="14" fill="#5A6B7A">Reference climatology 1981–2020 (SPI, SPEI, SMA)</text>
+<rect x="556.87" y="40" width="379.69" height="420" fill="#DCEBD2" opacity="0.55"/>
+<rect x="277.38" y="51.00" width="659.18" height="20" fill="#2A5F85"/>
+<text x="271.38" y="65.00" text-anchor="end" font-family="sans-serif" font-size="11" fill="#3B4A57">1981-01</text>
+<text x="942.56" y="65.00" font-family="sans-serif" font-size="11" fill="#3B4A57">2025-12</text>
+<text x="196" y="65.00" text-anchor="end" font-family="sans-serif" font-size="13" fill="#2E2820">SPI-1</text>
+<rect x="279.82" y="93.00" width="656.74" height="20" fill="#2A5F85"/>
+<text x="273.82" y="107.00" text-anchor="end" font-family="sans-serif" font-size="11" fill="#3B4A57">1981-03</text>
+<text x="942.56" y="107.00" font-family="sans-serif" font-size="11" fill="#3B4A57">2025-12</text>
+<text x="196" y="107.00" text-anchor="end" font-family="sans-serif" font-size="13" fill="#2E2820">SPI-3</text>
+<rect x="283.49" y="135.00" width="653.08" height="20" fill="#2A5F85"/>
+<text x="277.49" y="149.00" text-anchor="end" font-family="sans-serif" font-size="11" fill="#3B4A57">1981-06</text>
+<text x="942.56" y="149.00" font-family="sans-serif" font-size="11" fill="#3B4A57">2025-12</text>
+<text x="196" y="149.00" text-anchor="end" font-family="sans-serif" font-size="13" fill="#2E2820">SPI-6</text>
+<rect x="290.81" y="177.00" width="645.75" height="20" fill="#2A5F85"/>
+<text x="284.81" y="191.00" text-anchor="end" font-family="sans-serif" font-size="11" fill="#3B4A57">1981-12</text>
+<text x="942.56" y="191.00" font-family="sans-serif" font-size="11" fill="#3B4A57">2025-12</text>
+<text x="196" y="191.00" text-anchor="end" font-family="sans-serif" font-size="13" fill="#2E2820">SPI-12</text>
+<rect x="277.38" y="219.00" width="659.18" height="20" fill="#22756B"/>
+<text x="271.38" y="233.00" text-anchor="end" font-family="sans-serif" font-size="11" fill="#3B4A57">1981-01</text>
+<text x="942.56" y="233.00" font-family="sans-serif" font-size="11" fill="#3B4A57">2025-12</text>
+<text x="196" y="233.00" text-anchor="end" font-family="sans-serif" font-size="13" fill="#2E2820">SPEI-1</text>
+<rect x="279.82" y="261.00" width="656.74" height="20" fill="#22756B"/>
+<text x="273.82" y="275.00" text-anchor="end" font-family="sans-serif" font-size="11" fill="#3B4A57">1981-03</text>
+<text x="942.56" y="275.00" font-family="sans-serif" font-size="11" fill="#3B4A57">2025-12</text>
+<text x="196" y="275.00" text-anchor="end" font-family="sans-serif" font-size="13" fill="#2E2820">SPEI-3</text>
+<rect x="283.49" y="303.00" width="653.08" height="20" fill="#22756B"/>
+<text x="277.49" y="317.00" text-anchor="end" font-family="sans-serif" font-size="11" fill="#3B4A57">1981-06</text>
+<text x="942.56" y="317.00" font-family="sans-serif" font-size="11" fill="#3B4A57">2025-12</text>
+<text x="196" y="317.00" text-anchor="end" font-family="sans-serif" font-size="13" fill="#2E2820">SPEI-6</text>
+<rect x="290.81" y="345.00" width="645.75" height="20" fill="#22756B"/>
+<text x="284.81" y="359.00" text-anchor="end" font-family="sans-serif" font-size="11" fill="#3B4A57">1981-12</text>
+<text x="942.56" y="359.00" font-family="sans-serif" font-size="11" fill="#3B4A57">2025-12</text>
+<text x="196" y="359.00" text-anchor="end" font-family="sans-serif" font-size="13" fill="#2E2820">SPEI-12</text>
+<rect x="277.38" y="387.00" width="659.18" height="20" fill="#C87E3B"/>
+<text x="271.38" y="401.00" text-anchor="end" font-family="sans-serif" font-size="11" fill="#3B4A57">1981-01</text>
+<text x="942.56" y="401.00" font-family="sans-serif" font-size="11" fill="#3B4A57">2025-12</text>
+<text x="196" y="401.00" text-anchor="end" font-family="sans-serif" font-size="13" fill="#2E2820">SMA</text>
+<rect x="556.92" y="429.00" width="379.64" height="20" fill="#6F9E3F"/>
+<text x="550.92" y="443.00" text-anchor="end" font-family="sans-serif" font-size="11" fill="#3B4A57">2000-02</text>
+<text x="942.56" y="443.00" font-family="sans-serif" font-size="11" fill="#3B4A57">2025-12</text>
+<text x="196" y="443.00" text-anchor="end" font-family="sans-serif" font-size="13" fill="#2E2820">VCI</text>
+<text x="262.73" y="484" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#3B4A57">1980</text>
+<line x1="262.73" y1="460" x2="262.73" y2="465" stroke="#9AA7B2"/>
+<text x="335.98" y="484" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#3B4A57">1985</text>
+<line x1="335.98" y1="460" x2="335.98" y2="465" stroke="#9AA7B2"/>
+<text x="409.22" y="484" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#3B4A57">1990</text>
+<line x1="409.22" y1="460" x2="409.22" y2="465" stroke="#9AA7B2"/>
+<text x="482.46" y="484" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#3B4A57">1995</text>
+<line x1="482.46" y1="460" x2="482.46" y2="465" stroke="#9AA7B2"/>
+<text x="555.70" y="484" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#3B4A57">2000</text>
+<line x1="555.70" y1="460" x2="555.70" y2="465" stroke="#9AA7B2"/>
+<text x="628.95" y="484" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#3B4A57">2005</text>
+<line x1="628.95" y1="460" x2="628.95" y2="465" stroke="#9AA7B2"/>
+<text x="702.19" y="484" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#3B4A57">2010</text>
+<line x1="702.19" y1="460" x2="702.19" y2="465" stroke="#9AA7B2"/>
+<text x="775.43" y="484" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#3B4A57">2015</text>
+<line x1="775.43" y1="460" x2="775.43" y2="465" stroke="#9AA7B2"/>
+<text x="848.67" y="484" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#3B4A57">2020</text>
+<line x1="848.67" y1="460" x2="848.67" y2="465" stroke="#9AA7B2"/>
+<text x="921.91" y="484" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#3B4A57">2025</text>
+<line x1="921.91" y1="460" x2="921.91" y2="465" stroke="#9AA7B2"/>
+<text x="561.56" y="452" font-family="sans-serif" font-size="13" fill="#4C7A2E">VCI reference period 2000–present</text>
+</svg>
