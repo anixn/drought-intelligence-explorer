@@ -1576,7 +1576,7 @@
 
   /* ---- init / render -------------------------------------------------------- */
 
-  async function init() {
+  async function doInit() {
     $("projReloadBtn").hidden = true;
     if (!Proj.ready) {
       wire();
@@ -1604,6 +1604,20 @@
       drawBand(), renderMap(), renderRanking(),
       renderDivergence(), renderEvents(),
     ]);
+  }
+
+  /* init() re-renders on every tab entry; whenReady() is the promise of the
+   * FIRST initialization, which permalink application awaits so no in-flight
+   * render can overwrite restored controls (M10.4). */
+  let bootReady = null;
+  function init() {
+    const p = doInit();
+    if (!bootReady) bootReady = p;
+    return p;
+  }
+  function whenReady() {
+    if (!bootReady) bootReady = doInit();
+    return bootReady;
   }
 
   /** Size hooks for app.js: recalc the Leaflet container after tab switches
@@ -1636,5 +1650,99 @@
     };
   }
 
-  DIE.Projections = { init, state, invalidate, mapSize, snapshot };
+  /* ---- permalink state (M10.4) ------------------------------------------ */
+  function permalinkState() {
+    return {
+      pScenario: state.scenario,
+      pVariable: state.variable,
+      pStat: state.statistic,
+      pWindow: state.window,
+      pGeo: state.geography,
+      pStateId: state.stateSid,
+      pDistrict: state.district,
+      pYear: state.mapYear,
+      pMonth: state.mapMonth,
+      pDivYear: state.divYear,
+      pDivMonth: state.divMonth,
+    };
+  }
+
+  async function applyPermalink(p) {
+    await whenReady();                 // never race the first render
+    const g = (k) => (p.get ? p.get(k) : p[k]);
+    const sc = g("pScenario");
+    if (sc === "ssp245" || sc === "ssp585") state.scenario = sc;
+
+    const vSel = $("projVariable");
+    const va = g("pVariable");
+    if (va && vSel && [...vSel.options].some((o) => o.value === va)) {
+      state.variable = va;
+    }
+    const stSel = $("projStatistic");
+    const st = g("pStat");
+    if (st && stSel && [...stSel.options].some((o) => o.value === st)) {
+      state.statistic = st;
+    }
+    const wi = g("pWindow");
+    if (wi && ["near", "mid", "late", "custom"].indexOf(wi) !== -1) {
+      state.window = wi;
+    }
+
+    const geo = g("pGeo");
+    const sid = g("pStateId");
+    const did = g("pDistrict");
+    if (geo === "national") {
+      state.geography = "national";
+    } else if (geo === "state" && sid && DIE.registry.states.has(sid)) {
+      state.geography = "state";
+      state.stateSid = sid;
+    } else if (geo === "district" && did) {
+      const d = DIE.registry.districts.get(did);
+      if (d) {
+        state.geography = "district";
+        state.district = did;
+        state.stateSid = d.sid;
+      }
+    }
+
+    // Honest gates: a statistic/window that the catalog does not publish is
+    // reverted by its own sync helper (never a broken or empty view).
+    syncStatisticOptions();
+    syncRecordRangeUI();
+
+    document.querySelectorAll('input[name="projScenario"]').forEach((r) => {
+      r.checked = r.value === state.scenario;
+    });
+    if (vSel) vSel.value = state.variable;
+    if (stSel) stSel.value = state.statistic;
+    const wSel = $("projWindow");
+    if (wSel) wSel.value = state.window;
+    const custom = $("projCustomYears");
+    if (custom) custom.hidden = state.window !== "custom";
+    const gSel = $("projGeography");
+    if (gSel) gSel.value = state.geography;
+    syncGeoControls();
+
+    const y = Number(g("pYear")), mo = Number(g("pMonth"));
+    const dy = Number(g("pDivYear")), dm = Number(g("pDivMonth"));
+    if (Number.isFinite(y)) state.mapYear = y;
+    if (Number.isFinite(mo) && mo >= 1 && mo <= 12) state.mapMonth = mo;
+    if (Number.isFinite(dy)) state.divYear = dy;
+    if (Number.isFinite(dm) && dm >= 1 && dm <= 12) state.divMonth = dm;
+    populateMapPeriods();
+    populateDivPeriods();
+    const mm = $("projMapMonth"), dmm = $("projDivMonth");
+    if (mm) mm.value = String(state.mapMonth);
+    if (dmm) dmm.value = String(state.divMonth);
+
+    renderCheck();
+    await Promise.allSettled([
+      drawBand(), renderMap(), renderDivergence(), renderEvents(),
+    ]);
+  }
+
+  DIE.Projections = {
+    init, whenReady, state, invalidate, mapSize, snapshot,
+    permalinkState, applyPermalink,
+  };
 })();

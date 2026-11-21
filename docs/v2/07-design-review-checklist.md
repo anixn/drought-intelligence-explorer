@@ -64,7 +64,7 @@ Additional DIE-only checks: keyboard + ARIA on new controls; mobile 44 px target
 |---|---|---|
 | Depth-1 answer layer; question-first entry | M10.2 (Ask the record), M10.3c (product-first nav) | ✅ shipped |
 | Product-first navigation over technique-first tabs | **D11 / M10.3c** | ✅ shipped |
-| State-encoding permalinks | M10.4 | scheduled |
+| State-encoding permalinks | M10.4 | built 2026-11-21 |
 | DOI in metadata, exports and citation box | M10.5 | scheduled |
 | District profile pages `#/district/<id>` | M10.6 | scheduled |
 | Living methodology + governance + reality-check surfaces | M10.7 | scheduled |

@@ -174,6 +174,16 @@ Two viewport rules implemented ONCE in `MapView.createChoropleth`, so every map 
 1. **Click = zoom:** clicking any district zooms it to fill that map's own container (`fitRegion("district", id)`, animated; opt-out `zoomOnDistrictClick: false`).
 2. **Never smaller than fitted:** `minZoom` = the zoom at which the national outline fits THAT map's container — scrolling out stops at "India fully fitted in the viewport of each figure". The fit zoom is computed **analytically** from the CRS at a fixed reference zoom (Leaflet's `getBoundsZoom()` starts from the current zoom and never returns below it, so a map created in a small/hidden container would otherwise deadlock its minimum high — bug found and fixed in the same change; the initial view IS the fit, and every resize/tab-entry recomputes it).
 
+### 4.8 State-encoding permalinks (`assets/js/permalink.js`, M10.4 — BUILT 2026-11-21)
+
+One URL grammar for every workspace: `#<tab>?<shared state>&<panel state>`.
+
+- **Shared study context** (every lens): `ind` (metadata indicator id, e.g. `spi_3`), `date` (`YYYY-MM`), `ext` (`india|state|district`), `state` (slug), `dist` (slug), `from`/`to` (analysis years), `season` (metadata season key).
+- **Panel state:** Projections `pScenario pVariable pStat pWindow pGeo pStateId pDistrict pYear pMonth pDivYear pDivMonth`; Drought to 2100 `sScenario sVariable sWindow sMetric`; Atlas `aVariable aYear aMonth`; Cross-validation `cVariable cMetric`. Record lenses without panel state inherit the shared context only.
+- **Restore:** `routeFromHash` applies shared state before the tab renders, then awaits the panel's first-init promise and applies the validated panel state — so an in-flight default render can never overwrite a restored control. The address bar tracks shared state and tab switches with `replaceState` (no history spam); the **Copy link** control (sidebar footer) and the per-panel **Share** buttons always serialise fresh state.
+- **Safety:** values are validated against the loaded catalog/registry/metadata before use; an unknown indicator, district, year, season or statistic is ignored and the existing/default value retained (graceful fallback, never a broken or fabricated view). Documentation section links are preserved (`#data/c-methods?…`).
+- **Compatibility:** plain `#overview`, `#data`, `#data/<section>` and all R8 hashes keep working; panel keys are namespaced so no shared key can be shadowed.
+
 ## 5. Documentation & Resources centre extensions
 
 New panels (in the existing `doc-*` panel system): **Methodology v2** (every formula, window, threshold, seam — era table, QDM + Hargreaves + fitting chain, event rules, uncertainty statements; content owner: task M4.4/M7.4), **Status page** (from `data/status.json`; last run, current month, lag, known issues), **Validation** (IMD benchmark memo + cross-validation summary, discrepancies published), **Data model & schema** (Parquet schema, catalog, partitioning), **Provenance** (pipeline manifests, checksums, model list, retrieval dates). Existing panels (About, Data Sources, Methods, Validation & Data Quality, Uncertainty & Limits, Reproducibility, Downloads, Version History, How-to-use, Glossary) are preserved and versioned forward.

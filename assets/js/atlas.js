@@ -244,7 +244,7 @@
   }
 
   /* ---- init ---------------------------------------------------------------- */
-  async function init() {
+  async function doInit() {
     if (!Atlas.ready) {
       wire();
       Atlas.ready = true;
@@ -277,9 +277,44 @@
     await renderAll();
   }
 
+  /* init() re-renders on tab entry; whenReady() is the first-init promise the
+   * permalink layer awaits before restoring controls (M10.4). */
+  let bootReady = null;
+  function init() {
+    const p = doInit();
+    if (!bootReady) bootReady = p;
+    return p;
+  }
+  function whenReady() {
+    if (!bootReady) bootReady = doInit();
+    return bootReady;
+  }
+
   function invalidate() {
     if (mapApi) mapApi.invalidateSize();
   }
 
-  DIE.AtlasView = { init, invalidate };
+  /* ---- permalink state (M10.4) ------------------------------------------ */
+  function permalinkState() {
+    return { aVariable: state.variable, aYear: state.year, aMonth: state.month };
+  }
+
+  async function applyPermalink(p) {
+    await whenReady();                 // never race the first render
+    const v = p.get ? p.get("aVariable") : p.aVariable;
+    const y = Number(p.get ? p.get("aYear") : p.aYear);
+    const m = Number(p.get ? p.get("aMonth") : p.aMonth);
+    if (v && VAR_LABEL[v]) state.variable = v;
+    if (Number.isFinite(y) && y >= YEAR_MIN && y <= YEAR_MAX) state.year = y;
+    if (Number.isFinite(m) && m >= 1 && m <= 12) state.month = m;
+    const vSel = $("atlasVariable"), mSel = $("atlasMonth"), ySel = $("atlasYear");
+    if (vSel) vSel.value = state.variable;
+    if (mSel) mSel.value = String(state.month);
+    if (ySel) ySel.value = String(state.year);
+    const readout = $("atlasYearReadout");
+    if (readout) readout.textContent = String(state.year);
+    await renderAll();
+  }
+
+  DIE.AtlasView = { init, whenReady, invalidate, permalinkState, applyPermalink };
 })();

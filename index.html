@@ -2284,6 +2284,10 @@
                     <option value="district">District</option>
                   </select>
                 </div>
+                <div class="proj-field">
+                  <span class="proj-label">Share</span>
+                  <button type="button" class="btn btn-ghost" data-share title="Copy a link to this projection view">Copy link</button>
+                </div>
               </div>
               <p class="table-help" id="projControlNote">
                 The band chart and map below consume this selection; the
@@ -2536,6 +2540,10 @@
                     Export CSV
                   </button>
                 </div>
+                <div class="proj-field">
+                  <span class="proj-label">Share</span>
+                  <button type="button" class="btn btn-ghost" data-share title="Copy a link to this summary view">Copy link</button>
+                </div>
               </div>
               <p class="table-help" id="sumNationalNote">
                 Loading national figures…
@@ -2695,6 +2703,10 @@
                     <button type="button" class="btn btn-ghost atlas-anchor" data-year="2002">2002</button>
                   </div>
                 </div>
+                <div class="proj-field">
+                  <span class="proj-label">Share</span>
+                  <button type="button" class="btn btn-ghost" data-share title="Copy a link to this Atlas frame">Copy link</button>
+                </div>
               </div>
               <p class="table-help" id="atlasScrubNote">
                 Loading the era-A store…
@@ -2815,6 +2827,10 @@
                   <button type="button" class="btn btn-ghost" id="cvCsvBtn">
                     Export CSV
                   </button>
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Share</span>
+                  <button type="button" class="btn btn-ghost" data-share title="Copy a link to this comparison view">Copy link</button>
                 </div>
               </div>
               <p class="table-help" id="cvStatNote">Loading the comparison store&hellip;</p>
@@ -4279,7 +4295,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-21e";
+        var ASSET_VERSION = "2026-11-21g";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
@@ -4315,6 +4331,7 @@
           "summary",
           "atlas",
           "crossval",
+          "permalink",
         ];
         var inflight = {};
 

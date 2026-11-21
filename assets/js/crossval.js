@@ -454,7 +454,7 @@
   }
 
   /* ---- init / invalidate -------------------------------------------------- */
-  async function init() {
+  async function doInit() {
     if (!CV.ready) {
       wire();
       CV.ready = true;
@@ -481,6 +481,19 @@
     await renderAll();
   }
 
+  /* init() re-renders on tab entry; whenReady() is the first-init promise the
+   * permalink layer awaits before restoring controls (M10.4). */
+  let bootReady = null;
+  function init() {
+    const p = doInit();
+    if (!bootReady) bootReady = p;
+    return p;
+  }
+  function whenReady() {
+    if (!bootReady) bootReady = doInit();
+    return bootReady;
+  }
+
   function invalidate() {
     if (mapApi) mapApi.invalidateSize();
     const el = $("cvMonthlyChart");
@@ -489,5 +502,22 @@
     }
   }
 
-  DIE.CrossvalView = { init, invalidate };
+  /* ---- permalink state (M10.4) ------------------------------------------ */
+  function permalinkState() {
+    return { cVariable: state.variable, cMetric: state.metric };
+  }
+
+  async function applyPermalink(p) {
+    await whenReady();                 // never race the first render
+    const v = p.get ? p.get("cVariable") : p.cVariable;
+    const m = p.get ? p.get("cMetric") : p.cMetric;
+    if (v && VAR_LABEL[v]) state.variable = v;
+    if (m && METRICS[m]) state.metric = m;
+    const vSel = $("cvVariable"), mSel = $("cvMetric");
+    if (vSel) vSel.value = state.variable;
+    if (mSel) mSel.value = state.metric;
+    await renderAll();
+  }
+
+  DIE.CrossvalView = { init, whenReady, invalidate, permalinkState, applyPermalink };
 })();

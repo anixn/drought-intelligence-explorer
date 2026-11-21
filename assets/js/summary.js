@@ -608,7 +608,7 @@
   }
 
   /* ---- init / render ------------------------------------------------------ */
-  async function init() {
+  async function doInit() {
     if (!Sum.ready) {
       wire();
       Sum.ready = true;
@@ -637,10 +637,56 @@
     await renderAll();
   }
 
+  /* init() re-renders on tab entry; whenReady() is the first-init promise the
+   * permalink layer awaits before restoring controls (M10.4). */
+  let bootReady = null;
+  function init() {
+    const p = doInit();
+    if (!bootReady) bootReady = p;
+    return p;
+  }
+  function whenReady() {
+    if (!bootReady) bootReady = doInit();
+    return bootReady;
+  }
+
   function invalidate() {
     // container re-layout (tab switch / resize): Leaflet re-query is near-free
     if (mapApi) mapApi.invalidateSize();
   }
 
-  DIE.Summary = { init, invalidate };
+  /* ---- permalink state (M10.4) ------------------------------------------ */
+  function permalinkState() {
+    return {
+      sScenario: state.scenario, sVariable: state.variable,
+      sWindow: state.window, sMetric: state.metric,
+    };
+  }
+
+  async function applyPermalink(p) {
+    await whenReady();                 // never race the first render
+    const sc = p.get ? p.get("sScenario") : p.sScenario;
+    const va = p.get ? p.get("sVariable") : p.sVariable;
+    const wi = p.get ? p.get("sWindow") : p.sWindow;
+    const me = p.get ? p.get("sMetric") : p.sMetric;
+    if (sc === "ssp245" || sc === "ssp585") state.scenario = sc;
+    if (wi && WINDOWS[wi]) state.window = wi;
+    if (me && ["agreement", "frequency", "duration", "severity"].indexOf(me) !== -1) {
+      state.metric = me;
+    }
+    const vSel = $("sumVariable");
+    if (va && vSel && [...vSel.options].some((o) => o.value === va)) {
+      state.variable = va;
+    }
+    document.querySelectorAll('input[name="sumScenario"]').forEach((r) => {
+      r.checked = r.value === state.scenario;
+    });
+    if (vSel) vSel.value = state.variable;
+    const wSel = $("sumWindow"), mSel = $("sumMetric");
+    if (wSel) wSel.value = state.window;
+    if (mSel) mSel.value = state.metric;
+    await renderAll();
+  }
+
+  DIE.Summary = { init, whenReady, invalidate, permalinkState, applyPermalink };
 })();

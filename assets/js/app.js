@@ -112,6 +112,7 @@
     stack.appendChild(t);
     setTimeout(() => t.remove(), 7000);
   }
+  DIE.toast = toast;   // shared with permalink.js (copy confirmation)
 
   function currentDataset() { return DIE.datasets.get(DIE.state.indicator); }
   function ids() { return DIE.Filters.regionIds(); }
@@ -206,7 +207,8 @@
       // boot path; wire() only subscribes listeners.
       if (DIE.Telemetry) run(() => DIE.Telemetry.wire());
       renderStaticText();
-      routeFromHash();
+      await routeFromHash();
+      if (DIE.Permalink) DIE.Permalink.init();
 
       setBoot('Ready', 100);
       setTimeout(() => { $('bootOverlay').classList.add('is-hidden'); busy(false); }, 250);
@@ -231,6 +233,7 @@
   function switchTab(which, push) {
     const tab = TABS.find((t) => t.id === which) || TABS[0];
     currentTab = tab.id;
+    DIE.currentTab = tab.id;
     TABS.forEach((t) => {
       const view = $(t.view), btn = $(t.btn);
       const active = t.id === tab.id;
@@ -242,7 +245,10 @@
         btn.tabIndex = active ? 0 : -1;
       }
     });
-    if (push !== false && location.hash !== '#' + tab.id) {
+    if (push !== false && DIE.Permalink) {
+      // M10.4: the address bar carries the restorable view, not just the tab.
+      DIE.Permalink.sync(tab.id);
+    } else if (push !== false && location.hash !== '#' + tab.id) {
       history.replaceState(null, '', '#' + tab.id);
     }
     // Lazy init + render only when the tab needs it. DIRTY starts true for
@@ -442,15 +448,28 @@
     if (DIE.Telemetry) DIE.Telemetry.track('ask_open', { question: which, tab: target });
   }
 
-  function routeFromHash() {
-    const h = (location.hash || '').replace('#', '');
+  async function routeFromHash() {
+    const parsed = DIE.Permalink
+      ? DIE.Permalink.parse(location.hash)
+      : { tab: (location.hash || '').replace('#', ''), doc: null, params: null };
+    const h = parsed.tab || '';
     const slash = h.indexOf('/');
     const tab = slash > 0 ? h.slice(0, slash) : h;
-    const doc = slash > 0 ? h.slice(slash + 1) : null;
+    const doc = parsed.doc || (slash > 0 ? h.slice(slash + 1) : null);
     // '#docs' and '#documentation' are friendly aliases for the
     // Documentation & Resources workspace (whose router id stays 'data').
     const routed = { docs: 'data', documentation: 'data' }[tab] || tab;
+    // Shared study-context state is applied BEFORE the tab renders, so the
+    // first paint of a permalink is already the linked view.
+    if (parsed.params && DIE.Permalink) {
+      try { await DIE.Permalink.applyShared(parsed.params); }
+      catch (err) { console.warn('[permalink] shared state not applied:', err); }
+    }
     switchTab(TABS.some((t) => t.id === routed) ? routed : 'overview', false);
+    if (parsed.params && DIE.Permalink) {
+      try { await DIE.Permalink.applyTab(routed, parsed.params); }
+      catch (err) { console.warn('[permalink] tab state not applied:', err); }
+    }
     // deep link to a documentation section: #data/<section-id-suffix>
     if (routed === 'data' && doc && DOC_SECTIONS.includes('doc-' + doc)) {
       goDoc('doc-' + doc);
@@ -537,30 +556,8 @@
       if (target && $(target)) { $(target).click(); return; }
       goDoc('doc-g-downloads'); // propagation + docs: export centre
     });
-    // Copy a deep link to the current analysis view (hash preserves the view).
-    $('footShareBtn').addEventListener('click', async () => {
-      if (DIE.Telemetry) DIE.Telemetry.track('share_copy', { tab: currentTab });
-      const url = location.href;
-      try {
-        await navigator.clipboard.writeText(url);
-        toast('Link copied', 'The analysis URL is on your clipboard.');
-      } catch (err) {
-        // Clipboard API denied or unavailable: textarea fallback.
-        const ta = document.createElement('textarea');
-        ta.value = url;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-          document.execCommand('copy');
-          toast('Link copied', 'The analysis URL is on your clipboard.');
-        } catch (err2) {
-          toast('Copy failed', url, 'error');
-        }
-        ta.remove();
-      }
-    });
+    // Copy a state-encoding deep link (M10.4): owned by DIE.Permalink, which
+    // serialises indicator + geography + period + date + panel settings.
     // Collapse the panel on desktop (drawer mode ignores this; same code
     // path as the chevron in the sidebar head).
     $('footCollapseBtn').addEventListener('click', () => {
