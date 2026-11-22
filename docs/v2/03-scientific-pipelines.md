@@ -424,6 +424,8 @@ Only `parquet/` and `drought/` are remote. `metadata.json`, `status.json`, `real
 
 ```bash
 python scripts/publish_r2.py --version v2026.09 --dry-run      # plan: objects, bytes, groups
+# smoke test first (27.9 MB, writes _PARTIAL, no pointer):
+python scripts/publish_r2.py --version v2026.09 --only observed,catalog,csv
 python scripts/publish_r2.py --version v2026.09                # upload (skips unchanged by SHA-256)
 python scripts/publish_r2.py --version v2026.09 --write-pointer --public-base https://pub-xxxxxxxx.r2.dev/
 python scripts/verify_r2.py --base https://.../v2026.09/ --origin https://drought.ankitdeshmukh.com

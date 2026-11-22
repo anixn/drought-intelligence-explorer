@@ -62,19 +62,36 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def plan(version: str, include_csv: bool) -> list[tuple[Path, str]]:
+def plan(version: str, include_csv: bool, only: set[str] | None = None) -> list[tuple[Path, str]]:
     """(local path, object key relative to the snapshot prefix)."""
     items: list[tuple[Path, str]] = []
     parquet = REPO / "data" / "parquet"
+    wanted = only or None
+
+    def keep(group: str) -> bool:
+        if wanted is None:
+            return True
+        if group == "csv":
+            return include_csv and "csv" in wanted
+        return group in wanted
+
     for path in sorted(parquet.rglob("*.parquet")):
-        items.append((path, str(path.relative_to(parquet)).replace("\\", "/")))
+        rel = str(path.relative_to(parquet)).replace("\\", "/")
+        group = ("national" if rel.startswith("_national_monthly")
+                 else rel.split("/")[0])
+        if keep(group):
+            items.append((path, rel))
     catalog = parquet / "catalog.json"
-    if catalog.exists():
+    if catalog.exists() and keep("catalog"):
         items.append((catalog, "catalog.json"))
-    if include_csv:
+    if keep("csv"):
         for path in sorted((REPO / "data" / "drought").glob("*.csv")):
             items.append((path, "drought/" + path.name))
     return items
+
+
+GROUPS = {"observed", "atlas", "projections", "cross_validation",
+          "national", "catalog", "csv"}
 
 
 def client(endpoint: str | None, bucket: str):
@@ -125,6 +142,9 @@ def main(argv=None) -> int:
     ap.add_argument("--max-total-gb", type=float, default=8.0)
     ap.add_argument("--concurrency", type=int, default=8)
     ap.add_argument("--no-csv", action="store_true")
+    ap.add_argument("--only", default=None,
+                    help="comma-separated subset for a smoke test: "
+                         "observed,atlas,projections,cross_validation,national,catalog,csv")
     ap.add_argument("--force", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--write-pointer", action="store_true")
@@ -137,9 +157,19 @@ def main(argv=None) -> int:
         raise SystemExit("version must look like v2026.09 or v2.0.0")
     prefix = version + "/"
 
-    items = plan(version, include_csv=not args.no_csv)
+    only = None
+    if args.only:
+        only = {s.strip() for s in args.only.split(",") if s.strip()}
+        bad = only - GROUPS
+        if bad:
+            raise SystemExit("unknown group(s): " + ", ".join(sorted(bad)) +
+                             " (choose from " + ", ".join(sorted(GROUPS)) + ")")
+        print("PARTIAL upload (smoke test): " + ", ".join(sorted(only)))
+    partial = only is not None
+
+    items = plan(version, include_csv=not args.no_csv, only=only)
     if not items:
-        raise SystemExit("nothing to upload: data/parquet is empty")
+        raise SystemExit("nothing to upload: check --only / --no-csv")
     total = sum(p.stat().st_size for p, _ in items)
     by_group: dict[str, int] = {}
     for p, key in items:
@@ -219,6 +249,22 @@ def main(argv=None) -> int:
             if done % 500 == 0 or done == len(futures):
                 print(f"  {done:,}/{len(items):,} objects "
                       f"(uploaded {uploaded:,}, unchanged {skipped:,})")
+
+    if partial:
+        s3.put_object(Bucket=args.bucket, Key=prefix + "_PARTIAL",
+                      Body=json.dumps({
+                          "version": version, "groups": sorted(only),
+                          "objects": len(items), "bytes": total,
+                          "created": date.today().isoformat(),
+                          "note": "smoke test only; run the full upload to write _READY",
+                      }, indent=1).encode(),
+                      ContentType="application/json", CacheControl=CACHE_CONTROL)
+        print(f"\nuploaded {uploaded:,} object(s), {skipped:,} already present")
+        print(f"PARTIAL snapshot at {prefix} (no SHA256SUMS, no _READY). "
+              f"Run again without --only to complete it.")
+        if args.write_pointer:
+            raise SystemExit("refusing to write the pointer for a partial snapshot")
+        return 0
 
     checksums.sort(key=lambda s: s.split("  ", 1)[1])
     sums = "\n".join(checksums) + "\n"
