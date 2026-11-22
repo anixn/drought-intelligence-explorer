@@ -416,7 +416,7 @@ GitHub repo (code + contract)                 Cloudflare R2 (bulk data, immutabl
   data/data-source.json   <- ~200-byte pointer    _READY
 ```
 
-**Live snapshot (2026-11-22):** `v2026.09` on bucket `die-data` — 20,304 objects, 951.0 MB (projections 894.6, atlas 20.3, CSVs 19.6, cross-validation 8.2, observed 5.7, catalog/national 2.6). Public base `https://pub-e10a2ca68fd24e4c9b53c8b2d428283f.r2.dev/v2026.09/` (staging; move to a custom domain before release). `scripts/verify_r2.py` reports 6/6 checks PASS.
+**Live snapshot (2026-11-22):** `v2026.09` on bucket `die-data` — 20,304 objects, 951.0 MB (projections 894.6, atlas 20.3, CSVs 19.6, cross-validation 8.2, observed 5.7, catalog/national 2.6). Public base **`https://data.ankitdeshmukh.com/v2026.09/`** (custom domain connected 2026-11-22; the `r2.dev` URL remains as an alternate). `scripts/verify_r2.py` reports 6/6 checks PASS.
 
 Only `parquet/` and `drought/` are remote. `metadata.json`, `status.json`, `reality_checks.json` and the boundary GeoJSON stay with the code, so a first paint never depends on a second origin.
 

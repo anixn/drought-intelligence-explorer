@@ -1,9 +1,9 @@
 {
  "schema": "die-data-source/1.0",
  "note": "Committed pointer to the immutable bulk-data snapshot. Only the Parquet store and the era-B wide CSVs move; metadata.json, status.json, reality_checks.json and the boundary GeoJSON stay with the code. base=null means same-origin.",
- "base": "https://pub-e10a2ca68fd24e4c9b53c8b2d428283f.r2.dev/v2026.09/",
+ "base": "https://data.ankitdeshmukh.com/v2026.09/",
  "snapshot": "v2026.09",
- "public_base": "https://pub-e10a2ca68fd24e4c9b53c8b2d428283f.r2.dev/",
+ "public_base": "https://data.ankitdeshmukh.com/",
  "updated": "2026-11-22",
  "uploaded_by": "scripts/publish_r2.py"
 }
