@@ -58,11 +58,13 @@
     // month is part of the key as well: a monthly refresh moves the data
     // without changing the methodology, and a session must never keep serving
     // the previous month's CSV (R2 — the currency chip would disagree with the
-    // series it describes).
+    // series it describes). The remote snapshot version is included so
+    // switching snapshots invalidates cached text too.
     const v = DIE.meta ? DIE.meta.methodology_version : '0';
     const mode = DIE.meta ? String(DIE.meta.data_mode || '') : '';
     const end = DIE.meta && DIE.meta.period ? String(DIE.meta.period.end || '') : '';
-    return 'die:v' + v + ':' + mode + ':' + end + ':' + path;
+    const snap = DIE.dataVersion || '';
+    return 'die:v' + v + ':' + mode + ':' + end + ':' + snap + ':' + path;
   }
   function rememberText(path, text) {
     if (TEXT_CACHE.size >= TEXT_CACHE_MAX && !TEXT_CACHE.has(path)) {
@@ -84,7 +86,7 @@
         try { hit = sessionStorage.getItem(cacheKey(path)); } catch (e) { /* storage unavailable */ }
       }
       if (hit !== null) { rememberText(path, hit); return hit; }
-      const res = await fetch(DIE.base + path, { cache: 'no-cache' });
+      const res = await fetch(dataUrl(path), { cache: 'no-cache' });
       if (!res.ok) throw new Error('HTTP ' + res.status + ' — ' + path);
       const text = await res.text();
       if (sessionCacheable) {
@@ -222,7 +224,48 @@
   };
 
   /* ------------------------------------------------------------ loaders -- */
+  /* ---- bulk-data pointer (R2 snapshots, M7.1) ---------------------------
+   * data/data-source.json is committed with the code and names the immutable
+   * snapshot that serves the bulk artifacts (the Parquet store and the era-B
+   * wide CSVs). Absent, or with base:null, everything stays same-origin —
+   * which is what a bare clone and local development use. Only bulk data
+   * moves: metadata.json, status.json, reality_checks.json and the boundary
+   * GeoJSON stay with the code so a first paint never depends on a second
+   * origin. */
+  const REMOTE_PREFIX = /^data\/(parquet|drought)\//;
+  async function loadDataSource() {
+    let src = null;
+    try {
+      const res = await fetch(DIE.base + 'data/data-source.json', { cache: 'no-store' });
+      if (res.ok) src = await res.json();
+    } catch (e) { /* no pointer in this checkout: same-origin */ }
+    if (!src || !src.base) {
+      DIE.dataSource = src || null;
+      DIE.dataBase = null;
+      DIE.dataVersion = null;
+      return src;
+    }
+    let base = String(src.base);
+    if (!/\/$/.test(base)) base += '/';
+    DIE.dataSource = src;
+    DIE.dataBase = base;
+    DIE.dataVersion = String(src.version || src.snapshot || '');
+    console.info('[DIE] bulk data: ' + base +
+      (DIE.dataVersion ? ' (' + DIE.dataVersion + ')' : ''));
+    return src;
+  }
+
+  /** URL for a repo-relative data path: remote snapshot or same-origin. */
+  function dataUrl(path) {
+    const p = String(path).replace(/^\.?\//, '');
+    if (DIE.dataBase && REMOTE_PREFIX.test(p)) {
+      return DIE.dataBase + p.slice('data/'.length);
+    }
+    return DIE.base + p;
+  }
+
   async function loadMetadata() {
+    await loadDataSource();
     // metadata.json is the provenance single source of truth; bypass the HTTP
     // cache (like a hard reload) so a data-mode/provenance change on the
     // server is picked up on the next visit. Indicator CSVs keep normal
@@ -466,6 +509,8 @@
     fetchText,
     fetchJSON,
     prefetchText,
+    dataSource: loadDataSource,
+    dataUrl,
     /** Prefetch the CSV text for an indicator without parsing it yet. */
     prefetchIndicator(indicatorId) {
       const ind = DIE.indicatorById && DIE.indicatorById.get(indicatorId);

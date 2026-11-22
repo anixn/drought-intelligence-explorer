@@ -91,6 +91,7 @@ drought-intelligence-explorer/
 │   └── js/ducklab.js            # NEW: DuckDB-WASM engine service (see docs/v2/04)
 ├── data/
 │   ├── metadata.json            # v1.0 contract — extended, never broken
+│   ├── data-source.json         # NEW: pointer to the R2 snapshot (base:null = same-origin)
 │   ├── pipeline_manifest.json   # extended with checksums of new products
 │   ├── drought/*.csv            # v1.0 wide CSVs — kept as fallback, kept in sync
 │   ├── parquet/                 # NEW: the 1901–2100 store

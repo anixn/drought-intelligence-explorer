@@ -1,0 +1,3 @@
+# R2 publishing only (scripts/publish_r2.py). The repository's scientific
+# pipeline does not need these; the dashboard runs entirely in the browser.
+boto3>=1.34

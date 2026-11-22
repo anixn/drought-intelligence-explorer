@@ -36,8 +36,14 @@
   const DUCKDB_ESM_URL =
     'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@' + DUCKDB_VERSION + '/+esm';
   // Root-absolute: pages may live in any directory (e.g. scripts/ dev pages,
-  // v1.0 tab views) — a page-relative URL would resolve against the page path.
-  const CATALOG_URL = new URL('/data/parquet/catalog.json', location.origin).href;
+  // v1.0 tab views) - a page-relative URL would resolve against the page path.
+  // When data/data-source.json names a remote snapshot (R2, M7.1) the catalog
+  // travels with it; otherwise the same-origin copy is used.
+  function catalogUrl() {
+    const base = DIE.dataBase;
+    if (base) return base + 'parquet/catalog.json';
+    return new URL('/data/parquet/catalog.json', location.origin).href;
+  }
 
   const DISTRICT_RE = /^[a-z0-9-]{1,64}$/;     // v1.0 registry slugs
   const VAR_RE = /^[a-z0-9_]{1,32}$/;
@@ -130,6 +136,11 @@
     if (!/^https?:/i.test(location.protocol)) {
       throw newEngineError('no-http',
         'Engine requires http(s) — serve the site with server.py (P6).');
+    }
+    // Remote snapshot (R2): catalog paths stay repo-relative ("data/…") so the
+    // data contract never changes; only the origin moves.
+    if (DIE.dataBase && /^data\//.test(rel)) {
+      return DIE.dataBase + rel.slice('data/'.length);
     }
     return new URL(rel, location.origin + '/').href;
   }
@@ -225,7 +236,7 @@
 
   async function ensureCatalog() {
     if (!state.catalogPromise) {
-      state.catalogPromise = fetch(CATALOG_URL, { cache: 'no-store' })  // P2
+      state.catalogPromise = fetch(catalogUrl(), { cache: 'no-store' })  // P2
         .then((r) => {
           if (!r.ok) throw newEngineError('catalog-http', 'catalog.json HTTP ' + r.status);
           return r.json();

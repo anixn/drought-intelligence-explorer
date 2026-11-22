@@ -399,3 +399,40 @@ v1.0 keys untouched. Additions: `eras` block (id, label, years, sources, referen
 - IMD grids: Pai et al. (2014) *Mausam* 65, 1–18 (rainfall); Srivastava et al. (2009) *Atmos. Sci. Lett.* (temperature — verify current product).
 - Existing v1.0 method citations remain authoritative for era B (see `manuscript/main.tex`).
 
+## 10. Hosting and publication (R2 snapshots + a committed pointer)
+
+The application is a static site that reads bulk data over HTTP Range requests; it does not need that data in git. This section records the publication contract (M7.1).
+
+**Why the data left git (measured 2026-11-22).** One monthly refresh rewrites ten CSVs and ten Parquet files and adds **13.0 MB** of packed git objects (7.05 MB CSV + 5.46 MB Parquet). At twelve refreshes a year that is ~156 MB of permanent history. GitHub recommends repositories under 1 GB, blocks files over 100 MiB (warns at 50 MiB, recommends 1 MB), and caps a published GitHub Pages site at 1 GB. Era C alone is ~850 MB, so committing it would exceed the Pages limit on day one. Git LFS is not an option: GitHub Pages serves the LFS pointer text, not the object.
+
+**Topology.**
+
+```
+GitHub repo (code + contract)                 Cloudflare R2 (bulk data, immutable)
+  index.html, tour.html, assets/, docs/         <public-base>/v2026.09/
+  scripts/, *-pipeline/, validation-studies/      parquet/...            (+ catalog.json)
+  data/metadata.json, status.json,                drought/*.csv
+       reality_checks.json, boundaries/           SHA256SUMS.txt
+  data/data-source.json   <- ~200-byte pointer    _READY
+```
+
+Only `parquet/` and `drought/` are remote. `metadata.json`, `status.json`, `reality_checks.json` and the boundary GeoJSON stay with the code, so a first paint never depends on a second origin.
+
+**Pointer contract (`data/data-source.json`).** `{schema, base, snapshot, public_base, updated}`. `base` is the absolute snapshot prefix with a trailing slash; `base: null` (or the file missing) means same-origin, which is what a bare clone and local development use. `assets/js/data-loader.js` fetches it once at boot (`cache: 'no-store'`), exposes `DIE.dataBase` / `DIE.dataVersion`, maps `data/(parquet|drought)/...` through it, and includes the snapshot in the sessionStorage key so switching snapshots cannot serve stale text. `assets/js/ducklab.js` resolves catalog paths and `read_parquet` arguments through the same base; the catalog itself is read from `<base>parquet/catalog.json`.
+
+**Publishing.** Credentials are environment variables and are never printed or stored (`R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`; R2 -> API -> S3 token).
+
+```bash
+python scripts/publish_r2.py --version v2026.09 --dry-run      # plan: objects, bytes, groups
+python scripts/publish_r2.py --version v2026.09                # upload (skips unchanged by SHA-256)
+python scripts/publish_r2.py --version v2026.09 --write-pointer --public-base https://pub-xxxxxxxx.r2.dev/
+python scripts/verify_r2.py --base https://.../v2026.09/ --origin https://drought.ankitdeshmukh.com
+```
+
+The publisher writes `SHA256SUMS.txt` and a `_READY` marker, refuses to overwrite an existing version without `--force`, and refuses to exceed `--max-total-gb` (default 8, measured against live bucket usage) so a stray snapshot cannot silently grow the bill.
+
+**Bucket configuration.** Standard storage class (Infrequent Access has no free tier and a 30-day minimum); object versioning **off** (versions are prefixes, not object versions); public access via a custom domain in production (`r2.dev` for staging only - it is rate-limited and uncached); CORS `AllowedMethods: GET, HEAD`, `AllowedOrigins` = the dashboard origin plus localhost, `ExposeHeaders: Content-Range, Content-Length, Accept-Ranges, ETag`; objects uploaded with `Cache-Control: public, max-age=31536000, immutable`.
+
+**Costs and limits.** R2 free tier: 10 GB-month storage, 1 M Class A (writes/lists), 10 M Class B (reads), egress free. One snapshot is about 0.93 GB, so ~10 snapshots fit the free tier; a lifecycle rule on the snapshot prefix bounds growth automatically. Cloudflare's Spend Management does not yet cover R2, so the guard is: budget alert (Billing -> Billable Usage), usage notification (Notifications -> Billable Usage), lifecycle rule, and the publisher's `--max-total-gb`.
+
+**Monthly workflow after publication.** `run.py refresh` -> `publish_r2.py --version vYYYY.MM --write-pointer` -> commit `data/data-source.json` + `data/status.json` + `data/metadata.json` (kilobytes). The live site switches when the pointer commit deploys; old snapshots remain immutable for citation.
