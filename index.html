@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22o" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22r" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -4497,9 +4497,12 @@
               <h3 class="dl-cite-h">Version and citation</h3>
               <p class="mono small" id="methCitation">&mdash;</p>
               <p class="small">
+                Software DOI (concept): <a href="https://doi.org/10.5281/zenodo.24113363" target="_blank" rel="noopener">10.5281/zenodo.24113363</a>
+                &mdash; always resolves to the latest archived release; the v2.0.0
+                version DOI is minted when the GitHub release is published.
                 Archived v1.0.0 DOI:
                 <a href="https://doi.org/10.5281/zenodo.24113364" target="_blank" rel="noopener">10.5281/zenodo.24113364</a>.
-                The v2.0.0 DOI is minted at release (M7.2) and is not pre-claimed.
+                Dataset snapshot: <a href="https://data.ankitdeshmukh.com/v2026.09/" target="_blank" rel="noopener">v2026.09</a>.
               </p>
               <p class="small" id="methVersion">&mdash;</p>
             </div>
@@ -5143,24 +5146,25 @@ LIMIT 15;</pre>
               <h3>Changelog</h3>
               <ul>
                 <li>
-                  <b>2026-11</b> &mdash; Four-workspace navigation redesign:
-                  Data &amp; Methods moved out of the primary tabs into a
-                  dedicated Documentation &amp; Resources entry (book icon in
-                  the sidebar footer), a persistent study-context group,
-                  per-workspace accent identity and footer actions (export,
-                  copy link, reset, collapse).
+                  <b>2.0.0 — 2026-11-22</b> &mdash; Three labelled eras in one
+                  queryable record: the Drought Atlas reconstruction (era A,
+                  1901&ndash;2025), the gridded multi-source product (era B,
+                  1981&ndash;2026-09) and 24-model bias-corrected CMIP6
+                  projections (era C, 2015&ndash;2100); a product-first
+                  navigation with a guided tour and hover explainers; the Engine
+                  Lab (SQL over Parquet in the browser);
+                  era A &harr; era B cross-validation and seam uncertainty; an
+                  independent IMD benchmark (719 districts, median r 0.60&ndash;0.71,
+                  state agreement 82&ndash;87&nbsp;%); Documentation A&ndash;P
+                  including the SQL field reference; bulk data moved to an
+                  immutable Cloudflare R2 snapshot with a committed pointer.
                 </li>
                 <li>
-                  <b>2026-11</b> &mdash; Contextual control sidebar
-                  (workspace-specific sections in one rail), mobile ergonomics
-                  (drawer, safe-area layout, touch targets) and deep event
-                  instrumentation.
-                </li>
-                <li>
-                  <b>Initial release</b> &mdash; historical research dataset
-                  (CHIRPS v2.0, ERA5-Land, MODIS MOD13A3 via Google Earth
-                  Engine), four analytical workspaces, documentation centre and
-                  download centre.
+                  <b>1.0.0 — 2026-11-10</b> &mdash; Initial public release:
+                  historical research dataset (CHIRPS v2.0, ERA5-Land, MODIS
+                  MOD13A3 via Google Earth Engine), four analytical workspaces,
+                  documentation centre and download centre. Archived at
+                  <span class="mono">10.5281/zenodo.24113364</span>.
                 </li>
               </ul>
               <p class="small">
@@ -5327,7 +5331,7 @@ LIMIT 15;</pre>
           return;
         }
 
-        var ASSET_VERSION = "2026-11-22o";
+        var ASSET_VERSION = "2026-11-22r";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

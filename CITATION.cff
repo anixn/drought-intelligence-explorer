@@ -1,9 +1,9 @@
 cff-version: 1.2.0
 message: "If you use this software or dataset in your research, please cite the following."
-title: "Drought Intelligence Explorer: An Interactive Geospatial Platform for Drought Monitoring and Analysis in India"
-version: "1.0.0"
-doi: 10.5281/zenodo.24113364
-date-released: 2026-11-10
+title: "Drought Intelligence Explorer: a multi-era district drought record and analytics platform for India"
+version: "2.0.0"
+doi: 10.5281/zenodo.24113363
+date-released: 2026-11-22
 authors:
   - family-names: Deshmukh
     given-names: Ankit
@@ -12,27 +12,23 @@ authors:
     website: https://ankitdeshmukh.com/
 repository-code: https://github.com/anixn/drought-intelligence-explorer
 url: https://drought.ankitdeshmukh.com/
-abstract: "A fully static, client-side geospatial platform and its reproducible Python pipeline, which turn Google Earth Engine extracts of CHIRPS v2.0, ERA5-Land and MODIS MOD13A3 into ten standardized drought indicators (SPI, SPEI, SMA, VCI) for 724 Indian districts over 1981-2025."
+abstract: "A fully static, client-side geospatial platform and its reproducible Python pipelines for district-level drought analysis across India, spanning three explicitly labelled eras that are never spliced: the Drought Atlas of India SPEI reconstruction (1901-2025, served at district level), an observation-based gridded multi-source product (SPI-1/3/6/12, SPEI-1/3/6/12, soil-moisture anomaly and VCI, 1981-2026-09, from CHIRPS v2.0, ERA5-Land and MODIS MOD13A3), and bias-corrected CMIP6 projections (2015-2100, SSP2-4.5 and SSP5-8.5, ensemble median, spread and model agreement) for 724 districts. Missing values are never imputed; every statistic reports its sample size; an independent IMD benchmark and an era A/era B cross-validation are published with the record."
 keywords:
   - drought
   - India
-  - geospatial
   - SPI
   - SPEI
   - VCI
   - soil moisture
+  - drought events
+  - CMIP6
+  - climate projections
+  - Drought Atlas of India
   - CHIRPS
   - ERA5-Land
   - MODIS
-  - Google Earth Engine
+  - IMD benchmark
+  - district-level
+  - reproducible research
 license: MIT
 type: software
-references:
-  - type: dataset
-    title: "Drought Intelligence Explorer Dataset: CHIRPS, ERA5-Land, and MODIS Derived Drought Indicators for India (1981–2025)"
-    authors:
-      - family-names: Deshmukh
-        given-names: Ankit
-    year: 2026
-    version: "1.0.0"
-    doi: 10.5281/zenodo.24113364

@@ -3187,8 +3187,7 @@
   function citationLines(extra) {
     const m = DIE.meta || {};
     const L = [
-      '# Drought Intelligence Explorer v2.0 development - research export' +
-        ' (data v' + (m.version || '?') + ')',
+      '# Drought Intelligence Explorer v' + (m.version || '?') + ' - research export',
       '# Cite: ' + (m.citation || 'see Documentation > Downloads and citation'),
       '# Licence: application code MIT; datasets per their source terms (data/metadata.json > sources)',
       '# Generated (UTC): ' + new Date().toISOString() +

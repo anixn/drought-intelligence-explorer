@@ -3,19 +3,20 @@
 **An interactive geospatial platform for historical drought analysis in India.**
 A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScript (ES6+), Leaflet, Plotly and PapaParse. No frameworks, no backend, no database, no API keys, no mandatory external services. Leaflet and PapaParse are the only blocking libraries; Plotly loads in the background and html2canvas is fetched only when a map PNG is exported.
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24113364.svg)](https://doi.org/10.5281/zenodo.24113364)
+[![Software DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24113363.svg)](https://doi.org/10.5281/zenodo.24113363)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Live app](https://img.shields.io/badge/Live%20app-drought.ankitdeshmukh.com-2A5F85)](https://drought.ankitdeshmukh.com/)
+[![Data](https://img.shields.io/badge/Data-data.ankitdeshmukh.com-6E6238)](https://data.ankitdeshmukh.com/)
 
-> **Current build: historical research data.** The bundled dataset is a Google Earth Engine extract (CHIRPS v2.0, ERA5-Land and MODIS MOD13A3) processed by the reference pipeline (methodology `research-gee-1.0.2`). Indicator values are model- and observation-based estimates, not official drought declarations. The provenance banner, chips, methodology tab and footer all update automatically from `data/metadata.json`; swapping in a new extract requires no code changes.
+> **Current build: v2.0.0 — three labelled eras, never spliced.** Era A is the Drought Atlas of India SPEI reconstruction (1901–2025, served at district level); era B is the observation-based gridded multi-source product (SPI-1/3/6/12, SPEI-1/3/6/12, soil-moisture anomaly and VCI, 1981-01 → 2026-09, from CHIRPS v2.0, ERA5-Land and MODIS MOD13A3); era C is a 24-model bias-corrected CMIP6 ensemble (2015–2100, SSP2-4.5 and SSP5-8.5). Indicator values are model- and observation-based estimates, not official drought declarations. Bulk data (Parquet + the wide CSVs) are served from an immutable R2 snapshot selected by `data/data-source.json`; the browser reads them with HTTP Range requests. Missing values are never imputed and every statistic reports its sample size.
 
-> **New to the dashboard?** Start with the [user guide](docs/user-guide.md) or press <kbd>?</kbd> in the app. It explains every workspace, table and chart in plain language.
+> **New to the dashboard?** Start with the [guided tour](tour.html) (topbar → *How to use*), the [user guide](docs/user-guide.md), or the SQL field reference in Documentation **P** / [`docs/sql-guide.md`](docs/sql-guide.md).
 
 ---
 
 ## Contents
 
-- [Workspaces (four tabs + documentation)](#workspaces-four-tabs--documentation)
+- [Products, lenses and help](#products-lenses-and-help)
 - [Features](#features)
 - [Repository structure](#repository-structure)
 - [Run locally](#run-locally)
@@ -28,15 +29,17 @@ A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScr
 - [Technology, performance and design decisions](#technology-performance-and-design-decisions)
 - [License](#license)
 
-## Workspaces (four tabs + documentation)
+## Products, lenses and help
 
-The interface is organised into four analytical workspaces, reachable by URL hash (`#overview`, `#historical`, `#events`, `#propagation`) so refresh and deep links preserve the view. Geography, indicator and analysis period are **global study-context controls** (left panel) shared by every tab — the sidebar holds nothing else. Workspace-specific controls sit on the panels they drive, Grafana/Tableau style: an **Observation date** strip above the Overview panels, an **Event definition** strip above the Events panels, an **Indicator pair** strip above the Propagation panels, display controls (colour mode, layers, basemap) on a toolbar attached to the main map, and per-panel filters in panel heads (ranking level/search/CSV, catalogue search/year/CSV, trend granularity, sensitivity scenario, comparison pair). The basemap choice on the map toolbar applies to **every map** in the dashboard, including event-detail, propagation-pattern and comparison maps. The former fifth tab, Data & Methods, is now **Documentation & Resources**: a dedicated documentation area opened with the book icon in the sidebar footer (URL hash `#data` or `#docs`), covering About, Data Sources, Methodology, Validation & Data Quality, Uncertainty & Limitations, Reproducibility, Downloads & Citations and Version History. Each workspace has its own accent identity; drought-severity palettes and plot colours remain independent of it.
+The interface is **product-first**: the top bar lists the four data products and tools — `Record · 1981–present`, `Projections · 2015–2100`, `Atlas · 1901–2025`, `Engine Lab` — and a second row holds the lenses of the active product. Each product is a labelled era; the lenses are questions asked of it. Hovering or focusing any product, lens or topbar utility shows a one-line explanation. Help and reference live with the brand: **How to use** opens the guided tour ([`tour.html`](tour.html)); **Documentation** opens the reference centre.
 
-1. **Overview** — where is drought, how severe, how has it changed: date slider, snapshot KPIs (affected/severe area in equal-area km², area-weighted mean, districts in drought with change vs the previous month), the interactive district map with legend, the full time series with drought-class thresholds, the severity distribution, a top-10 most-affected-district ranking (by severity or affected area) and a historical-context timeline (% of region area in drought) with playback.
-2. **Historical Analysis** — frequency (months and % in drought, per-year bars, district frequency histogram), duration and severity (summary statistics plus per-district choropleth maps), non-parametric trend analysis (Mann-Kendall with tie correction and Hamed-Rao variance correction when significant autocorrelation exists; Sen's slope with 90% confidence interval; annual or monthly granularity), empirical recurrence (inter-arrival times, severity-exceedance return periods — no fitted distribution), and the district-wise ranking table (sortable/searchable/paginated, CSV export).
-3. **Drought Events** — the event catalogue (runs analysis per district: onset, termination, duration, maximum intensity, cumulative severity, censoring flag, recovery months; filterable by year/district, sortable, CSV export), the onset timeline, the duration distribution, an event detail view (event-specific series with the shaded event window and a map extent) and a definition-sensitivity panel (minimum duration / truncation scenarios, clearly separated from the default methodology).
-4. **Propagation & Relationships** — lagged cross-correlation (−12…+12 months, matched months only) between any two indicators with the optimal lag, Pearson r and moving-block bootstrap 95% CI (serial dependence preserved, fixed seed), a dual-series comparison chart, a full 10×10 correlation heatmap, a district-wise optimal-lag map, the migrated single-date spatial comparison (synchronized maps, difference map, agreement statistics, scatter), and an explicitly **unavailable** section for streamflow/groundwater propagation (no such data in the dataset — nothing is simulated).
-5. **Documentation & Resources** (book icon in the sidebar footer, hash `#data`/`#docs`) — dataset information (source, modes, units, windows, latest observation, reference period), per-indicator data quality (valid %, missing %) with the live validation report, uncertainty and limitations, the full methodology (indicators, thresholds, aggregation, events, trends, correlation, missing-data policy) and the download centre: long-format CSV, wide matrix, district statistics, event catalogue, analysis-metadata JSON, boundary GeoJSON, map PNG, documentation, citation — every CSV export carries a `#`-comment reproducibility header (indicator, geography, periods, reference period, export timestamp, methodology version, data mode and seed, source). Organised as About the Explorer · Data Sources · Methodology · Validation & Data Quality · Uncertainty and Limitations · Reproducibility · Downloads & Citations · Version History, plus the user guide and glossary.
+- **Record** (era B) — lenses: **Overview** (map, headline area, national series, ranking, evolution), **Historical Analysis** (frequency, duration, severity, Mann–Kendall + Sen trends, recurrence, ranking), **Drought Events** (runs analysis catalogue, onset timeline, detail, sensitivity), **Propagation & Relationships** (lagged cross-correlation −12…+12 months with a moving-block bootstrap CI, 10×10 heatmap, optimal-lag map, spatial comparison), **Cross-validation** (era A ↔ era B over 1981–2014: agreement, bias, seam uncertainty) and **District profile** (`#/district/<id>`).
+- **Projections** (era C) — **Future Projections** (scenario, statistic and window controls; ensemble band, agreement map, divergence, ranking, events) and **Drought to 2100** (agreement-first summary and change metrics).
+- **Atlas** (era A) — per-year scrubber for SPEI-1/4/12, class shares, historical anchors (1918, 1965, 1972, 1987, 2002), caveats.
+- **Engine Lab** — SQL over the published Parquet store in the browser (DuckDB-WASM), with presets, arbitrary queries, row counts, timings, byte traffic and CSV export.
+- **Documentation** (A–P) — About, data sources, methodology, validation (including the independent IMD benchmark), uncertainty, reproducibility, downloads and citation, version history, the user guide and glossary, governance and licences, reality checks, data status, and the SQL field reference (P).
+
+The sidebar is the study context for the Record lenses (observation date, geography, indicator, analysis period) and a **product console** on Projections and Atlas (live read-outs plus quick presets); Documentation gets a contents index. The product consoles mirror and drive the panel controls, so the panel select remains the single source of truth. Every surface carries its era, window, baseline and sample size.
 
 ## Features
 
@@ -133,6 +136,15 @@ Boundary preparation (`prepare_boundaries.py`) additionally needs Node.js on the
 
 The `.nojekyll` file prevents GitHub Pages' Jekyll from touching files whose names it treats specially.
 
+### Bulk data hosting (R2)
+
+GitHub Pages serves the **application**; the data live in an immutable Cloudflare R2 snapshot and the repository carries only a pointer:
+
+- `data/data-source.json` names the snapshot (`base`, `snapshot`, `public_base`); `base: null` means same-origin, which is what a bare clone and local development use.
+- The loader and the DuckDB engine resolve `data/parquet/…` and `data/drought/…` through that base; `metadata.json`, `status.json`, `reality_checks.json` and the boundary GeoJSON stay with the code.
+- Publishing a refresh: `python scripts/publish_r2.py --version vYYYY.MM --write-pointer --public-base …`, then commit the pointer. Verify with `python scripts/verify_r2.py --base …/vYYYY.MM/`.
+- Why: one monthly refresh is ~13 MB of permanent git history and era C alone is ~895 MB, while a GitHub Pages site is capped at 1 GB. The full contract is in [`docs/v2/03-scientific-pipelines.md`](docs/v2/03-scientific-pipelines.md) §10.
+
 ## Configuring the base path
 
 All asset and data references are relative, and the app **auto-detects its base path** from the `<script src>` of `data-loader.js`. It therefore works unchanged:
@@ -218,24 +230,26 @@ At load time the application checks every dataset for: duplicate district rows (
 
 If the platform or the dataset contributes to your research, please cite it. The canonical machine-readable metadata is [CITATION.cff](CITATION.cff) (cff-version 1.2.0); Zenodo archives the release with a versioned DOI.
 
-**Software — the platform and its pipeline:**
+**Software — the platform and its pipelines (v2.0.0):**
 
 ```bibtex
 @software{deshmukh2026droughtexplorer,
   author  = {Deshmukh, Ankit},
   orcid   = {0000-0002-1433-3872},
-  title   = {Drought Intelligence Explorer: An Interactive Geospatial Platform
-             for Drought Monitoring and Analysis in India},
+  title   = {Drought Intelligence Explorer: a multi-era district drought
+             record and analytics platform for India},
   year    = {2026},
-  version = {1.0.0},
-  doi     = {10.5281/zenodo.24113364},
+  version = {2.0.0},
+  doi     = {10.5281/zenodo.24113363},
   url     = {https://github.com/anixn/drought-intelligence-explorer}
 }
 ```
 
-**Dataset — the indicator archive:**
+The DOI shown is the **concept DOI**, which always resolves to the latest archived release; each release also receives its own version DOI (v2.0.0 is minted by the GitHub–Zenodo integration when the release is published).
 
-> Deshmukh, A. (2026). *Drought Intelligence Explorer Dataset: CHIRPS, ERA5-Land, and MODIS Derived Drought Indicators for India (1981–2025)*, version 1.0.0. Zenodo. <https://doi.org/10.5281/zenodo.24113364>
+**Dataset — the district record (snapshot `v2026.09`, 1901–2100):**
+
+> Deshmukh, A. (2026). *Drought Intelligence Explorer v2.0.0 — district drought record for India (1901–2100)* [Data set], version 2.0.0, snapshot v2026.09. Zenodo. DOI pending; meanwhile cite the archived dataset URL, <https://data.ankitdeshmukh.com/v2026.09/>, with the software DOI above.
 
 **Preprint:** the accompanying manuscript ([`manuscript/`](manuscript/)) is prepared for [EarthArXiv](https://eartharxiv.org/); insert the preprint DOI here once minted.
 

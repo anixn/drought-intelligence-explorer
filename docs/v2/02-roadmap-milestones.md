@@ -206,13 +206,14 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 
 | Task | Content | Gate |
 |---|---|---|
-| M7.1 | Download portal: versioned Parquet + CSV bundles generated from catalog, schema docs, checksums; **every bundle + export carries era/source/base_period/pet_method/seam_note headers (X6) with a regression check** | files identical to dashboard-served |
+| M7.1 | Download portal: versioned Parquet + CSV bundles generated from catalog, schema docs, checksums; **every bundle + export carries era/source/base_period/pet_method/seam_note headers (X6) with a regression check** — **hosting half BUILT 2026-11-22:** immutable R2 snapshot `v2026.09` + `data/data-source.json` pointer + `publish_r2.py`/`verify_r2.py` + `make_zenodo_bundle.py` (4 archives, 940 MB, SHA256SUMS); the Downloads page still ships the existing per-view exports | files identical to dashboard-served |
 | M7.2 | CITATION.cff update + Zenodo v2.0.0 deposit + DOI + citation line | DOI resolves |
 | M7.3 | Mobile + WCAG 2.1 AA pass; permalink hardening; Engine Lab polish — **BUILT 2026-11-22** (mobile touch targets ≥ 44 px, drawer stacking, topbar status row, contrast fixes, malformed-permalink guards, byte-counter port isolation; Owner design pass: footer card, viewport-fitted map, product bar attached to topbar + scroll collapse, observation date in the rail, aligned Historical A strip) | checklist in 04 §7 green |
 | M7.3a | Help model (Owner design pass 2026-11-22): Documentation moved to the topbar utilities, standalone `tour.html`, delayed hover/focus explainers on every product/lens/utility, per-product rail consoles, Documentation contents rail — register I7–I10 | `tour.html` internal links resolve; rails mirror and drive the panel controls |
 | M7.3b | Query documentation (Owner request 2026-11-22): `docs/sql-guide.md` + Documentation **P** (SQL field reference, eight recipes, gotcha table), downloadable from P and G, Engine Lab “SQL guide” button; doc deep links now land below the sticky chrome; topbar era/currency chips paint on a cold deep link | every recipe runs; fields match the shipped Parquet schema |
 | M7.4 | Methodology page v2 complete; changelog; release notes; version-history panel updated | no leftover placeholders |
 | M7.5 | Definition-of-Done checklist (docs/v2/01 §6) walked item by item | all boxes checked or explicitly deferred with Owner sign-off |
+| **v2.0.0** | **Release candidate 2026-11-22:** `version: 2.0.0`, CITATION.cff v2 (concept DOI `10.5281/zenodo.24113363`), README and tour rewritten for the three-era product, Documentation H changelog (2.0.0 / 1.0.0), release notes `docs/v2/release-notes-v2.0.0.md`, Zenodo dataset bundles built (era A 20.4 MB · era B 11.4 MB · era C 900.1 MB · crossval 8.2 MB + `SHA256SUMS.txt` + dataset README). **DOI pending:** minted by the GitHub–Zenodo integration when the GitHub release is published (concept 24113363; v1.0.0 = 24113364) | merge → tag `v2.0.0` → GitHub release → DOI → patch |
 
 **Exit gate M7:** v2.0.0 tagged, DOI minted, manuscript v2 outline drafted.
 

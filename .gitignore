@@ -32,3 +32,6 @@ validation-studies/imd/work/
 *.env
 r2.env
 .die/
+
+# Zenodo dataset archives (built locally, uploaded to Zenodo by the Owner)
+dist/

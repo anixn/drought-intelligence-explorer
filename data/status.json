@@ -2,7 +2,7 @@
   "schema": "die-status/1.0",
   "as_of": "2026-11-22",
   "data": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "methodology_version": "research-gee-1.0.2",
     "pipeline_version": "1.1.0",
     "mode": "static-research",
@@ -223,7 +223,7 @@
     {
       "id": "regression",
       "label": "Shipped-data regression",
-      "detail": "699 baseline values, seed 20261103",
+      "detail": "735 baseline values, seed 20261103",
       "command": "python scripts/regression_check.py"
     },
     {
