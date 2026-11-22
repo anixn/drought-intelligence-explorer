@@ -249,7 +249,7 @@ This is the **v2.0.0 version DOI**; the concept DOI `10.5281/zenodo.24113363` al
 
 **Dataset — the district record (snapshot `v2026.09`, 1901–2100):**
 
-> Deshmukh, A. (2026). *Drought Intelligence Explorer v2.0.0 — district drought record for India (1901–2100)* [Data set], version 2.0.0, snapshot v2026.09. Zenodo. DOI pending; meanwhile cite the archived dataset URL, <https://data.ankitdeshmukh.com/v2026.09/>, with the software DOI above.
+> Deshmukh, A. (2026). *Drought Intelligence Explorer v2.0.0 — district drought record for India (1901–2100)* [Data set], version 2.0.0, snapshot v2026.09. Zenodo. <https://doi.org/10.5281/zenodo.24445534> (CC-BY-4.0).
 
 **Preprint:** the accompanying manuscript ([`manuscript/`](manuscript/)) is prepared for [EarthArXiv](https://eartharxiv.org/); insert the preprint DOI here once minted.
 

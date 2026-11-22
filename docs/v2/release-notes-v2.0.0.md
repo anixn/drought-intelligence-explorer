@@ -50,7 +50,7 @@ One queryable drought record for India, presented as **three labelled eras that 
 ## Compatibility and known limitations
 
 - v1.0.0 URL hashes still work (`#overview`, `#historical`, `#events`, `#propagation`, `#data`); new hashes: `#atlas`, `#projections`, `#summary`, `#crossval`, `#engine`, `#/district/<id>`.
-- The v2.0.0 **software DOI is minted by the GitHub–Zenodo integration when this release is published**; until then the interface and `CITATION.cff` show the concept DOI `10.5281/zenodo.24113363` and an explicit "pending" note. The dataset record is a separate Zenodo deposit (see the release assets / repository README).
+- The v2.0.0 **software DOI** is `10.5281/zenodo.24444860` (concept `10.5281/zenodo.24113363`, latest version) and the **dataset DOI** is `10.5281/zenodo.24445534` (CC-BY-4.0, snapshot v2026.09). The archived source tag predates both DOIs, so its `metadata.json` records them as pending; the repository's `CITATION.cff` and the live citation carry the minted DOIs.
 - IMD temperature is the **1.0°** product (1951–2025); every temperature-based comparison is bounded at 1951 and inherits that resolution.
 - Era C 2015–2025 holds free-running model realisations, not observations; the overlap with era B is cross-validation material only.
 - GitHub Pages caps sites at 1 GB, which is why the data are hosted on R2.
@@ -69,4 +69,4 @@ Zenodo. https://doi.org/10.5281/zenodo.24444860
 
 Concept DOI (always latest): https://doi.org/10.5281/zenodo.24113363 · v1.0.0: https://doi.org/10.5281/zenodo.24113364
 
-Data: *Drought Intelligence Explorer v2.0.0 — district drought record for India (1901–2100)*, snapshot v2026.09, CC-BY-4.0 (dataset DOI pending; archived at https://data.ankitdeshmukh.com/v2026.09/).
+Data: *Drought Intelligence Explorer v2.0.0 — district drought record for India (1901–2100)*, snapshot v2026.09, CC-BY-4.0. Zenodo. https://doi.org/10.5281/zenodo.24445534
