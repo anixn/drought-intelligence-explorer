@@ -26,7 +26,7 @@
     "parquet/sma": "05f4ecebba8bb5f817dd2e342cdc8de67921d0cef925159231b24785114fed18",
     "csv/vci": "0f71e683deb17ef96bd8e7901a83ab52a2cc55f2f8bc419f78f29463a03dfd3e",
     "parquet/vci": "29db452bf511967fdff7451b70f46f3249af5b58e997e6eb3df4c41e68a4c7f1",
-    "catalog.json": "4b83876c98155216e07233f6bcbf5b115b3bc8416e5aea2b1c29a476ef5c88ca",
+    "catalog.json": "ea1c265bc5496dc2b5ba9b2c78b218f2cb20c6b52305fdfefb6105caaf0a4cf7",
     "reality_checks.json": "79ef52053b06a7952a982280162bfadba2035957a7d803379c74dcf40d347d89",
     "national": "7932dbe3d28e64819e58c7da500c87d0db78cff5cef17d04422dbc622069e656"
   },
@@ -1063,7 +1063,7 @@
     }
   },
   "imd": {
-    "sha256": "2da7e40d7bd457420d2dc24daef0a300b5da31aea0682c5b57a443589b6b9b6a",
+    "sha256": "c536cdf1a68d686fccf311bc6fa3f6a5d765ce269e5d5b2f89b03054ccd0e0bf",
     "period": [
       1981,
       2025

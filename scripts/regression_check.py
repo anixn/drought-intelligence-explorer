@@ -61,11 +61,16 @@ WINDOW = ("1981-01", "2020-12")   # v1.0 reference period (C2: 1981-2020)
 
 
 def sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
+    data = path.read_bytes()
+    # Text artefacts must be LF: the baseline hashes bytes, git stores LF
+    # (.gitattributes) and CI checks out LF, so a CRLF worktree file (Windows
+    # text mode) would produce a platform-specific hash — exactly the drift this
+    # harness reported on 2026-11-22. Fail loudly instead of blessing it.
+    if path.suffix.lower() in {".json", ".csv", ".md", ".txt"} and b"\r\n" in data:
+        raise SystemExit(
+            f"CRLF line endings in {path}: writers must emit LF "
+            f"(the baseline hashes bytes and CI checks out LF per .gitattributes)")
+    return hashlib.sha256(data).hexdigest()
 
 
 def f32(x: float) -> float:

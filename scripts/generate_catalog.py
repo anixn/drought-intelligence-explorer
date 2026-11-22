@@ -353,8 +353,11 @@ def main() -> int:
             print(f"VALIDATE: {p}")
         return 1
     if not args.check:
+        # newline="\n": the regression harness hashes these bytes and CI checks
+        # out LF (see .gitattributes). Windows' default text mode would write
+        # CRLF and make the blessed hash platform-specific.
         CATALOG.write_text(json.dumps(catalog, indent=2, ensure_ascii=False) + "\n",
-                           encoding="utf-8")
+                           encoding="utf-8", newline="\n")
         n_files = sum(len(f) for v in catalog["variables"] for f in v["files"].values())
         print(f"Wrote {CATALOG} ({CATALOG.stat().st_size} bytes, "
               f"{len(catalog['variables'])} variables, {n_files} files)")

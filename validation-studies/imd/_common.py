@@ -307,7 +307,7 @@ def write_json(path: str | Path, obj) -> None:
 
     Path(path).write_text(
         json.dumps(obj, indent=1, ensure_ascii=False, default=default) + "\n",
-        encoding="utf-8")
+        encoding="utf-8", newline="\n")
 
 
 def print_table(rows: list[list[str]], header: list[str]) -> None:
