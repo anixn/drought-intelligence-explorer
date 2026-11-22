@@ -220,6 +220,17 @@ New panels (in the existing `doc-*` panel system): **Methodology v2** (every for
 - **Rendering scale:** Leaflet + 724 polygons is fine today. Switch triggers: tehsil layer (≈4,590 polys) or the animated Atlas scrubber → PMTiles + deck.gl/MapLibre; 200-year monthly series → Plotly `scattergl` or UPlot; object-pool Arrow tables across sibling views instead of re-querying.
 - **States:** loading indicators on every engine query; explicit no-data styling distinct from "normal"; error states with retry; unsupported combinations (e.g. era C × SMA) disabled with an explanation, not silently broken.
 
+### 7.1 M7.3 built checklist (2026-11-22)
+
+Verified on all 11 routes at desktop and 390 × 844: **zero console errors, zero horizontal overflow**, `python data-pipeline/selftest.py` green, `python scripts/regression_check.py` green (699 values), Lighthouse accessibility **1.00** on `#overview`.
+
+- **Touch targets ≥ 44 px** (phone widths ≤ 760 px): icon buttons, nav toggle, product/lens tokens, pagers, panel selects and search inputs, segmented controls, indicator rows, switches, doc navigation, event jump buttons and the date slider (44 px track with a 28 px thumb). Documented WCAG 2.5.8 exceptions, each carrying a CSS comment: the icon-only "?" guide button (intentional), in-sentence "Or go back to 1901 →" link, heading-embedded "Copy anchor" buttons, and visually-hidden 1 × 1 checkbox inputs whose `.switch` labels are 44 px.
+- **Contrast:** `.doc-letter` chip (2.48:1 → ~13:1) and the duplicated `.ev-sep` override (1.65:1) corrected.
+- **Phones keep era honesty:** the topbar status cluster returns as a compact second row showing the **era pill + currency chip** only (`--topbar-h: 90px`); `#chipDataMode`, `#chipDate` and `#chipAvail` stay desktop-only rather than being dropped without replacement.
+- **Permalinks:** `permalink.js` `parse()` wraps `decodeURIComponent` in `try/catch`, so malformed hashes (`#/district/%`, over-long values) degrade to the default view instead of throwing through `routeFromHash`; behaviour-tested against 8 malformed hashes and a 4,012-character hash.
+- **Engine Lab:** byte/request counters travel on a dedicated `MessageChannel` port (register I6) — no `unassociated response` warnings, counts still exact (5.19 MB / 2 requests on init, +587 KB for a 538-row scan); catalog file count is recursive (20,289 files, was `NaN`); "no query yet" replaces an empty last-query line; preset query, custom SQL, results CSV and error display all re-verified.
+- **Layout contract (register I1–I5):** product bar attached to the topbar and collapsing on scroll; viewport-fitted map — on phones the display toolbar is one scrollable row (wrapped it cost ~183 px and pushed the map off-screen) with `contain: paint` so its children cannot widen the document; the observation date leads the rail (it sat below the indicator sections, which needed a full rail scroll); footer as a panel card; Historical A summary strip above aligned plots.
+
 ## 8. Regression protection (what must never break)
 
 1. The four v1.0 workspaces produce identical numbers (regression harness, M1.9).

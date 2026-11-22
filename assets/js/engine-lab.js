@@ -61,11 +61,29 @@
   }
 
   function fileCount(cat) {
+    // catalog.json nests era → scenario → stat → [paths] (projections), so
+    // count leaves recursively; a flat `length` per era yields NaN.
+    const walk = (node) => {
+      if (Array.isArray(node)) return node.length;
+      if (node && typeof node === "object") {
+        return Object.keys(node).reduce((a, k) => a + walk(node[k]), 0);
+      }
+      return 0;
+    };
     let n = 0;
-    (cat.variables || []).forEach((v) => {
-      Object.keys(v.files || {}).forEach((era) => { n += v.files[era].length; });
-    });
+    (cat.variables || []).forEach((v) => { n += walk(v.files); });
     return n;
+  }
+
+  function filesOf(v) {
+    const walk = (node) => {
+      if (Array.isArray(node)) return node.length;
+      if (node && typeof node === "object") {
+        return Object.keys(node).reduce((a, k) => a + walk(node[k]), 0);
+      }
+      return 0;
+    };
+    return walk(v && v.files);
   }
 
   function observedYears(v, cat) {
@@ -81,7 +99,7 @@
       esc(v.id) + "</span></td>" +
       "<td>" + esc((v.eras || []).join(", ")) + "</td>" +
       "<td class=\"num\">" + esc(observedYears(v, cat)) + "</td>" +
-      "<td class=\"num\">" + (v.files ? Object.values(v.files).reduce((a, f) => a + f.length, 0) : 0) + "</td></tr>"
+      "<td class=\"num\">" + filesOf(v) + "</td></tr>"
     ).join("");
     $("elCatalogMeta").textContent =
       "data/parquet/catalog.json · " + (cat.variables || []).length +
@@ -187,9 +205,9 @@
     const b = engineAvailable() ? E.bytes() : { bytes: 0, requests: 0 };
     $("elStatusBytes").textContent = fmtBytes(b.bytes);
     $("elStatusRequests").textContent = String(b.requests || 0);
-    $("elStatusLast").textContent = b.lastMs != null
-      ? Math.round(b.lastMs) + " ms \u00b7 " + (b.lastSql ? b.lastSql.slice(0, 60) + (b.lastSql.length > 60 ? "\u2026" : "") : "")
-      : "\u2014";
+    $("elStatusLast").textContent = b.lastMs != null && b.lastSql
+      ? Math.round(b.lastMs) + " ms \u00b7 " + (b.lastSql.slice(0, 60) + (b.lastSql.length > 60 ? "\u2026" : ""))
+      : "no query yet";
     $("elStatusSettings").textContent =
       "disable_parquet_prefetching = true \u00b7 parquet_metadata_cache = true";
   }

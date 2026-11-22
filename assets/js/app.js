@@ -206,6 +206,7 @@
       DIE.MapView.fitRegion();
 
       wireShell();
+      wireChrome();
       // Deep event instrumentation (GTM dataLayer). Never throws into the
       // boot path; wire() only subscribes listeners.
       if (DIE.Telemetry) run(() => DIE.Telemetry.wire());
@@ -1003,6 +1004,38 @@
     $('scrim').hidden = true;
   }
 
+  /* ---- chrome behaviour (M7.4) ----------------------------------------- *
+   * The product bar reads as a child row of the topbar: flush under it and
+   * full-bleed across the content column (CSS). Behaviourally it steps out
+   * of the way while the reader scrolls down and returns on the first
+   * upward scroll, on focus, or near the top — never while a link inside it
+   * has keyboard focus, and never when the reader asked for reduced motion
+   * (the transform is instant then, which is still correct). */
+  function wireChrome() {
+    const nav = document.querySelector('.tab-nav');
+    if (!nav) return;
+    let last = window.scrollY;
+    let frame = 0;
+
+    const step = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const dy = y - last;
+      if (Math.abs(dy) < 6) return;                 // ignore jitter
+      last = y;
+      if (dy > 0 && y > 220 && !nav.contains(document.activeElement)) {
+        nav.classList.add('is-collapsed');
+      } else if (dy < 0 || y < 140) {
+        nav.classList.remove('is-collapsed');
+      }
+    };
+
+    window.addEventListener('scroll', () => {
+      if (!frame) frame = requestAnimationFrame(step);
+    }, { passive: true });
+    nav.addEventListener('focusin', () => nav.classList.remove('is-collapsed'));
+  }
+
   /* Drawer mode (= mobile/tablet) owns the sidebar entirely; on desktop the
      sidebar can be collapsed to a narrow toggle. State is in localStorage. */
   const drawerMq = window.matchMedia('(max-width: 1024px)');
@@ -1741,9 +1774,10 @@
 
       $('freqMeta').textContent = label + ' · ' + periodLabel();
       $('freqStats').innerHTML =
-        '<span class="stat"><b>' + h.droughtMonths + '</b><i>months in drought (of ' + h.validScopeMonths + ' valid)</i></span>' +
-        '<span class="stat"><b>' + h.nEvents + '</b><i>drought events (runs ≥ 3 months)</i></span>' +
-        '<span class="stat"><b>' + DIE.fmt.pct(h.droughtMonths / Math.max(1, h.validScopeMonths) * 100) + '</b><i>of valid months</i></span>';
+        statBlk(h.droughtMonths, 'months in drought', 'of ' + h.validScopeMonths + ' valid') +
+        statBlk(h.nEvents, h.nEvents === 1 ? 'drought event' : 'drought events', 'runs ≥ 3 months') +
+        statBlk(DIE.fmt.pct(h.droughtMonths / Math.max(1, h.validScopeMonths) * 100),
+          'of valid months', 'share in drought');
       DIE.Charts.frequencyByYear($('freqChart'), { years: h.years, counts: h.counts });
 
       // district-wise frequency histogram (share of months in drought)
@@ -1929,6 +1963,16 @@
   function statCell(v, label) {
     const shown = (v === null || v === undefined || (typeof v === 'number' && !Number.isFinite(v))) ? '—' : v;
     return '<div class="stat-cell"><b>' + shown + '</b><i>' + label + '</i></div>';
+  }
+
+  /* Decorative value-over-label block for the frequency strip (M7.4): the
+     number is the headline, the label reads as prose, and the qualifying
+     clause (sample size / run rule / denominator) is muted so the three
+     blocks scan as one line rather than three sentences. */
+  function statBlk(v, label, qualifier) {
+    const shown = (v === null || v === undefined || (typeof v === 'number' && !Number.isFinite(v))) ? '—' : v;
+    return '<div class="stat-blk"><b>' + shown + '</b><span>' + label +
+      (qualifier ? ' <em>(' + qualifier + ')</em>' : '') + '</span></div>';
   }
 
   /* ============================================= VIEW 3 · EVENTS ===== */

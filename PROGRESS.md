@@ -7,30 +7,35 @@
 ## 1. Status flag
 
 ```
-| STATUS:        ACTIVE - M3 COMPLETE (session 56):                       |
-|        M3.2 status.json + Documentation N panel; M3.3 topbar currency    |
-|        chip ("Data · Dec 2025 · 325 d lag", amber >45) both driven by    |
-|        the derived status artifact. Next: M7 release gate.               |
+| STATUS:        ACTIVE - M7.3 COMPLETE (session 57):                       |
+|        Mobile + WCAG 2.1 AA pass, permalink hardening, Engine Lab byte    |
+|        interceptor fix, and the Owner design pass (register I1-I6).       |
+|        Next: M7 release gate (Owner decisions: era-C hosting, v2.0 DOI).  |
 | PHASE:         M6 complete; M5 complete; M9 MVP complete; M10 complete;  |
-|                M3 complete (M3.1/M3.2/M3.3); M7 next                     |
+|                M3 complete (M3.1/M3.2/M3.3); M7.3 complete; M7 gate next  |
 | ROADMAP:       M0-M2 complete. M5.2-M5.8 done. M6.1-M6.8 done. D6-D20    |
-|                committed. M9 MVP done. M10 complete. M3 complete. M7 next.|
-| PHASE:         M6 complete in practice (M6.1-M6.3/6.6/6.8 done); M5      |
-|                complete + era-C 2015-2100 (D7); M9 MVP complete;         |
-|                M10.1-M10.8 done (M10.9 optional)                        |
-| ROADMAP:       M0-M2 complete. M5.2-M5.8 done. M6.1/M6.2/M6.2b/M6.3/     |
-|                M6.6/M6.8 done. D6-D18 committed. M9 MVP done. M10 close. |
-| LAST SESSION:  2026-11-21 (row 56 - M3.2/M3.3 status + currency; row 55 - M3.1) |
-| BLOCKERS:      none technical. Pending Owner: nothing blocking; era-C   |
-|                hosting (at release); OD10/OD11                          |
+|                committed. M9 MVP done. M10 complete. M3 complete.        |
+|                M7.3 done 2026-11-22. M7.1/M7.2 Owner-gated.              |
+| LAST SESSION:  2026-11-22 (row 57 - M7.3 + design pass; row 56 - M3.2/3.3)|
+| BLOCKERS:      none technical. Pending Owner: era-C hosting (at release), |
+|                v2.0 DOI minting, OD10/OD11                              |
 | BRANCH:        v2-dev (from master @ f3f773a; tag v2-base)              |
 ```
 
-Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ✅ (M3.1/M3.2/M3.3 ✅ 2026-11-21 — refresh, status, currency) · M4 ⬜ · M5 ✅ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2–M5.8 all ✅; M5.8/E14 OD9 resolved 2026-11-18) · M6 ◐ (M6.1 ✅ + M6.2 ✅ + M6.2b ✅ + M6.3 ✅ 2026-11-20 + M6.6 ✅ + M6.8 ✅ 2026-11-21 — era A promoted, `#atlas` scrubber, `#crossval` agreement lens and the X7 seam layer live) · M7 ⬜ · M8+ ⬜ · M9 ◐ · M10 ✅ (M10.1–M10.8 done 2026-11-20/21 — theme, Depth-1 answers, typography, product-first navigation, default observation, permalinks, citation/DOI, district profiles, evidence surfaces and the claim verifier; M10.9 lamplight optional)** (definitions: `docs/v2/02-roadmap-milestones.md`).
+Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2026-11-17) · M2 ✅ (published 2026-11-17) · M3 ✅ (M3.1/M3.2/M3.3 ✅ 2026-11-21 — refresh, status, currency) · M4 ⬜ · M5 ✅ (M5.1 n/a — real era-C data published, fixture stage skipped; M5.2–M5.8 all ✅; M5.8/E14 OD9 resolved 2026-11-18) · M6 ◐ (M6.1 ✅ + M6.2 ✅ + M6.2b ✅ + M6.3 ✅ 2026-11-20 + M6.6 ✅ + M6.8 ✅ 2026-11-21 — era A promoted, `#atlas` scrubber, `#crossval` agreement lens and the X7 seam layer live) · M7 ◐ (M7.3 ✅ 2026-11-22 — mobile/WCAG/permalink/Engine Lab + design pass I1–I6; M7.1/M7.2 and the release gate Owner-gated) · M8+ ⬜ · M9 ◐ · M10 ✅ (M10.1–M10.8 done 2026-11-20/21 — theme, Depth-1 answers, typography, product-first navigation, default observation, permalinks, citation/DOI, district profiles, evidence surfaces and the claim verifier; M10.9 lamplight optional)** (definitions: `docs/v2/02-roadmap-milestones.md`).
 
 ## 2. Current phase
 
-**M6 (Atlas era A) is the current phase.** M6.1 is DONE
+**M7.3 is COMPLETE (session 57, 2026-11-22) — the current phase is the M7
+release gate.** The mobile + WCAG 2.1 AA pass, permalink hardening, Engine Lab
+byte-interceptor fix and the Owner design pass are built and verified (details
+in the session-57 log row and `docs/v2/04` §7.1; interface decisions are
+register I1–I6). What remains in M7 is Owner-gated: M7.1 download portal,
+M7.2 DOI minting, and the release gate itself (era-C hosting decision,
+CITATION.cff references, README/manuscript sync, versioned bundles). **M4 IMD**
+and the **M9 exit-gate review** remain independent, queueable tasks.
+
+**Background — M6 (Atlas era A), complete.** M6.1 is DONE
 (session 33, 2026-11-18): the Owner's landed archive
 `D:/Websites/die-data/DroughtAtlas_v2` passed the source verification gate
 `atlas-pipeline/00_verify_atlas.py` (30 checks / 9 notes) against
@@ -206,16 +211,20 @@ v1.0.0 site is untouched.
 
 | **M3.2/M3.3** | 2026-11-21 | **Status artifact + public status panel + currency chip BUILT (register D20).** (a) `scripts/build_status.py` derives `data/status.json` from metadata/manifest/catalog/baseline/reality checks: record, data month, lag days (amber >45), per-indicator coverage, era coverage, last run, versions, verification gates, curated known issues; `--check` validates consistency and runs in CI. (b) Documentation section N renders the status (cards, indicator table, issues, gates) with the machine-readable link. (c) The topbar chip now reads “Data · Dec 2025 · 325 d lag” on every page, amber >45, full statement in the tooltip — filled from status.json, not hand-typed. (d) `run.py refresh` regenerates status after publication. | scripts/build_status.py (new), data/status.json (new), index.html (N section + chip), assets/js/app.js, assets/css/style.css, data-pipeline/run.py, .github/workflows/ci.yml, docs/v2/{02,03,04,05}, PROGRESS.md | `build_status.py` write + --check PASS; panel renders 5 cards, 10 indicators, 5 issues, 4 gates; chip shows Dec 2025 / 325 d lag / amber; all 11 hashes 0 console errors; Lighthouse A11y 100 / BP 100; regression PASS 699; selftest PASS | M7 release gate |
 
+| **M7.3** | 2026-11-22 | **Mobile + WCAG 2.1 AA pass, permalink hardening, Engine Lab polish, and the Owner design pass (register I1–I6).** (a) MOBILE: 44 px touch targets at ≤760 px (icon buttons, nav/product/lens tokens, pagers, panel selects and search, segmented controls, indicator rows, switches, doc navigation, event jumps, and the date slider with a 28 px thumb); four documented WCAG 2.5.8 exceptions each carry a CSS comment (icon-only "?" guide, in-sentence "go back to 1901" link, heading-embedded Copy-anchor buttons, 1×1 visually-hidden checkbox inputs whose `.switch` labels are 44 px). Panels stack, the map stays touch-operable, and the topbar status cluster returns as a compact second row with the **era pill + currency chip** (era honesty on phones), `--topbar-h: 90px`. (b) CONTRAST: `.doc-letter` chip 2.48:1 → ~13:1; duplicate `.ev-sep` override removed (1.65:1). (c) PERMALINKS: `parse()` wraps `decodeURIComponent` in try/catch, so `#/district/%` and over-long hashes degrade to the default view instead of throwing through `routeFromHash` (8 malformed hashes + a 4,012-char hash tested). (d) ENGINE LAB: the byte counter now travels on a dedicated `MessageChannel` port handed to the worker before `INSTANTIATE` — the interceptor was reading `d.ports` (always undefined; ports live on `e.ports`), so deltas fell back to the shared channel and duckdb-wasm logged `unassociated response` per message; the control message is now stopped before the dispatcher sees it. Counts stay exact (5.19 MB / 2 requests on init, +587 KB for a 538-row scan), no warnings; catalog file count made recursive (20,289 files, was `NaN`); "no query yet" replaces an empty last-query line. (e) OWNER DESIGN PASS: footer is a panel card; `#map` height is viewport-derived (`clamp(320px, 100dvh − topbar − 190px, 720px)`; phones 260–520 px) so the whole map panel fits under the sticky chrome, with `scroll-margin-top` on `.map-panel`; the product bar is now a **child row of the topbar** (full-bleed, shared surface, no gap) and collapses on scroll-down, returning on upward scroll/focus and instantly under reduced motion; the **observation-date** controls (year, month, slider, Latest) moved into the study-context rail as an Overview-scoped section (IDs unchanged, so `filters.js` wiring is untouched); Historical A · Drought frequency now renders a value-over-label strip above **two aligned plots** ("4 months in drought (of 538 valid) · 1 drought event (runs ≥ 3 months) · 0.7 % of valid months"). | assets/css/style.css, assets/js/{app,ducklab,permalink,engine-lab}.js, index.html, scripts/mobile-harness.html (new, dev-only), scripts/port-test.html (new, dev-only), docs/v2/{02,04,05}, PROGRESS.md | all 11 routes at desktop **and** 390 × 844: 0 console errors, 0 horizontal overflow; touch-target audit (documented exceptions only); keyboard battery (no positive tabindex, roving tabindex per product tablist, skip link visible on focus, `:focus-visible` present); sidebar date controls drive the panels (year→Jul 2015, month→Jun 2015, slider→Sep 2025 535/538, Latest→Dec 2025); Historical A charts both at top 573 / 150 px; map panel top 135 → bottom 876 of 886 (fits); product bar collapses on scroll-down and restores on scroll-up; Engine Lab init/scan/error/CSV re-verified with no `unassociated response`; Lighthouse Accessibility **1.00** on Overview; `data-pipeline/selftest.py` PASS; `scripts/regression_check.py` PASS (699 values) | M7.1 download portal |
+
 ## 4. In progress
 
-- (none — M3.2/M3.3 status + currency shipped complete in session 56, verified)
+- (none — M7.3 mobile/WCAG/permalink/Engine-Lab polish + the Owner design pass shipped complete in session 57, verified)
 
 ## 5. Pending (next up)
 
 | Order | Task | Milestone | Depends on | Notes |
 |---|---|---|---|---|
-| **1** | **M7 release gate**: era-C hosting decision, v2.0 DOI minting, CITATION.cff references (software/dataset/era-A/era-C), README/manuscript sync, versioned download bundles, final Lighthouse/console sweep | M7 | M3-M6 (all done) | Owner decisions required at the gate (hosting, DOI deposit); M10.9 lamplight optional |
-| 2 | M4 IMD validation framework (M4.1 acquisition is Owner-side) | M4 | IMD data | independent queueable task |
+| **1** | **M7 release gate**: era-C hosting decision, v2.0 DOI minting, CITATION.cff references (software/dataset/era-A/era-C), README/manuscript sync, versioned download bundles, final Lighthouse/console sweep | M7 | M3-M6 + M7.3 (all done) | Owner decisions required at the gate (hosting, DOI deposit); M10.9 lamplight optional |
+| **2** | **M7.1 download portal** (versioned bundles + checksums + licence text per artefact) | M7 | M7.3 ✅ | Buildable now; final bundle set waits on the DOI/hosting decision |
+| **3** | **M7.2 CITATION.cff + Zenodo v2.0.0 deposit** | M7 | Owner mints the DOI | Owner-side deposit; OpenCode prepares the file and the mapping table |
+| 4 | M4 IMD validation framework (M4.1 acquisition is Owner-side) | M4 | IMD data | independent queueable task |
 | — | **M9 exit-gate ship review** | M9 | — | MVP live; X7 measured |
 | — | **E19 / M9 — `#summary` tab** — **MVP LIVE 2026-11-19** (agreement-first map, change metrics, per-state table, national figures, CSV export); X7 seam caveat now measured (M6.8 ✅); remaining: the M9 exit-gate ship review | M9 | era C 2015–2100 published ✅; E14 ✅; X7 ✅ | Owner arbitration 2026-11-19 supersedes the X1 "after #crossval" build-order note for this surface (register + roadmap noted) |
 | — | M6.8 `seam_uncertainty` — **BUILT 2026-11-21 (session 47)**: `sd_diff` live in `#projections` / `#summary` / `#crossval` | M6 | M6.6 ✅ | X7 ✅ |
@@ -250,6 +259,7 @@ v1.0.0 site is untouched.
 - **Session-47 addition (M6.8/D13):** the X7 seam uncertainty is computed from already-published local stores and ships in the committed cross-validation artifact, so no Owner compute is required and no era-C file was touched. The memo's 1981–2020 window is superseded by D6's 1981–2014 (documented in D13 and docs/v2/03 §6). Reported for transparency: the SPEI-12 area-weighted bias is **+0.008 z** and area-weighted exact-class agreement **34.5 %**; session 46 briefly recorded the unweighted mean (+0.039 z) and pooled class share (32.5 %) under those labels — corrected this session, with no change to any shipped value.
 - **Session-48 addition (M10.4/D14):** the URL is a presentation of validated state, not a second source of truth; every restored value passes through the same catalog/registry/metadata checks as the UI. The docs section is preserved (`#data/<section>?…`), and a copy failure shows the URL rather than failing silently. No analysis semantics or data change.
 - **Session-49 addition (M10.5/D15):** the era-C provenance block is now authoritative in `metadata.json` and is re-emitted by step 09 on every publish, so it cannot be lost in a monthly/era-C refresh. The only claimed DOI is the archived v1.0.0 release; the v2.0.0 DOI stays `null` until M7.2. Dataset licences are stated per source and never collapsed into the application's MIT licence.
+- **Session-57 addition (M7.3/I1–I6):** the Owner design pass changed the visual contract of shared surfaces, so the choices are recorded as interface decisions I1–I6 in `docs/v2/05` §4b rather than as panel-local tweaks: product bar as a collapsing child of the topbar, viewport-fitted map, observation date in the rail, footer card, Historical A value-over-label strip, and the dedicated byte-counter port. **No analytic, data or severity-palette change** (R1) — the changes are chrome, layout and one genuine bug fix (the interceptor's `d.ports` vs `e.ports`). Recorded for the Owner: the Engine Lab catalog still labels era-B variables `observed` (catalog vocabulary predates D8; renaming is a catalog-contract change, not a silent edit).
 - **Session-56 addition (M3.2/M3.3/D20):** `data/status.json` is the single freshness artifact; the panel and the topbar chip read it, so they cannot disagree. The status shows the honest 325-day lag to 2025-12 and amber styling; it will drop as soon as the Owner runs a monthly refresh and `run.py refresh` regenerates it. Known issues are curated in `build_status.py` and must be edited when a blocker changes.
 - **Session-55 addition (M3.1/D19):** the monthly refresh now publishes Parquet/catalog in one command. The observed Parquet files were re-converted once to embed their source SHA-256 (values unchanged); the regression baseline was re-blessed after reviewing that only those checksums moved. The refresh command never auto-blesses — a legitimate monthly data change still requires a reviewed `--bless`.
 - **Session-52 addition (M10.8/D18):** the figure verifier reproduces figure *data* and the quantitative claims, not the archival browser screenshots (those are screenshots by design). Fig 6 reproduces the manuscript's r=0.874, n=538 and CI exactly; Fig 5 reproduces 4/538 months and one qualifying event; Fig 2 is re-drawn deterministically from metadata. CI now gates both `verify_reality_checks.py --check` and `reproduce_figures.py --check`.
@@ -258,6 +268,20 @@ v1.0.0 site is untouched.
 - Recorded for the Owner (not blocking): (1) the Engine Lab catalog table still says eras `observed` for era-B variables — the catalog's `eras` vocabulary predates D8's "Gridded Multi-Source Product" wording; renaming it is a catalog-contract change (M10.5/next catalog regeneration), never a silent edit; (2) lamplight night mode is specified (roadmap M10.9) but deliberately not shipped; state-encoding permalinks shipped this session (M10.4).
 
 ## 7. Files created or modified
+
+**Session 57 (2026-11-22, M7.3 mobile/WCAG/permalink/engine polish + Owner design pass):**
+
+| File | Change |
+|---|---|
+| `assets/css/style.css` | Contrast fixes (`.doc-letter`, `.ev-sep`); mobile touch-target block (44 px) + two-row topbar status; footer as a panel card; product bar attached to the topbar with scroll collapse; viewport-fitted `#map`; phone map toolbar as one scrollable row (edge fade + `contain: paint` to stop document-width inflation); `.stat-strip`/`.stat-blk` (value-over-label) and aligned `.hist-col`; workspace padding vars `--ws-pad-x/y`; rail observation-date styles |
+| `assets/js/app.js` | `statBlk()` + the frequency strip renderer; `wireChrome()` (product-bar collapse on scroll, focus-safe, rAF-throttled) |
+| `assets/js/ducklab.js` | Byte interceptor takes the counter port from `e.ports` (was `d.ports`, always `undefined`), stops the control message reaching duckdb-wasm's dispatcher |
+| `assets/js/permalink.js` | `parse()` guards `decodeURIComponent` (malformed hashes degrade, never throw) |
+| `assets/js/engine-lab.js` | Recursive catalog file count (was `NaN`), "no query yet" last-query line |
+| `index.html` | Observation-date section moved into the study-context rail and placed **first** (Overview-scoped, IDs unchanged); Historical A restructured (strip above two aligned plots); `ASSET_VERSION 2026-11-22d` |
+| `scripts/mobile-harness.html`, `scripts/port-test.html` (new, dev-only) | 390×844 iframe harness for viewport work; port-handoff probe |
+| `docs/v2/02`, `docs/v2/04`, `docs/v2/05` | M7.3 BUILT; §7.1 built checklist; register **I1–I6** interface decisions |
+| `PROGRESS.md` | Status, board (M7 ◐), phase, completed row, files table, session-log row 57 |
 
 **Session 56 (2026-11-21, M3.2/M3.3 status + currency):**
 
@@ -716,12 +740,24 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-> **Updated 2026-11-21 (session 56):** M3 is COMPLETE — M3.1 refresh, M3.2
-> `status.json` + status panel, and M3.3 currency chip are built and verified.
-> The next gate is **M7 release** (era-C hosting, DOI minting, CITATION.cff
-> references, README/manuscript sync, download bundles), which needs Owner
-> decisions; **M4 IMD** and the **M9 exit-gate review** remain independent.
-> The historical M6.2 note below is kept for the record.
+> **Updated 2026-11-22 (session 57):** M7.3 is COMPLETE — mobile/WCAG pass,
+> permalink hardening, Engine Lab interceptor fix, and the Owner design pass
+> (register I1–I6) are built and verified on all 11 routes at desktop and
+> 390 × 844. The next buildable task is **M7.1 download portal** (versioned
+> bundles + checksums + per-artefact licence text); the **M7 release gate**
+> itself (era-C hosting, v2.0 DOI, CITATION.cff, README/manuscript sync) needs
+> Owner decisions. **M4 IMD** and the **M9 exit-gate review** remain
+> independent. Historical notes below are kept for the record.
+
+### M7.1 — download portal (next buildable task)
+
+Versioned download bundles (era A / era B / era C + cross-validation), each
+with a SHA-256 manifest, the per-artefact licence statement from
+`metadata.json`, the citation block and the era labels, served from
+`data/downloads/` with the existing Range-capable dev server. Bundles are
+byte-identical to the files the dashboard serves (docs/v2/04 parity rule) and
+the page states the v2.0 DOI as pending until M7.2 mints it. Final bundle
+contents wait on the Owner's hosting decision; build the generator + page now.
 
 ### M6.2 – Atlas ingestion (next task; M6.1 gate PASSED 2026-11-18)
 
@@ -854,3 +890,4 @@ X1 refusal. WORLD SELFTEST PASS.
 | 54 | 2026-11-21 | **M10 EXIT GATE PASSED.** Boot audit: Overview, July 2002, SPI-3, Reading Room accent, Era B pill, Record product + six lenses, no horizontal overflow. Lighthouse Accessibility 100 / Best Practices 100 on Overview, District profile, Cross-validation, Drought to 2100 and the evidence surfaces (SEO 75 only on hash-link routes, `crawlable-anchors`, SPA property, not a gate). Zero console errors across all 11 routes. Permalink round-trip restored crossval state. M10.4-M10.8 all built; M10.9 lamplight optional. | docs/v2/02-roadmap-milestones.md, docs/v2/07-design-review-checklist.md, PROGRESS.md | Lighthouse sweep (5 surfaces), boot/overflow/permalink audit, all-route console sweep; regression PASS 699; selftest PASS | M3.1 monthly-increment mode |
 | 55 | 2026-11-21 | **M3.1 monthly-increment mode BUILT (register D19).** (a) `python data-pipeline/run.py refresh [--offline]` = existing fetch/extend + indicator/export, then `scripts/convert_to_parquet.py --incremental --verify 5`, `scripts/build_national.py`, `scripts/generate_catalog.py`; no fork, no auto-bless. (b) Fixed a real latent bug: `ParquetWriter(SCHEMA)` silently dropped the source CSV SHA-256 metadata, so an incremental gate could never work; writer now uses `table.schema`, all ten observed files re-converted once (+785 bytes each, values unchanged) and regression re-blessed after review. (c) `--incremental` skips variables with matching source SHA-256 and verifies only changed ones; `--selftest` proves incremental output is byte-identical to a full recompute; a full real-data conversion matched the incremental output byte-for-byte. (d) Runbook/pipeline docs updated; CI runs the converter selftest. | scripts/convert_to_parquet.py, data-pipeline/run.py, data/parquet/observed/*.parquet, scripts/regression_baseline.json, .github/workflows/ci.yml, docs/v2/{02,03,05}, data-pipeline/docs/data-update-guide.md, PROGRESS.md | converter --selftest 4/4 PASS; first incremental run converted 10 vars + 5-cell verify each; second run skipped all 10; full recompute byte-identical; _publish_parquet integration PASS; regression PASS 699 after --bless; data-pipeline selftest PASS | M3.2 status.json + status panel |
 | 56 | 2026-11-21 | **M3.2 status artifact + panel and M3.3 currency chip BUILT (register D20; M3 COMPLETE).** (a) `scripts/build_status.py` derives `data/status.json` from metadata/manifest/catalog/baseline/reality checks: record, data month, lag (amber >45 d), indicator/era coverage, versions, verification gates, curated known issues; `--check` in CI. (b) Documentation section N renders 5 cards, 10-indicator coverage, known issues and 4 gates; machine-readable link. (c) Topbar chip now shows 'Data · Dec 2025 · 325 d lag' on every page, amber, full tooltip; driven by status.json. (d) `run.py refresh` regenerates status after publication. | scripts/build_status.py (new), data/status.json (new), index.html, assets/js/app.js, assets/css/style.css, data-pipeline/run.py, .github/workflows/ci.yml, docs/v2/{02,03,04,05}, PROGRESS.md | build_status write + --check PASS; panel 5 cards/10 indicators/5 issues/4 gates; chip Dec 2025/325 d lag/amber; 11 hashes 0 console errors; Lighthouse A11y 100 / BP 100; regression PASS 699; selftest PASS | M7 release gate |
+| 57 | 2026-11-22 | **M7.3 mobile/WCAG/permalink/Engine-Lab polish + the Owner design pass (register I1–I6).** (a) MOBILE: 44 px touch targets at ≤760 px across icon buttons, nav/product/lens tokens, pagers, panel selects and search, segmented controls, indicator rows, switches, doc navigation, event jumps and the date slider (44 px track / 28 px thumb); four WCAG 2.5.8 exceptions documented in CSS comments (icon-only "?" guide, in-sentence "go back to 1901" link, heading-embedded Copy-anchor buttons, 1×1 visually-hidden checkbox inputs whose `.switch` labels are 44 px). The topbar status cluster returns as a compact second row carrying **era pill + currency chip** (era honesty on phones), `--topbar-h: 90px`. (b) CONTRAST: `.doc-letter` 2.48:1 → ~13:1; duplicate `.ev-sep` override (1.65:1) removed. (c) PERMALINKS: `parse()` wraps `decodeURIComponent` in try/catch so `#/district/%` and over-long hashes degrade to the default view instead of throwing through `routeFromHash` (8 malformed hashes + a 4,012-char hash tested). (d) ENGINE LAB: **root cause found for the `unassociated response` warnings** — the interceptor read `d.ports` (always undefined; transferable ports live on `e.ports`), so every counter message fell through to duckdb-wasm's shared channel and its dispatcher answered it. The port is now read from `e.ports[0]`, the control message is stopped with `stopImmediatePropagation()` before the dispatcher sees it, and the listener removes itself. Counts stay exact (5.19 MB / 2 requests on init; +587.2 KB for a 538-row scan, 3 requests); no warnings; catalog file count is now recursive (20,289 files, was `NaN`); "no query yet" replaces an empty last-query line; preset query, custom SQL, results CSV and error display re-verified. (e) OWNER DESIGN PASS: footer is a panel card (1 px hairline, radius, surface-2, 18 px bottom margin); `#map` height is viewport-derived (`clamp(320px, 100dvh − topbar − 190px, 720px)`; phones 260–520 px) so the whole map panel fits under the sticky chrome, with `scroll-margin-top` on `.map-panel`; the product bar is now a **child row of the topbar** (full-bleed, shared `--surface`, no gap) and **collapses on scroll-down**, returning on the first upward scroll / focus / near top, instant under reduced motion, rAF-throttled with a ±6 px jitter guard (`wireChrome()`); the **observation-date** controls (year, month, slider, Latest) moved into the study-context rail and lead it (below the indicator sections they required a full rail scroll; IDs unchanged, so `filters.js` wiring is untouched); on phones the map toolbar is one scrollable row so the head + toolbar + map still fit above the fold; Historical A · Drought frequency now renders a **value-over-label strip above two aligned plots** ("4 months in drought (of 538 valid) · 1 drought event (runs ≥ 3 months) · 0.7 % of valid months"). | assets/css/style.css, assets/js/{app,ducklab,permalink,engine-lab}.js, index.html, scripts/mobile-harness.html (new, dev-only), scripts/port-test.html (new, dev-only), docs/v2/{02,04,05}, PROGRESS.md | all 11 routes at desktop **and** 390 × 844: 0 console errors, 0 horizontal overflow; touch-target audit (documented exceptions only); keyboard battery (no positive tabindex, roving tabindex per product tablist, skip link visible on focus, `:focus-visible` present); rail date controls lead the rail and drive the panels (year→"View · Jul 2015", month→"Jun 2015", slider→"Sep 2025 · obs 535/538", Latest→"Dec 2025"); Historical A both charts at top 573 / h 150 / w 457, strip 3 × 62 px; map panel top 135 → bottom 876 of 886 vh (fits); on 390 × 844 the map sits at 287 → 807 of 844 with the head and a one-row toolbar above it, 0 overflow; product bar collapses on scroll-down and restores on scroll-up; Engine Lab init/scan/error/CSV re-verified with **zero `unassociated response`**; Lighthouse Accessibility **1.00** on Overview; `data-pipeline/selftest.py` PASS; `scripts/regression_check.py` PASS (699 values) | M7 release gate (M7.1/M7.2 Owner-gated) |

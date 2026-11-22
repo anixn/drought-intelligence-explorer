@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!-- DEV-ONLY: verifies the ducklab byte-interceptor MessageChannel port handoff.
+     Loads the real interceptor text out of ducklab.js and probes the worker. -->
+<html lang="en">
+<head><meta charset="utf-8"><title>DIE port handoff test (dev only)</title></head>
+<body>
+<pre id="out">running…</pre>
+<script>
+(async function () {
+  const out = [];
+  const src = await (await fetch('/assets/js/ducklab.js')).text();
+  const startMarker = 'const WORKER_INTERCEPTOR = `';
+  const s = src.indexOf(startMarker);
+  const bodyStart = src.indexOf('`', s) + 1;
+  const bodyEnd = src.indexOf('`;', s);
+  const interceptor = src.slice(bodyStart, bodyEnd);
+  out.push('interceptor chars: ' + interceptor.length);
+  out.push('has port listener: ' + /ducklab-port/.test(interceptor));
+
+  const blob = new Blob([interceptor + '\nself.addEventListener("message", function (e) {\n' +
+    '  var d = e.data;\n' +
+    '  if (d && d.cmd === "probe") { self.postMessage({ portSet: !!__dlPort }); }\n' +
+    '  if (d && d.cmd === "fetch-test") { fetch("/index.html").then(function () {}); }\n' +
+    '});'], { type: 'text/javascript' });
+  const url = URL.createObjectURL(blob);
+  const w = new Worker(url);
+  const chan = new MessageChannel();
+  const errors = [];
+  w.onerror = (ev) => { errors.push(String(ev.message || ev)); };
+
+  const probeResult = await new Promise((resolve) => {
+    w.onmessage = (ev) => resolve(ev.data);
+    w.postMessage({ type: 'ducklab-port' }, [chan.port2]);
+    setTimeout(() => resolve({ timeout: true }), 3000);
+    w.postMessage({ cmd: 'probe' });
+  });
+  out.push('probe (portSet expected true): ' + JSON.stringify(probeResult));
+
+  const portDelta = await new Promise((resolve) => {
+    chan.port1.onmessage = (ev) => resolve(ev.data);
+    setTimeout(() => resolve({ timeout: true }), 2000);
+    chan.port2 && chan.port1.start && chan.port1.start();
+    // trigger a tracked fetch inside the worker via the interceptor's own fetch hook
+    w.postMessage({ cmd: 'fetch-test' });
+  });
+  out.push('port delta (expected {type:"ducklab-bytes"}): ' + JSON.stringify(portDelta));
+  out.push('worker errors: ' + JSON.stringify(errors));
+  w.terminate();
+  URL.revokeObjectURL(url);
+  document.getElementById('out').textContent = out.join('\n');
+})();
+</script>
+</body>
+</html>

@@ -819,6 +819,18 @@ input[type="range"] {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
   padding: 12px 14px 0;
+  align-items: start;
+}
+/* Both columns carry the same sub-title + chart structure, so the two plots
+   share a baseline (M7.4 — the left plot used to sit under an inline stat
+   row and started ~60 px lower than the right one). */
+.hist-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.hist-col .chart-box-mini {
+  flex: 1 1 auto;
 }
 .sub-title {
   margin: 0 0 6px;
@@ -1230,9 +1242,19 @@ body.is-busy input {
   z-index: 0;
 }
 #map {
+  /* The whole map panel must fit under the sticky chrome (M7.4): height is
+     driven by the viewport, not a fixed 560 px, so the map is never clipped
+     by the fold. 190 px covers the panel head + map toolbar + breathing room;
+     100dvh tracks mobile browser chrome collapsing. */
   height: 560px;
+  height: clamp(320px, calc(100dvh - var(--topbar-h) - 190px), 720px);
   width: 100%;
   background: #EDE5D4;
+}
+/* Landing on the map (skip link, in-page jump, tab switch) leaves the whole
+   panel visible below the sticky bars instead of tucking its head under them. */
+.map-panel {
+  scroll-margin-top: calc(var(--topbar-h) + 84px);
 }
 .map-corner-tag {
   position: absolute;
@@ -1516,6 +1538,48 @@ body.is-busy input {
   font-style: normal;
   font-size: 10.5px;
   color: var(--ink-2);
+}
+/* M7.4 · value-over-label strip (Historical A · Drought frequency).
+   One decorative line above the two plots: the figure carries the eye, the
+   label reads as prose and the qualifying clause is muted. Kept in the
+   panel's own type scale (serif figures) so it reads as a masthead rather
+   than a fourth chart. */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 12px 14px 0;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.stat-blk {
+  min-width: 0;
+  padding: 9px 12px 10px;
+  border-left: 1px solid var(--hairline);
+}
+.stat-blk:first-child {
+  border-left: 0;
+}
+.stat-blk b {
+  display: block;
+  font-family: var(--serif);
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--ink-strong);
+  font-variant-numeric: tabular-nums;
+}
+.stat-blk span {
+  display: block;
+  margin-top: 3px;
+  font-size: 10.5px;
+  line-height: 1.3;
+  color: var(--ink-soft);
+}
+.stat-blk em {
+  font-style: normal;
+  color: var(--ink-faint);
 }
 .stat-grid {
   display: grid;
@@ -2765,7 +2829,9 @@ kbd {
     display: block;
   }
   .workspace {
-    padding: 12px 12px 0;
+    --ws-pad-x: 12px;
+    --ws-pad-y: 12px;
+    padding: var(--ws-pad-y) var(--ws-pad-x) 0;
   }
   .map-body {
     grid-template-columns: 1fr;
@@ -3412,16 +3478,25 @@ body[data-tab="data"] .side-sec[data-side="data"] {
   color: #ffffff;
 }
 
-/* observation-date slider row (was the workspace date panel) */
+/* observation-date slider row (was the workspace date panel; M7.4 brings the
+   controls back to the rail, where they are reachable without scrolling) */
 .sidebar .date-slider-row {
   padding: 2px 0 4px;
   gap: 8px;
 }
 .sidebar .date-slider-label {
+  display: block;
   color: #6E6250;
   font-size: 10.5px;
   min-width: 0;
   flex: 0 0 auto;
+  text-align: left;
+  margin: 0 0 6px;
+}
+.side-sec .btn-block {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 /* Data & Methods quick-jump list */
@@ -5043,16 +5118,33 @@ input[type="range"] {
  * One top-level destination per era/product; the analytical lenses sit
  * beneath it. The four era-B lenses are four questions about one gridded
  * record, not four datasets, so they stop competing as peer tabs. Fixed
- * group tokens keep the product identity stable across its lenses. */
+ * group tokens keep the product identity stable across its lenses.
+ *
+ * M7.4: the bar reads as a child row of the topbar — it spans the full
+ * content column (negative workspace padding), shares the topbar surface,
+ * and has no gap above it. It also steps out of the way while the reader
+ * scrolls down and returns on the first upward scroll or focus, which buys
+ * back ~70 px of reading height on every panel below. */
 .tab-nav {
   position: sticky;
   top: var(--topbar-h);
   z-index: 46;
-  background: var(--paper);
+  background: var(--surface);
   border-bottom: 1px solid var(--hairline);
-  box-shadow:
-    0 1px 0 var(--hairline),
-    0 4px 12px rgba(62, 52, 38, 0.04);
+  box-shadow: 0 1px 0 var(--hairline);
+  padding: 0 16px;
+  margin: calc(var(--ws-pad-y) * -1) calc(var(--ws-pad-x) * -1) 0;
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+  will-change: transform;
+}
+.tab-nav.is-collapsed {
+  transform: translateY(-101%);
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab-nav {
+    transition: none;
+  }
 }
 .tab-nav .tabs {
   position: static;
@@ -5161,7 +5253,11 @@ input[type="range"] {
 
 /* ------------------------------------- 5. panels, cards and intros ------ */
 .workspace {
-  padding: 16px 22px 0;
+  /* Content-column padding, published as vars so full-bleed children
+     (the product bar, M7.4) can cancel it without hard-coding breakpoints. */
+  --ws-pad-x: 22px;
+  --ws-pad-y: 16px;
+  padding: var(--ws-pad-y) var(--ws-pad-x) 0;
   gap: 12px;
 }
 .panel,
@@ -5271,9 +5367,11 @@ input[type="range"] {
 .app-footer {
   background: var(--surface-2);
   color: var(--ink-soft);
-  border-top: 1px solid var(--hairline);
-  border-radius: 0;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
   padding: 14px 22px 12px;
+  margin: 0 0 18px;
+  overflow: hidden;
 }
 .footer-title {
   color: var(--ink-strong);
@@ -5381,7 +5479,10 @@ input[type="range"] {
   background: var(--accent-soft);
 }
 .doc-letter {
-  color: var(--ink-faint);
+  /* M7.3 AA fix: the chip stays --navy (#2E2820); the letter was var(--ink-faint)
+     (#6F6350) = 2.48:1 on that dark chip. Paper ink restores the intended
+     letter-chip look at ~13:1. */
+  color: var(--paper);
 }
 .doc-sub {
   border-color: var(--hairline);
@@ -5593,12 +5694,12 @@ input[type="range"] {
   color: var(--ink-strong);
   font-weight: 600;
 }
+/* M7.3: the second rule (hairline-strong, 1.65:1) was a later duplicate that
+   silently overrode the intended --ink-faint tone; collapsed to one rule. The
+   separator is decorative and already aria-hidden in app.js renderEvidence. */
 .evidence .ev-sep {
   font-style: normal;
   color: var(--ink-faint);
-}
-.evidence .ev-sep {
-  color: var(--hairline-strong);
 }
 
 /* ------------------------------------------ 8. appearance (accent) UI --- */
@@ -5940,7 +6041,9 @@ body {
 }
 @media (max-width: 760px) {
   .workspace {
-    padding: 12px 12px 0;
+    --ws-pad-x: 12px;
+    --ws-pad-y: 12px;
+    padding: var(--ws-pad-y) var(--ws-pad-x) 0;
   }
   .tab-group {
     padding: 7px 10px;
@@ -5954,6 +6057,229 @@ body {
   }
   .brand-title {
     font-size: 16px;
+  }
+  /* Phones: the display controls stay on ONE scrollable row. Wrapped, they
+     took ~183 px of vertical space above the map (6 controls × 44 px touch
+     targets), which pushed the map itself below the fold however short the
+     map was. One row keeps the panel head + toolbar + map inside a phone
+     screen, and the row scrolls sideways for the remaining toggles. */
+  .map-toolbar {
+    flex-wrap: nowrap;
+    gap: 8px 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* Right-edge fade hints that more controls sit off-screen. */
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent);
+    /* Without paint containment the scroll region's wider children still
+       inflate documentElement.scrollWidth (measured 689 px on a 380 px
+       phone viewport), which makes the page pan sideways. */
+    contain: paint;
+  }
+  .map-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+  .map-toolbar > * {
+    flex: 0 0 auto;
+  }
+  /* Phones: the map keeps its whole extent on screen under the taller
+     two-row topbar and the single-row toolbar above it. */
+  #map {
+    height: clamp(260px, calc(100dvh - var(--topbar-h) - 190px), 520px);
+  }
+  .stat-strip {
+    grid-template-columns: 1fr;
+  }
+  .stat-blk {
+    border-left: 0;
+    border-top: 1px solid var(--hairline);
+  }
+  .stat-blk:first-child {
+    border-top: 0;
+  }
+}
+
+/* ---- 11b. Touch targets (M7.3, spec §7 "touch targets ≥ 44 px") ----------
+   Phone widths only (same 760 px breakpoint as the layout rules above);
+   the desktop layout is untouched. Controls that must keep a smaller
+   visual footprint carry an explicit note on how their hit area is
+   preserved or why the WCAG inline exception applies. */
+@media (max-width: 760px) {
+  /* icon buttons (nav toggle, fullscreen, sidebar close, collapse/expand,
+     how-to) grow to the 44 px hit area; flex: 0 0 auto stops the tight
+     topbar row from squeezing them back under the target size */
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+  }
+  /* the view-intro chevron keeps its place in the title row: 44 px hit area
+     pulled back with negative margins so the row layout does not shift */
+  .vi-title .icon-btn.vi-toggle {
+    width: 44px;
+    height: 44px;
+    margin: -9px;
+  }
+  /* topbar: buttons keep their size, the brand (which wraps) shrinks first */
+  .topnav {
+    flex-shrink: 0;
+  }
+  .topnav button {
+    flex-shrink: 0;
+    min-height: 44px;
+  }
+  .brand {
+    min-width: 0;
+    /* cap the brand width so the base-size line-breaking pass keeps the
+       nav buttons on the same row (wrapping decisions use base sizes, not
+       min-content, so a shrinkable-but-large brand still forces a wrap) */
+    max-width: 200px;
+  }
+  /* let the brand title wrap on phones: with nowrap the brand's min-content
+     (~280 px) pushes the topnav to its own row and grows the topbar. The
+     12 px size restores the ≤640 px rule's intent (it was being overridden
+     by the later ≤760 px 16 px rule). */
+  .brand-title {
+    font-size: 12px;
+    white-space: normal;
+  }
+  .pager button {
+    min-width: 44px;
+    height: 44px;
+    font-size: 13px;
+  }
+  .btn {
+    min-height: 44px;
+  }
+  select,
+  input[type="search"] {
+    min-height: 44px;
+  }
+  /* segmented radio groups: the hidden input covers the whole label
+     (inset: 0), so enlarging the span enlarges the hit target. The
+     .panel-actions variant is listed because its own rule (padding 4px 9px)
+     out-specifies the bare .seg span at equal file order otherwise. */
+  .seg span,
+  .panel-actions .seg span {
+    padding: 14px 12px;
+  }
+  /* sidebar indicator checkbox rows and map-layer switch labels */
+  .ind-opt,
+  .switch {
+    min-height: 44px;
+  }
+  /* documentation contents buttons */
+  .doc-nav-links button {
+    min-height: 44px;
+  }
+  /* accent swatches: the visible 22 px chip becomes an inset circle inside a
+     44 px transparent button, so the pressed ring still reads as one swatch */
+  .appearance-swatch {
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: 0;
+  }
+  .appearance-swatch::before {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    border: 1px solid rgba(46, 40, 32, 0.2);
+    background: var(--sw, var(--accent));
+  }
+  .appearance-swatch[aria-pressed="true"]::before {
+    box-shadow:
+      0 0 0 2px var(--surface-2),
+      0 0 0 3px var(--sw, var(--accent));
+  }
+  /* "How events are defined" style buttons sit in the view-intro action row —
+     standalone buttons, so the inline exception does not apply; they get the
+     full 44 px hit area on phones */
+  .vi-link {
+    padding: 10px 0;
+    min-height: 44px;
+  }
+  /* per-section "↑ Back to top" buttons in the Documentation centre, plus the
+     K-methodology jump-nav chips */
+  .doc-top,
+  .ev-jump button {
+    min-height: 44px;
+  }
+  /* "Copy anchor" buttons live inside the method-block <h3> headings; their
+     size is constrained by the heading line height (the WCAG 2.5.8 inline
+     exception), so they are padded for touch comfort but not forced to
+     44 px — a mis-tap only copies a URL */
+  .ev-anchor {
+    padding: 8px 10px;
+  }
+  /* sliders (Atlas year/month scrubber): the input row is a 44 px tall hit
+     strip; the thumb itself is drawn at 28 px (≥ the WCAG 2.5.8 24 px
+     minimum) so the track stays legible. The .date-slider-row variant is
+     listed explicitly because the ≤640 px rule at line ~3521 sets 28 px at
+     equal-or-higher specificity — later file order wins the tie. */
+  input[type="range"],
+  .date-slider-row input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 44px;
+    background: transparent;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--hairline-strong);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    margin-top: -11px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--surface);
+    box-shadow: 0 0 0 1px var(--hairline-strong);
+  }
+  input[type="range"]::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--hairline-strong);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--surface);
+    box-shadow: 0 0 0 1px var(--hairline-strong);
+  }
+  /* Era honesty + currency on phones (R2, M3.3): the topbar status cluster is
+     hidden ≤1100 px because the single row cannot fit it; on phones it comes
+     back as a compact second row carrying the two honesty-critical chips —
+     the era pill and the data-currency chip. The view/availability/data-mode
+     chips stay hidden (each panel states them in place; full status lives in
+     Documentation → Data status). --topbar-h follows the grown topbar. */
+  :root {
+    --topbar-h: 90px;
+  }
+  .topbar {
+    flex-wrap: wrap;
+    row-gap: 3px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+  .topbar-status {
+    display: flex;
+    order: 99;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+  #chipDataMode,
+  #chipDate,
+  #chipAvail {
+    display: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {

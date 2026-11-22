@@ -91,10 +91,15 @@
     // District profiles have a dedicated path route: #/district/<id>
     const dm = /^\/district\/([^?/]+)(?:\?(.*))?$/.exec(raw);
     if (dm) {
+      // A malformed escape (e.g. "#/district/%") must not break routing:
+      // keep the raw id when decoding fails, and registry lookup will
+      // reject it as unknown (graceful fallback, never a broken view).
+      let districtId = dm[1];
+      try { districtId = decodeURIComponent(dm[1]); } catch (e) { /* raw */ }
       return {
         tab: "district",
         doc: null,
-        district: decodeURIComponent(dm[1]),
+        district: districtId,
         params: new URLSearchParams(dm[2] || ""),
       };
     }

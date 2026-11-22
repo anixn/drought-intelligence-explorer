@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-21a" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22d" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -259,6 +259,50 @@
             Study context
             <span class="group-note">&mdash; applies to every workspace</span>
           </div>
+
+        <!-- OVERVIEW · Observation date (M7.4). The date drives every
+             Overview panel, so the controls lead the rail — reachable without
+             scrolling to the panels they change. Shown only while Overview is
+             the active lens (body[data-tab="overview"]). -->
+        <section
+          class="side-sec tab-sec"
+          data-side="overview"
+          aria-labelledby="secObsH"
+        >
+          <h2 id="secObsH">Observation date</h2>
+          <div class="field-row">
+            <label class="field"
+              ><span class="field-label">Year</span>
+              <select id="yearSelect" aria-label="Observation year"></select
+            ></label>
+            <label class="field"
+              ><span class="field-label">Month</span>
+              <select id="monthSelect" aria-label="Observation month"></select
+            ></label>
+          </div>
+          <div class="date-slider-row">
+            <input
+              type="range"
+              id="dateSlider"
+              min="0"
+              max="239"
+              value="239"
+              step="1"
+              aria-label="Observation date slider"
+            />
+          </div>
+          <span class="mono date-slider-label" id="dateSliderLabel">—</span>
+          <button
+            type="button"
+            class="btn btn-ghost btn-block"
+            id="latestBtn"
+            title="Jump to the latest available observation"
+          >
+            Latest observation
+          </button>
+          <p class="side-note" id="datePanelMeta">—</p>
+        </section>
+
         <!-- GLOBAL · Geography -->
         <section class="side-sec" data-side="global" aria-labelledby="secGeoH">
           <h2 id="secGeoH">Geography</h2>
@@ -335,6 +379,7 @@
             </select>
           </label>
         </section>
+
         </div>
         <!-- /side-group: study context -->
 
@@ -936,51 +981,10 @@
             </button>
           </section>
 
-          <!-- Workspace scope strip: the observation date drives every
-               Overview panel (summary cards, map, time series, ranking,
-               evolution), so it sits directly above them as one bar. -->
-          <div class="ws-strip" id="overviewStrip" role="group" aria-label="Observation date">
-            <span class="ws-strip-label">Observation date</span>
-            <div class="field-row">
-              <label class="field"
-                ><span class="field-label">Year</span>
-                <select
-                  id="yearSelect"
-                  class="panel-ctl"
-                  aria-label="Observation year"
-                ></select
-              ></label>
-              <label class="field"
-                ><span class="field-label">Month</span>
-                <select
-                  id="monthSelect"
-                  class="panel-ctl"
-                  aria-label="Observation month"
-                ></select
-              ></label>
-            </div>
-            <div class="date-slider-row">
-              <input
-                type="range"
-                id="dateSlider"
-                min="0"
-                max="239"
-                value="239"
-                step="1"
-                aria-label="Observation date slider"
-              />
-              <span class="mono date-slider-label" id="dateSliderLabel">—</span>
-            </div>
-            <button
-              type="button"
-              class="btn btn-ghost"
-              id="latestBtn"
-              title="Jump to the latest available observation"
-            >
-              Latest
-            </button>
-            <p class="side-note" id="datePanelMeta">—</p>
-          </div>
+          <!-- The observation date lives in the sidebar (M7.4): every Overview
+               panel (summary cards, map, time series, ranking, evolution)
+               follows it, and a rail control is easier to reach than a strip
+               that scrolls away with the panels it drives. -->
 
           <!-- Summary statistics -->
           <section class="kpi-row" id="kpiRow" aria-label="Scientific summary">
@@ -1424,14 +1428,26 @@
                 <span class="panel-meta" id="freqMeta">—</span>
               </div>
             </div>
+            <!-- Numbers sit above the plots they summarise, one decorative
+                 line: value over label, with the qualifying clause muted
+                 (M7.4 — the old inline stat row pushed the left plot down and
+                 left the two charts misaligned). -->
+            <div
+              class="stat-strip"
+              id="freqStats"
+              role="group"
+              aria-label="Drought frequency summary"
+            >
+              <div class="stat-blk">
+                <b>—</b><span>months in drought</span>
+              </div>
+            </div>
             <div class="hist-2col">
-              <div>
-                <div class="stat-row" id="freqStats">
-                  <span class="stat"><b>—</b><i>months in drought</i></span>
-                </div>
+              <div class="hist-col">
+                <h3 class="sub-title">Months in drought per year</h3>
                 <div class="chart-box chart-box-mini" id="freqChart"></div>
               </div>
-              <div>
+              <div class="hist-col">
                 <h3 class="sub-title">District-wise drought frequency</h3>
                 <div class="chart-box chart-box-mini" id="freqDistChart"></div>
               </div>
@@ -4683,7 +4699,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-21w";
+        var ASSET_VERSION = "2026-11-22d";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

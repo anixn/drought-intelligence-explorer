@@ -106,6 +106,19 @@ The four planning inputs (build specification, implementation specification, wor
 | **L** | Ensemble storage: per-model partitions vs pre-averaged groups only | **Both:** ensemble stat partitions ship publicly; per-model district series retained in `work/` (optionally shipped) so model detail stays inspectable |
 | **M** | Era B end-year drift with monthly refresh vs static era definitions | Era years in `catalog.json`/`metadata.json` are updated by the refresh run; era labels always show actual coverage ("1981–2025 → current") |
 
+## 4b. Interface decisions (I1–I6, 2026-11-22 — Owner design pass inside M7.3)
+
+Recorded because they change the visual contract of shared surfaces, not just one panel. Each is reversible but must not be re-litigated silently.
+
+| # | Decision | Reason |
+|---|---|---|
+| **I1** | The product bar (`.tab-nav`: Record/Projections/Atlas/Documentation/Engine Lab + lenses) is a **child row of the topbar** — full-bleed across the content column, same `--surface` background, no gap above — and **collapses on scroll-down**, returning on the first upward scroll, on focus, or near the top. Never collapsed while a link inside it holds keyboard focus; instant under `prefers-reduced-motion` | Two bars with a gap read as two unrelated tools; the second row was also eating ~70 px of reading height on every panel |
+| **I2** | The main map (`#map`) takes its height from the viewport: `clamp(320px, 100dvh − topbar − 190px, 720px)`; phones `clamp(260px, 100dvh − topbar − 190px, 520px)`. `.map-panel` carries a `scroll-margin-top` matching the sticky chrome. On phones the display toolbar is a **single horizontally scrollable row** (wrapped it was ~183 px and pushed the map below the fold) with a right-edge fade, and `contain: paint` so its wider children cannot inflate `documentElement.scrollWidth` | The whole map panel must be visible once scrolled to; a fixed 560 px was clipped by the fold on laptops and phones, and wrapped toolbar controls consumed the map's own space |
+| **I3** | The **observation date** controls (year, month, slider, Latest) live in the study-context rail as the **first** Overview-scoped section (`data-side="overview"`), not in a strip above the panels they drive | The date drives every Overview panel; a rail control that leads the rail is reachable without scrolling (placed after the indicator sections it needed a full rail scroll). IDs unchanged, so `filters.js` wiring is untouched |
+| **I4** | The footer is a **panel-style card** (1 px `--hairline`, `--radius`, `--surface-2`) with an 18 px bottom margin, like every other surface | It was the only flat, square, borderless band in an otherwise card-based system |
+| **I5** | Historical A · Drought frequency renders its summary as a **value-over-label strip above the two plots** (figure in the serif display face, label in prose, qualifying clause muted), and both plots sit in identical `sub-title + chart` columns | The inline stat row pushed the left plot ~60 px below the right one and read as three sentences instead of one line |
+| **I6** | Engine Lab's byte counter travels on a **dedicated `MessageChannel` port** handed to the worker before `INSTANTIATE`; duckdb-wasm's shared channel only ever carries duckdb messages. Catalog file counts are computed recursively (era → scenario → stat → paths) | The shared channel logged `unassociated response` for every counter message, and the flat `length` count rendered `NaN Parquet files` |
+
 ## 5. Open decisions (Owner input needed — tracked in PROGRESS.md)
 
 | ID | Decision | Default until resolved |

@@ -45,12 +45,28 @@
 
   /* ---- worker-side byte interceptor (P3) -------------------------------- */
   /* Injected verbatim as the first lines of the worker blob. Counts GET
-   * response bytes only; HEADs are excluded. Posts typed deltas to the main
-   * thread — the main-side listener filters by type; duckdb-wasm's own
-   * handler ignores unknown types. */
+   * response bytes only; HEADs are excluded. Deltas are posted on a dedicated
+   * MessageChannel port handed over from the main thread — NOT on the shared
+   * worker channel — so duckdb-wasm's own dispatcher never sees them (it logs
+   * "unassociated response" for every foreign message type; measured
+   * 2026-11-22, M7.3 polish). The main-side listener filters by type either
+   * way; duckdb-wasm's handler is unaffected. */
   const WORKER_INTERCEPTOR = `
     (function () {
       self.__ducklab = { bytes: 0, requests: 0 };
+      var __dlPort = null;
+      function __dlPortMsg(e) {
+        var d = e.data;
+        if (!d || d.type !== 'ducklab-port') return;
+        // transferable ports live on the event, never on the cloned data
+        if (e.ports && e.ports[0]) __dlPort = e.ports[0];
+        else if (d.ports && d.ports[0]) __dlPort = d.ports[0];
+        // duckdb-wasm's own onmessage would answer this control message with an
+        // ERROR on the shared channel; stop it here, we registered first.
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        self.removeEventListener('message', __dlPortMsg);
+      }
+      self.addEventListener('message', __dlPortMsg);
       function track(url, method, contentLength) {
         if (String(method || 'GET').toUpperCase() === 'HEAD') return;
         var n = 0;
@@ -60,7 +76,10 @@
         }
         self.__ducklab.bytes += n;
         self.__ducklab.requests += 1;
-        try { self.postMessage({ type: 'ducklab-bytes', delta: n }); } catch (e) {}
+        try {
+          if (__dlPort) __dlPort.postMessage({ type: 'ducklab-bytes', delta: n });
+          else self.postMessage({ type: 'ducklab-bytes', delta: n });
+        } catch (e) {}
       }
       var __origFetch = self.fetch;
       if (__origFetch) {
@@ -163,6 +182,15 @@
     const worker = new Worker(workerUrl);
     worker.addEventListener('message', onWorkerMessage);
     URL.revokeObjectURL(workerUrl);   // worker already loaded the blob
+
+    /* Dedicated byte-counter channel (M7.3 polish): the interceptor posts its
+     * deltas on port2, and only this port feeds onWorkerMessage, so the
+     * duckdb-wasm dispatcher on the shared channel never logs an
+     * "unassociated response" warning per transferred byte. The shared-channel
+     * listener stays as a fallback. */
+    const byteChannel = new MessageChannel();
+    byteChannel.port1.onmessage = onWorkerMessage;
+    worker.postMessage({ type: 'ducklab-port' }, [byteChannel.port2]);
 
     const logger = new duckdb.ConsoleLogger(duckdb.LogLevel.WARNING);
     const db = new duckdb.AsyncDuckDB(logger, worker);
