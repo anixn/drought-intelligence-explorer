@@ -113,6 +113,14 @@ WHERE district_id = ? AND year BETWEEN ? AND ?;
 
 Existing tabs keep the CSV loader as default and first-paint path; the engine path activates behind `?engine=1` (per tab, starting with Historical) and must produce **identical values** (spot-checked against CSV path) before it becomes default per tab. The CSV fallback stays permanent for offline resilience and CDN-failure fallback (pitfall: jsDelivr unreachable → show message, fall back).
 
+### 3.5 Live-host latency and the warm pre-fetch (2026-11-22)
+
+Moving the store to R2 exposed a latency profile that localhost had hidden. Measured on the live host: one partition read costs **~300–600 ms** round trip, and the DuckDB-WASM build is **single-threaded** here (`SET threads = 4` → "DuckDB was compiled without threads!"; cross-origin isolation is off on GitHub Pages, so `SharedArrayBuffer`/pthreads are unavailable). A 15-year era-C window is 15 files, so an unassisted band/map query cost tens of seconds and the panel looked stuck.
+
+Fix (implemented in `ducklab.js`): before a multi-file read, `warmUrls()` fetches the same immutable objects **in parallel** (6 at a time, `cache: 'force-cache'`), then DuckDB reads them from the browser HTTP cache. Measured on five cold partitions: **3.08 s DuckDB-direct → 0.37 s parallel pre-fetch + 0.007 s query**, and the live-style projections first paint fell from tens of seconds to **status 0.5 s / map 1.3 s / band 1.5 s**. The pre-fetch bytes and requests are added to the engine counter, so the Engine Lab traffic figure stays honest.
+
+Remaining headroom (tracked, not done): per-window pre-aggregated partitions (stat × variable × window in one file) would cut the file count per view from ~45 to 3, and a Cloudflare Cache Rule for the data host may reduce cold costs further (Range requests are not cached by default).
+
 ## 4. New surface specifications
 
 ### 4.1 Engine Lab (`#engine`, M1)
