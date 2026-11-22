@@ -1,0 +1,286 @@
+# DIE v2.0 — Roadmap, Feature Backlog and Milestones
+
+*Doc 2 of the v2.0 suite. Defines the full feature inventory, priority tiers, dependency-based development sequence, and per-milestone exit gates. OpenCode executes **one task per session**, updating `PROGRESS.md` each time. Milestone targets are suggestions aligned to the Dec 2026 – May 2027 build window; data-availability gates (Owner-executed compute) dominate the schedule.*
+
+---
+
+## 1. Priority framework
+
+Tiers inherit the committed decision matrix (D1–D5) and the worth/effort scoring from the v2.0 specification:
+
+- **Tier 1 — Essential (v2.0 core).** Must ship for the v2.0 release. Blocking dependencies handled by fixtures and gates (see §3).
+- **Tier 2 — Optional (post-core hardening and reach).** Build after Tier 1 is verified; may slip past the release without hurting the definition of done.
+- **Tier 3 — Future (v2.x / v3.0 backlog).** Documented so the schema accommodates them, but explicitly not scheduled.
+
+Every feature carries: ID, tier, worth (1–5), effort (S/M/L), dependencies, and where it is specified (docs pointer).
+
+## 2. Feature backlog
+
+### 2.1 Tier 1 — Essential
+
+| ID | Feature | Worth | Effort | Depends on | Spec |
+|---|---|---|---|---|---|
+| E01 | Parquet + DuckDB-WASM data engine (era B migration), Engine Lab, catalog.json | 5 | M | — | 03 §1, 04 §3 |
+| E02 | Numeric regression harness (v1.0 behaviour protection) | 5 | S | E01 | 03 §7 |
+| E03 | Monthly refresh pipeline + public status page + currency banner (< 45-day lag) | 5 | S–M | — (Owner runs GEE monthly) | 03 §1.4 |
+| E04 | GCM processing framework (era C code, configs, synthetic self-test, runbook — Owner executes) | 5 | L | — | 03 §3 |
+| E05 | Future Projections workspace (era C): scenario switch, ensemble median + 25–75 % band, agreement layer, model ranking, SPI–SPEI divergence map, projection banner | 5 | L | E04 output (fixtures for UI build) | 04 §4.2 |
+| E06 | Era A Atlas integration (district level first): era-labelled tab, seasonal composites, frequency climatology, category shares, historical-event anchoring | 5 | M | Atlas v2 verification (Owner gate) | 03 §2 |
+| E07 | Era A ↔ Era B cross-validation panel (1981–2020 overlap) | 4 | S | E06 | 03 §6 |
+| E08 | IMD benchmark validation study (framework + memo + methodology v2 section) | 4 | M | IMD data (Owner) | 03 §5 |
+| E09 | Methodology page v2 (every formula, window, threshold, seam; incl. PET-method seam) | 5 | S | E04, E06, E08 content | 04 §5 |
+| E10 | Download portal v2 (versioned Parquet + CSV, schema docs, CITATION.cff, checksums) | 5 | S | E01, E04, E06 | 04 §6 |
+| E11 | Zenodo v2.0.0 deposit + DOI + citation line | 5 | S | E10, release gate | 04 §6 |
+| E12 | Mobile + WCAG 2.1 AA pass, permalink hardening, Engine Lab polish | 4 | S–M | — | 04 §7 |
+| E13 | Global era toggle + era banners + no-splice rules | 5 | S | E05/E06 surfaces | 04 §2 |
+
+### 2.2 Tier 2 — Optional (post-core)
+
+| ID | Feature | Worth | Effort | Depends on | Note |
+|---|---|---|---|---|---|
+| O01 | Tehsil (≈4,590-unit) layer for era A | 4 | M | E06 + **verified tehsil geometry source** (licence!) | v1.0 manuscript deliberately deferred sub-district units until a maintained geometry source exists — keep that gate |
+| O02 | Change-point detection (Pettitt) alongside trend tests | 4 | S | — | v1.0 roadmap item; client-side, low cost |
+| O03 | Benjamini–Hochberg FDR view in district trend maps | 4 | S | — | Demo already in v1.0 Technical Validation (382 → 324 of 724 at q = 0.05) |
+| O04 | Monthly India Drought Brief (auto-generated, plain language) | 4 | S | E03 | National pre-aggregate + latest month |
+| O05 | Hindi legends + bilingual brief | 3 | S–M | O04 | i18n of static front end |
+| O06 | Permalinks for every view + embeddable widgets | 3 | S | — | URL-param serialisation of analysis state |
+| O07 | ENSO / IOD conditioning of drought risk (ONI + DMI association panels) | 3 | M | index data | Association only; never causal |
+| O08 | Alerts / subscription (district crosses class) | 3 | S–M | E03 | Static-host constraint: email via third party; keep minimal or defer |
+| O09 | Standardised soil-moisture index (z-score SMI switch) | 3 | S | — | Config switch exists in v1.0; class-table remap required |
+| O10 | Thickness-weighted root-zone SMA sensitivity study (7/21/72 cm) | 3 | S | Owner GEE rerun | v1.0 roadmap item |
+| O11 | Fixed 2001–2020 VCI baseline alternative | 3 | S | Owner GEE rerun | Release-frozen baseline remains default |
+| O12 | SEAS5/C3S seasonal outlook overlay | 3 | M | data verification | Analysis-only, never operational warning |
+
+### 2.3 Tier 3 — Future backlog (schema accommodates, not scheduled)
+
+| ID | Feature | Worth | Note |
+|---|---|---|---|
+| F01 | Hydrological drought layer (GloFAS runoff → SRI/SSI, clearly labelled modelled) | 4 | Licence check; distinguish from observed flow |
+| F02 | Reservoir storage integration (CWC) | 4 | PDF-parsing cost; verify access conditions |
+| F03 | Groundwater (CGWB levels) | 3 | Access/completeness constraints |
+| F04 | Crop exposure overlay (ICRISAT/DES calendars + yields) | 4 | Sowing-window framing |
+| F05 | Population/livestock exposure (Census/WorldPop) | 3 | People-in-drought statistics |
+| F06 | Drought Risk & Vulnerability workspace (hazard/exposure/vulnerability kept separate) | 4 | Implementation-spec Workspace 5; only with documented normalisation/weighting and sensitivity tests |
+| F07 | Composite DIE-CDI analytical layer | 3 | Only after validation earns trust; clearly flagged, never default |
+| F08 | Compound drought–heat events + flash drought detection | 4 | Documented rapid-intensification definition required |
+| F09 | S2S outlook links (IMD ERFS / IRI) | 3 | Data-agreement dependent |
+| F10 | Story-mode guided tours (e.g. 2002 drought) | 2 | Animation engine exists |
+| F11 | Era D reanalysis bridge (ERA5-Land 1940/1950–2025 SMA/PET context) | 3 | Workplan era D; context only, never spliced |
+| F12 | Explainable ML for drought drivers | 3 | Spatially blocked validation, temporal separation, transparent baselines; only for well-posed questions |
+| F13 | Other-region redeployment of the same contract | 3 | Pipeline is region-parameterised by design |
+| F14 | Non-stationary return periods | 3 | Sample-size and diagnostics gate |
+
+### 2.4 Owner-amendment backlog (docs/v2/06-amendments.md, 2026-11-15)
+
+Added by the Owner's amendments memo; tracked with the same one-task-per-session discipline. Items marked **[Owner]** need sign-off before they enter the build order.
+
+| ID | Feature | Tier | Worth | Effort | Depends on | Spec notes |
+|---|---|---|---|---|---|---|
+| E14 | Future drought event analytics (era C): frozen v1.0 event machinery over validated era C products; frequency/duration/severity per window (2026–2040 / 2041–2060 / 2081–2100) vs observed baseline per district (**1981–2014** per register D6, supersedes the original 1981–2020 wording; shipped as `baseline_1981_2014.json`); fourth view in `#projections` | 1 (candidate, **[Owner: confirm]** — OD9) | 5 | M | E05 real data | Reuses event machinery; never run on fixtures for public numbers; ensemble-median-based windows with agreement reported alongside |
+| E15 | People-in-drought, static exposure: projected drought-month counts × Census/WorldPop population ("X million people in moderate-or-worse drought months per year by 2050/2100") | 2 | 4 | S | E05; population grid verified (licence) | Static exposure only; hazard and exposure never conflated (register safeguard 5); minimal version of F05 promoted forward |
+| E16 | PET-method sensitivity study: Hargreaves (committed C3) vs ERA5-Land PET vs a Penman–Monteith variant (`huss`, `rlds`, `sfcWind` — availability-checked in 01_inventory_check.py; run only where supplied) on 1981–2020, best-subset models; validation-study memo + methodology v2 uncertainty statement quantifying the era B↔C PET seam | 2 **[Owner: compute]** | 4 | M | M2 framework; IMD/ERA5-Land reference | Never changes the committed default (C3); sensitivity only — OD10 |
+| E17 | Era B ↔ era C cross-validation panel: corrected-model-historical (1981–2014) vs era B (Gridded Multi-Source Product, register D8) over the overlap, symmetric to the Atlas↔Observed panel (r, bias, class agreement, event match, discrepancy map) | **1** (X5) | 4 | S | M2.8 outputs | Reuses crossval schema; add `era` column or second partition file; the 2025/2026 seam gets the same treatment as the 1901/1981 seam |
+| E18 | Flash drought + compound drought–heat detection (era B first, era C if it holds up). Flash: one documented rapid-intensification definition picked and registered (Ford/Otkin-style). Compound: joint SPI/SPEI + Tmax extremes same month, lag-0 dependence noted | 2 | 4 | M | — | Definition fixed in code + methodology page before any map ships — OD11; absorbs Tier 3 F08 |
+| O13 | Alternate-reference QDM sensitivity product: QDM chain with CHIRPS/ERA5-Land reference (register D) alongside IMD-primary; divergence as downloadable sensitivity product + methodology paragraph | 2 **[Owner: compute]** | 3 | M (Owner) | M2 chain | Schema unchanged; `reference_id` column or parallel partition root |
+| O14 | Standardisation-baseline sensitivity for era C: fixed 1981–2020 (C2) vs rolling/era-specific baseline on a subset — separates climate signal from baseline-definition effect | 3 | 3 | S | E14 optional | One memo section; not a UI default |
+| O15 | ENSO/IOD conditioning panels (existing O07 promoted): ONI + DMI association with district drought frequency; association only, never causal; JJAS-conditioned composites | 2 | 3 | M | index data verified | Keep out of any projection claim |
+| E19 | **`#summary` tab (Owner request 2026-11-18): "how drought changes from now to 2100"** — ensemble-vs-observed shift per district on the **1981–2014 baseline (register D6)**: drought-frequency/duration/severity change (era C windows vs observed baseline), share of models agreeing on drying (`dir_agreement_drier`), area share in moderate-or-worse drought, per-state summary table, scenario toggle (SSP2-4.5 / SSP5-8.5) | 1 (candidate) | 5 | M | era C 2051–2100 download (Owner, **complete 2026-11-19**); E14 event machinery; M5.4 agreement layer | New hash `#summary` (R8); era labels + honest ensemble n (X3); agreement-first default (X2); numbers only from validated era C products past the §6 release gate — never fixtures (R3). Proposed in M8 below |
+
+**Promotions within the existing backlog (amendment memo §1):**
+
+- **O02 (Pettitt change-point) → Tier 1.** Wire into the Historical tab trend view next to Mann–Kendall; client-side, S effort.
+- **O03 (BH-FDR view) → Tier 1.** District trend maps ship with the q = 0.05 FDR view as default-adjacent toggle (v1.0 demo: 382 → 324 of 724). Reviewers will not accept uncorrected district trend maps.
+- **F08 → superseded by E18** (register marks it; definition gate moves to OD11).
+- **O07 → O15** (same feature, promoted forward from Tier 2 to the amendment backlog).
+
+**Process amendments (OpenCode-executable, memo §3):** CI workflow gating `selftest.py` + regression harness (once M1.9 lands) + `selftest_gcm.py`/`selftest_atlas.py` (once they exist); separate versioned Zenodo deposits per era dataset (software DOI stays one deposit; mapping recorded in register + CITATION.cff); README freshness badge rendering `data/status.json`; `scripts/reproduce_figures.py` closing the data↔paper loop before M7. Scheduled: CI at M1.9, badge at M3.2, DOI mapping at M7.2, figure script at M7.4.
+
+## 3. Milestone plan (dependency-based)
+
+Ordering logic: **engine + regression protection first** (nothing is built on a moving foundation); **GCM framework handed to the Owner as early as possible** (their downloads are the long pole and can run in parallel with UI work); freshness next (credibility); validation studies before projections UI ships real numbers; Atlas and release last. Milestones map onto the Dec 2026 – May 2027 window from the committed plan, with dates as suggestions only.
+
+### M0 — Documentation and decision register ✅ (complete — 2026-11-12)
+- Output: this documentation suite; decision register with all cross-document conflicts resolved; PROGRESS.md initialised.
+- Exit gate: Owner reviews and installs the suite into the repo (`AGENTS.md`, `PROGRESS.md` → root; `docs/01–05` → `docs/v2/`).
+
+### M1 — Foundation: engine, era-B Parquet, regression harness
+*Suggested: Nov–Dec 2026. Depends on: nothing. Owner actions: none.*
+
+| Task | Content | Size | Gate |
+|---|---|---|---|
+| M1.1 | Install docs, create `v2-dev` branch from `master` (tag `v2-base`), repo audit notes → PROGRESS.md | S | audit recorded; all v1.0 tabs verified working on branch |
+| M1.2 | Directory skeleton per AGENTS.md §5 (`data/parquet`, `data/geo`, `data/fixtures`, `scripts/`, `gcm-pipeline/`, `atlas-pipeline/`, `validation-studies/`, `server.py`) | S | tree matches spec |
+| M1.3 | `scripts/convert_to_parquet.py` — era B wide CSVs → long Parquet (zstd, dictionary-encoded, row groups aligned to 60 districts); print per-variable rows/sizes | M | total ≤ ~30 MB era B; per-file ≤ ~600 KB |
+| M1.4 | Round-trip verification: ≥ 5 random cells per variable, exact match vs CSV | S | 100 % match, logged |
+| M1.5 | `catalog.json` generator + schema doc (`docs/v2/03 section 8.2`) | S | all paths resolve HTTP 200 via `server.py` |
+| M1.6 | `assets/js/ducklab.js` engine service (worker blob + byte interceptor + settings) — reuse `work/die-2.0` prototype if present | M | init < 8 s; district slice < 100 ms cold; repeat 0 KB |
+| M1.7 | Engine Lab tab `#engine` (status, SQL box, byte/time readouts) | S | zero console errors across all tabs |
+| M1.8 | Wire Historical tab to engine behind `?engine=1` flag (CSV loader default); numbers must match CSV path exactly | M | identical values on ≥ 3 spot checks |
+| M1.9 | Numeric regression harness: snapshot regional summaries + catalogue entries; comparison script wired into verification | S | baseline green |
+| M1.10 | Pre-aggregates: `_national_monthly.parquet` (area-weighted) | S | matches v1.0 area-weighted rule within 1e-6 |
+
+**Exit gate M1:** all four v1.0 workspaces + docs centre behave exactly as v1.0.0 (regression harness green); engine passes Q1/Q2/Q3 checks; CSV fallback intact; mobile pass.
+
+### M2 — GCM framework handoff (era C code ready for Owner compute)
+*Suggested: Dec 2026, overlapping M1 tail. Depends on: nothing from M1 except repo skeleton. **This is the critical-path handoff — the Owner's downloads start here and run for weeks.***
+
+| Task | Content | Size | Gate |
+|---|---|---|---|
+| M2.1 | `gcm-pipeline/config/models.yaml` template + selection criteria (daily pr/tasmax/tasmin, historical + ssp245 + ssp585, documented variant, 1950–2100 coverage); **amendment (06 §2): per-model `genealogy:` field (CMIP6 parent/institution family) so agreement fractions can be reported family-collapsed — ranking stays model-level, genealogy view is display-only** | S | Owner fills final 24-model list (Owner action) |
+| M2.2 | `config/reference.yaml` — IMD primary reference (0.25° rainfall; temperature product per Owner choice), CHIRPS/ERA5-Land alternates; grid spec 0.25° | S | decision recorded in register |
+| M2.3 | `00_download_cmip6.py` — ESGF/Pangeo-Google subsetting per model/scenario/var, resumable, manifest + SHA-256 | M | dry-run on one model var verified |
+| M2.4 | `01_inventory_check.py` — availability matrix (model × var × scenario × period × calendar), fails hard on gaps | S | runs on template list |
+| M2.5 | `02_regrid_025.py` — conservative remap (pr), bilinear (tasmin/tasmax) to common 0.25° grid | M | conservation test: domain-mean precip preserved within tolerance |
+| M2.6 | `03_qdm_bias_correct.py` — QDM vs reference (1981–2020), per calendar month; multiplicative for precip (zero-guard), additive for temperature; preserve-change diagnostics | L | synthetic-world test: known signal preserved; quantile mapping inverts correctly |
+| M2.7 | `04_pet_hargreaves.py` — Hargreaves PET on corrected tasmin/tasmax (FAO-56 Ra by latitude/day-of-year); mm/month | S | spot-check against published worked example |
+| M2.8 | `05_spi_spei_compute.py` — **reuse `data-pipeline/indicators.py` machinery**; fits on fixed 1981–2020; bounds [−5, +5] for era C; per-fit gates as v1.0 | M | base-period calibration gates pass on synthetic world |
+| M2.9 | `06_district_aggregate.py` — area-weighted aggregation to 724 districts; v1.0 buffer-fallback semantics for sub-pixel units; LAEA areas reused; **amendment (06 §2): sub-pixel transparency list — every district whose aggregation rests on ≤ 2 grid cells published as a `flag` value + downloadable CSV so users can filter them out** | M | national totals plausible; sub-pixel flags match v1.0 handling |
+| M2.10 | `07_ensemble_stats.py` — median/p25/p75, agreement (≤ −1.0, ≤ −1.5 fractions), direction-of-change agreement (late-window vs reference mean), n_models | S | exact definitions verified on synthetic ensemble |
+| M2.11 | `08_validate_gcm.py` — validation gate: corrected-historical consistency vs reference; drought frequency/duration/severity vs observed 1981–2014 by region; model ranking (multi-metric); best-subset 8–12 models; SPI–SPEI divergence quantification; **amendment (06 §2): tail checks — Q–Q comparison of corrected-historical vs reference plus p90/p95 drought-tail statistics by region/season; gate fails on declared tail tolerance breach (means can pass while tails fail)**; non-zero exit on failure | M | gate logic proven on synthetic world |
+| M2.12 | `09_export_parquet.py` — era C partitions (scenario × stat × variable × year), ≤ ~0.5 MB per file; catalog update; manifest checksums | M | catalog integration test |
+| M2.13 | `gcm-pipeline/selftest_gcm.py` — synthetic 3-model × 2-scenario mini-world end-to-end; seed-deterministic | M | all assertions pass |
+| M2.14 | `gcm-pipeline/README.md` runbook for the Owner: env setup (conda/requirements), execution order, checkpointing, storage estimates, where outputs land, what gets recorded in PROGRESS.md | S | Owner can start downloads without further code work |
+
+**Exit gate M2:** synthetic self-test passes end-to-end; runbook delivered; Owner confirms download start (recorded in PROGRESS.md). **No real-era-C numbers exist yet — UI builds against fixtures.**
+
+### M3 — Freshness: monthly refresh + status page (E03)
+*Suggested: Dec 2026–Jan 2027. Depends on: M1 (parquet pipeline). Owner actions: monthly GEE run from Jan 2027 onward.*
+
+| Task | Content | Gate |
+|---|---|---|
+| M3.1 | **Monthly-increment mode — BUILT 2026-11-21:** `python data-pipeline/run.py refresh [--offline]` runs the monthly fetch/extend + export, then incrementally publishes only variables whose CSV SHA-256 changed (`scripts/convert_to_parquet.py --incremental --verify 5`), rebuilds the national pre-aggregate and regenerates the catalog. The converter now embeds the source CSV SHA-256 in Parquet metadata (the old writer silently dropped it); `--selftest` proves incremental output is byte-identical to a full recompute. | one incremental run verified vs full recompute |
+| M3.2 | **`data/status.json` + public status panel — BUILT 2026-11-21:** `scripts/build_status.py` derives the status artifact from metadata/manifest/catalog (record, data month, lag days, per-indicator coverage, era coverage, pipeline versions, verification gates, curated known issues); Documentation section N renders it. Numbers match the manifest; `--check` is in CI. | status numbers match manifest |
+| M3.3 | **Currency banner — BUILT 2026-11-21:** the topbar chip shows "Data · Dec 2025 · N d lag" on every page, amber beyond 45 days, with the full date/window/build in the tooltip; it is driven by `status.json`, not hand-typed. | banner math verified against status.json |
+
+**Exit gate M3:** a simulated month increments era B end-to-end; banner + status correct; v1.0 numbers unchanged (regression harness).
+
+### M4 — IMD benchmark validation study (E08) — **BUILT 2026-11-22**
+*Depends on: IMD data (the Owner's local archive). Independent of M2/M3.*
+
+**Result (measured 2026-11-22, record to 2026-09):** 719 districts × 540 months compared for SPI-1/3/6/12, 714 for SPEI-3/12. Median district r 0.60–0.71 (national series 0.73–0.86), area-weighted bias −0.038…+0.002 z, state agreement 82.2–86.9 %, exact class 31.7–36.5 %. Trend maps (BH-FDR q = 0.05): era B flags more districts than IMD (SPI-3 324 vs 155), with 89.3 % slope-sign agreement among districts significant in both. Memo: `validation-studies/imd/report/validation-memo.md`; UI: Documentation D.
+
+| Task | Content | Gate |
+|---|---|---|
+| M4.1 | `validation-studies/imd/` acquisition **verification** + inventory (the archive was already complete: rain 0.25° 1901–2025, temperature **1.0°** 1951–2025 — OD3 resolved) | inventory PASS; grid/units/fill recorded |
+| M4.2 | IMD monthly aggregation → fractional-area district fabric → IMD-SPI/SPEI using the **era-B indicator code** (same estimators, base 1981–2020, gates) | 47,047 fits (88 % fitted, 10 % Gringorten, 2.6 % calibration fallback) |
+| M4.3 | Comparison framework (r, bias, RMSD, state/class/event; seasonal; national) + BH-FDR trend maps | metrics from the run; no hand-typed numbers |
+| M4.4 | Validation memo + dashboard summary (Documentation D) + reproduction commands; X8 statement (temperature ≥ 1951) | memo populated with real numbers |
+
+**Exit gate M4:** validation memo with real IMD comparison numbers — **MET 2026-11-22** (no pending sections).
+
+### M5 - Future Projections workspace (E05, E13)
+**Build-order constraint (amendment 06 §5 X1):** `#crossval` (M6.6) gates ANY projections surface going live; fixture-based development may proceed in parallel. Default view is AGREEMENT, not median (X2); banner states the honest ensemble n, never "24 models" (X3).
+*Suggested: Feb–Mar 2027. Depends on: M2 (fixtures for build; real data for ship), M1 engine.*
+
+| Task | Content | Gate |
+|---|---|---|
+| M5.1 | Era C fixture generation (`data/fixtures/`, labelled synthetic, realistic schema) | fixtures carry `FIXTURE — SYNTHETIC` banner end to end |
+| M5.2 | `#projections` tab skeleton: era toggle wiring, scenario switch, variable/timescale selector | zero console errors; mobile drawer OK |
+| M5.3 | Ensemble band chart (median + 25–75 %), district time-series, choropleth of ensemble stat per month/year — **choropleth DEFAULT = agreement fraction (X2); median is the secondary toggle** | queries via engine < 150 ms cold |
+| M5.4 | Agreement layer (fraction of models ≤ −1.0 / ≤ −1.5; direction-of-change map) with exact definitions + per-district seam_uncertainty (X7) in tooltips; agreement-first default (X2) | definitions text matches 07_ensemble_stats output |
+| M5.5 | Model ranking panel (from `08_validate_gcm.py` outputs; multi-metric, best-subset selectable) | no single-metric ranking |
+| M5.6 | SPI–SPEI divergence map + copy ("Rainfall alone does not decide India's drought future; demand does half the work.") | divergence computed from shipped products only |
+| M5.7 | Projection banner (**honest ensemble n from best_subset — amendment X3: the memo's "24 models" copy is rejected**; median shown with 25–75 % range; model disagreement is the finding); era labels; no-splice rules | banner present on every era C surface |
+| M5.8 | **E14 future drought event analytics** (amendment 06 §2): frozen event machinery on validated era C; frequency/duration/severity per window vs 1981–2020 baseline; fourth view in `#projections`. Tier-1 entry gated on **OD9 (Owner confirmation)** | runs only on real era C data past the release gate |
+
+**Exit gate M5 (ship gate):** tab verified on **real Owner-produced era C data** after `08_validate_gcm.py` passes (CMIP6 release gate in register §6). Until then the tab may exist in `v2-dev` behind a flag with fixtures, never on the live site.
+
+### M6 — Atlas era A + cross-validation (E06, E07, E13)
+*Suggested: Mar–Apr 2027. Depends on: Atlas v2 verification (Owner gate), M1.*
+
+| Task | Content | Gate |
+|---|---|---|
+| M6.1 | Atlas v2 verification: DOI/licence/version/variables/PET method/SPEI flavour/spatial units recorded in register; v1 fallback identified | verification memo in register |
+| M6.2 | `atlas-pipeline/` ingestion: Atlas grids → district long Parquet, per-year tiles (era A partitioning) | round-trip spot checks; per-year tiles ≤ ~20 KB |
+| M6.3 | `#atlas` tab: era-labelled scrubber (per-year tile fetch only), seasonal composites (JJAS, ONDJ, water year, calendar year) | scrubbing 1901→end fetches only touched years |
+| M6.4 | Frequency climatology maps (three eras), category-share summary ("X % of units in moderate-or-worse") | era labels explicit |
+| M6.5 | Historical-event anchoring: 1918, 1965, 1972, 1987, 2002 identifiable | events reproduce against Atlas documentation |
+| M6.6 | Cross-validation panel `#crossval`: era A vs era B, **1981–2014 primary window (register D6; full 1981–2025 overlap as sensitivity)** (r, bias, class agreement, event match rate, discrepancy map) | table + map render; discrepancies visible |
+| M6.7 | Era A tab initially district-level; tehsil layer (O01) only after boundary-source verification | boundary decision recorded |
+| M6.8 | **seam_uncertainty (X7) — BUILT 2026-11-21:** per district, SD of (era A − era B) SPEI-12 over the **1981–2014** overlap (D6; the memo's 1981–2020 wording is superseded), computed once at cross-validation and stored as `sd_diff` in `data/parquet/cross_validation/per_district_1981_2014.parquet` (D13 — not duplicated into the local era-C store), surfaced in SPEI-12 projection tooltips as "seam SD ±X z", in the `#crossval` table/CSV, and as a median-with-n caveat on `#summary` | column present; tooltip copy matches computed value |
+
+**Exit gate M6:** Atlas era live with era labels; cross-validation published; known events identifiable.
+
+### M7 — Release: downloads, DOI, hardening (E10–E12)
+*Suggested: May 2027. Depends on: M3–M6 gates.*
+
+| Task | Content | Gate |
+|---|---|---|
+| M7.1 | Download portal: versioned Parquet + CSV bundles generated from catalog, schema docs, checksums; **every bundle + export carries era/source/base_period/pet_method/seam_note headers (X6) with a regression check** — **hosting half BUILT 2026-11-22:** immutable R2 snapshot `v2026.09` + `data/data-source.json` pointer + `publish_r2.py`/`verify_r2.py` + `make_zenodo_bundle.py` (4 archives, 940 MB, SHA256SUMS); the Downloads page still ships the existing per-view exports | files identical to dashboard-served |
+| M7.2 | CITATION.cff update + Zenodo v2.0.0 deposit + DOI + citation line | DOI resolves |
+| M7.3 | Mobile + WCAG 2.1 AA pass; permalink hardening; Engine Lab polish — **BUILT 2026-11-22** (mobile touch targets ≥ 44 px, drawer stacking, topbar status row, contrast fixes, malformed-permalink guards, byte-counter port isolation; Owner design pass: footer card, viewport-fitted map, product bar attached to topbar + scroll collapse, observation date in the rail, aligned Historical A strip) | checklist in 04 §7 green |
+| M7.3a | Help model (Owner design pass 2026-11-22): Documentation moved to the topbar utilities, standalone `tour.html`, delayed hover/focus explainers on every product/lens/utility, per-product rail consoles, Documentation contents rail — register I7–I10 | `tour.html` internal links resolve; rails mirror and drive the panel controls |
+| M7.3b | Query documentation (Owner request 2026-11-22): `docs/sql-guide.md` + Documentation **P** (SQL field reference, eight recipes, gotcha table), downloadable from P and G, Engine Lab “SQL guide” button; doc deep links now land below the sticky chrome; topbar era/currency chips paint on a cold deep link | every recipe runs; fields match the shipped Parquet schema |
+| M7.4 | Methodology page v2 complete; changelog; release notes; version-history panel updated | no leftover placeholders |
+| M7.5 | Definition-of-Done checklist (docs/v2/01 §6) walked item by item | all boxes checked or explicitly deferred with Owner sign-off |
+| **v2.0.0** | **Release candidate 2026-11-22:** `version: 2.0.0`, CITATION.cff v2 (concept DOI `10.5281/zenodo.24113363`), README and tour rewritten for the three-era product, Documentation H changelog (2.0.0 / 1.0.0), release notes `docs/v2/release-notes-v2.0.0.md`, Zenodo dataset bundles built (era A 20.4 MB · era B 11.4 MB · era C 900.1 MB · crossval 8.2 MB + `SHA256SUMS.txt` + dataset README). **DOI pending:** minted by the GitHub–Zenodo integration when the GitHub release is published (concept 24113363; v1.0.0 = 24113364) | merge → tag `v2.0.0` → GitHub release → DOI → patch |
+
+**Exit gate M7:** v2.0.0 tagged, DOI minted, manuscript v2 outline drafted.
+
+### M8+ — Tier 2 / Tier 3 rollout (post-release)
+Work Tier 2 (O01–O12) in worth order; Tier 3 items only when their data/licence gates are satisfied. Each item still follows one-task-per-session with tracker updates.
+
+### M9 — `#summary` tab: drought change now → 2100 (E19, Owner request 2026-11-18)
+*Suggested: after M5.8 + the Owner's 2051–2100 SSP download (COMPLETE 2026-11-19: 8-model subset × 2 scenarios × 3 variables × 2015–2100, 4,128 files) and the full-record era-C recompute. Depends on: validated era C past the register §6 gate; E14 event machinery. **Build-order note (2026-11-19, Owner arbitration): the Owner's explicit "I prefer summary and crossover" supersedes the X1 "after `#crossval`" sequencing for THIS surface — the MVP shipped with `seam_uncertainty` (X7) explicitly labelled pending M6.6/M6.8, never fabricated; `#crossval` remains the next credibility surface.***
+
+| Task | Content | Gate |
+|---|---|---|
+| M9.1 | Change layer: per district, era C window drought-frequency/duration/severity vs observed **1981–2014** baseline (register D6; reuses E14 outputs), rendered as the primary `#summary` map | only validated products (R3); era labels + honest n (X3) |
+| M9.2 | Agreement strip: `dir_agreement_drier` share-of-models map + "X of N models agree" copy (agreement-first, X2); scenario toggle SSP2-4.5/SSP5-8.5 | definitions verbatim from `config/ensemble.yaml` |
+| M9.3 | Per-state summary table + national area-share-in-drought figure (LAEA areas); downloadable CSV with reproducibility headers (X6) | state table sums to national; n reported per row (R10) |
+| M9.4 | Caveat copy block: projections are simulations not forecasts (R2), seam_uncertainty ±X (X7), PET-method sensitivity pointer (OD10) | copy review vs register |
+
+**Exit gate M9:** `#summary` live on real era C data with the same ship gate as M5 (register §6), after `#crossval` (M6.6) is live (build-order constraint X1).
+
+### M10 — "Sepia Paper" UI/UX re-baseline (Owner instruction 2026-11-20, decision D10)
+*Suggested: Nov–Dec 2026 (runs alongside M6.6, which it does not block). Depends on: nothing data-side — this is the design-system and information-architecture layer. Governing constraints: R2 (era honesty on every surface), R8 (stable hash routes, keyboard + ARIA), R9 (interpretation guardrails), R1 (v1.0.0 semantics untouched — the published site is not modified; the Owner has granted layout redesign permission for the v2 dashboard). The theme lives in the `SEPIA PAPER THEME LAYER` section of `assets/css/style.css`; tokens + the seven working rules are recorded in register D10.*
+
+| Task | Content | Gate |
+|---|---|---|
+| M10.1 ✅ 2026-11-20 | **Sepia Paper theme across all nine surfaces**: token layer (paper/surface/hairline/ink ramp/status), paper control rail replacing the navy sidebar, muted per-tab identity band, warm footer; severity/class colours unchanged (data, not theme) | all tabs cycled, zero console errors; selftest + regression green |
+| M10.2 ✅ 2026-11-20 | **Depth-1 answers**: "Ask the record" band on `#overview` (4 question cards + Atlas link, each routing to the evidence surface), receipts line (era · product · window · baseline · n) under the summary cards, standing topbar era pill (Era A/B/C per tab; "C − B · Delta to 2100" on `#summary`) | every quoted number carries its era + n; R2 copy verified on all eras |
+| M10.3 ✅ 2026-11-20 | **Four accent themes** (Reading Room / Field Notes / Drafting Table / Hydrograph) with the persisted sidebar "Paper accent" control; chrome-only, severity ramp identical in all four; `DIE.inkOn()` WCAG ink on data chips | Lighthouse accessibility ≥ 95 (measured 100) |
+| M10.3b ✅ 2026-11-20 | **Typography pass** (Owner follow-up to the theme): Literata (variable optical 7–72; revised from Source Serif 4 after the Owner judged the title cramped) as the display/reading voice, Inter as the analytical UI voice, IBM Plex Mono for data; KPI figures set in the serif with lining + tabular numerals; body 14 px / 1.55; prose serif with measured line length; `meta theme-color` follows paper | fonts load in-browser, tab-cycle battery zero console errors, Lighthouse accessibility 100 |
+| M10.3c ✅ 2026-11-20 | **Product-first navigation** (Owner question "is it good to give 4 tabs for one produced combined gridded one?"; decision D11): top row = products/eras (Record 1981–2025, Projections 2015–2100, Atlas 1901–2025, Documentation, Engine Lab); analytical tabs become lenses beneath the active product; single-surface groups hide the lens strip; hashes, analytics and ARIA tab semantics preserved | every group/lens route walked; lens strip reveals only for Record/Projections; zero console errors; keyboard + Lighthouse pass |
+| M10.3d ✅ 2026-11-20 | **Documented default observation** (Owner instruction "put the default one some month with extreme drought; Dec 2025 is not a drought month"; decision D12): boot and Reset open on **July 2002** (410/724 districts ≤ −1.0; 151 ≤ −2.0; 76.8 % area in drought, 23.3 % extreme), with Latest one click away and a latest fallback for indicators that do not cover the anchor | default date resolves to 2002-07; Latest → 2025-12; Reset → 2002-07; zero console errors |
+| M10.4 | **State-encoding permalinks — BUILT 2026-11-21:** the Copy-link control (sidebar footer + per-panel Share on Projections, Drought to 2100, Atlas, Cross-validation) writes shared study context (indicator, geography, period, date, season) plus the active panel's settings into the hash (`#tab?ind=…&date=…&pScenario=…`); `routeFromHash` restores them before the first paint; the address bar tracks shared state and tab switches; `routeFromHash` restores them | round-trip restore test on every tab; R8 routes still work |
+| M10.5 | **DOI/citation plumbing — BUILT 2026-11-21:** era C `source` block added to `metadata.json` (era A already carried one) with the CMIP6/QDM/IMD/Hargreaves citation chain; DOI in the citation box (archived v1.0.0 DOI, v2.0.0 explicitly not pre-claimed); every CSV/text export and the map PNG carry a citation header/caption; Copy-citation includes an access date; a generated share card (PNG) carries the view summary + citation | every downloadable asset carries the citation header (X6) |
+| M10.6 | **District profile pages — BUILT 2026-11-21:** dedicated route `#/district/<id>` + Record lens; headline answer for the selected month, ten-indicator strip (one Parquet query), annual trend with Mann–Kendall/Sen/Hamed–Rao, frozen event catalogue, and era context cards (B record, A overlap/seam, C projection link). Deep-linkable, keyboard operable, era labels on every block | deep-link + keyboard operable; era labels on every block |
+| M10.7 | **Evidence surfaces — BUILT 2026-11-21:** a living anchored methodology (section K, ten method anchors, version/date on every block, `#data/k-methodology/<anchor>` deep links), a public governance/licence page (section L, curated decision register + per-artefact licences + what-this-is/is-not), and three reality-check boxes (section M) rendered from `data/reality_checks.json` re-derived by `scripts/verify_reality_checks.py` | review items 3-9 closed or explicitly deferred |
+| M10.8 | **Claim verifier - BUILT 2026-11-21:** `scripts/reproduce_figures.py` regenerates three published figures/claims from the shipped record (Fig 2 coverage SVG + data, Fig 5 All-India SPI-3 4/538 + one event, Fig 6 propagation r=0.8743/n=538/CI [0.8353,0.9018]) and Table 5 by hashing the reality-check artifact; `--check` compares committed references and runs in CI. Every headline surface now links "How this is made" to the relevant method anchor — **refresh 2026-11-22 (2026-09 record): 4/547 months, r=0.8716, n=547, CI [0.8356,0.8999]; the references were regenerated, not hand-edited** | verifier reproduces ≥ 3 published figures exactly |
+| M10.9 | Optional: lamplight night mode (documented in D10, deliberately not shipped with M10.1–M10.3) | contrast pass in the dark paper palette; never auto-forced |
+
+**Exit gate M10 (PASSED 2026-11-21):** the theme + Depth-1 layer are the default experience on `v2-dev` (boot = July 2002, Record product, era pill visible), Lighthouse accessibility **100** and Best Practices **100** on Overview, District profile, Cross-validation, Drought to 2100 and the evidence surfaces, **zero console errors** across all 11 routes, and the deferred credibility surfaces M10.4–M10.8 are built (M10.9 lamplight remains optional). SEO is 75 on routes that use hash-only in-app links (`crawlable-anchors`, an SPA property), not an M10 gate.
+
+## 4. Feature → milestone map
+
+| Milestone | Features delivered |
+|---|---|
+| M1 | E01, E02 (+ engine foundation for everything else) |
+| M2 | E04 (framework; real data by Owner during M2–M5) |
+| M3 | E03 |
+| M4 | E08 |
+| M5 | E05, E13 |
+| M6 | E06, E07 |
+| M7 | E09, E10, E11, E12 |
+| M8+ | O01–O12, O13–O15 (amendment backlog, docs/v2/06), then Tier 3 |
+| M9 | E19 (`#summary`) |
+| M10 | "Sepia Paper" theme + Depth-1 answer layer (register D10); M10.4–M10.8 cover the review's credibility backlog |
+
+## 5. Owner-executed compute register (what OpenCode must never assume is done)
+
+| Item | Trigger | Where results get recorded |
+|---|---|---|
+| Monthly GEE export + indicator recomputation (era B extension) | from Jan 2027 monthly | PROGRESS.md session log + `data/status.json` |
+| Final 24-model list | at M2.1 | `gcm-pipeline/config/models.yaml` |
+| CMIP6 downloads (24 models, pr/tasmax/tasmin, historical + ssp245 + ssp585) | M2 handoff → ongoing | PROGRESS.md |
+| Regrid → QDM → PET → SPI/SPEI → aggregation → ensemble → export (era C) | per model/scenario batch | PROGRESS.md + `pipeline_manifest.json` checksums |
+| IMD data acquisition (rainfall; temperature) | M4 | PROGRESS.md + register |
+| Atlas v2 acquisition + licence verification | M6 gate | register + PROGRESS.md |
+| Era A ingestion compute (if heavy) | M6 | PROGRESS.md |
+
+## 6. Session sizing guidance
+
+- One task per session (S ≈ one focused session; M ≈ 2–3 sessions; L ≈ 4+ sessions broken into task sub-steps with intermediate verification).
+- If a session ends mid-task, mark the task `in_progress` with precise state notes in PROGRESS.md ("what works, what remains"), so the next session resumes cleanly.
+- Never start a milestone whose dependency gate is unmet — pick the next independent milestone instead (the plan is deliberately parallelisable: M2/M3/M4 are mutually independent once M1 lands).

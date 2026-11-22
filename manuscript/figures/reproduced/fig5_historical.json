@@ -1,0 +1,36 @@
+{
+  "figure": "fig5_historical",
+  "series": "All-India SPI-3 (area-weighted national monthly)",
+  "n_months": 547,
+  "n_at_or_below_minus1": 4,
+  "months": [
+    {
+      "date": "1987-07",
+      "value": -1.1449
+    },
+    {
+      "date": "2002-07",
+      "value": -1.248
+    },
+    {
+      "date": "2002-08",
+      "value": -1.0299
+    },
+    {
+      "date": "2002-09",
+      "value": -1.2957
+    }
+  ],
+  "minimum": {
+    "date": "2002-09",
+    "value": -1.2957
+  },
+  "qualifying_events": [
+    {
+      "start": "2002-07",
+      "end": "2002-09",
+      "months": 3
+    }
+  ],
+  "n_qualifying_events": 1
+}

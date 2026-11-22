@@ -1,0 +1,4 @@
+# SHA-256 of the committed ssp-mode gate evidence (regenerated 2026-11-19, full-record recompute)
+
+7cec4d61caefe0db551fa621e5a74011773d9f4220991fef059cf3a783444951  validation_report_ssp.json
+a6ef40e79af1268b6d20e034947d7b579222e0b9d3a6c255e6ea1f7cd59c7c90  README.md

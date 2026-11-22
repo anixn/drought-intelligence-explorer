@@ -1,0 +1,281 @@
+{
+  "schema": "die-status/1.0",
+  "as_of": "2026-11-22",
+  "data": {
+    "version": "2.0.0",
+    "methodology_version": "research-gee-1.0.2",
+    "pipeline_version": "1.1.0",
+    "mode": "static-research",
+    "updated": "2026-11-22",
+    "period": {
+      "start": "1981-01",
+      "end": "2026-09"
+    },
+    "data_month": "2026-09",
+    "lag_days": 53,
+    "lag_threshold_days": 45,
+    "lag_status": "amber",
+    "indicators": [
+      {
+        "id": "spi_1",
+        "label": "SPI-1",
+        "from": "1981-01",
+        "to": "2026-09",
+        "months": 549,
+        "completeness_pct": 100.0
+      },
+      {
+        "id": "spi_3",
+        "label": "SPI-3",
+        "from": "1981-03",
+        "to": "2026-09",
+        "months": 547,
+        "completeness_pct": 100.0
+      },
+      {
+        "id": "spi_6",
+        "label": "SPI-6",
+        "from": "1981-06",
+        "to": "2026-09",
+        "months": 544,
+        "completeness_pct": 100.0
+      },
+      {
+        "id": "spi_12",
+        "label": "SPI-12",
+        "from": "1981-12",
+        "to": "2026-09",
+        "months": 538,
+        "completeness_pct": 100.0
+      },
+      {
+        "id": "spei_1",
+        "label": "SPEI-1",
+        "from": "1981-01",
+        "to": "2026-09",
+        "months": 549,
+        "completeness_pct": 99.86
+      },
+      {
+        "id": "spei_3",
+        "label": "SPEI-3",
+        "from": "1981-03",
+        "to": "2026-09",
+        "months": 547,
+        "completeness_pct": 99.86
+      },
+      {
+        "id": "spei_6",
+        "label": "SPEI-6",
+        "from": "1981-06",
+        "to": "2026-09",
+        "months": 544,
+        "completeness_pct": 99.86
+      },
+      {
+        "id": "spei_12",
+        "label": "SPEI-12",
+        "from": "1981-12",
+        "to": "2026-09",
+        "months": 538,
+        "completeness_pct": 99.86
+      },
+      {
+        "id": "sma",
+        "label": "Soil Moisture Anomaly",
+        "from": "1981-01",
+        "to": "2026-09",
+        "months": 549,
+        "completeness_pct": 99.86
+      },
+      {
+        "id": "vci",
+        "label": "Vegetation Condition Index",
+        "from": "2000-02",
+        "to": "2026-09",
+        "months": 320,
+        "completeness_pct": 100.0
+      }
+    ],
+    "eras": {
+      "observed": {
+        "label": "Gridded Multi-Source Product 1981-2025 -> current",
+        "available": true,
+        "years": [
+          1981,
+          2026
+        ]
+      },
+      "atlas": {
+        "label": "Atlas reconstruction (SPEI) 1901-2025",
+        "available": true,
+        "years": [
+          1901,
+          2025
+        ]
+      },
+      "projections": {
+        "label": "PROJECTIONS (era C) - QDM-bias-corrected CMIP6, SSP2-4.5 / SSP5-8.5, IMD-calibrated (reference 1981-2020). Simulations, never forecasts; never spliced with observed data; presented with ensemble spread and agreement (X2/X3), never the median alone.",
+        "available": true,
+        "years": [
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025,
+          2026,
+          2027,
+          2028,
+          2029,
+          2030,
+          2031,
+          2032,
+          2033,
+          2034,
+          2035,
+          2036,
+          2037,
+          2038,
+          2039,
+          2040,
+          2041,
+          2042,
+          2043,
+          2044,
+          2045,
+          2046,
+          2047,
+          2048,
+          2049,
+          2050,
+          2051,
+          2052,
+          2053,
+          2054,
+          2055,
+          2056,
+          2057,
+          2058,
+          2059,
+          2060,
+          2061,
+          2062,
+          2063,
+          2064,
+          2065,
+          2066,
+          2067,
+          2068,
+          2069,
+          2070,
+          2071,
+          2072,
+          2073,
+          2074,
+          2075,
+          2076,
+          2077,
+          2078,
+          2079,
+          2080,
+          2081,
+          2082,
+          2083,
+          2084,
+          2085,
+          2086,
+          2087,
+          2088,
+          2089,
+          2090,
+          2091,
+          2092,
+          2093,
+          2094,
+          2095,
+          2096,
+          2097,
+          2098,
+          2099,
+          2100
+        ]
+      }
+    }
+  },
+  "run": {
+    "last_run": "2026-11-22",
+    "manifest": "data/pipeline_manifest.json",
+    "catalog_version": "2.0.0"
+  },
+  "verification": [
+    {
+      "id": "pipeline_selftest",
+      "label": "Pipeline self-test",
+      "detail": "82 assertions, seed-deterministic",
+      "command": "python data-pipeline/selftest.py"
+    },
+    {
+      "id": "regression",
+      "label": "Shipped-data regression",
+      "detail": "735 baseline values, seed 20261103",
+      "command": "python scripts/regression_check.py"
+    },
+    {
+      "id": "reality",
+      "label": "Reality checks",
+      "detail": "3 external checks, re-derived",
+      "command": "python scripts/verify_reality_checks.py --check"
+    },
+    {
+      "id": "figures",
+      "label": "Published figures",
+      "detail": "Fig 2/5/6 + Table 5 reproduced from the shipped record",
+      "command": "python scripts/reproduce_figures.py --check"
+    },
+    {
+      "id": "imd_benchmark",
+      "label": "IMD benchmark (M4)",
+      "detail": "independent IMD comparison; memo + machine-readable artifact",
+      "command": "python validation-studies/imd/04_compare.py"
+    }
+  ],
+  "known_issues": [
+    {
+      "id": "refresh-due",
+      "severity": "amber",
+      "text": "Era B ends 2026-09; the monthly refresh is 53 days behind (target ≤ 45 days)."
+    },
+    {
+      "id": "era-c-local",
+      "severity": "info",
+      "text": "Era-C projections are served from the local store during testing; they are not pushed to the public site until the v2.0 release gate."
+    },
+    {
+      "id": "imd-pending",
+      "severity": "info",
+      "text": "The IMD gridded benchmark (M4) has not been run; era-B indicators are not yet validated against IMD."
+    },
+    {
+      "id": "atlas-islands",
+      "severity": "known-limitation",
+      "text": "the six island districts have no Atlas grid cells (documented ocean mask); values absent, never imputed (R10)"
+    },
+    {
+      "id": "preprint-drift",
+      "severity": "info",
+      "text": "A few Marathwada figures in the preprint's Table 5 differ slightly from the released matrices; the interface uses the released values (M7 sync item)."
+    }
+  ],
+  "links": {
+    "repository": "https://github.com/anixn/drought-intelligence-explorer",
+    "citation": "CITATION.cff",
+    "doi_v1": "https://doi.org/10.5281/zenodo.24113364",
+    "reality_checks": "data/reality_checks.json"
+  }
+}

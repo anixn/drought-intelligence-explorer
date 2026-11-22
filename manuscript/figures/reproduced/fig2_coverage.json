@@ -1,0 +1,77 @@
+{
+  "figure": "fig2_coverage",
+  "reference_period": "1981-01..2020-12",
+  "vci_period": "2000-02..2025-12",
+  "bars": [
+    {
+      "id": "spi_1",
+      "label": "SPI-1",
+      "start": "1981-01",
+      "end": "2026-09",
+      "color": "#2A5F85"
+    },
+    {
+      "id": "spi_3",
+      "label": "SPI-3",
+      "start": "1981-03",
+      "end": "2026-09",
+      "color": "#2A5F85"
+    },
+    {
+      "id": "spi_6",
+      "label": "SPI-6",
+      "start": "1981-06",
+      "end": "2026-09",
+      "color": "#2A5F85"
+    },
+    {
+      "id": "spi_12",
+      "label": "SPI-12",
+      "start": "1981-12",
+      "end": "2026-09",
+      "color": "#2A5F85"
+    },
+    {
+      "id": "spei_1",
+      "label": "SPEI-1",
+      "start": "1981-01",
+      "end": "2026-09",
+      "color": "#22756B"
+    },
+    {
+      "id": "spei_3",
+      "label": "SPEI-3",
+      "start": "1981-03",
+      "end": "2026-09",
+      "color": "#22756B"
+    },
+    {
+      "id": "spei_6",
+      "label": "SPEI-6",
+      "start": "1981-06",
+      "end": "2026-09",
+      "color": "#22756B"
+    },
+    {
+      "id": "spei_12",
+      "label": "SPEI-12",
+      "start": "1981-12",
+      "end": "2026-09",
+      "color": "#22756B"
+    },
+    {
+      "id": "sma",
+      "label": "SMA",
+      "start": "1981-01",
+      "end": "2026-09",
+      "color": "#C87E3B"
+    },
+    {
+      "id": "vci",
+      "label": "VCI",
+      "start": "2000-02",
+      "end": "2026-09",
+      "color": "#6F9E3F"
+    }
+  ]
+}

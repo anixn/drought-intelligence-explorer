@@ -1,0 +1,112 @@
+{
+  "schema": "die-reality-checks/1.0",
+  "data_version": "1.0.0",
+  "methodology_version": "research-gee-1.0.2",
+  "generated_by": "scripts/verify_reality_checks.py",
+  "checks": [
+    {
+      "id": "rajasthan-2002",
+      "title": "Rajasthan, July–September 2002",
+      "claim": "Every Rajasthan district was in drought through the 2002 monsoon failure.",
+      "window": "2002-07 to 2002-09",
+      "indicator": "spi_03",
+      "threshold": -1.0,
+      "numbers": {
+        "districts": 33,
+        "months": [
+          {
+            "date": "2002-07",
+            "n": 33,
+            "n_drought": 33,
+            "all_in_drought": true,
+            "mean_area_weighted": -2.5471560406996163,
+            "min": -3.01,
+            "max": -1.69
+          },
+          {
+            "date": "2002-08",
+            "n": 33,
+            "n_drought": 33,
+            "all_in_drought": true,
+            "mean_area_weighted": -2.684597968056104,
+            "min": -3.05,
+            "max": -1.66
+          },
+          {
+            "date": "2002-09",
+            "n": 33,
+            "n_drought": 33,
+            "all_in_drought": true,
+            "mean_area_weighted": -2.5438992946131758,
+            "min": -2.97,
+            "max": -1.55
+          }
+        ]
+      },
+      "checked_against": "Documented 2002 all-India monsoon failure (Gadgil & Gadgil 2006; Mallya et al. 2016)",
+      "source": "data/drought/spi_03.csv; data/districts.csv"
+    },
+    {
+      "id": "all-india-spi3",
+      "title": "All-India SPI-3, 1981–2026",
+      "claim": "The national area-weighted SPI-3 fell to or below −1.00 in only four months of the 547-month record — July 1987 and July–September 2002.",
+      "window": "1981-03 to 2026-09",
+      "indicator": "spi_03",
+      "threshold": -1.0,
+      "numbers": {
+        "n_months": 547,
+        "n_at_or_below": 4,
+        "months": [
+          {
+            "date": "1987-07",
+            "value": -1.1448843479156494
+          },
+          {
+            "date": "2002-07",
+            "value": -1.2479979991912842
+          },
+          {
+            "date": "2002-08",
+            "value": -1.029906988143921
+          },
+          {
+            "date": "2002-09",
+            "value": -1.2956767082214355
+          }
+        ]
+      },
+      "checked_against": "The two deepest national rainfall deficits of the CHIRPS record",
+      "source": "data/parquet/_national_monthly.parquet"
+    },
+    {
+      "id": "marathwada-2015",
+      "title": "Marathwada, 2015–16",
+      "claim": "The 2015 rainfall deficit was followed by severe vegetation stress two to four months later, which is why the platform shows more than one indicator family.",
+      "window": "2015-09 to 2016-01",
+      "indicators": [
+        "spi_03",
+        "vci"
+      ],
+      "numbers": {
+        "districts": 8,
+        "spi3_2015_09": {
+          "n": 8,
+          "mean": -0.97125,
+          "share_le_minus1": 0.5
+        },
+        "vci_2015_11": {
+          "n": 8,
+          "mean": 13.5,
+          "share_below_30": 0.875
+        },
+        "vci_2016_01": {
+          "n": 8,
+          "mean": 8.375,
+          "share_below_30": 1.0
+        }
+      },
+      "checked_against": "Documented 2015–16 Marathwada drought",
+      "source": "data/drought/spi_03.csv; data/drought/vci.csv"
+    }
+  ]
+}

@@ -18,7 +18,7 @@
   const DIE = (window.DIE = window.DIE || {});
   const $ = (id) => document.getElementById(id);
 
-  const NO_DATA_COLOR = "#D7DEE7";
+  const NO_DATA_COLOR = "#E8E1D2";
   // const BASEMAPS = {
   //   light: {
   //     url: "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
@@ -81,10 +81,12 @@
 
   function classChip(c) {
     if (!c)
-      return '<span class="mini-chip" style="background:#9AA7B5">no data</span>';
+      return '<span class="mini-chip" style="background:#6F6350;color:#FBF7EE">no data</span>';
     return (
       '<span class="mini-chip" style="background:' +
       c.color +
+      ";color:" +
+      DIE.inkOn(c.color) +
       '">' +
       c.label +
       "</span>"
@@ -208,7 +210,7 @@
 
     const districtsLayer = L.geoJSON(DIE.boundaries.districts, {
       style: () => ({
-        color: "#FFFFFF",
+        color: "#FBF7EE",
         weight: 0.6,
         fillColor: NO_DATA_COLOR,
         fillOpacity: 0.92,
@@ -216,14 +218,20 @@
       onEachFeature: (feature, layer) => {
         const id = feature.properties.id;
         layer.on("mouseover", () =>
-          layer.setStyle({ weight: 1.4, color: "#14263D" }),
+          layer.setStyle({ weight: 1.4, color: "#211C15" }),
         );
         layer.on("mouseout", () =>
-          layer.setStyle({ weight: 0.6, color: "#FFFFFF" }),
+          layer.setStyle({ weight: 0.6, color: "#FBF7EE" }),
         );
-        if (opts.onDistrictClick) {
-          layer.on("click", () => opts.onDistrictClick(id));
-        }
+        // Owner UX directive (2026-11-20): clicking a district zooms it to
+        // fill the map's own container (opt-out with zoomOnDistrictClick).
+        // Applies to EVERY choropleth — one code path, consistent feel.
+        layer.on("click", () => {
+          if (opts.onDistrictClick) opts.onDistrictClick(id);
+          if (opts.zoomOnDistrictClick !== false) {
+            fitRegion("district", id);
+          }
+        });
         if (opts.tooltip !== false) {
           layer.bindTooltip(
             () =>
@@ -244,7 +252,7 @@
 
     const statesLayer = L.geoJSON(DIE.boundaries.states, {
       style: () => ({
-        color: "#8C9BAD",
+        color: "#968A74",
         weight: 1.1,
         fill: false,
         opacity: 0.9,
@@ -254,7 +262,7 @@
 
     const outlineLayer = L.geoJSON(DIE.boundaries.outline, {
       style: () => ({
-        color: "#14263D",
+        color: "#211C15",
         weight: 2,
         fill: false,
         opacity: 0.95,
@@ -266,6 +274,42 @@
     const layerBySid = new Map();
     districtsLayer.eachLayer((l) => layerById.set(l.feature.properties.id, l));
     statesLayer.eachLayer((l) => layerBySid.set(l.feature.properties.sid, l));
+
+    /* -- viewport-fit discipline (Owner UX directive 2026-11-20) -----------
+     * The map may NEVER shrink below "India fully fitted in this map's own
+     * container": minZoom = the zoom at which the national outline fits the
+     * container, recomputed on every resize; the initial view IS that fit.
+     * NOTE: Leaflet's getBoundsZoom() starts from the CURRENT zoom and
+     * never returns below it (it climbs to maxZoom otherwise) — so a map
+     * created in a small/hidden container would deadlock its minimum at a
+     * too-high zoom. The fit zoom is therefore computed ANALYTICALLY from
+     * the CRS at a fixed reference zoom, independent of the current view. */
+    const outlineBounds = outlineLayer.getBounds();
+    let fittedOnce = false;
+    function analyticFitZoom() {
+      const size = map.getSize();
+      if (!outlineBounds.isValid() || !size.x || !size.y) return null;
+      const z0 = 4;
+      const nw = map.project(outlineBounds.getNorthWest(), z0);
+      const se = map.project(outlineBounds.getSouthEast(), z0);
+      const w = Math.abs(nw.x - se.x) + 16;   // +16px breathing room
+      const h = Math.abs(nw.y - se.y) + 16;
+      const snap = map.options.zoomSnap || 1;
+      let z = z0 + Math.log2(Math.min(size.x / w, size.y / h));
+      z = Math.floor(z / snap) * snap;
+      return Math.max(0, Math.min(z, map.options.maxZoom || 18));
+    }
+    function applyMinZoomFit(forceFit) {
+      const z = analyticFitZoom();
+      if (z === null) return;                 // zero-size container (hidden tab)
+      map.setMinZoom(z);
+      if ((forceFit || !fittedOnce) && map.getContainer().offsetWidth > 0) {
+        map.setView(outlineBounds.getCenter(), z);
+        fittedOnce = true;
+      }
+    }
+    applyMinZoomFit(true);
+    map.on("resize", () => applyMinZoomFit(false));
 
     const labelGroup = L.layerGroup();
     function buildLabels() {
@@ -328,7 +372,7 @@
         layer.setStyle({
           fillColor: color,
           fillOpacity: Number.isFinite(v) ? 0.92 : 0.75,
-          color: isSelected ? "#14263D" : "#FFFFFF",
+          color: isSelected ? "#211C15" : "#FBF7EE",
           weight: isSelected ? 2.4 : 0.6,
         });
         if (isSelected) layer.bringToFront();
@@ -392,7 +436,13 @@
       setLabels,
       layerById,
       layerBySid,
-      invalidateSize: () => map.invalidateSize(),
+      invalidateSize: () => {
+        map.invalidateSize();
+        // viewport-fit discipline: recompute the fitted minimum (a map
+        // hidden at creation re-fits on its first real invalidateSize;
+        // later resizes only raise the minimum, never the user's zoom)
+        applyMinZoomFit(false);
+      },
     };
     choropleths.add(api);
     return api;
@@ -573,9 +623,60 @@
       const canvas = await html2canvas(el, {
         useCORS: true,
         logging: false,
-        backgroundColor: "#EDF1F5",
+        backgroundColor: "#EFE8D8",
         scale: 2,
       });
+      // X6/M10.5: the PNG carries the citation too. A caption strip is added
+      // below the captured map so the file is self-describing when shared.
+      const scale = canvas.width / Math.max(1, el.clientWidth || canvas.width / 2);
+      const capH = Math.round(104 * scale);
+      const out = document.createElement("canvas");
+      out.width = canvas.width;
+      out.height = canvas.height + capH;
+      const ctx = out.getContext("2d");
+      ctx.drawImage(canvas, 0, 0);
+      ctx.fillStyle = "#FBF7EE";
+      ctx.fillRect(0, canvas.height, out.width, capH);
+      ctx.fillStyle = "#6B2B1F";
+      ctx.fillRect(0, canvas.height, out.width, Math.max(2, Math.round(3 * scale)));
+      const ind = DIE.indicatorById && DIE.indicatorById.get(DIE.state.indicator);
+      const ym = DIE.Filters.dateYm();
+      const title = "Drought Intelligence Explorer v2.0 development" +
+        "  ·  " + (ind ? ind.label : DIE.state.indicator) +
+        (ym ? "  ·  " + DIE.dates.label(ym) : "") +
+        "  ·  " + DIE.Filters.regionLabel();
+      const cite = (DIE.App && DIE.App.citationText)
+        ? DIE.App.citationText().split("\n")[0]
+        : (DIE.meta.citation || "");
+      const foot = "Archived v1.0.0 DOI 10.5281/zenodo.24113364  ·  " +
+        "methodology " + (DIE.meta.methodology_version || "") +
+        "  ·  generated " + new Date().toISOString().slice(0, 10);
+      const pad = Math.round(16 * scale);
+      ctx.fillStyle = "#2E2820";
+      ctx.font = "600 " + Math.round(14 * scale) + "px Georgia, 'Times New Roman', serif";
+      ctx.fillText(title, pad, canvas.height + Math.round(26 * scale), out.width - 2 * pad);
+      ctx.fillStyle = "#6E6250";
+      ctx.font = "400 " + Math.round(10.5 * scale) + "px Inter, Arial, sans-serif";
+      // two-line wrap for the citation
+      const maxW = out.width - 2 * pad;
+      const words = String(cite).split(/\s+/);
+      let line = "";
+      let lineNo = 0;
+      const baseY = canvas.height + Math.round(48 * scale);
+      const lh = Math.round(15 * scale);
+      for (const word of words) {
+        const test = line ? line + " " + word : word;
+        if (ctx.measureText(test).width > maxW && line) {
+          ctx.fillText(line, pad, baseY + lineNo * lh);
+          lineNo += 1;
+          line = word;
+          if (lineNo >= 2) break;
+        } else {
+          line = test;
+        }
+      }
+      if (line && lineNo < 3) ctx.fillText(line, pad, baseY + lineNo * lh);
+      ctx.fillText(foot, pad, canvas.height + Math.round(92 * scale), maxW);
       const a = document.createElement("a");
       a.download =
         "drought-map-" +
@@ -583,7 +684,7 @@
         "-" +
         DIE.state.indicator +
         ".png";
-      a.href = canvas.toDataURL("image/png");
+      a.href = out.toDataURL("image/png");
       a.click();
       try {
         if (DIE.Telemetry)
@@ -615,6 +716,8 @@
     districtCompleteness,
     classChip,
     setBasemapAll,
+    /* live choropleth instances (testing + keyboard focus helpers) */
+    choropleths: () => Array.from(choropleths),
     get main() {
       return main;
     },

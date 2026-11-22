@@ -17,15 +17,15 @@ region:
 # climatology fitting. `end: null` means "latest month present on disk".
 # ---------------------------------------------------------------------------
 history:
-  start: "1981-01"          # CHIRPS v3 archive begins 1981-01
+  start: "1981-01" # CHIRPS v3 archive begins 1981-01
   end: null
 
 # Climatology (base) periods used to fit distributions / normals.
 #   null as second element = open-ended (through the latest month).
 base_period:
-  spi_spei: [1981, 2020]    # WMO-style 30-year reference for SPI/SPEI
-  sma: [1981, 2020]         # soil-moisture normals
-  vci: [2000, null]         # MODIS NDVI min/max (full record since 2000)
+  spi_spei: [1981, 2020] # WMO-style 30-year reference for SPI/SPEI
+  sma: [1981, 2020] # soil-moisture normals
+  vci: [2000, null] # MODIS NDVI min/max (full record since 2000)
 
 # Minimum number of base-period years required to fit a distribution.
 # 20 is the hard floor (the step refuses to fit below it); 30 recommended.
@@ -33,19 +33,20 @@ min_base_years: 20
 
 # What is written into the application's data/ folder.
 export:
-  period_start: "1981-01"   # first month in the app CSVs. SPI/SPEI/SMA cover
-                            # the full CHIRPS/ERA5 archive; VCI is limited to
-                            # the MODIS NDVI record (2000-02+) and the export
-                            # records that per-indicator availability.
-  period_end: null          # null = latest month available
+  period_start:
+    "1981-01" # first month in the app CSVs. SPI/SPEI/SMA cover
+    # the full CHIRPS/ERA5 archive; VCI is limited to
+    # the MODIS NDVI record (2000-02+) and the export
+    # records that per-indicator availability.
+  period_end: null # null = latest month available
 
 # ---------------------------------------------------------------------------
 # Paths. app_root points at the repository that contains index.html.
 # ---------------------------------------------------------------------------
 paths:
   app_root: ".."
-  raw: "data_raw"               # downloads land here (never committed)
-  processed: "data_processed"   # clipped rasters, series, indicators
+  raw: "data_raw" # downloads land here (never committed)
+  processed: "data_processed" # clipped rasters, series, indicators
   # null -> <app_root>/data/boundaries/india_districts.geojson
   boundaries: null
   # null -> <app_root>/data/districts.csv (and states.csv alongside)
@@ -67,10 +68,10 @@ downloads:
     dataset: "reanalysis-era5-land-monthly-means"
     product_type: "monthly_averaged_reanalysis"
     variables:
-      - "potential_evaporation"        # m/day mean, negative by convention
-      - "volumetric_soil_water_layer_1"  # 0-7 cm, m3/m3
-      - "volumetric_soil_water_layer_2"  # 7-28 cm
-      - "volumetric_soil_water_layer_3"  # 28-100 cm
+      - "potential_evaporation" # m/day mean, negative by convention
+      - "volumetric_soil_water_layer_1" # 0-7 cm, m3/m3
+      - "volumetric_soil_water_layer_2" # 7-28 cm
+      - "volumetric_soil_water_layer_3" # 28-100 cm
     dir: "era5land"
     # Requests are split per year automatically. 1981+ aligns with CHIRPS;
     # the archive extends back to 1950 if you want a longer SPEI record.
@@ -86,9 +87,26 @@ downloads:
     # 17 tiles cover the India bbox (computed from the sinusoidal grid —
     # regenerate for another region with:
     #   python -m die_pipeline.download_modis_ndvi --compute-tiles)
-    tiles: ["h23v05", "h23v06", "h24v05", "h24v06", "h24v07", "h24v08",
-            "h25v05", "h25v06", "h25v07", "h25v08", "h26v05", "h26v06",
-            "h26v07", "h26v08", "h27v06", "h27v07", "h27v08"]
+    tiles:
+      [
+        "h23v05",
+        "h23v06",
+        "h24v05",
+        "h24v06",
+        "h24v07",
+        "h24v08",
+        "h25v05",
+        "h25v06",
+        "h25v07",
+        "h25v08",
+        "h26v05",
+        "h26v06",
+        "h26v07",
+        "h26v08",
+        "h27v06",
+        "h27v07",
+        "h27v08",
+      ]
   appeears:
     # Alternative NDVI route: drop AppEEARS GeoTIFF exports (EPSG:4326)
     # here; prepare_rasters picks them up automatically by date in filename.
@@ -98,18 +116,18 @@ downloads:
 # Physical variables after prepare_rasters (units, guards).
 # ---------------------------------------------------------------------------
 variables:
-  precip: {dir: "precip", units: "mm/month",  valid_range: [0.0, 4000.0]}
+  precip: { dir: "precip", units: "mm/month", valid_range: [0.0, 4000.0] }
   # ERA5-Land potential evaporation can exceed 700 mm/month in the humid
   # north-east; the old 700 cap masked whole Mizoram months to NaN.
-  pet:    {dir: "pet",    units: "mm/month",  valid_range: [0.0, 1500.0]}
-  soil:   {dir: "soil",   units: "% volumetric", valid_range: [0.0, 60.0]}
-  ndvi:   {dir: "ndvi",   units: "fraction", valid_range: [-0.2, 1.0]}
+  pet: { dir: "pet", units: "mm/month", valid_range: [0.0, 1500.0] }
+  soil: { dir: "soil", units: "% volumetric", valid_range: [0.0, 60.0] }
+  ndvi: { dir: "ndvi", units: "fraction", valid_range: [-0.2, 1.0] }
 
 # ---------------------------------------------------------------------------
 # District aggregation.
 # ---------------------------------------------------------------------------
 zonal:
-  area_weighted: true        # weight pixels by cos(latitude) on lat/lon grids
+  area_weighted: true # weight pixels by cos(latitude) on lat/lon grids
   all_touched_fallback: true # re-rasterise districts smaller than one pixel
 
 # ---------------------------------------------------------------------------
@@ -117,16 +135,16 @@ zonal:
 # kind: spi | spei | sma | vci ; scale = accumulation months (spi/spei only)
 # ---------------------------------------------------------------------------
 indicators:
-  - {id: "spi_1",   kind: spi,  scale: 1}
-  - {id: "spi_3",   kind: spi,  scale: 3}
-  - {id: "spi_6",   kind: spi,  scale: 6}
-  - {id: "spi_12",  kind: spi,  scale: 12}
-  - {id: "spei_1",  kind: spei, scale: 1}
-  - {id: "spei_3",  kind: spei, scale: 3}
-  - {id: "spei_6",  kind: spei, scale: 6}
-  - {id: "spei_12", kind: spei, scale: 12}
-  - {id: "sma",     kind: sma,  statistic: "percent_mean"}   # or "zscore"
-  - {id: "vci",     kind: vci}
+  - { id: "spi_1", kind: spi, scale: 1 }
+  - { id: "spi_3", kind: spi, scale: 3 }
+  - { id: "spi_6", kind: spi, scale: 6 }
+  - { id: "spi_12", kind: spi, scale: 12 }
+  - { id: "spei_1", kind: spei, scale: 1 }
+  - { id: "spei_3", kind: spei, scale: 3 }
+  - { id: "spei_6", kind: spei, scale: 6 }
+  - { id: "spei_12", kind: spei, scale: 12 }
+  - { id: "sma", kind: sma, statistic: "percent_mean" } # or "zscore"
+  - { id: "vci", kind: vci }
 
 # ---------------------------------------------------------------------------
 # metadata.json overrides applied by export_app.
@@ -182,16 +200,18 @@ app_metadata:
 # See docs/gee-update-guide.md.
 # ---------------------------------------------------------------------------
 gee:
-  project: null              # Google Cloud project with Earth Engine enabled
-                             # (or pass --project / set EE_PROJECT)
-  end: "2025-12"             # historical cut-off for the GEE build
-  export_start: "1981-01"    # first month written to data/drought/*.csv.
-                             # SPI/SPEI/SMA cover 1981+; VCI starts with MODIS
-                             # (2000-02) and is labelled with its own window.
-  chunk_months: 12           # months per reduceRegions request (split on timeout)
-  tile_scale: 4              # raise to 8 if GEE reports memory errors
-  boundary_asset: null       # optional projects/<project>/assets/india_districts_724
-  upload_boundary: false     # create boundary_asset from the local GeoJSON first
+  project:
+    "ee-water-enc" # Google Cloud project with Earth Engine enabled
+    # (or pass --project / set EE_PROJECT)
+  end: "2025-12" # historical cut-off for the GEE build
+  export_start:
+    "1981-01" # first month written to data/drought/*.csv.
+    # SPI/SPEI/SMA cover 1981+; VCI starts with MODIS
+    # (2000-02) and is labelled with its own window.
+  chunk_months: 12 # months per reduceRegions request (split on timeout)
+  tile_scale: 4 # raise to 8 if GEE reports memory errors
+  boundary_asset: null # optional projects/<project>/assets/india_districts_724
+  upload_boundary: false # create boundary_asset from the local GeoJSON first
   # Buffer (metres) applied only to districts whose total pixel count is 0,
   # i.e. the all_touched fallback for Mahe, Lakshadweep, Diu, etc.
   buffer_m:
@@ -203,32 +223,36 @@ gee:
   # Dataset mapping. Override any key here without touching Python.
   datasets:
     precip:
-      id: "UCSB-CHG/CHIRPS/DAILY"   # GEE currently serves CHIRPS v2.0 Final
+      id: "UCSB-CHG/CHIRPS/DAILY" # GEE currently serves CHIRPS v2.0 Final
       band: "precipitation"
-      monthly: "sum"                # daily mm/day -> monthly mm
+      monthly: "sum" # daily mm/day -> monthly mm
     pet:
       id: "ECMWF/ERA5_LAND/MONTHLY_AGGR"
       band: "potential_evaporation_sum"
       monthly: "first"
       abs: true
-      scale: 1000.0                 # m/month -> mm/month
+      scale: 1000.0 # m/month -> mm/month
     soil:
       id: "ECMWF/ERA5_LAND/MONTHLY_AGGR"
-      bands: ["volumetric_soil_water_layer_1",
-              "volumetric_soil_water_layer_2",
-              "volumetric_soil_water_layer_3"]
+      bands:
+        [
+          "volumetric_soil_water_layer_1",
+          "volumetric_soil_water_layer_2",
+          "volumetric_soil_water_layer_3",
+        ]
       monthly: "first"
-      scale: 100.0                  # m3/m3 -> % volumetric
+      scale: 100.0 # m3/m3 -> % volumetric
     ndvi:
       id: "MODIS/061/MOD13A3"
       band: "NDVI"
       monthly: "first"
-      mosaic: true                 # MOD13A3 ships as ~16-17 sinusoidal tiles
-                                    # per month; mosaic composites them into one
-                                    # image (col.first() would rasterise a single
-                                    # tile and mask the rest of India)
+      mosaic:
+        true # MOD13A3 ships as ~16-17 sinusoidal tiles
+        # per month; mosaic composites them into one
+        # image (col.first() would rasterise a single
+        # tile and mask the rest of India)
       scale: 0.0001
-      start: "2000-02"              # first MOD13A3 month
+      start: "2000-02" # first MOD13A3 month
 
   # Provenance written into data/metadata.json when the GEE route is used.
   app_metadata:
@@ -269,9 +293,9 @@ gee:
 # QA thresholds used by validate.py (mirrors and extends the app-side checks).
 # ---------------------------------------------------------------------------
 qa:
-  completeness_warn: 90.0        # % of district-months below this -> warning
+  completeness_warn: 90.0 # % of district-months below this -> warning
   completeness_fail: 70.0
-  spi_abs_mean_warn: 0.25        # national area-weighted mean of SPI-6
+  spi_abs_mean_warn: 0.25 # national area-weighted mean of SPI-6
   spi_sd_range: [0.70, 1.40]
   value_limits:
     zscore: [-4.0, 4.0]

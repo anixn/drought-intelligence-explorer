@@ -1,0 +1,715 @@
+district_id,state_name,n,r,bias,rmsd,state,class_exact,event
+andhra-pradesh-anantapur,Andhra Pradesh,538,0.8433,0.0110,0.5739,0.8810,0.4480,0.4435
+andhra-pradesh-chittoor,Andhra Pradesh,538,0.8345,-0.0043,0.5812,0.8848,0.4294,0.4312
+andhra-pradesh-east-godavari,Andhra Pradesh,538,0.7957,0.0117,0.6311,0.8401,0.3829,0.3333
+andhra-pradesh-guntur,Andhra Pradesh,538,0.7772,-0.0213,0.6648,0.8550,0.3810,0.3500
+andhra-pradesh-krishna,Andhra Pradesh,538,0.7958,0.0164,0.6401,0.8457,0.4108,0.3306
+andhra-pradesh-kurnool,Andhra Pradesh,538,0.8127,-0.0156,0.6129,0.8680,0.4089,0.4320
+andhra-pradesh-prakasam,Andhra Pradesh,538,0.7872,-0.0251,0.6492,0.8643,0.3903,0.3761
+andhra-pradesh-s-p-s-nellore,Andhra Pradesh,538,0.8205,-0.0271,0.5962,0.8922,0.4015,0.4630
+andhra-pradesh-srikakulam,Andhra Pradesh,538,0.7032,-0.0127,0.7559,0.8513,0.3699,0.3277
+andhra-pradesh-visakhapatnam,Andhra Pradesh,538,0.7789,0.0041,0.6529,0.8903,0.3959,0.4779
+andhra-pradesh-vizianagaram,Andhra Pradesh,538,0.7267,-0.0066,0.7257,0.8550,0.3346,0.3659
+andhra-pradesh-west-godavari,Andhra Pradesh,538,0.7580,0.0354,0.6928,0.8457,0.3736,0.3465
+andhra-pradesh-y-s-r-kadapa,Andhra Pradesh,538,0.8081,0.0110,0.6239,0.8736,0.3959,0.4035
+arunachal-pradesh-anjaw,Arunachal Pradesh,474,0.4460,0.0549,1.0465,0.7489,0.2595,0.2222
+arunachal-pradesh-changlang,Arunachal Pradesh,538,0.4907,0.0499,0.9925,0.8011,0.2937,0.2621
+arunachal-pradesh-east-kameng,Arunachal Pradesh,538,0.4737,0.0124,1.0091,0.7918,0.2714,0.2727
+arunachal-pradesh-east-siang,Arunachal Pradesh,538,0.5178,0.0333,0.9673,0.7974,0.2844,0.2214
+arunachal-pradesh-kamle,Arunachal Pradesh,538,0.5225,-0.0236,0.9931,0.7751,0.2621,0.2577
+arunachal-pradesh-kra-daadi,Arunachal Pradesh,538,0.4135,-0.0767,1.1662,0.7509,0.2509,0.2118
+arunachal-pradesh-kurung-kumey,Arunachal Pradesh,538,0.4454,-0.0213,1.0759,0.7491,0.2807,0.1964
+arunachal-pradesh-lepa-rada,Arunachal Pradesh,538,0.5928,0.0016,0.8853,0.8086,0.3216,0.3087
+arunachal-pradesh-lohit,Arunachal Pradesh,538,0.4462,0.0290,1.0387,0.7844,0.2844,0.2318
+arunachal-pradesh-longding,Arunachal Pradesh,538,0.5173,0.0389,0.9669,0.8346,0.3197,0.3206
+arunachal-pradesh-lower-dibang-valley,Arunachal Pradesh,538,0.4235,0.0456,1.0636,0.7862,0.2732,0.2532
+arunachal-pradesh-lower-siang,Arunachal Pradesh,538,0.6795,0.0137,0.7865,0.8197,0.3662,0.3071
+arunachal-pradesh-lower-subansiri,Arunachal Pradesh,538,0.4916,0.0156,1.0214,0.7918,0.2621,0.3000
+arunachal-pradesh-namsai,Arunachal Pradesh,538,0.5189,0.0026,0.9691,0.8160,0.2807,0.3125
+arunachal-pradesh-pakke-kessang,Arunachal Pradesh,538,0.4580,0.0759,1.0191,0.8048,0.2881,0.2222
+arunachal-pradesh-papum-pare,Arunachal Pradesh,538,0.5410,0.0521,0.9517,0.8160,0.3550,0.2979
+arunachal-pradesh-shi-yomi,Arunachal Pradesh,538,0.1941,0.1380,1.2693,0.7454,0.2268,0.1595
+arunachal-pradesh-siang,Arunachal Pradesh,538,0.4342,0.0349,1.0423,0.7844,0.2398,0.2468
+arunachal-pradesh-tawang,Arunachal Pradesh,538,0.3118,-0.0568,1.1590,0.7361,0.2230,0.1598
+arunachal-pradesh-tirap,Arunachal Pradesh,538,0.5383,0.0584,0.9515,0.8253,0.3253,0.3088
+arunachal-pradesh-upper-dibang-valley,Arunachal Pradesh,538,0.2798,0.0990,1.1857,0.7472,0.2528,0.1392
+arunachal-pradesh-upper-siang,Arunachal Pradesh,538,0.2542,0.1058,1.1931,0.7454,0.2286,0.1161
+arunachal-pradesh-upper-subansiri,Arunachal Pradesh,538,0.4192,-0.0127,1.0824,0.7416,0.2454,0.2057
+arunachal-pradesh-west-kameng,Arunachal Pradesh,538,0.4114,0.0120,1.0705,0.7472,0.2435,0.2093
+arunachal-pradesh-west-siang,Arunachal Pradesh,538,0.4962,0.0085,0.9925,0.8030,0.2844,0.2980
+assam-baksa,Assam,538,0.6094,0.0268,0.8834,0.8178,0.3030,0.3288
+assam-barpeta,Assam,538,0.5726,0.0428,0.9304,0.8011,0.2695,0.3185
+assam-biswanath,Assam,538,0.6070,0.0240,0.8684,0.8401,0.3290,0.3385
+assam-bongaigaon,Assam,538,0.5866,0.0545,0.9120,0.7993,0.2862,0.2703
+assam-cachar,Assam,538,0.6705,0.0074,0.8119,0.8457,0.3327,0.4113
+assam-charaideo,Assam,538,0.5814,0.0347,0.9038,0.8346,0.3216,0.3206
+assam-chirang,Assam,538,0.6471,0.0671,0.8406,0.8234,0.3290,0.3357
+assam-darrang,Assam,538,0.6572,0.0091,0.8237,0.8197,0.3216,0.3446
+assam-dhemaji,Assam,538,0.7109,0.0125,0.7462,0.8290,0.3699,0.3429
+assam-dhubri,Assam,538,0.6492,0.0082,0.8336,0.8234,0.2900,0.3262
+assam-dibrugarh,Assam,538,0.6042,0.0346,0.8822,0.8383,0.3234,0.3507
+assam-dima-hasao,Assam,538,0.6053,0.0184,0.8845,0.8290,0.2937,0.3655
+assam-goalpara,Assam,538,0.6362,0.0327,0.8508,0.8216,0.3178,0.3143
+assam-golaghat,Assam,538,0.6515,0.0222,0.8151,0.8569,0.3606,0.3889
+assam-hailakandi,Assam,538,0.6478,0.0197,0.8363,0.8271,0.3104,0.3451
+assam-hojai,Assam,538,0.5260,-0.0244,0.9593,0.8178,0.3030,0.3378
+assam-jorhat,Assam,538,0.5897,0.0223,0.8771,0.8364,0.3364,0.3481
+assam-kamrup,Assam,538,0.6455,0.0445,0.8514,0.7993,0.3197,0.3250
+assam-kamrup-metropolitan,Assam,538,0.6269,0.0069,0.8622,0.8234,0.3086,0.3581
+assam-karbi-anglong,Assam,538,0.6116,-0.0236,0.8596,0.8420,0.3587,0.3704
+assam-karimganj,Assam,538,0.6287,0.0232,0.8512,0.8290,0.3327,0.3475
+assam-kokrajhar,Assam,538,0.6492,0.0482,0.8360,0.8327,0.2937,0.3617
+assam-lakhimpur,Assam,538,0.6248,0.0388,0.8490,0.8494,0.3625,0.3672
+assam-majuli,Assam,538,0.6050,-0.0119,0.8670,0.8309,0.3625,0.3358
+assam-morigaon,Assam,538,0.5869,0.0194,0.8957,0.8234,0.3141,0.3493
+assam-nagaon,Assam,538,0.5273,0.0308,0.9568,0.8253,0.2918,0.3139
+assam-nalbari,Assam,538,0.5756,0.0170,0.9387,0.7937,0.3141,0.2930
+assam-sivasagar,Assam,538,0.5745,0.0586,0.9043,0.8513,0.2993,0.3548
+assam-sonitpur,Assam,538,0.4881,0.0004,0.9904,0.8216,0.3197,0.2727
+assam-south-salmara-mankachar,Assam,538,0.5327,0.0490,0.9516,0.7788,0.2565,0.2222
+assam-tinsukia,Assam,538,0.5604,0.0033,0.9305,0.8104,0.3216,0.2867
+assam-udalguri,Assam,538,0.5113,-0.0109,0.9955,0.8123,0.3253,0.2887
+assam-west-karbi-anglong,Assam,538,0.5949,-0.0033,0.8858,0.8123,0.3048,0.2986
+bihar-araria,Bihar,538,0.6855,-0.0278,0.7753,0.8141,0.3067,0.2593
+bihar-arwal,Bihar,538,0.7193,-0.0631,0.7441,0.8606,0.3290,0.4186
+bihar-aurangabad,Bihar,538,0.7772,-0.0543,0.6644,0.8569,0.3792,0.4122
+bihar-banka,Bihar,538,0.6991,-0.0069,0.7714,0.8810,0.3587,0.4622
+bihar-begusarai,Bihar,538,0.6588,0.0025,0.8216,0.8457,0.3234,0.3413
+bihar-bhagalpur,Bihar,538,0.6695,-0.0715,0.8179,0.8364,0.3178,0.3577
+bihar-bhojpur,Bihar,538,0.7451,-0.0743,0.7110,0.8680,0.3513,0.4409
+bihar-buxar,Bihar,538,0.7148,-0.0602,0.7501,0.8662,0.3271,0.4146
+bihar-darbhanga,Bihar,538,0.7152,-0.0242,0.7536,0.8569,0.3457,0.3840
+bihar-east-champaran,Bihar,538,0.7017,-0.0639,0.7724,0.8439,0.3197,0.3538
+bihar-gaya,Bihar,538,0.7990,-0.0294,0.6313,0.8866,0.3959,0.5000
+bihar-gopalganj,Bihar,538,0.7362,-0.0397,0.7282,0.8513,0.3346,0.3846
+bihar-jamui,Bihar,538,0.7102,-0.0300,0.7586,0.8717,0.3606,0.4344
+bihar-jehanabad,Bihar,538,0.7708,-0.0230,0.6724,0.8792,0.3625,0.4583
+bihar-kaimur,Bihar,538,0.7720,-0.0518,0.6712,0.8513,0.3457,0.3893
+bihar-katihar,Bihar,538,0.7318,-0.0475,0.7291,0.8662,0.3476,0.4240
+bihar-khagaria,Bihar,538,0.7151,-0.0172,0.7530,0.8383,0.3792,0.3359
+bihar-kishanganj,Bihar,538,0.6576,-0.0478,0.8095,0.8271,0.3067,0.2901
+bihar-lakhisarai,Bihar,538,0.6870,-0.0110,0.7876,0.8680,0.3550,0.4132
+bihar-madhepura,Bihar,538,0.6646,-0.0492,0.8105,0.8532,0.3030,0.3876
+bihar-madhubani,Bihar,538,0.7123,-0.0175,0.7539,0.8606,0.3513,0.4094
+bihar-munger,Bihar,538,0.7018,-0.0152,0.7679,0.8494,0.2993,0.3622
+bihar-muzaffarpur,Bihar,538,0.7504,-0.0261,0.7069,0.8606,0.3346,0.4094
+bihar-nalanda,Bihar,538,0.7416,-0.0230,0.7149,0.8848,0.3513,0.5000
+bihar-nawada,Bihar,538,0.7195,-0.0336,0.7448,0.8587,0.3086,0.4062
+bihar-patna,Bihar,538,0.7792,-0.0334,0.6623,0.8866,0.3885,0.4831
+bihar-purnia,Bihar,538,0.7011,-0.0552,0.7649,0.8457,0.3346,0.3897
+bihar-rohtas,Bihar,538,0.7702,-0.0573,0.6718,0.8532,0.3569,0.4148
+bihar-saharsa,Bihar,538,0.6404,-0.0706,0.8581,0.8383,0.2881,0.3603
+bihar-samastipur,Bihar,538,0.7298,-0.0306,0.7329,0.8717,0.3699,0.4250
+bihar-saran,Bihar,538,0.7602,-0.0482,0.6942,0.8327,0.3123,0.3382
+bihar-sheikhpura,Bihar,538,0.6919,-0.0331,0.7826,0.8736,0.3290,0.4426
+bihar-sheohar,Bihar,538,0.6465,-0.0358,0.8322,0.8401,0.3123,0.3065
+bihar-sitamarhi,Bihar,538,0.6616,-0.0466,0.8188,0.8420,0.3086,0.3254
+bihar-siwan,Bihar,538,0.7159,-0.0476,0.7598,0.8216,0.3104,0.2941
+bihar-supaul,Bihar,538,0.7027,-0.0052,0.7659,0.8364,0.3253,0.3071
+bihar-vaishali,Bihar,538,0.7334,-0.0474,0.7287,0.8643,0.3513,0.4206
+bihar-west-champaran,Bihar,538,0.7127,-0.0186,0.7552,0.8290,0.3067,0.3333
+chandigarh-chandigarh,Chandigarh,538,0.5160,-0.0846,0.9757,0.8123,0.2862,0.2681
+chhattisgarh-balod,Chhattisgarh,538,0.7838,-0.0358,0.6579,0.8643,0.3587,0.3917
+chhattisgarh-baloda-bazar,Chhattisgarh,538,0.7669,-0.0409,0.6794,0.8625,0.3848,0.3621
+chhattisgarh-balrampur,Chhattisgarh,538,0.8224,-0.0065,0.5987,0.8550,0.4071,0.4135
+chhattisgarh-bametara,Chhattisgarh,538,0.7709,-0.0564,0.6695,0.8606,0.4164,0.3802
+chhattisgarh-bastar,Chhattisgarh,538,0.7636,0.0186,0.6752,0.8625,0.3755,0.3675
+chhattisgarh-bijapur,Chhattisgarh,538,0.6291,0.0588,0.8514,0.8141,0.3197,0.2537
+chhattisgarh-bilaspur,Chhattisgarh,538,0.8158,-0.0381,0.5999,0.8810,0.4071,0.4435
+chhattisgarh-dakshin-bastar-dantewada,Chhattisgarh,538,0.7435,0.0099,0.7005,0.8550,0.3755,0.3659
+chhattisgarh-dhamtari,Chhattisgarh,538,0.7018,-0.0269,0.7604,0.8569,0.3420,0.3636
+chhattisgarh-durg,Chhattisgarh,538,0.7476,-0.0703,0.7087,0.8662,0.3829,0.4000
+chhattisgarh-gariaband,Chhattisgarh,538,0.7215,-0.0168,0.7312,0.8773,0.3550,0.4310
+chhattisgarh-janjgir-champa,Chhattisgarh,538,0.7573,-0.0404,0.6906,0.8625,0.3569,0.3833
+chhattisgarh-jashpur,Chhattisgarh,538,0.7474,-0.0344,0.7037,0.8680,0.3569,0.4453
+chhattisgarh-kabeerdham,Chhattisgarh,538,0.7977,-0.0383,0.6256,0.8829,0.3959,0.4569
+chhattisgarh-kondagaon,Chhattisgarh,538,0.7550,-0.0126,0.6868,0.8755,0.4182,0.4370
+chhattisgarh-korba,Chhattisgarh,538,0.7664,-0.0516,0.6751,0.8810,0.4071,0.4530
+chhattisgarh-koriya,Chhattisgarh,538,0.8020,-0.0412,0.6207,0.8532,0.3903,0.3680
+chhattisgarh-mahasamund,Chhattisgarh,538,0.7316,-0.0632,0.7267,0.8346,0.3532,0.3258
+chhattisgarh-mungeli,Chhattisgarh,538,0.8243,-0.0265,0.5844,0.8978,0.3903,0.5000
+chhattisgarh-narayanpur,Chhattisgarh,538,0.5728,0.0580,0.9189,0.8253,0.3253,0.3088
+chhattisgarh-raigarh,Chhattisgarh,538,0.7852,-0.0535,0.6479,0.8457,0.3810,0.3759
+chhattisgarh-raipur,Chhattisgarh,538,0.7574,-0.0590,0.6973,0.8587,0.3364,0.3667
+chhattisgarh-rajnandgaon,Chhattisgarh,538,0.7775,-0.0409,0.6599,0.8885,0.3941,0.4545
+chhattisgarh-sukma,Chhattisgarh,538,0.7276,0.0264,0.7237,0.8550,0.3699,0.3810
+chhattisgarh-surajpur,Chhattisgarh,538,0.7890,-0.0467,0.6426,0.8717,0.3903,0.4435
+chhattisgarh-surguja,Chhattisgarh,538,0.7644,-0.0668,0.6831,0.8717,0.3848,0.4435
+chhattisgarh-uttar-bastar-kanker,Chhattisgarh,538,0.6633,0.0209,0.8159,0.8178,0.3178,0.2741
+dadra-and-nagar-haveli-and-daman-and-diu-dadra-and-nagar-haveli,Dadra and Nagar Haveli and Daman and Diu,538,0.7292,0.0089,0.7502,0.8978,0.3662,0.4660
+delhi-delhi,Delhi,538,0.7820,-0.0271,0.6588,0.8773,0.3643,0.4359
+goa-north-goa,Goa,538,0.6876,-0.0159,0.8192,0.8662,0.3569,0.3950
+goa-south-goa,Goa,538,0.6148,-0.0350,0.9112,0.8309,0.2900,0.2891
+gujarat-ahmedabad,Gujarat,538,0.7015,-0.0628,0.7814,0.8680,0.4015,0.3932
+gujarat-amreli,Gujarat,538,0.7300,-0.0356,0.7501,0.8662,0.3717,0.3846
+gujarat-anand,Gujarat,538,0.6690,-0.0479,0.8192,0.8383,0.3569,0.2869
+gujarat-aravalli,Gujarat,538,0.7216,-0.0487,0.7563,0.8532,0.3736,0.3248
+gujarat-banaskantha,Gujarat,538,0.5954,-0.0638,0.9287,0.8309,0.3625,0.2720
+gujarat-bharuch,Gujarat,538,0.7206,-0.0055,0.7602,0.8810,0.4294,0.4074
+gujarat-bhavnagar,Gujarat,538,0.7114,-0.0298,0.7800,0.8569,0.3717,0.3790
+gujarat-botad,Gujarat,538,0.7655,-0.0207,0.6975,0.8625,0.3941,0.3884
+gujarat-chhota-udaipur,Gujarat,538,0.7389,-0.0083,0.7396,0.8587,0.3792,0.3333
+gujarat-dahod,Gujarat,538,0.7107,-0.0565,0.7703,0.8550,0.3476,0.3554
+gujarat-dang,Gujarat,538,0.5914,-0.0094,0.9169,0.8494,0.3141,0.3306
+gujarat-devbhumi-dwarka,Gujarat,538,0.6678,0.0055,0.8363,0.8290,0.3662,0.3185
+gujarat-gandhinagar,Gujarat,538,0.7004,-0.0556,0.7829,0.8327,0.3680,0.3130
+gujarat-gir-somnath,Gujarat,538,0.7313,0.0023,0.7557,0.8587,0.3736,0.3821
+gujarat-jamnagar,Gujarat,538,0.7250,-0.0327,0.7597,0.8494,0.4071,0.3622
+gujarat-junagadh,Gujarat,538,0.7091,-0.0067,0.7892,0.8309,0.3625,0.3158
+gujarat-kheda,Gujarat,538,0.7081,-0.0397,0.7704,0.8439,0.3532,0.2821
+gujarat-kutch,Gujarat,538,0.6997,-0.0552,0.8062,0.8253,0.3792,0.2879
+gujarat-mahisagar,Gujarat,538,0.6873,-0.0516,0.7987,0.8606,0.3309,0.3590
+gujarat-mehsana,Gujarat,538,0.5933,-0.0620,0.9144,0.8401,0.3773,0.3065
+gujarat-morbi,Gujarat,538,0.6864,-0.0361,0.8055,0.8420,0.3736,0.3200
+gujarat-narmada,Gujarat,538,0.7293,0.0208,0.7595,0.8662,0.3625,0.3739
+gujarat-navsari,Gujarat,538,0.7336,0.0025,0.7525,0.8885,0.3792,0.4545
+gujarat-panchmahal,Gujarat,538,0.7247,-0.0254,0.7502,0.8476,0.3625,0.3223
+gujarat-patan,Gujarat,538,0.6263,-0.0712,0.8907,0.8178,0.3532,0.2160
+gujarat-porbandar,Gujarat,538,0.6483,-0.0352,0.8682,0.8234,0.3717,0.2963
+gujarat-rajkot,Gujarat,538,0.7801,-0.0300,0.6794,0.8699,0.4182,0.4118
+gujarat-sabarkantha,Gujarat,538,0.7246,-0.0506,0.7617,0.8550,0.3866,0.3554
+gujarat-surat,Gujarat,538,0.7318,0.0166,0.7502,0.8699,0.3903,0.3805
+gujarat-surendranagar,Gujarat,538,0.7384,-0.0493,0.7309,0.8699,0.3903,0.3913
+gujarat-tapi,Gujarat,538,0.6557,0.0075,0.8516,0.8420,0.3141,0.3307
+gujarat-vadodara,Gujarat,538,0.7001,-0.0324,0.7818,0.8401,0.3587,0.2893
+gujarat-valsad,Gujarat,538,0.7387,0.0040,0.7419,0.9089,0.3959,0.5243
+gujarat-vav-tharad,Gujarat,538,0.5599,-0.0713,0.9647,0.8271,0.3346,0.2677
+haryana-ambala,Haryana,538,0.5315,-0.1112,0.9607,0.8216,0.2658,0.3094
+haryana-bhiwani,Haryana,538,0.7678,-0.0646,0.6828,0.8866,0.3848,0.4299
+haryana-charkhi-dadri,Haryana,538,0.7975,-0.0166,0.6437,0.8755,0.4126,0.4018
+haryana-faridabad,Haryana,538,0.7467,-0.0445,0.7070,0.8699,0.3587,0.3966
+haryana-fatehabad,Haryana,538,0.7200,-0.0400,0.7509,0.8829,0.3160,0.4324
+haryana-gurugram,Haryana,538,0.8228,0.0093,0.5997,0.8959,0.3810,0.4862
+haryana-hisar,Haryana,538,0.7404,-0.0540,0.7203,0.8736,0.3587,0.4188
+haryana-jhajjar,Haryana,538,0.8192,0.0001,0.6074,0.8829,0.4108,0.4375
+haryana-jind,Haryana,538,0.7214,-0.0564,0.7464,0.8643,0.3197,0.3866
+haryana-kaithal,Haryana,538,0.7154,-0.0523,0.7535,0.8717,0.3346,0.4298
+haryana-karnal,Haryana,538,0.7175,-0.0682,0.7511,0.8494,0.3680,0.3672
+haryana-kurukshetra,Haryana,538,0.5991,-0.0777,0.8918,0.8550,0.3011,0.3710
+haryana-mahendragarh,Haryana,538,0.8355,-0.0053,0.5843,0.8829,0.4294,0.4220
+haryana-nuh,Haryana,538,0.8284,-0.0043,0.5876,0.8996,0.4257,0.5000
+haryana-palwal,Haryana,538,0.7679,-0.0420,0.6808,0.8792,0.3253,0.4444
+haryana-panchkula,Haryana,538,0.6007,-0.0629,0.8931,0.8364,0.2900,0.3282
+haryana-panipat,Haryana,538,0.6945,-0.0666,0.7771,0.8569,0.3197,0.3740
+haryana-rewari,Haryana,538,0.8332,-0.0035,0.5831,0.8866,0.4312,0.4602
+haryana-rohtak,Haryana,538,0.7629,-0.0261,0.6912,0.8773,0.3643,0.4261
+haryana-sirsa,Haryana,538,0.7674,-0.0245,0.6836,0.8996,0.3922,0.5046
+haryana-sonipat,Haryana,538,0.7446,-0.0512,0.7144,0.8755,0.3327,0.4370
+haryana-yamunanagar,Haryana,538,0.6482,-0.0688,0.8335,0.8216,0.2732,0.3043
+himachal-pradesh-bilaspur,Himachal Pradesh,538,0.6373,-0.0372,0.8459,0.8290,0.3216,0.3083
+himachal-pradesh-chamba,Himachal Pradesh,538,0.4824,-0.0500,0.9938,0.8216,0.3178,0.3143
+himachal-pradesh-hamirpur,Himachal Pradesh,538,0.5562,-0.0250,0.9323,0.7955,0.3086,0.2254
+himachal-pradesh-kangra,Himachal Pradesh,538,0.5711,-0.0312,0.9035,0.8290,0.3160,0.3285
+himachal-pradesh-kinnaur,Himachal Pradesh,538,0.4288,-0.0579,1.0585,0.8086,0.2565,0.2426
+himachal-pradesh-kullu,Himachal Pradesh,538,0.6008,-0.0073,0.8954,0.8364,0.3457,0.3383
+himachal-pradesh-lahaul-and-spiti,Himachal Pradesh,538,0.4035,-0.0801,1.0865,0.7714,0.2491,0.2360
+himachal-pradesh-mandi,Himachal Pradesh,538,0.6139,-0.0084,0.8752,0.8197,0.3067,0.2971
+himachal-pradesh-shimla,Himachal Pradesh,538,0.6661,-0.0084,0.8142,0.8104,0.3290,0.2966
+himachal-pradesh-sirmaur,Himachal Pradesh,538,0.6872,-0.0242,0.7830,0.8234,0.3067,0.3116
+himachal-pradesh-solan,Himachal Pradesh,538,0.6553,-0.0177,0.8279,0.8309,0.3030,0.3106
+himachal-pradesh-una,Himachal Pradesh,538,0.6171,-0.0582,0.8652,0.8401,0.3234,0.3281
+jammu-and-kashmir-anantnag,Jammu and Kashmir,538,0.6395,-0.0514,0.8433,0.8234,0.2807,0.3493
+jammu-and-kashmir-bandipora,Jammu and Kashmir,538,0.6978,-0.0310,0.7651,0.8439,0.3699,0.4126
+jammu-and-kashmir-baramulla,Jammu and Kashmir,538,0.6864,-0.0182,0.7801,0.8606,0.3736,0.4186
+jammu-and-kashmir-budgam,Jammu and Kashmir,538,0.7179,-0.0364,0.7394,0.8680,0.3810,0.4621
+jammu-and-kashmir-doda,Jammu and Kashmir,538,0.5329,-0.0401,0.9589,0.7862,0.2862,0.2177
+jammu-and-kashmir-ganderbal,Jammu and Kashmir,538,0.6945,-0.0131,0.7688,0.8513,0.3569,0.4074
+jammu-and-kashmir-jammu,Jammu and Kashmir,538,0.7024,0.0195,0.7716,0.8513,0.3457,0.3496
+jammu-and-kashmir-kathua,Jammu and Kashmir,538,0.6254,0.0118,0.8622,0.8216,0.2751,0.3094
+jammu-and-kashmir-kishtwar,Jammu and Kashmir,538,0.5098,-0.0537,0.9847,0.7862,0.2677,0.2581
+jammu-and-kashmir-kulgam,Jammu and Kashmir,538,0.6871,-0.0269,0.7786,0.8364,0.3457,0.3889
+jammu-and-kashmir-kupwara,Jammu and Kashmir,538,0.6727,-0.0390,0.8047,0.8420,0.3309,0.4138
+jammu-and-kashmir-mirpur,Jammu and Kashmir,538,0.6433,-0.0434,0.8338,0.8457,0.3569,0.3806
+jammu-and-kashmir-muzaffarabad,Jammu and Kashmir,538,0.6455,-0.0488,0.8303,0.8513,0.3346,0.4245
+jammu-and-kashmir-pulwama,Jammu and Kashmir,538,0.6550,-0.0554,0.8197,0.8327,0.3160,0.3836
+jammu-and-kashmir-punch,Jammu and Kashmir,538,0.5870,-0.0564,0.8927,0.8513,0.3086,0.3985
+jammu-and-kashmir-rajouri,Jammu and Kashmir,538,0.6779,-0.0147,0.8003,0.8216,0.3197,0.3287
+jammu-and-kashmir-ramban,Jammu and Kashmir,538,0.6306,-0.0288,0.8484,0.8383,0.3178,0.3786
+jammu-and-kashmir-reasi,Jammu and Kashmir,538,0.6825,0.0325,0.8018,0.8420,0.3216,0.3929
+jammu-and-kashmir-samba,Jammu and Kashmir,538,0.6561,0.0054,0.8247,0.8216,0.2862,0.2500
+jammu-and-kashmir-shopiyan,Jammu and Kashmir,538,0.6618,-0.0593,0.8157,0.8457,0.3253,0.4155
+jammu-and-kashmir-srinagar,Jammu and Kashmir,538,0.6930,-0.0268,0.7740,0.8532,0.3717,0.4234
+jammu-and-kashmir-udhampur,Jammu and Kashmir,538,0.6122,-0.0052,0.8747,0.8048,0.3234,0.2657
+jharkhand-bokaro,Jharkhand,538,0.7607,-0.0179,0.7042,0.8810,0.3494,0.4797
+jharkhand-chatra,Jharkhand,538,0.8146,-0.0265,0.6116,0.9071,0.4052,0.5652
+jharkhand-deoghar,Jharkhand,538,0.7158,-0.0032,0.7566,0.8587,0.3643,0.3968
+jharkhand-dhanbad,Jharkhand,538,0.7682,-0.0085,0.6990,0.8810,0.3606,0.4622
+jharkhand-dumka,Jharkhand,538,0.7411,-0.0429,0.7266,0.8699,0.3792,0.4531
+jharkhand-east-singhbhum,Jharkhand,538,0.8782,0.0046,0.4975,0.9089,0.4833,0.5664
+jharkhand-garhwa,Jharkhand,538,0.8100,-0.0470,0.6166,0.8532,0.3625,0.3969
+jharkhand-giridih,Jharkhand,538,0.7061,-0.0292,0.7696,0.8699,0.3494,0.4574
+jharkhand-godda,Jharkhand,538,0.6702,-0.0150,0.8132,0.8476,0.3216,0.3926
+jharkhand-gumla,Jharkhand,538,0.8154,-0.0156,0.6053,0.8922,0.4071,0.5323
+jharkhand-hazaribagh,Jharkhand,538,0.7536,-0.0339,0.7054,0.8829,0.3327,0.4836
+jharkhand-jamtara,Jharkhand,538,0.7391,0.0004,0.7407,0.8550,0.3420,0.3953
+jharkhand-khunti,Jharkhand,538,0.7379,-0.0004,0.7297,0.8717,0.3699,0.4435
+jharkhand-koderma,Jharkhand,538,0.7139,-0.0057,0.7521,0.8699,0.3234,0.4400
+jharkhand-latehar,Jharkhand,538,0.8300,-0.0232,0.5851,0.8773,0.4554,0.4803
+jharkhand-lohardaga,Jharkhand,538,0.8275,-0.0316,0.5914,0.8866,0.3996,0.5081
+jharkhand-pakur,Jharkhand,538,0.6992,-0.0332,0.7766,0.8494,0.3736,0.4088
+jharkhand-palamu,Jharkhand,538,0.8059,-0.0274,0.6257,0.8662,0.3978,0.4545
+jharkhand-ramgarh,Jharkhand,538,0.7097,-0.0078,0.7703,0.8699,0.3457,0.4531
+jharkhand-ranchi,Jharkhand,538,0.7940,-0.0170,0.6475,0.8680,0.3959,0.4320
+jharkhand-sahibganj,Jharkhand,538,0.6916,-0.0020,0.7838,0.8550,0.3457,0.3906
+jharkhand-saraikela-kharsawan,Jharkhand,538,0.8520,-0.0073,0.5454,0.8996,0.4740,0.5263
+jharkhand-simdega,Jharkhand,538,0.7995,0.0041,0.6292,0.8885,0.3699,0.4737
+jharkhand-west-singhbhum,Jharkhand,538,0.8247,-0.0063,0.5911,0.8532,0.4033,0.3780
+karnataka-bagalkote,Karnataka,538,0.7428,-0.0697,0.7325,0.8401,0.3383,0.3333
+karnataka-ballari,Karnataka,538,0.7652,-0.0215,0.7082,0.8587,0.3736,0.3770
+karnataka-belagavi,Karnataka,538,0.7673,-0.0381,0.6965,0.8569,0.4033,0.3937
+karnataka-bengaluru-rural,Karnataka,538,0.8060,-0.0072,0.6369,0.8736,0.4164,0.4426
+karnataka-bengaluru-urban,Karnataka,538,0.8097,-0.0028,0.6297,0.8717,0.4312,0.4202
+karnataka-bidar,Karnataka,538,0.7254,-0.0355,0.7370,0.8513,0.3996,0.3277
+karnataka-chamarajanagara,Karnataka,538,0.7223,-0.0100,0.7518,0.8401,0.3680,0.2833
+karnataka-chikkaballapura,Karnataka,538,0.7894,0.0216,0.6701,0.8885,0.3550,0.4643
+karnataka-chikkamagaluru,Karnataka,538,0.6376,-0.0066,0.8705,0.8476,0.3234,0.3223
+karnataka-chitradurga,Karnataka,538,0.7902,-0.0087,0.6763,0.8717,0.3346,0.4250
+karnataka-dakshina-kannada,Karnataka,538,0.7162,-0.0127,0.7762,0.8420,0.3457,0.3254
+karnataka-davanagere,Karnataka,538,0.7584,-0.0125,0.7192,0.8253,0.3141,0.3037
+karnataka-dharwad,Karnataka,538,0.7002,-0.0027,0.8012,0.8476,0.3773,0.3333
+karnataka-gadag,Karnataka,538,0.7740,-0.0321,0.6895,0.8569,0.3903,0.3740
+karnataka-hassan,Karnataka,538,0.7361,0.0408,0.7487,0.8290,0.3420,0.3134
+karnataka-haveri,Karnataka,538,0.6646,-0.0371,0.8465,0.8327,0.3383,0.3023
+karnataka-kalaburagi,Karnataka,538,0.7136,-0.0492,0.7647,0.8662,0.3717,0.3898
+karnataka-kodagu,Karnataka,538,0.6838,0.0284,0.8020,0.8699,0.3457,0.4118
+karnataka-kolar,Karnataka,538,0.8014,-0.0055,0.6474,0.8885,0.4108,0.4545
+karnataka-koppal,Karnataka,538,0.7291,-0.0404,0.7538,0.8309,0.3401,0.3106
+karnataka-mandya,Karnataka,538,0.7707,0.0175,0.6921,0.8885,0.3569,0.4393
+karnataka-mysuru,Karnataka,538,0.7034,0.0113,0.7753,0.8662,0.3699,0.3684
+karnataka-raichur,Karnataka,538,0.6703,-0.0722,0.8290,0.8160,0.3141,0.2500
+karnataka-ramanagara,Karnataka,538,0.7814,-0.0421,0.6707,0.8792,0.3717,0.4298
+karnataka-shivamogga,Karnataka,538,0.6356,0.0213,0.8825,0.8327,0.3216,0.2969
+karnataka-tumakuru,Karnataka,538,0.7968,0.0069,0.6650,0.8773,0.3903,0.4159
+karnataka-udupi,Karnataka,538,0.6727,-0.0188,0.8420,0.8327,0.3160,0.2969
+karnataka-uttara-kannada,Karnataka,538,0.6687,-0.0235,0.8405,0.8401,0.3067,0.3435
+karnataka-vijayapura,Karnataka,538,0.7639,-0.0338,0.6975,0.8383,0.3513,0.3308
+karnataka-yadgir,Karnataka,538,0.6633,-0.0599,0.8356,0.8271,0.3123,0.2901
+kerala-alappuzha,Kerala,538,0.7488,0.0063,0.7127,0.8643,0.3643,0.4016
+kerala-ernakulam,Kerala,538,0.7139,0.0157,0.7555,0.8606,0.3364,0.3902
+kerala-idukki,Kerala,538,0.6945,0.0398,0.7770,0.8625,0.3401,0.3782
+kerala-kannur,Kerala,538,0.6891,-0.0016,0.7990,0.8513,0.3234,0.3496
+kerala-kasaragod,Kerala,538,0.6496,-0.0393,0.8571,0.8457,0.2881,0.3306
+kerala-kollam,Kerala,538,0.7163,-0.0229,0.7477,0.8513,0.3569,0.3651
+kerala-kottayam,Kerala,538,0.7367,0.0250,0.7209,0.8755,0.3625,0.4274
+kerala-kozhikode,Kerala,538,0.7232,0.0344,0.7554,0.8476,0.3755,0.3333
+kerala-malappuram,Kerala,538,0.7472,0.0274,0.7157,0.8178,0.3662,0.2950
+kerala-palakkad,Kerala,538,0.7326,0.0341,0.7355,0.8327,0.3439,0.2969
+kerala-pathanamthitta,Kerala,538,0.7574,0.0075,0.6937,0.8773,0.3494,0.4211
+kerala-thiruvananthapuram,Kerala,538,0.7401,-0.0243,0.7190,0.8699,0.3643,0.4017
+kerala-thrissur,Kerala,538,0.7166,0.0044,0.7560,0.8420,0.3476,0.3307
+kerala-wayanad,Kerala,538,0.6385,0.0885,0.8671,0.8253,0.3234,0.2932
+ladakh-kargil,Ladakh,538,0.5054,-0.0870,1.0003,0.7825,0.2379,0.2866
+ladakh-leh,Ladakh,538,0.4656,-0.0615,1.0394,0.7825,0.1952,0.2952
+madhya-pradesh-agar-malwa,Madhya Pradesh,538,0.7508,-0.0724,0.7167,0.8885,0.4108,0.4340
+madhya-pradesh-alirajpur,Madhya Pradesh,538,0.7645,-0.0368,0.7065,0.8699,0.3717,0.3694
+madhya-pradesh-anuppur,Madhya Pradesh,538,0.8204,-0.0341,0.5860,0.8755,0.4033,0.4224
+madhya-pradesh-ashoknagar,Madhya Pradesh,538,0.8053,-0.0317,0.6273,0.8717,0.4368,0.3947
+madhya-pradesh-balaghat,Madhya Pradesh,538,0.6051,-0.0024,0.8720,0.8253,0.3439,0.2598
+madhya-pradesh-barwani,Madhya Pradesh,538,0.7642,-0.0466,0.7026,0.8550,0.4089,0.3710
+madhya-pradesh-betul,Madhya Pradesh,538,0.7580,-0.0491,0.6973,0.8401,0.3476,0.2893
+madhya-pradesh-bhind,Madhya Pradesh,538,0.8085,-0.0124,0.6168,0.8494,0.4015,0.3415
+madhya-pradesh-bhopal,Madhya Pradesh,538,0.7968,-0.0588,0.6456,0.8885,0.3996,0.4118
+madhya-pradesh-burhanpur,Madhya Pradesh,538,0.6850,-0.0563,0.7966,0.8513,0.3420,0.3277
+madhya-pradesh-chhatarpur,Madhya Pradesh,538,0.8281,-0.0438,0.5774,0.8922,0.4591,0.4821
+madhya-pradesh-chhindwara,Madhya Pradesh,538,0.7729,-0.0265,0.6726,0.8755,0.3941,0.4123
+madhya-pradesh-damoh,Madhya Pradesh,538,0.8109,-0.0406,0.6064,0.8810,0.4238,0.4336
+madhya-pradesh-datia,Madhya Pradesh,538,0.7535,-0.0405,0.6951,0.8383,0.3773,0.2810
+madhya-pradesh-dewas,Madhya Pradesh,538,0.7745,-0.0548,0.6786,0.8550,0.4164,0.3217
+madhya-pradesh-dhar,Madhya Pradesh,538,0.7737,-0.0676,0.6896,0.8792,0.3941,0.4248
+madhya-pradesh-dindori,Madhya Pradesh,538,0.8167,0.0039,0.5939,0.8755,0.4275,0.4123
+madhya-pradesh-guna,Madhya Pradesh,538,0.7791,-0.0518,0.6761,0.8922,0.4442,0.4369
+madhya-pradesh-gwalior,Madhya Pradesh,538,0.8129,-0.0144,0.6134,0.8476,0.4145,0.3223
+madhya-pradesh-harda,Madhya Pradesh,538,0.7323,-0.0610,0.7364,0.8717,0.3792,0.3551
+madhya-pradesh-hoshangabad,Madhya Pradesh,538,0.7551,-0.0424,0.7061,0.8587,0.3978,0.3391
+madhya-pradesh-indore,Madhya Pradesh,538,0.7683,-0.0590,0.6897,0.8792,0.3885,0.4248
+madhya-pradesh-jabalpur,Madhya Pradesh,538,0.8222,-0.0349,0.5840,0.8550,0.4257,0.3607
+madhya-pradesh-jhabua,Madhya Pradesh,538,0.7457,-0.0563,0.7257,0.8755,0.3699,0.3964
+madhya-pradesh-katni,Madhya Pradesh,538,0.8091,-0.0344,0.6033,0.8643,0.4349,0.3967
+madhya-pradesh-khandwa,Madhya Pradesh,538,0.7287,-0.0687,0.7391,0.8736,0.3717,0.4035
+madhya-pradesh-khargone,Madhya Pradesh,538,0.7143,-0.0751,0.7651,0.8513,0.3457,0.3496
+madhya-pradesh-mandla,Madhya Pradesh,538,0.8119,-0.0276,0.6021,0.8717,0.4238,0.4052
+madhya-pradesh-mandsaur,Madhya Pradesh,538,0.7182,-0.0728,0.7656,0.8457,0.3829,0.3140
+madhya-pradesh-morena,Madhya Pradesh,538,0.8062,-0.0246,0.6269,0.8457,0.3941,0.3197
+madhya-pradesh-narsinghpur,Madhya Pradesh,538,0.7705,-0.0329,0.6745,0.8476,0.3866,0.2870
+madhya-pradesh-neemuch,Madhya Pradesh,538,0.7530,-0.0626,0.7255,0.8550,0.3587,0.3217
+madhya-pradesh-niwari,Madhya Pradesh,538,0.7506,-0.0390,0.7009,0.8271,0.3922,0.2791
+madhya-pradesh-panna,Madhya Pradesh,538,0.7887,-0.0507,0.6363,0.8829,0.3941,0.4569
+madhya-pradesh-raisen,Madhya Pradesh,538,0.8025,-0.0447,0.6285,0.8680,0.3903,0.3364
+madhya-pradesh-rajgarh,Madhya Pradesh,538,0.7693,-0.0567,0.6933,0.8848,0.3922,0.4312
+madhya-pradesh-ratlam,Madhya Pradesh,538,0.7704,-0.0504,0.6946,0.8717,0.4071,0.3839
+madhya-pradesh-rewa,Madhya Pradesh,538,0.8255,-0.0487,0.5817,0.8829,0.4219,0.4615
+madhya-pradesh-sagar,Madhya Pradesh,538,0.8457,-0.0341,0.5476,0.8755,0.4647,0.3964
+madhya-pradesh-satna,Madhya Pradesh,538,0.8265,-0.0445,0.5763,0.8773,0.4257,0.4590
+madhya-pradesh-sehore,Madhya Pradesh,538,0.7884,-0.0554,0.6573,0.8550,0.3829,0.3217
+madhya-pradesh-seoni,Madhya Pradesh,538,0.7789,-0.0203,0.6591,0.8829,0.4312,0.4324
+madhya-pradesh-shahdol,Madhya Pradesh,538,0.8229,-0.0408,0.5826,0.8569,0.4071,0.3889
+madhya-pradesh-shajapur,Madhya Pradesh,538,0.7431,-0.0795,0.7267,0.8532,0.3773,0.3248
+madhya-pradesh-sheopur,Madhya Pradesh,538,0.7146,-0.0271,0.7790,0.8476,0.3606,0.3333
+madhya-pradesh-shivpuri,Madhya Pradesh,538,0.8045,-0.0087,0.6344,0.8699,0.4238,0.3913
+madhya-pradesh-sidhi,Madhya Pradesh,538,0.8289,-0.0191,0.5763,0.8755,0.4275,0.4322
+madhya-pradesh-singrauli,Madhya Pradesh,538,0.8357,-0.0202,0.5694,0.8550,0.3922,0.3953
+madhya-pradesh-tikamgarh,Madhya Pradesh,538,0.8043,-0.0391,0.6205,0.8532,0.4480,0.3471
+madhya-pradesh-ujjain,Madhya Pradesh,538,0.7798,-0.0698,0.6748,0.8978,0.4257,0.4860
+madhya-pradesh-umaria,Madhya Pradesh,538,0.8106,-0.0241,0.5994,0.8717,0.4164,0.4435
+madhya-pradesh-vidisha,Madhya Pradesh,538,0.8095,-0.0551,0.6152,0.8755,0.4219,0.3909
+maharashtra-ahmednagar,Maharashtra,538,0.7124,-0.0575,0.7677,0.8569,0.3773,0.3583
+maharashtra-akola,Maharashtra,538,0.7168,-0.0913,0.7530,0.8662,0.3866,0.3739
+maharashtra-amravati,Maharashtra,538,0.7517,-0.0722,0.7075,0.8587,0.3532,0.3504
+maharashtra-aurangabad,Maharashtra,538,0.6979,-0.0594,0.7839,0.8309,0.3550,0.2661
+maharashtra-beed,Maharashtra,538,0.6667,-0.0820,0.8217,0.8253,0.3197,0.2713
+maharashtra-bhandara,Maharashtra,538,0.7541,-0.0533,0.6943,0.8513,0.3662,0.3701
+maharashtra-buldhana,Maharashtra,538,0.7243,-0.0597,0.7414,0.8699,0.3550,0.3913
+maharashtra-chandrapur,Maharashtra,538,0.7779,-0.0375,0.6619,0.8717,0.4052,0.4202
+maharashtra-dhule,Maharashtra,538,0.7412,-0.0302,0.7393,0.8383,0.3941,0.2984
+maharashtra-gadchiroli,Maharashtra,538,0.5466,0.0063,0.9370,0.7937,0.2918,0.2397
+maharashtra-gondia,Maharashtra,538,0.7268,-0.0582,0.7298,0.8532,0.3643,0.3471
+maharashtra-hingoli,Maharashtra,538,0.6631,-0.1116,0.8165,0.8401,0.3178,0.3008
+maharashtra-jalgaon,Maharashtra,538,0.6769,-0.0628,0.8085,0.8253,0.3439,0.2598
+maharashtra-jalna,Maharashtra,538,0.6723,-0.0745,0.8127,0.8216,0.3048,0.2727
+maharashtra-kolhapur,Maharashtra,538,0.6887,-0.0162,0.8137,0.8253,0.2974,0.2824
+maharashtra-latur,Maharashtra,538,0.7056,-0.0524,0.7696,0.8383,0.3699,0.3150
+maharashtra-mumbai,Maharashtra,538,0.6535,0.0405,0.8445,0.8606,0.4052,0.3590
+maharashtra-nagpur,Maharashtra,538,0.8099,-0.0438,0.6146,0.8829,0.4405,0.4324
+maharashtra-nanded,Maharashtra,538,0.6939,-0.0592,0.7851,0.8420,0.3513,0.2672
+maharashtra-nandurbar,Maharashtra,538,0.7179,-0.0357,0.7665,0.8494,0.3885,0.3361
+maharashtra-nashik,Maharashtra,538,0.7564,-0.0220,0.7068,0.8866,0.3885,0.4404
+maharashtra-osmanabad,Maharashtra,538,0.7594,-0.0376,0.6967,0.8476,0.3643,0.3387
+maharashtra-palghar,Maharashtra,538,0.7546,0.0328,0.7107,0.8996,0.4071,0.4653
+maharashtra-parbhani,Maharashtra,538,0.6510,-0.0837,0.8356,0.8513,0.3160,0.3333
+maharashtra-pune,Maharashtra,538,0.6857,-0.0749,0.8010,0.8587,0.3364,0.3821
+maharashtra-raigad,Maharashtra,538,0.6865,-0.0061,0.7979,0.8550,0.3680,0.3810
+maharashtra-ratnagiri,Maharashtra,538,0.6949,0.0145,0.7960,0.8234,0.3494,0.3066
+maharashtra-sangli,Maharashtra,538,0.7642,-0.0696,0.6963,0.8587,0.3457,0.4109
+maharashtra-satara,Maharashtra,538,0.7255,-0.0776,0.7512,0.8532,0.3309,0.3730
+maharashtra-sindhudurg,Maharashtra,538,0.6578,0.0106,0.8572,0.8420,0.3532,0.3359
+maharashtra-solapur,Maharashtra,538,0.7455,-0.0722,0.7215,0.8625,0.3439,0.4127
+maharashtra-thane,Maharashtra,538,0.7328,0.0177,0.7431,0.8662,0.3810,0.4000
+maharashtra-wardha,Maharashtra,538,0.7866,-0.0396,0.6513,0.8736,0.4294,0.4035
+maharashtra-washim,Maharashtra,538,0.7478,-0.0524,0.7099,0.8439,0.3587,0.3226
+maharashtra-yavatmal,Maharashtra,538,0.7696,-0.0544,0.6795,0.8625,0.3885,0.3782
+manipur-bishnupur,Manipur,538,0.6558,-0.0377,0.8435,0.8513,0.3792,0.4558
+manipur-chandel,Manipur,538,0.5966,-0.0388,0.9042,0.8086,0.2677,0.3481
+manipur-churachandpur,Manipur,538,0.6197,-0.0485,0.8980,0.8327,0.3290,0.4118
+manipur-imphal-east,Manipur,538,0.7221,0.0101,0.7459,0.8736,0.3717,0.4769
+manipur-imphal-west,Manipur,538,0.7087,-0.0100,0.7656,0.8643,0.3513,0.4672
+manipur-jiribam,Manipur,538,0.7053,-0.0044,0.7733,0.8550,0.3513,0.4388
+manipur-kakching,Manipur,538,0.6469,-0.0381,0.8532,0.8476,0.3457,0.4345
+manipur-kamjong,Manipur,538,0.6051,0.0376,0.8755,0.8178,0.3178,0.3147
+manipur-kangpokpi,Manipur,538,0.7112,0.0137,0.7579,0.8736,0.3773,0.4769
+manipur-noney,Manipur,538,0.6624,0.0169,0.8255,0.8587,0.3494,0.4610
+manipur-pherzawl,Manipur,538,0.6473,-0.0501,0.8637,0.7918,0.3160,0.3373
+manipur-senapati,Manipur,538,0.5619,-0.0076,0.9219,0.8420,0.2937,0.3841
+manipur-tamenglong,Manipur,538,0.7050,0.0282,0.7661,0.8569,0.3309,0.4420
+manipur-tengnoupal,Manipur,538,0.5786,0.0128,0.9044,0.8030,0.3048,0.2933
+manipur-thoubal,Manipur,538,0.6749,-0.0170,0.8109,0.8587,0.3625,0.4648
+manipur-ukhrul,Manipur,538,0.5895,0.0037,0.8948,0.8643,0.3216,0.4160
+meghalaya-east-garo-hills,Meghalaya,538,0.4148,0.0843,1.0908,0.7862,0.2677,0.2628
+meghalaya-east-jaintia-hills,Meghalaya,538,0.5668,-0.0234,0.9462,0.8141,0.3086,0.3506
+meghalaya-east-khasi-hills,Meghalaya,538,0.3739,0.0133,1.1113,0.7770,0.2639,0.1892
+meghalaya-north-garo-hills,Meghalaya,538,0.5553,0.0692,0.9424,0.8067,0.3141,0.2973
+meghalaya-ribhoi,Meghalaya,538,0.4949,0.0330,1.0030,0.8123,0.3048,0.2986
+meghalaya-south-garo-hills,Meghalaya,538,0.3321,0.0537,1.1417,0.7509,0.2379,0.1728
+meghalaya-south-west-garo-hills,Meghalaya,538,0.4286,0.1279,1.0804,0.7881,0.2770,0.2549
+meghalaya-south-west-khasi-hills,Meghalaya,538,0.3515,0.0567,1.1293,0.7546,0.2491,0.1646
+meghalaya-west-garo-hills,Meghalaya,538,0.4857,0.0979,1.0151,0.7955,0.2788,0.2517
+meghalaya-west-jaintia-hills,Meghalaya,538,0.4555,0.0202,1.0530,0.8067,0.2862,0.3067
+meghalaya-west-khasi-hills,Meghalaya,538,0.3537,0.0717,1.1378,0.7677,0.2881,0.1987
+mizoram-aizawl,Mizoram,538,0.6085,-0.0280,0.8827,0.8030,0.3104,0.3248
+mizoram-champhai,Mizoram,538,0.5577,-0.0443,0.9422,0.7788,0.2807,0.2874
+mizoram-hnahthial,Mizoram,538,0.3610,0.1404,1.1458,0.6896,0.1952,0.1773
+mizoram-khawzawl,Mizoram,538,0.5565,-0.0379,0.9418,0.7751,0.2825,0.2924
+mizoram-kolasib,Mizoram,538,0.6019,0.0288,0.8829,0.8104,0.2900,0.2966
+mizoram-lawngtlai,Mizoram,538,0.2716,0.1767,1.2417,0.7639,0.2175,0.1533
+mizoram-lunglei,Mizoram,538,0.5478,0.0115,0.9492,0.8253,0.3141,0.3605
+mizoram-mamit,Mizoram,538,0.6605,-0.0206,0.8194,0.8346,0.3550,0.3688
+mizoram-saiha,Mizoram,538,0.1141,0.1733,1.4103,0.8067,0.1766,0.1034
+mizoram-serchhip,Mizoram,538,0.5602,0.0018,0.9328,0.7937,0.2918,0.2792
+nagaland-dimapur,Nagaland,538,0.5615,-0.0183,0.9137,0.8141,0.3104,0.2908
+nagaland-kiphire,Nagaland,538,0.5332,0.0040,0.9467,0.8178,0.3178,0.2950
+nagaland-kohima,Nagaland,538,0.5690,0.0006,0.9110,0.8271,0.3123,0.3451
+nagaland-longleng,Nagaland,538,0.5262,0.0272,0.9458,0.8309,0.2937,0.3158
+nagaland-mokokchung,Nagaland,538,0.5389,0.0295,0.9369,0.8234,0.2993,0.2857
+nagaland-mon,Nagaland,538,0.5517,0.0354,0.9245,0.8290,0.3067,0.3235
+nagaland-peren,Nagaland,538,0.5549,0.0040,0.9212,0.8234,0.3160,0.3116
+nagaland-phek,Nagaland,538,0.5391,-0.0126,0.9478,0.8290,0.3253,0.3521
+nagaland-tuensang,Nagaland,538,0.5235,0.0142,0.9553,0.8067,0.2825,0.2624
+nagaland-wokha,Nagaland,538,0.6046,0.0438,0.8885,0.8309,0.3216,0.3158
+nagaland-zunheboto,Nagaland,538,0.5906,0.0045,0.8954,0.8216,0.2881,0.3043
+odisha-angul,Odisha,538,0.7510,-0.0282,0.6893,0.8848,0.3866,0.4609
+odisha-balangir,Odisha,538,0.7064,-0.0477,0.7471,0.8773,0.3364,0.4359
+odisha-balasore,Odisha,538,0.7554,-0.0393,0.6864,0.8346,0.3736,0.3643
+odisha-bargarh,Odisha,538,0.7505,-0.0666,0.6981,0.8680,0.3717,0.4083
+odisha-bhadrak,Odisha,538,0.7643,-0.0333,0.6740,0.8587,0.3457,0.4062
+odisha-boudh,Odisha,538,0.7230,-0.0392,0.7255,0.8773,0.3439,0.4454
+odisha-cuttack,Odisha,538,0.7972,-0.0227,0.6214,0.8978,0.4498,0.5133
+odisha-deogarh,Odisha,538,0.7409,-0.0262,0.7046,0.8717,0.3773,0.4298
+odisha-dhenkanal,Odisha,538,0.7555,-0.0229,0.6828,0.8848,0.3717,0.4561
+odisha-gajapati,Odisha,538,0.7207,-0.0224,0.7298,0.8550,0.3587,0.3710
+odisha-ganjam,Odisha,538,0.7202,-0.0185,0.7309,0.8625,0.3420,0.3782
+odisha-jagatsinghpur,Odisha,538,0.7550,-0.0307,0.6905,0.8309,0.3755,0.3406
+odisha-jajpur,Odisha,538,0.7974,-0.0232,0.6246,0.8941,0.4182,0.5086
+odisha-jharsuguda,Odisha,538,0.8402,-0.0186,0.5598,0.9015,0.4033,0.5391
+odisha-kalahandi,Odisha,538,0.7026,-0.0353,0.7528,0.8532,0.3532,0.3780
+odisha-kandhamal,Odisha,538,0.6980,-0.0207,0.7650,0.8625,0.3569,0.3729
+odisha-kendrapara,Odisha,538,0.8084,-0.0274,0.6083,0.8699,0.3996,0.4309
+odisha-kendujhar,Odisha,538,0.8185,-0.0279,0.5959,0.8810,0.3699,0.4622
+odisha-khordha,Odisha,538,0.7731,-0.0135,0.6576,0.8922,0.4089,0.4867
+odisha-koraput,Odisha,538,0.7166,0.0040,0.7350,0.8662,0.3792,0.4146
+odisha-malkangiri,Odisha,538,0.7362,0.0193,0.7114,0.8587,0.3699,0.3821
+odisha-mayurbhanj,Odisha,538,0.8343,-0.0117,0.5701,0.8810,0.4331,0.4622
+odisha-nabarangapur,Odisha,538,0.6884,-0.0288,0.7729,0.8401,0.3606,0.3385
+odisha-nayagarh,Odisha,538,0.7552,-0.0121,0.6817,0.8941,0.3866,0.4818
+odisha-nuapada,Odisha,538,0.7305,-0.0341,0.7149,0.8550,0.3755,0.3710
+odisha-puri,Odisha,538,0.7104,-0.0491,0.7484,0.8253,0.3755,0.3088
+odisha-rayagada,Odisha,538,0.7151,-0.0451,0.7381,0.8606,0.3346,0.3644
+odisha-sambalpur,Odisha,538,0.8119,-0.0397,0.6039,0.8903,0.4108,0.4914
+odisha-subarnapur,Odisha,538,0.7118,-0.0625,0.7432,0.8606,0.3494,0.3952
+odisha-sundargarh,Odisha,538,0.8513,-0.0032,0.5400,0.9052,0.4219,0.5405
+puducherry-karaikal,Puducherry,538,0.5904,-0.0536,0.9077,0.8309,0.3271,0.2155
+puducherry-puducherry,Puducherry,538,0.6548,-0.0148,0.8380,0.8439,0.3178,0.3115
+punjab-amritsar,Punjab,538,0.7100,-0.0394,0.7647,0.8885,0.3290,0.4340
+punjab-barnala,Punjab,538,0.6998,-0.0441,0.7735,0.8699,0.3271,0.4068
+punjab-bathinda,Punjab,538,0.7454,-0.0522,0.7156,0.8755,0.3513,0.4322
+punjab-faridkot,Punjab,538,0.7512,-0.0384,0.7102,0.8736,0.3717,0.4333
+punjab-fatehgarh-sahib,Punjab,538,0.5641,-0.0782,0.9223,0.8197,0.2900,0.2595
+punjab-fazilka,Punjab,538,0.6533,-0.0678,0.8321,0.8401,0.3030,0.3120
+punjab-ferozepur,Punjab,538,0.6851,-0.0275,0.7961,0.8885,0.3271,0.4783
+punjab-gurdaspur,Punjab,538,0.6467,-0.0526,0.8361,0.8532,0.2955,0.3629
+punjab-hoshiarpur,Punjab,538,0.5834,-0.0662,0.9006,0.8178,0.2770,0.2847
+punjab-jalandhar,Punjab,538,0.6937,-0.0576,0.7805,0.8680,0.3160,0.4083
+punjab-kapurthala,Punjab,538,0.7132,-0.0261,0.7625,0.8755,0.3439,0.4174
+punjab-ludhiana,Punjab,538,0.6976,-0.0560,0.7736,0.8699,0.3476,0.4068
+punjab-mansa,Punjab,538,0.7135,-0.0387,0.7544,0.8736,0.2937,0.4087
+punjab-moga,Punjab,538,0.7127,-0.0044,0.7670,0.8829,0.3755,0.4615
+punjab-pathankot,Punjab,538,0.6485,-0.0204,0.8251,0.8569,0.3587,0.4031
+punjab-patiala,Punjab,538,0.6479,-0.0803,0.8312,0.8569,0.3123,0.3689
+punjab-rupnagar,Punjab,538,0.6120,-0.0606,0.8827,0.8253,0.2788,0.2985
+punjab-s-a-s-nagar,Punjab,538,0.5115,-0.1097,0.9845,0.8048,0.2770,0.2708
+punjab-sangrur,Punjab,538,0.7328,-0.0617,0.7265,0.8699,0.3457,0.4262
+punjab-shahid-bhagat-singh-nagar,Punjab,538,0.6568,-0.0570,0.8199,0.8476,0.3011,0.3740
+punjab-sri-muktsar-sahib,Punjab,538,0.7042,-0.0652,0.7680,0.8662,0.3290,0.3950
+punjab-tarn-taran,Punjab,538,0.7251,-0.0326,0.7462,0.8885,0.3922,0.4595
+rajasthan-ajmer,Rajasthan,538,0.8345,-0.0158,0.5966,0.9015,0.4219,0.5138
+rajasthan-alwar,Rajasthan,538,0.8335,-0.0385,0.5811,0.8810,0.3736,0.4483
+rajasthan-banswara,Rajasthan,538,0.6838,-0.0652,0.8056,0.8439,0.3643,0.3058
+rajasthan-baran,Rajasthan,538,0.7553,-0.0467,0.7196,0.8643,0.3699,0.3652
+rajasthan-barmer,Rajasthan,538,0.7359,-0.0335,0.7389,0.8513,0.3996,0.3333
+rajasthan-bharatpur,Rajasthan,538,0.8140,-0.0323,0.6141,0.8736,0.3978,0.4138
+rajasthan-bhilwara,Rajasthan,538,0.7802,-0.0349,0.6863,0.8587,0.3439,0.3613
+rajasthan-bikaner,Rajasthan,538,0.8566,-0.0037,0.5512,0.8941,0.4758,0.4722
+rajasthan-bundi,Rajasthan,538,0.8010,-0.0171,0.6602,0.8941,0.3941,0.4722
+rajasthan-chittorgarh,Rajasthan,538,0.7741,-0.0533,0.6982,0.8736,0.3662,0.3818
+rajasthan-churu,Rajasthan,538,0.8674,-0.0116,0.5254,0.8922,0.4703,0.4630
+rajasthan-dausa,Rajasthan,538,0.8280,-0.0192,0.6023,0.8792,0.3866,0.4397
+rajasthan-dholpur,Rajasthan,538,0.8130,-0.0088,0.6198,0.8625,0.3848,0.3675
+rajasthan-dungarpur,Rajasthan,538,0.7080,-0.0832,0.7840,0.8439,0.3420,0.3000
+rajasthan-ganganagar,Rajasthan,538,0.7986,0.0039,0.6516,0.8773,0.4405,0.4310
+rajasthan-hanumangarh,Rajasthan,538,0.7910,-0.0141,0.6516,0.8680,0.4071,0.3983
+rajasthan-jaipur,Rajasthan,538,0.8379,-0.0295,0.5846,0.8829,0.4331,0.4569
+rajasthan-jaisalmer,Rajasthan,538,0.7806,0.0009,0.6744,0.8532,0.3792,0.3417
+rajasthan-jalore,Rajasthan,538,0.6192,-0.0683,0.8996,0.8383,0.3569,0.2984
+rajasthan-jhalawar,Rajasthan,538,0.6953,-0.0889,0.7951,0.8625,0.3755,0.3393
+rajasthan-jhunjhunu,Rajasthan,538,0.8523,-0.0204,0.5508,0.8922,0.4480,0.4579
+rajasthan-jodhpur,Rajasthan,538,0.8181,-0.0222,0.6251,0.8699,0.4312,0.4118
+rajasthan-karauli,Rajasthan,538,0.8221,-0.0274,0.6101,0.8736,0.4331,0.4286
+rajasthan-kota,Rajasthan,538,0.7486,-0.0475,0.7331,0.8755,0.3773,0.4071
+rajasthan-nagaur,Rajasthan,538,0.8426,-0.0023,0.5820,0.8978,0.4275,0.4860
+rajasthan-pali,Rajasthan,538,0.7265,-0.0391,0.7689,0.8736,0.3810,0.4035
+rajasthan-pratapgarh,Rajasthan,538,0.7475,-0.0379,0.7318,0.8532,0.3513,0.3248
+rajasthan-rajsamand,Rajasthan,538,0.7709,-0.0293,0.7104,0.8662,0.3866,0.3684
+rajasthan-sawai-madhopur,Rajasthan,538,0.7946,-0.0349,0.6608,0.8699,0.3829,0.4017
+rajasthan-sikar,Rajasthan,538,0.8622,-0.0084,0.5340,0.8866,0.4814,0.4455
+rajasthan-sirohi,Rajasthan,538,0.6512,-0.0584,0.8704,0.8587,0.3494,0.3559
+rajasthan-tonk,Rajasthan,538,0.7886,-0.0119,0.6803,0.8866,0.3680,0.4741
+rajasthan-udaipur,Rajasthan,538,0.7725,-0.0450,0.7041,0.8569,0.4033,0.3419
+sikkim-east-sikkim,Sikkim,538,0.5726,0.0733,0.9113,0.8364,0.3346,0.2960
+sikkim-north-sikkim,Sikkim,538,0.1878,0.1700,1.2876,0.7435,0.2286,0.1534
+sikkim-south-sikkim,Sikkim,538,0.5011,0.1385,1.0023,0.8067,0.2732,0.2353
+sikkim-west-sikkim,Sikkim,538,0.3695,0.1774,1.1362,0.8067,0.2435,0.2571
+tamil-nadu-ariyalur,Tamil Nadu,538,0.6553,-0.0580,0.8390,0.8439,0.3457,0.3115
+tamil-nadu-chengalpattu,Tamil Nadu,538,0.7408,-0.0214,0.7193,0.8513,0.3513,0.3043
+tamil-nadu-coimbatore,Tamil Nadu,538,0.6906,0.0295,0.7917,0.8439,0.3643,0.2821
+tamil-nadu-cuddalore,Tamil Nadu,538,0.6930,-0.0425,0.7861,0.8383,0.3773,0.2810
+tamil-nadu-dharmapuri,Tamil Nadu,538,0.7550,-0.0405,0.7069,0.8625,0.3829,0.3451
+tamil-nadu-dindigul,Tamil Nadu,538,0.6792,-0.0454,0.7983,0.8532,0.3569,0.3305
+tamil-nadu-erode,Tamil Nadu,538,0.6872,-0.0091,0.7913,0.8476,0.3662,0.3051
+tamil-nadu-kallakurichi,Tamil Nadu,538,0.6720,-0.0389,0.8208,0.8662,0.3680,0.3394
+tamil-nadu-kancheepuram,Tamil Nadu,538,0.7587,-0.0196,0.6928,0.8457,0.3643,0.2719
+tamil-nadu-kanyakumari,Tamil Nadu,538,0.6514,-0.0444,0.8235,0.8457,0.3160,0.3025
+tamil-nadu-karur,Tamil Nadu,538,0.7055,-0.0629,0.7613,0.8680,0.3532,0.3772
+tamil-nadu-krishnagiri,Tamil Nadu,538,0.7780,-0.0063,0.6797,0.8532,0.3810,0.3190
+tamil-nadu-madurai,Tamil Nadu,538,0.6095,-0.0734,0.8751,0.8178,0.3067,0.2344
+tamil-nadu-nagapattinam,Tamil Nadu,538,0.6598,-0.0574,0.8250,0.8271,0.3364,0.2500
+tamil-nadu-namakkal,Tamil Nadu,538,0.7152,-0.0392,0.7659,0.8643,0.3290,0.3423
+tamil-nadu-nilgiris,Tamil Nadu,538,0.6429,0.0391,0.8512,0.8383,0.3141,0.2869
+tamil-nadu-perambalur,Tamil Nadu,538,0.6952,-0.0466,0.7898,0.8513,0.3439,0.3043
+tamil-nadu-pudukkottai,Tamil Nadu,538,0.6875,-0.0627,0.7942,0.8606,0.3160,0.3243
+tamil-nadu-ramanathapuram,Tamil Nadu,538,0.6777,-0.0855,0.8077,0.8364,0.3699,0.2903
+tamil-nadu-ranipet,Tamil Nadu,538,0.7516,-0.0001,0.7130,0.8383,0.3662,0.2927
+tamil-nadu-salem,Tamil Nadu,538,0.7320,-0.0408,0.7403,0.8364,0.3364,0.2903
+tamil-nadu-sivaganga,Tamil Nadu,538,0.6638,-0.0660,0.8223,0.8476,0.3327,0.2743
+tamil-nadu-tenkasi,Tamil Nadu,538,0.6204,-0.0500,0.8662,0.8476,0.3420,0.3051
+tamil-nadu-thanjavur,Tamil Nadu,538,0.6998,-0.0520,0.7801,0.8476,0.3810,0.3109
+tamil-nadu-theni,Tamil Nadu,538,0.6179,-0.0557,0.8657,0.8160,0.3048,0.2443
+tamil-nadu-thiruvallur,Tamil Nadu,538,0.7574,0.0053,0.7003,0.8606,0.3829,0.3421
+tamil-nadu-thiruvarur,Tamil Nadu,538,0.6916,-0.0534,0.7876,0.8383,0.3532,0.2869
+tamil-nadu-thoothukkudi,Tamil Nadu,538,0.5625,-0.0806,0.9270,0.8532,0.3216,0.3248
+tamil-nadu-tiruchirappalli,Tamil Nadu,538,0.7372,-0.0453,0.7254,0.8643,0.3866,0.3540
+tamil-nadu-tirunelveli,Tamil Nadu,538,0.6343,-0.0376,0.8511,0.8439,0.3364,0.3280
+tamil-nadu-tirupathur,Tamil Nadu,538,0.7146,-0.0327,0.7716,0.8550,0.3941,0.3333
+tamil-nadu-tiruppur,Tamil Nadu,538,0.5601,-0.0479,0.9329,0.8513,0.3234,0.3043
+tamil-nadu-tiruvannamalai,Tamil Nadu,538,0.7613,-0.0253,0.6987,0.8606,0.3922,0.3363
+tamil-nadu-vellore,Tamil Nadu,538,0.7585,-0.0185,0.7025,0.8662,0.3996,0.3739
+tamil-nadu-viluppuram,Tamil Nadu,538,0.7018,0.0022,0.7876,0.8513,0.3587,0.2982
+tamil-nadu-virudhunagar,Tamil Nadu,538,0.5901,-0.0886,0.9093,0.8104,0.2770,0.2031
+telangana-adilabad,Telangana,538,0.7651,-0.0401,0.6888,0.8866,0.3569,0.4352
+telangana-bhadradri-kothagudem,Telangana,538,0.7142,0.0273,0.7542,0.8550,0.3829,0.3500
+telangana-hyderabad,Telangana,538,0.7452,-0.0634,0.7117,0.8290,0.3643,0.3134
+telangana-jagtial,Telangana,538,0.6923,-0.0650,0.7821,0.8550,0.3550,0.3097
+telangana-jangaon,Telangana,538,0.6951,-0.0032,0.7860,0.8383,0.3550,0.3040
+telangana-jayashankar-bhupalapally,Telangana,538,0.7312,0.0155,0.7244,0.8643,0.3550,0.3814
+telangana-jogulamba-gadwal,Telangana,538,0.7136,-0.0590,0.7686,0.8439,0.3401,0.3488
+telangana-kamareddy,Telangana,538,0.7354,-0.0238,0.7282,0.8569,0.3773,0.3529
+telangana-karimnagar,Telangana,538,0.7366,-0.0240,0.7196,0.8457,0.3699,0.3306
+telangana-khammam,Telangana,538,0.7280,0.0015,0.7428,0.8476,0.3680,0.3333
+telangana-komaram-bheem,Telangana,538,0.7748,-0.0330,0.6639,0.8680,0.3717,0.4180
+telangana-mahabubabad,Telangana,538,0.7114,0.0207,0.7667,0.8476,0.3216,0.3223
+telangana-mahabubnagar,Telangana,538,0.6760,-0.0472,0.8189,0.8494,0.3290,0.3415
+telangana-mancherial,Telangana,538,0.7274,-0.0410,0.7300,0.8401,0.3513,0.3065
+telangana-medak,Telangana,538,0.7398,-0.0192,0.7192,0.8439,0.3866,0.3058
+telangana-medchal-malkajgiri,Telangana,538,0.7603,-0.0363,0.6910,0.8420,0.3680,0.3254
+telangana-mulugu,Telangana,538,0.7470,0.0273,0.7033,0.8662,0.3439,0.3571
+telangana-nagarkurnool,Telangana,538,0.7386,-0.0125,0.7240,0.8494,0.3550,0.3415
+telangana-nalgonda,Telangana,538,0.7050,-0.0546,0.7641,0.8234,0.3346,0.2803
+telangana-narayanpet,Telangana,538,0.6605,-0.0594,0.8414,0.8364,0.3160,0.3333
+telangana-nirmal,Telangana,538,0.7262,-0.0431,0.7454,0.8755,0.3327,0.3796
+telangana-nizamabad,Telangana,538,0.7598,-0.0245,0.6976,0.8755,0.3810,0.3909
+telangana-peddapalli,Telangana,538,0.7278,-0.0404,0.7292,0.8104,0.3625,0.2388
+telangana-rajanna-sircilla,Telangana,538,0.7600,-0.0209,0.6909,0.8662,0.3848,0.3739
+telangana-ranga-reddy,Telangana,538,0.7688,-0.0545,0.6790,0.8643,0.3476,0.4065
+telangana-sangareddy,Telangana,538,0.7619,-0.0307,0.6852,0.8569,0.3829,0.3529
+telangana-siddipet,Telangana,538,0.7715,-0.0102,0.6774,0.8717,0.3903,0.4202
+telangana-suryapet,Telangana,538,0.6707,-0.0402,0.8138,0.8197,0.3216,0.2422
+telangana-vikarabad,Telangana,538,0.7251,-0.0387,0.7406,0.8532,0.3829,0.3417
+telangana-wanaparthy,Telangana,538,0.6899,-0.0504,0.7966,0.8513,0.3197,0.3548
+telangana-warangal-rural,Telangana,538,0.7281,0.0280,0.7428,0.8532,0.3625,0.3577
+telangana-warangal-urban,Telangana,538,0.6783,-0.0010,0.7954,0.8346,0.3643,0.3101
+telangana-yadadri-bhuvanagiri,Telangana,538,0.7742,-0.0103,0.6753,0.8569,0.3810,0.3636
+tripura-dhalai,Tripura,538,0.6948,-0.0214,0.7812,0.8271,0.3420,0.3404
+tripura-gomati,Tripura,538,0.7061,-0.0626,0.7763,0.8606,0.3755,0.4275
+tripura-khowai,Tripura,538,0.6856,-0.0691,0.7943,0.8439,0.3383,0.3636
+tripura-north-tripura,Tripura,538,0.6443,0.0340,0.8343,0.8030,0.3309,0.2639
+tripura-sipahijala,Tripura,538,0.7214,-0.0382,0.7469,0.8569,0.3829,0.4254
+tripura-south-tripura,Tripura,538,0.6313,-0.0121,0.8642,0.8680,0.3309,0.4274
+tripura-unokoti,Tripura,538,0.6525,0.0474,0.8240,0.8253,0.3364,0.3037
+tripura-west-tripura,Tripura,538,0.7068,-0.0562,0.7616,0.8662,0.3848,0.4462
+uttar-pradesh-agra,Uttar Pradesh,538,0.7489,-0.0389,0.7075,0.8383,0.3104,0.2927
+uttar-pradesh-aligarh,Uttar Pradesh,538,0.7424,-0.0376,0.7122,0.8587,0.3643,0.3770
+uttar-pradesh-ambedkar-nagar,Uttar Pradesh,538,0.6660,-0.0743,0.8052,0.8420,0.3067,0.3511
+uttar-pradesh-amethi,Uttar Pradesh,538,0.7060,-0.0811,0.7587,0.8587,0.3401,0.3770
+uttar-pradesh-amroha,Uttar Pradesh,538,0.7167,-0.0523,0.7423,0.8699,0.3309,0.4118
+uttar-pradesh-auraiya,Uttar Pradesh,538,0.6540,-0.0613,0.8159,0.8420,0.2937,0.3145
+uttar-pradesh-ayodhya,Uttar Pradesh,538,0.6764,-0.0630,0.7949,0.8346,0.3048,0.2992
+uttar-pradesh-azamgarh,Uttar Pradesh,538,0.6921,-0.0582,0.7761,0.8643,0.3364,0.4160
+uttar-pradesh-baghpat,Uttar Pradesh,538,0.7008,-0.0589,0.7734,0.8625,0.3216,0.3884
+uttar-pradesh-bahraich,Uttar Pradesh,538,0.7444,-0.0473,0.7099,0.8048,0.3439,0.2391
+uttar-pradesh-ballia,Uttar Pradesh,538,0.7253,-0.0578,0.7439,0.8625,0.3513,0.4173
+uttar-pradesh-balrampur,Uttar Pradesh,538,0.6405,-0.0146,0.8363,0.8030,0.3011,0.2429
+uttar-pradesh-banda,Uttar Pradesh,538,0.8116,-0.0359,0.6078,0.8680,0.4219,0.3932
+uttar-pradesh-barabanki,Uttar Pradesh,538,0.7008,-0.0431,0.7658,0.8327,0.3755,0.3182
+uttar-pradesh-bareilly,Uttar Pradesh,538,0.7911,-0.0307,0.6337,0.8699,0.3885,0.4355
+uttar-pradesh-basti,Uttar Pradesh,538,0.6375,-0.0667,0.8420,0.8401,0.3234,0.3435
+uttar-pradesh-bhadohi,Uttar Pradesh,538,0.7886,-0.0651,0.6467,0.8717,0.3848,0.4344
+uttar-pradesh-bijnor,Uttar Pradesh,538,0.6600,-0.0706,0.8213,0.8587,0.3346,0.4016
+uttar-pradesh-budaun,Uttar Pradesh,538,0.7377,-0.0700,0.7119,0.8532,0.3271,0.3828
+uttar-pradesh-bulandshahr,Uttar Pradesh,538,0.6932,-0.0486,0.7768,0.8457,0.3364,0.3566
+uttar-pradesh-chandauli,Uttar Pradesh,538,0.7719,-0.0634,0.6736,0.8587,0.3829,0.3920
+uttar-pradesh-chitrakoot,Uttar Pradesh,538,0.8124,-0.0372,0.6048,0.8773,0.3978,0.4159
+uttar-pradesh-deoria,Uttar Pradesh,538,0.7458,-0.0549,0.7131,0.8550,0.3587,0.4135
+uttar-pradesh-etah,Uttar Pradesh,538,0.7571,-0.0139,0.6921,0.8550,0.3643,0.3554
+uttar-pradesh-etawah,Uttar Pradesh,538,0.7166,-0.0422,0.7422,0.8309,0.3439,0.2891
+uttar-pradesh-farrukhabad,Uttar Pradesh,538,0.6493,-0.0948,0.8226,0.8271,0.2900,0.3261
+uttar-pradesh-fatehpur,Uttar Pradesh,538,0.7427,-0.0670,0.7127,0.8364,0.3885,0.3016
+uttar-pradesh-firozabad,Uttar Pradesh,538,0.7560,-0.0238,0.6933,0.8457,0.3587,0.3197
+uttar-pradesh-gautam-buddha-nagar,Uttar Pradesh,538,0.6932,-0.0688,0.7804,0.8327,0.3104,0.3182
+uttar-pradesh-ghaziabad,Uttar Pradesh,538,0.6385,-0.0965,0.8475,0.8587,0.3141,0.3719
+uttar-pradesh-ghazipur,Uttar Pradesh,538,0.7498,-0.0383,0.7031,0.8773,0.3680,0.4310
+uttar-pradesh-gonda,Uttar Pradesh,538,0.6471,-0.0279,0.8288,0.8383,0.3439,0.3040
+uttar-pradesh-gorakhpur,Uttar Pradesh,538,0.7026,-0.0627,0.7704,0.8457,0.3401,0.3712
+uttar-pradesh-hamirpur,Uttar Pradesh,538,0.7651,-0.0215,0.6819,0.8364,0.4089,0.3016
+uttar-pradesh-hapur,Uttar Pradesh,538,0.6450,-0.0969,0.8388,0.8494,0.3048,0.3622
+uttar-pradesh-hardoi,Uttar Pradesh,538,0.7551,-0.0706,0.6861,0.8569,0.3457,0.3689
+uttar-pradesh-hathras,Uttar Pradesh,538,0.7668,-0.0019,0.6867,0.8439,0.3755,0.3226
+uttar-pradesh-jalaun,Uttar Pradesh,538,0.7350,-0.0212,0.7201,0.8439,0.3810,0.3058
+uttar-pradesh-jaunpur,Uttar Pradesh,538,0.7392,-0.0864,0.7184,0.8699,0.3290,0.4215
+uttar-pradesh-jhansi,Uttar Pradesh,538,0.7460,-0.0520,0.7071,0.8309,0.3996,0.3053
+uttar-pradesh-kannauj,Uttar Pradesh,538,0.6629,-0.0542,0.8047,0.8550,0.3401,0.3659
+uttar-pradesh-kanpur-dehat,Uttar Pradesh,538,0.6815,-0.0714,0.7864,0.8569,0.3625,0.3740
+uttar-pradesh-kanpur-nagar,Uttar Pradesh,538,0.7103,-0.0524,0.7499,0.8606,0.4015,0.3750
+uttar-pradesh-kasganj,Uttar Pradesh,538,0.7694,-0.0524,0.6680,0.8457,0.3532,0.3566
+uttar-pradesh-kaushambi,Uttar Pradesh,538,0.8187,-0.0604,0.5996,0.8866,0.4145,0.4602
+uttar-pradesh-kushinagar,Uttar Pradesh,538,0.6695,-0.0572,0.8100,0.8420,0.2974,0.3511
+uttar-pradesh-lakhimpur-kheri,Uttar Pradesh,538,0.7154,-0.0303,0.7402,0.8309,0.3476,0.3000
+uttar-pradesh-lalitpur,Uttar Pradesh,538,0.8025,-0.0437,0.6268,0.8717,0.4145,0.3894
+uttar-pradesh-lucknow,Uttar Pradesh,538,0.7418,-0.0401,0.7070,0.8532,0.3625,0.3629
+uttar-pradesh-maharajganj,Uttar Pradesh,538,0.6736,-0.0260,0.7987,0.8383,0.3104,0.3603
+uttar-pradesh-mahoba,Uttar Pradesh,538,0.7841,-0.0526,0.6478,0.8476,0.4015,0.3333
+uttar-pradesh-mainpuri,Uttar Pradesh,538,0.6970,-0.0491,0.7647,0.8476,0.3011,0.3440
+uttar-pradesh-mathura,Uttar Pradesh,538,0.7392,-0.0466,0.7191,0.8383,0.3030,0.3203
+uttar-pradesh-mau,Uttar Pradesh,538,0.7464,-0.0647,0.7117,0.8680,0.3569,0.4274
+uttar-pradesh-meerut,Uttar Pradesh,538,0.6867,-0.0576,0.7916,0.8662,0.3401,0.4050
+uttar-pradesh-mirzapur,Uttar Pradesh,538,0.7959,-0.0558,0.6351,0.8680,0.3829,0.4453
+uttar-pradesh-moradabad,Uttar Pradesh,538,0.7094,-0.0784,0.7498,0.8439,0.3439,0.3731
+uttar-pradesh-muzaffarnagar,Uttar Pradesh,538,0.6767,-0.0632,0.8063,0.8569,0.3290,0.4077
+uttar-pradesh-pilibhit,Uttar Pradesh,538,0.7300,-0.0420,0.7161,0.8383,0.3829,0.3256
+uttar-pradesh-pratapgarh,Uttar Pradesh,538,0.7681,-0.0532,0.6754,0.8569,0.3383,0.3529
+uttar-pradesh-prayagraj,Uttar Pradesh,538,0.7958,-0.0775,0.6354,0.8885,0.3978,0.4595
+uttar-pradesh-rae-bareli,Uttar Pradesh,538,0.7395,-0.0439,0.7093,0.8587,0.3643,0.3559
+uttar-pradesh-rampur,Uttar Pradesh,538,0.7732,-0.0416,0.6610,0.8550,0.3717,0.3858
+uttar-pradesh-saharanpur,Uttar Pradesh,538,0.6094,-0.1005,0.8801,0.8160,0.2677,0.3028
+uttar-pradesh-sambhal,Uttar Pradesh,538,0.7411,-0.0485,0.7070,0.8569,0.3569,0.3740
+uttar-pradesh-sant-kabir-nagar,Uttar Pradesh,538,0.6597,-0.0632,0.8167,0.8290,0.3048,0.3134
+uttar-pradesh-shahjahanpur,Uttar Pradesh,538,0.7248,-0.0717,0.7276,0.8401,0.3364,0.3630
+uttar-pradesh-shamli,Uttar Pradesh,538,0.6463,-0.1031,0.8365,0.8327,0.3104,0.3182
+uttar-pradesh-shrawasti,Uttar Pradesh,538,0.7489,-0.0376,0.7076,0.8216,0.3383,0.2782
+uttar-pradesh-siddharthnagar,Uttar Pradesh,538,0.6543,-0.0277,0.8207,0.8401,0.3160,0.3228
+uttar-pradesh-sitapur,Uttar Pradesh,538,0.6967,-0.0619,0.7681,0.8439,0.3309,0.3488
+uttar-pradesh-sonbhadra,Uttar Pradesh,538,0.8226,-0.0285,0.5943,0.8717,0.4089,0.4524
+uttar-pradesh-sultanpur,Uttar Pradesh,538,0.6930,-0.0814,0.7757,0.8643,0.3457,0.4206
+uttar-pradesh-unnao,Uttar Pradesh,538,0.6843,-0.0812,0.7835,0.8383,0.3476,0.3256
+uttar-pradesh-varanasi,Uttar Pradesh,538,0.7896,-0.0642,0.6486,0.8792,0.3625,0.4628
+uttarakhand-almora,Uttarakhand,538,0.6356,-0.0442,0.8460,0.8197,0.3309,0.3356
+uttarakhand-bageshwar,Uttarakhand,538,0.3949,0.0118,1.0932,0.7788,0.2621,0.2372
+uttarakhand-chamoli,Uttarakhand,538,0.5336,0.0594,0.9803,0.8086,0.2621,0.2643
+uttarakhand-champawat,Uttarakhand,538,0.5938,-0.0227,0.8846,0.8346,0.3216,0.3047
+uttarakhand-dehradun,Uttarakhand,538,0.7240,-0.0256,0.7384,0.8178,0.3086,0.2899
+uttarakhand-haridwar,Uttarakhand,538,0.6611,-0.0738,0.8218,0.8457,0.2862,0.3664
+uttarakhand-nainital,Uttarakhand,538,0.7204,-0.0228,0.7401,0.8625,0.3810,0.3934
+uttarakhand-pauri-garhwal,Uttarakhand,538,0.6770,-0.0870,0.7984,0.8476,0.3290,0.3881
+uttarakhand-pithoragarh,Uttarakhand,538,0.4367,0.0311,1.0548,0.7677,0.2677,0.2236
+uttarakhand-rudraprayag,Uttarakhand,538,0.6956,0.0223,0.7850,0.8401,0.3197,0.3333
+uttarakhand-tehri-garhwal,Uttarakhand,538,0.6180,-0.0302,0.8681,0.8141,0.3030,0.2857
+uttarakhand-udham-singh-nagar,Uttarakhand,538,0.7698,-0.0026,0.6690,0.8606,0.4126,0.3802
+uttarakhand-uttarkashi,Uttarakhand,538,0.5740,0.0021,0.9181,0.8178,0.3104,0.2632
+west-bengal-alipurduar,West Bengal,538,0.6562,0.0378,0.8284,0.8364,0.3216,0.3623
+west-bengal-bankura,West Bengal,538,0.8430,0.0180,0.5705,0.8587,0.4294,0.4016
+west-bengal-birbhum,West Bengal,538,0.7252,-0.0277,0.7516,0.8476,0.3829,0.3788
+west-bengal-cooch-behar,West Bengal,538,0.6691,0.0208,0.8098,0.8439,0.3141,0.3731
+west-bengal-dakshin-dinajpur,West Bengal,538,0.5347,-0.0531,0.9480,0.7844,0.2937,0.2564
+west-bengal-darjeeling,West Bengal,538,0.6097,0.0386,0.8600,0.8216,0.3030,0.2889
+west-bengal-hooghly,West Bengal,538,0.8167,-0.0005,0.6074,0.8848,0.4758,0.4746
+west-bengal-howrah,West Bengal,538,0.8109,-0.0097,0.6144,0.8606,0.4145,0.4094
+west-bengal-jalpaiguri,West Bengal,538,0.6671,0.0177,0.8024,0.8606,0.3327,0.3750
+west-bengal-jhargram,West Bengal,538,0.8412,-0.0096,0.5673,0.8978,0.4387,0.5217
+west-bengal-kalimpong,West Bengal,538,0.5852,0.0552,0.9030,0.8290,0.3123,0.3083
+west-bengal-malda,West Bengal,538,0.6285,-0.0347,0.8524,0.8346,0.3401,0.3504
+west-bengal-murshidabad,West Bengal,538,0.6864,-0.0445,0.7886,0.8401,0.3420,0.3813
+west-bengal-nadia,West Bengal,538,0.7338,-0.0156,0.7250,0.8717,0.3550,0.4390
+west-bengal-north-24-parganas,West Bengal,538,0.7845,0.0213,0.6572,0.8494,0.4219,0.3721
+west-bengal-paschim-bardhaman,West Bengal,538,0.7794,-0.0084,0.6750,0.8569,0.3773,0.4211
+west-bengal-paschim-medinipur,West Bengal,538,0.8254,-0.0047,0.5914,0.8773,0.4498,0.4844
+west-bengal-purba-bardhaman,West Bengal,538,0.7580,-0.0199,0.6967,0.8717,0.3848,0.4344
+west-bengal-purba-medinipur,West Bengal,538,0.7965,-0.0143,0.6303,0.8625,0.4052,0.3984
+west-bengal-purulia,West Bengal,538,0.8343,-0.0179,0.5837,0.8792,0.4238,0.4800
+west-bengal-south-24-parganas,West Bengal,538,0.7922,0.0093,0.6407,0.8476,0.4275,0.3594
+west-bengal-uttar-dinajpur,West Bengal,538,0.6650,-0.0627,0.8002,0.8513,0.3457,0.3798

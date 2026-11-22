@@ -1,0 +1,72 @@
+# DIE v2.0 — gcm-pipeline reference.yaml
+#
+# Task M2.2 (docs/v2/02 §M2.2). Committed defaults from the decision register
+# (docs/v2/05): D (IMD primary reference — Owner instruction), C1 (QDM),
+# C2 (fixed 1981-2020 calibration), C3 (Hargreaves PET, identically applied),
+# C7 (0.25° target grid; conservative remap for pr, bilinear for temperature).
+#
+# Why IMD as primary: independent, station-interpolated national data — era C
+# is anchored to a reference that is NOT the satellite-gauge blend feeding
+# era B. CHIRPS / ERA5-Land are retained as alternates and cross-checks; both
+# can be run and compared at the validation stage (docs/v2/03 §3.8).
+
+target_grid:
+  res_deg: 0.25
+  # India domain (docs/v2/03 §3.1); IMD native domain, grid-cell centres
+  # offset ~0.125° from the NEX-GDDP-style 0.25° grid (registered observation).
+  lon_min: 67.0
+  lon_max: 99.0
+  lat_min: 6.0
+  lat_max: 38.0
+  regrid_method: {pr: conservative, tasmax: bilinear, tasmin: bilinear}
+
+calibration_window: [1981, 2020]      # fixed; matches era B reference discipline (C2)
+era_c_period: {start: 2026, end: 2100}   # OD2 provisional default: 2026 (clean seam at 2025-12)
+scenario_combo_note: "model baseline 1981-2020 = historical 1981-2014 combined with ssp 2015-2020 (one consistent model baseline per AS6)"
+
+reference:
+  precipitation:
+    primary:
+      name: "IMD 0.25° daily gridded rainfall (Pai et al. 2014 lineage)"
+      path: "D:/Websites/die-data/imd/pr"          # IMD_rain_YYYY.nc, verified 1901-2025 (125 files)
+      citation: "Pai, D. S., Sridhar, L., Rajeevan, M., Sreejith, O. P., Satbhai, N. S., & Mukhopadhyay, B. (2014). Development of a new high spatial resolution (0.25° x 0.25°) long period (1901-2010) daily gridded rainfall data set over India. Mausam, 65(1), 1-18."
+      licence: "free for research/academic use — verify redistribution terms before shipping derived grids (manifest requirement)"
+    alternate:
+      name: "CHIRPS v2.0 daily (era-B source; consistency cross-check)"
+      citation: "Funk et al. (2015), Scientific Data 2:150066, doi:10.1038/sdata.2015.66"
+  temperature:
+    primary:
+      name: "IMD daily gridded Tmax/Tmin — VERIFY current product resolution/version (OD3, gate M4.1)"
+      path: "D:/Websites/die-data/imd/tmax"        # IMD_tmax_YYYY.nc, verified 1951-2025 (75 files)
+      path_tmin: "D:/Websites/die-data/imd/tmin"   # IMD_tmin_YYYY.nc, verified 1951-2025 (75 files)
+      citation: "Srivastava, A. K., Rajeevan, M., & Kshirsagar, S. R. (2009). Development of a high resolution daily gridded temperature data set for the Indian region. Atmospheric Science Letters, 10(4), 249-254."
+      licence: "free for research/academic use — verify redistribution terms (manifest requirement)"
+    alternate:
+      name: "ERA5-Land t2m/tmn/tmx (era-B source; consistency cross-check)"
+      citation: "Munoz-Sabater et al. (2021), ESSD 13, 4349-4351, doi:10.5194/essd-13-4349-2021"
+
+  pet_reference_mode: "hargreaves-on-reference-temperature"
+  # C3/E: era B keeps ERA5-Land model PET (frozen); era C PET = Hargreaves on
+  # IMD Tmax/Tmin applied IDENTICALLY to reference and model data. The PET
+  # method seam between eras is documented in methodology v2 — never bridged
+  # silently (register resolution E).
+
+pet:
+  # Hargreaves–Samani (1985) as committed by C3 — parameters are science, they
+  # live here, never as hidden constants in code (AGENTS.md §8).
+  method: "hargreaves-samani-1985"
+  equation: "PET_mm_day = Ch * Ra * (Tmean + To) * sqrt(max(Tmax - Tmin, 0))"
+  coefficient_ch: 0.0023                 # Hargreaves–Samani empirical coefficient
+  coefficient_temp_offset: 17.8          # To (degC)
+  latent_heat_mj_per_kg: 2.45            # MJ/kg at ~20-30 degC (FAO-56 eq 1-2 range)
+  solar_constant_mj_m2_min: 0.0820       # FAO-56 Gsc
+  ra_mid_month_day_rule: "Ra evaluated at the mid-month day (day = round(days_in_month/2)) on the proleptic-Gregorian axis; monthly PET = daily estimate * days_in_month"
+  guards:
+    negative_pet: "clip at 0, count reported (possible only if Tmean < -17.8 degC)"
+    tmax_lt_tmin: "PET = NaN, count reported (physically invalid month; R10 absent, never imputed)"
+
+qa:
+  bounds_era_c: [-5, 5]        # register resolution G/K — clip counts reported
+  bounds_era_b: [-4, 4]        # released record — untouched
+  min_base_years: 20
+  fit_gates: "era B machinery (data-pipeline/indicators.py) reused verbatim for 05_spi_spei_compute.py"

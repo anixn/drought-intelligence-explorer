@@ -1,0 +1,5 @@
+# SHA-256 of the committed per-district QA evidence (2026-11-20)
+
+66c6b612ae95070dbd6678397a9caab5acb17e10a01810a01b51856e6f45589c  district_qa.json
+b91d77926309522185b4aae2e263159902c09cfc9a039116b473fb732495d9bf  district_qa.csv
+120db1d78987fb76c88abc7ec24c3c3bd11bbef7ada03d17ccd11a808c046753  README.md

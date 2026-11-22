@@ -683,8 +683,10 @@
     const st = DIE.state;
     const m = DIE.meta;
     const ds = DIE.datasets.get(st.indicator);
-    const lines = [
-      '# Drought Intelligence Explorer — research export',
+    const cite = (DIE.App && DIE.App.citationLines)
+      ? DIE.App.citationLines()
+      : ['# Drought Intelligence Explorer — research export', '# Cite: ' + (m.citation || '')];
+    const lines = cite.concat([
       '# exported (UTC): ' + new Date().toISOString(),
       '# indicator: ' + (ds ? ds.indicator.label + ' (' + ds.indicator.id + ', ' + ds.indicator.units + ')' : st.indicator),
       '# geography: ' + DIE.Filters.regionLabel() + ' (extent: ' + st.extent + ')',
@@ -698,7 +700,7 @@
       '# data source: ' + (m.sources && m.sources[0] ? m.sources[0].name : m.data_provenance),
       '# threshold / event settings: truncation ' + droughtThreshold(ds ? ds.indicator : { classes: [] }) +
         ' · minimum duration 3 months (runs analysis, Yevjevich 1967)'
-    ];
+    ]);
     (extra || []).forEach((l) => lines.push('# ' + l));
     lines.push('');
     return lines;

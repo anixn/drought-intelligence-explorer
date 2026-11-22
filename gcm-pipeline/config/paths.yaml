@@ -1,0 +1,34 @@
+# DIE v2.0 — gcm-pipeline paths.yaml
+#
+# Task M2.3 companion config (docs/v2/03 §3.1). All roots listed here are
+# OWNER-LOCAL storage — nothing under raw/work/out is ever committed or
+# shipped (docs/v2/03 §3.1; .gitignore covers gcm-pipeline/work/* and out/*).
+#
+# REALITY NOTE (2026-11-15): the spec sketch used work/raw/<model>/<exp>/<var>.nc,
+# but the Owner's completed phase-1 download (download.R, 2,312 files) lives in
+# a flat per-variable layout:
+#
+#   <raw_root>/<variable>/<var>_day_<model>_<experiment>_<variant>_<grid>_<year>_v2.0.nc
+#
+# Code is the source of truth: this layout is now the convention ALL gcm-pipeline
+# scripts parse (00 download, 01 inventory, 02 regrid, ...). New downloads
+# (phase 2 SSPs) must follow the SAME naming so the pipeline stays uniform.
+
+raw_root: "D:/Websites/die-data/cmip6/Hist"    # phase-1 store — RELOCATED 2026-11-17 (Owner reorganisation: was outdir/, now Hist/; inventory identical: 24-model pr, 22-model tas, 1981-2014, complete)
+# Phase-2 SSP downloads (Owner): COMPLETE 2015-2100 as of 2026-11-19 —
+#   D:/Websites/die-data/cmip6/SSP/<var>/  8-model committed subset,
+#   ssp245 + ssp585, 2015-2100, 4,128 files (1,376 per variable), 25.2 GB,
+#   verified complete by the 01 inventory gate (coverage 2015-2100 for both
+#   scenarios, 0 gaps) and by the byte-level health scan
+#   (scan_nc_health.py --root-sub SSP: 4,128 files opened, 4 damaged copies
+#   of CanESM5/ssp585/tasmin 2039/2041/2042/2043, re-downloaded by the Owner
+#   2026-11-19 — a truncated file is a loud failure, never a silent gap).
+#   Same per-variable flat layout + naming as phase 1.
+#   NOTE: a full historical mirror also exists at D:/Websites/die-data/cmip6/Hist
+#   (24/22-model, 1981-2014) — kept as the Owner's copy; production historical
+#   continues to be sourced from raw_root (Hist).
+# Step routing (M2.13): step 02/01 select the raw root PER EXPERIMENT —
+# historical -> raw_root; ssp* -> raw_root_ssp (merge with raw_root fallback).
+raw_root_ssp: "D:/Websites/die-data/cmip6/SSP"
+work_root: "work"    # relative to gcm-pipeline/ — manifests, plans, intermediates; NEVER shipped
+out_root: "out"      # validated era-C products; only these ever reach data/parquet/projections/

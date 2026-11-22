@@ -1,0 +1,169 @@
+# DIE v2.0 - era A (Drought Atlas of India) source parameters (task M6.1,
+# docs/v2/03 section 2.1). Every fact here was VERIFIED against the landed
+# archive on 2026-11-18 and against the Zenodo landing page -
+# never assumed. The verifier (00_verify_atlas.py) re-checks them and fails
+# loudly when the release changes.
+#
+# R4: the Owner acquires and stores the archive; OpenCode verifies, configures
+# and ingests. R3: nothing here is inferred from the readme alone - where the
+# readme and the files disagree, the FILES win and the delta is recorded.
+
+atlas:
+
+  # ---------------------------------------------------------- provenance ----
+  release:
+    title: "Drought Atlas of India, 1901-2025"
+    version: 2
+    doi: "10.5281/zenodo.20368514"
+    doi_url: "https://zenodo.org/records/20368514"
+    published: "2024-01-02"           # Zenodo record, version 2
+    licence: "CC-BY-4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_source: "Zenodo record page (the archive itself ships no LICENCE file)"
+    creators:
+      - "Chuphal, Dipesh Singh (IIT Gandhinagar, ORCID 0000-0002-0662-2906)"
+      - "Kushwaha, Anuj Prakash (IIT Gandhinagar)"
+      - "Aadhar, Saran (IIT Jodhpur)"
+      - "Mishra, Vimal (IIT Gandhinagar)"
+    citation: >-
+      Chuphal, D. S., Kushwaha, A. P., Aadhar, S., & Mishra, V. (2024).
+      Drought Atlas of India, 1901-2025 (Version 2) [Data set]. Zenodo.
+      https://doi.org/10.5281/zenodo.20368514
+    attribution_note: >-
+      Era A surfaces must credit the Atlas authors and DOI (CC BY 4.0).
+      Attribution text is rendered from this block, never hand-typed in the UI.
+
+  # ------------------------------------------------------------ local data ----
+  local_root: "D:/Websites/die-data/DroughtAtlas_v2"
+
+  # Series directories (5 columns: Year Month SPEI-1 SPEI-4 SPEI-12).
+  series:
+    india:
+      dir: "Z-score/India"
+      file_pattern: "^India$"
+    states:
+      dir: "Z-score/States"
+      file_pattern: "^data_statewise_id_(\\d+)$"
+    districts:
+      dir: "Z-score/Districts"
+      file_pattern: "^data_distwise_id_(\\d+)$"
+    talukas:
+      dir: "Z-score/Talukas"
+      file_pattern: "^data_talukwise_id_(\\d+)$"
+
+  # Gridded source: the archive ships the 0.05 degree grid in TWO disjoint
+  # sibling folders (verified: zero shared cells, union ~= the latlon list).
+  # Both are required for full coverage.
+  grid:
+    roots:
+      - "Gridded_SPEI"
+      - "DroughtAtlas_v2/Gridded_SPEI"
+    file_pattern: "^data_(-?\\d+\\.\\d+)_(-?\\d+\\.\\d+)$"
+    latlon_csv: "latlon_India_0.05degree.csv"
+
+  boundaries:
+    dir: "Administrative-Boundaries_Shapefile"
+    district: "DISTRICT_BOUNDARY.shp"
+    subdistrict: "SUBDISTRICT_BOUNDARY.shp"
+    state: "STATE_BOUNDARY.shp"
+    country: "India_Country_Boundary.shp"
+
+  readme: "readme"
+
+  # -------------------------------------------------------- data contract ----
+  # Verified on the landed archive (readme says 1901-2020 + a PNG atlas; the
+  # files say otherwise - the readme is stale).
+  period: [1901, 2025]                # first/last record, inclusive
+  expected_months: 1500               # 1901-01 .. 2025-12
+  scales: [1, 4, 12]                  # SPEI-1, SPEI-4, SPEI-12 (NO 3/6 month!)
+  series_columns: [year, month, spei1, spei4, spei12]
+  grid_columns: [sno, year, month, spei1, spei4, spei12]
+  resolution_deg: 0.05
+  units: "standardised index (z-score, dimensionless)"
+  missing: "NaN tokens in place (absent, never imputed - R10)"
+  calendar: "gregorian, monthly, no partial records observed"
+
+  # ------------------------------------------------------------ the fabric ---
+  # The platform serves the v1.0 724-district fabric (R1). The Atlas carries
+  # a NEWER demarcation: 742 district polygons / 732 district series and
+  # 4,723 subdistrict polygons / 4,639 series. Era A is therefore mapped onto
+  # the platform fabric by area-weighted aggregation from the 0.05 degree
+  # grid (docs/v2/03 section 2.2), never by renaming districts.
+  platform_districts: 724
+  atlas_district_polygons: 742
+  atlas_district_series: 732
+  atlas_subdistrict_polygons: 4723
+  atlas_subdistrict_series: 4639
+  atlas_state_polygons: 40
+  atlas_state_series: 36
+
+  # ---------------------------------------------------------- known deltas ---
+  # Recorded so the verifier asserts them instead of rediscovering them, and
+  # so the UI/docs never claim things the archive does not contain.
+  anomalies:
+    - "readme claims 1901-2020 and a PNG atlas folder; the files run 1901-2025 and contain NO PNGs"
+    - "the 0.05 degree grid is split across two disjoint sibling folders of the same name (both needed)"
+    - "SPEI-4 exists, SPEI-3 and SPEI-6 do NOT - era A timescales are 1/4/12"
+    - "DISTRICT_BOUNDARY.dbf name fields are partially corrupted (A and E render as '>'); the numeric DISTRICT_L column carries the LGD district code but is NOT a strict id bijection: 11 DISPUTED polygons carry no DISTRICT_L at all (MP inter-district disputes + Muzaffarabad/Mirpur), and disputed polygons may share a district's series - the era-A crosswalk must be geometric (polygon -> grid cells), never name- or code-based"
+    - "10 district series, 84 subdistrict series and 4 state series are absent although their polygons exist"
+    - "the 0.05-degree shipped cell set (115,394 files) omits all six island districts entirely - Nicobars, North/Middle Andaman, South Andaman, Diu, Lakshadweep and Mahe have NO Atlas grid cells (crosswalk: outside_domain, mode no_shipped_cells): era A honestly carries no data for them (era B covers the Andamans; the crossval panel will show the gap)"
+    - "the archive ships no LICENCE file; the licence is stated only on the Zenodo record page"
+
+  # ------------------------------------------------------------ trim policy ---
+  # What is IMPORTANT for DIE (keep), what is DERIVED (delete after the
+  # ingest product is verified), and what is ALREADY absent.
+  # The verifier writes the measured sizes; 02_trim.py enforces this list.
+  keep:
+    - "Gridded_SPEI/**"                       # source for the 724-district + tehsil products
+    - "DroughtAtlas_v2/Gridded_SPEI/**"       # second half of the same grid
+    - "Administrative-Boundaries_Shapefile/SUBDISTRICT_BOUNDARY.*"  # licensed tehsil geometry (O01)
+    - "Administrative-Boundaries_Shapefile/DISTRICT_BOUNDARY.*"     # crosswalk/QA geometry
+    - "readme"
+  delete_after_ingest:
+    - "Z-score/**"                            # convenience averages; superseded by the platform aggregation (kept until the QA comparison passes)
+    - "Administrative-Boundaries_Shapefile/STATE_BOUNDARY.*"   # not needed for the platform fabric
+    - "Administrative-Boundaries_Shapefile/India_Country_Boundary.*"  # ditto
+    - "latlon_India_0.05degree.csv"           # grid index; reproducible from the file names
+  delete_now_if_present:
+    - "DroughtAtlas_v2/*.png"                 # readme's PNG atlas - NOT present in this download
+
+  # ----------------------------------------------------------- the crosswalk ---
+  # Era A lands on the platform's 724-district fabric (OD4, Owner-delegated
+  # 2026-11-18). Weights REUSE the proven gcm-pipeline/06 machinery by import
+  # (exact Sutherland-Hodgman clip of district rings against the 0.05-degree
+  # cell rectangles in the v1.0 LAEA projection) - imported, never copied, so
+  # one source of truth. The Atlas's own 742-polygon fabric is QA-only.
+  crosswalk:
+    boundaries_geojson: "data/boundaries/india_districts.geojson"   # 724 features (v1.0 fabric, R1)
+    registry_csv: "data/districts.csv"                             # ids + LAEA registry areas + centroids
+    area_proj4: "+proj=laea +lat_0=22.5 +lon_0=79.5 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
+    sub_pixel_flag_threshold: 2          # n_cells <= 2 -> flagged (amendment M2.9 rule)
+    buffer_fallback_max_km: 50           # nearest-centre capture ceiling (v1.0 buffer-fallback semantics)
+    # The Atlas lattice, verified by the M6.1 gate (V4) - asserted, never re-derived.
+    lattice:
+      lat_start: 8.125
+      lat_end: 37.075
+      lon_start: 68.225
+      lon_end: 97.375
+      step: 0.05
+      n_lats: 580
+      n_lons: 584
+    area_tolerance_frac: 0.02            # coverage-ratio warning threshold (diagnostic only)
+
+  # ---------------------------------------------------------------- ingest ---
+  ingest:
+    staging_root: "work/atlas_store"     # prototype output (X9-style): promoted to
+                                         # data/parquet/atlas ONLY after verification
+    partition_layout: "atlas/variable=<id>/year=<yyyy>/part-0.parquet"
+    # column index (0-based) of each SPEI scale inside the grid files,
+    # whose columns are: SNo Year Month SPEI-1 SPEI-4 SPEI-12
+    variables:
+      spei_01: 3
+      spei_04: 4
+      spei_12: 5
+    year_start: 1901
+    # Output schema mirrors the era-B observed store EXACTLY so ducklab.js
+    # reads era A with the same code path (R1 continuity).
+    schema: "district_id dictionary<string,int32>, year int16, month int8, value float32"
+    national_qa: true                    # grid-weighted national series vs the Atlas India file
+    qa_roundtrip_cells: 5                # single-contributor cells re-verified cell-level (R7)

@@ -7,6 +7,7 @@ Typical quarterly update (see docs/data-update-guide.md for the full runbook):
                                                    # reprocess, re-export,
                                                    # validate
     python run.py update --start 2026-07 --end 2026-09
+    python run.py refresh --end 2026-09             # monthly: update + Parquet/catalog
     python run.py status                          # inventory of what is on disk
     python run.py download --start 2026-07        # step 1 only
     python run.py selftest                        # offline end-to-end test
@@ -22,8 +23,10 @@ from __future__ import annotations
 import argparse
 import glob
 import os
+import subprocess
 import sys
 import time
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -125,6 +128,44 @@ def _apply_gee_metadata(cfg: dict) -> None:
         cfg["app_metadata"]["sources"] = gee_meta["sources"]
 
 
+def _publish_parquet() -> int:
+    """M3.1: incrementally refresh the era-B Parquet store + catalog + national
+    pre-aggregate after the wide CSVs were updated. Each step is deterministic
+    and safe to re-run; unchanged variables are skipped by source SHA-256."""
+    root = Path(__file__).resolve().parent.parent
+    steps = [
+        ("Parquet incremental conversion",
+         [sys.executable, str(root / "scripts" / "convert_to_parquet.py"),
+          "--incremental", "--verify", "5"]),
+        ("National monthly pre-aggregate",
+         [sys.executable, str(root / "scripts" / "build_national.py")]),
+        ("Catalog contract",
+         [sys.executable, str(root / "scripts" / "generate_catalog.py")]),
+        ("Public status artifact",
+         [sys.executable, str(root / "scripts" / "build_status.py")]),
+    ]
+    for label, cmd in steps:
+        common.banner(label)
+        rc = subprocess.call(cmd, cwd=str(root))
+        if rc != 0:
+            print(f"  FAILED: {label} (exit {rc})")
+            return rc
+    print("\nParquet store, national pre-aggregate and catalog are current.")
+    print("Next: review the data diff, then run "
+          "`python scripts/regression_check.py --bless` if the drift is a "
+          "legitimate monthly refresh.")
+    return 0
+
+
+def cmd_refresh(cfg: dict, args) -> int:
+    """One command for a monthly refresh: fetch/extend (unless --offline),
+    export the wide CSVs, then incrementally publish Parquet/catalog."""
+    rc = cmd_update(cfg, args) if args.offline else cmd_gee(cfg, args)
+    if rc != 0:
+        return rc
+    return _publish_parquet()
+
+
 def cmd_gee(cfg: dict, args) -> int:
     """GEE extraction -> indicators -> export -> validate."""
     t0 = time.time()
@@ -214,7 +255,7 @@ def main(argv=None) -> int:
     ap.add_argument("command", nargs="?", default="update",
                     choices=["update", "download", "prepare", "zonal",
                              "indicators", "export", "validate", "status",
-                             "selftest", "gee"])
+                             "selftest", "gee", "refresh"])
     ap.add_argument("--config", default=None)
     ap.add_argument("--start", default=None, help="YYYY-MM window start")
     ap.add_argument("--end", default=None, help="YYYY-MM window end")
@@ -235,6 +276,8 @@ def main(argv=None) -> int:
                     help="GEE: recompute cached chunks")
     ap.add_argument("--skip-extract", action="store_true",
                     help="GEE: reuse data_processed/series/*.csv")
+    ap.add_argument("--offline", action="store_true",
+                    help="refresh: use the offline download route instead of GEE")
     args = ap.parse_args(argv)
 
     if args.command == "selftest":
@@ -246,6 +289,8 @@ def main(argv=None) -> int:
         return cmd_update(cfg, args)
     if args.command == "gee":
         return cmd_gee(cfg, args)
+    if args.command == "refresh":
+        return cmd_refresh(cfg, args)
     if args.command == "download":
         step_download(cfg, args.start or cfg["history"]["start"],
                       args.end or _latest_wanted(cfg))

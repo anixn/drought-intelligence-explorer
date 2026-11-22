@@ -1,0 +1,132 @@
+# DIE v2.0 — gcm-pipeline models.yaml
+#
+# Task M2.1 (docs/v2/02 §M2.1). Owner action (OD1): confirm/verify this list.
+#
+# PROVISIONAL PRE-FILL (2026-11-14): the 24 source_ids below are taken verbatim
+# from the Owner's R download list (D:/Websites/die-data/cmip6/download.R,
+# dated 2026-10-30). VARIANT/GRID_LABEL UPDATE (2026-11-15): the template
+# defaults were replaced by the values ACTUALLY on disk, extracted by
+# 01_inventory_check.py from the 2,312 phase-1 filenames (the inventory checker
+# and download manifest are the authoritative source for the real values —
+# update this file from their output, never the reverse). Affected models are
+# marked "variant from inventory". SSP phase-2 planning MUST use these same
+# variant/grid values so the model record stays one consistent run.
+#
+# SELECTION CRITERIA (all must hold — docs/v2/03 §3.1):
+#   - activity_id CMIP6, experiment_id in {historical, ssp245, ssp585}
+#   - table_id day (daily); variables: pr, tasmax, tasmin
+#   - one documented variant per model (default r1i1p1f1); record grid_label
+#   - historical coverage >= 1981 (calibration 1981-2020 uses model
+#     historical 1981-2014 combined with ssp 2015-2020 — AS6)
+#   - future coverage to 2100
+#
+# DOWNLOAD POLICY (PROGRESS.md §8, session-2 additions — ranking-before-SSP):
+#   Phase 1 (now):   historical only, 1981-2014, all listed models.
+#   Phase 2 (later): ssp245 + ssp585 2015-2100 ONLY for the best subset
+#                    (8-12 models) selected by 08_validate_gcm.py.
+#   Ensemble statistics are computed over the best subset; n is shown honestly
+#   (never labelled "24 models").
+
+meta:
+  status: owner-confirmed-2026-11-18   # OD1 closed: 24-model list + genealogy confirmed by the Owner (Geneology.md)
+  list_source: "download.R (Owner R cmip6 route), 2026-10-30"
+  genealogy_status: "owner-confirmed 2026-11-18 (Geneology.md: 5 families + 14 singletons/2 excluded)"
+  era_c_route: A                        # raw CMIP6 + own QDM vs IMD (OD7 resolved, register §1)
+  scenarios_full_record: [historical, ssp245, ssp585]
+  phase1_experiments: [historical]
+  historical_phase1: complete           # Owner report + OpenCode verification, 2026-11-14: 24 models x 34 years (1981-2014), 2312 files, all v2.0, merged into outdir
+  effective_era_c_models: 22            # 24 listed; CESM2 + IITM-ESM excluded (Owner decision 2026-11-14)
+  known_gaps:                           # verified by OpenCode inventory scan 2026-11-14 (2312 files, 0 unparsed)
+    - "RESOLVED 2026-11-14: historical 1981-1984 gap filled — all 24 models now complete 1981-2014 in outdir"
+    - "RESOLVED 2026-11-15: variant/grid_label template defaults replaced with on-disk reality (01_inventory_check.py over 2312 filenames): CESM2 pr=r4i1p1f1; CNRM-CM6-1 r1i1p1f2/gr; EC-Earth3 + EC-Earth3-Veg-LR gr; FGOALS-g3 r3i1p1f1; GFDL-ESM4 gr1; GISS-E2-1-G r1i1p1f2; HadGEM3-GC31-MM r1i1p1f3; INM-CM4-8/INM-CM5-0 gr1; IPSL-CM6A-LR gr; MIROC-ES2L r1i1p1f2. SSP phase-2 must use the same variant/grid per model."
+    - "Calendars on disk (regrid step 02 harmonises; recorded not failed): 360_day, 365_day, proleptic_gregorian, standard"
+    - "CESM2 + IITM-ESM have pr ONLY (daily tasmax/tasmin absent per Owner report 2026-11-14) -> EXCLUDED from the era C ensemble (Owner decision 2026-11-14); ensemble stats computed over n=22, shown honestly"
+    - "IITM-ESM daily tasmax/tasmin does not exist on ESGF (Owner confirmed). CESM2 day-temperature may exist under other variant labels (e.g. r10i1p1f1) - one optional variant re-check permitted; if it succeeds, the exclusion can be reversed via a register update"
+  commented_from_r_list:
+    - CMCC-CM2-SR5                      # commented out in download.R by the Owner
+
+# Amendment (docs/v2/06 §2, M2.1): per-model genealogy (CMIP6 parent /
+# institution family) so agreement fractions can be reported family-collapsed
+# (24 models are NOT 24 independent models). Ranking stays model-level; the
+# genealogy view is display-only.
+#
+# FILLED 2026-11-18 from the Owner's memo (Geneology.md, "CMIP6 Model
+# Genealogy and Validation Gate"); OD1 genealogy item. Five documented
+# lineages are grouped; every other model carries its own source_id as its
+# family so the gate counts it as one sample:
+#   ACCESS    — shared UM7.1/MOM5 core, ACCESS-ESM1-5 adds the carbon cycle
+#               (Bi et al. 2020)
+#   MPI       — same model at different resolution (Müller et al. 2017)
+#   EC-Earth  — identical atmosphere/ocean/sea-ice; Veg adds LPJ-GUESS
+#   MIROC     — MIROC-ES2L is the Earth-system extension of MIROC6
+#               (Hajima et al. 2020)
+#   INM       — INM-CM5-0 is the successor generation (Volodin et al. 2017)
+# Shared components ACROSS families (e.g. UM atmosphere in ACCESS + HadGEM,
+# NEMO/MOM oceans) are noted in the memo as approximate-independence caveats;
+# they do not create YAML groupings (over-grouping would reduce diversity).
+genealogy:
+  # -- ACCESS family ---------------------------------------------------------
+  ACCESS-CM2:        {family: "ACCESS",   institution: "CSIRO-ARCCSS"}
+  ACCESS-ESM1-5:     {family: "ACCESS",   institution: "CSIRO"}
+  # -- MPI family ------------------------------------------------------------
+  MPI-ESM1-2-HR:     {family: "MPI",      institution: "MPI-M"}
+  MPI-ESM1-2-LR:     {family: "MPI",      institution: "MPI-M"}
+  # -- EC-Earth family -------------------------------------------------------
+  EC-Earth3:         {family: "EC-Earth", institution: "EC-Earth-Consortium"}
+  EC-Earth3-Veg-LR:  {family: "EC-Earth", institution: "EC-Earth-Consortium"}
+  # -- MIROC family ----------------------------------------------------------
+  MIROC6:            {family: "MIROC",    institution: "MIROC"}
+  MIROC-ES2L:        {family: "MIROC",    institution: "MIROC"}
+  # -- INM family ------------------------------------------------------------
+  INM-CM4-8:         {family: "INM",      institution: "INM"}
+  INM-CM5-0:         {family: "INM",      institution: "INM"}
+  # -- singletons (no direct lineage: family = own source_id) ----------------
+  BCC-CSM2-MR:       {family: "BCC-CSM2-MR",    institution: "BCC"}
+  CanESM5:           {family: "CanESM5",        institution: "CCCma"}
+  CESM2:             {family: "CESM2",          institution: "NCAR"}
+  MRI-ESM2-0:        {family: "MRI-ESM2-0",     institution: "MRI"}
+  CMCC-ESM2:         {family: "CMCC-ESM2",      institution: "CMCC"}
+  CNRM-CM6-1:        {family: "CNRM-CM6-1",     institution: "CNRM-CERFACS"}
+  FGOALS-g3:         {family: "FGOALS-g3",      institution: "CAS"}
+  GFDL-ESM4:         {family: "GFDL-ESM4",      institution: "NOAA-GFDL"}
+  GISS-E2-1-G:       {family: "GISS-E2-1-G",    institution: "NASA-GISS"}
+  HadGEM3-GC31-MM:   {family: "HadGEM3-GC31-MM", institution: "MOHC"}
+  IITM-ESM:          {family: "IITM-ESM",       institution: "IITM"}
+  IPSL-CM6A-LR:      {family: "IPSL-CM6A-LR",   institution: "IPSL"}
+  NorESM2-MM:        {family: "NorESM2-MM",     institution: "NCC"}
+  TaiESM1:           {family: "TaiESM1",        institution: "AS-RCEC"}
+
+# Gate-pooling note (review finding F3): 08_validate_gcm.py currently pools
+# all models as if independent. The genealogy above is the input for the
+# family-aware interpretation, but changing gate SEMANTICS requires a
+# documented decision + re-run + Owner sign-off (AGENTS.md — never silently).
+# Until then this block is display/report metadata only.
+
+models:
+  - {source_id: "ACCESS-CM2",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "ACCESS-ESM1-5",     variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "BCC-CSM2-MR",       variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "CanESM5",           variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "CESM2",             variant: "r4i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}, era_c_ensemble: false}   # variant from inventory (pr on disk is r4i1p1f1); pr-only (no daily tasmax/tasmin) — excluded from era C ensemble per Owner decision 2026-11-14
+  - {source_id: "MRI-ESM2-0",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "CMCC-ESM2",         variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "CNRM-CM6-1",        variant: "r1i1p1f2", grid_label: "gr", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # variant+grid from inventory
+  - {source_id: "EC-Earth3",         variant: "r1i1p1f1", grid_label: "gr", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # grid from inventory
+  - {source_id: "EC-Earth3-Veg-LR",  variant: "r1i1p1f1", grid_label: "gr", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # grid from inventory
+  - {source_id: "FGOALS-g3",         variant: "r3i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # variant from inventory
+  - {source_id: "GFDL-ESM4",         variant: "r1i1p1f1", grid_label: "gr1", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # grid from inventory
+  - {source_id: "GISS-E2-1-G",       variant: "r1i1p1f2", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # variant from inventory
+  - {source_id: "HadGEM3-GC31-MM",   variant: "r1i1p1f3", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # variant from inventory
+  - {source_id: "IITM-ESM",          variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}, era_c_ensemble: false}   # pr-only — daily tasmax/tasmin not on ESGF (Owner confirmed); excluded per Owner decision 2026-11-14
+  - {source_id: "INM-CM4-8",         variant: "r1i1p1f1", grid_label: "gr1", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # grid from inventory
+  - {source_id: "INM-CM5-0",         variant: "r1i1p1f1", grid_label: "gr1", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # grid from inventory; verified present on disk (earlier "verify on ESGF" flag resolved by the completed download)
+  - {source_id: "IPSL-CM6A-LR",      variant: "r1i1p1f1", grid_label: "gr", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # grid from inventory
+  - {source_id: "MIROC-ES2L",        variant: "r1i1p1f2", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}   # variant from inventory
+  - {source_id: "MIROC6",            variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "MPI-ESM1-2-HR",     variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "MPI-ESM1-2-LR",     variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "NorESM2-MM",        variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+  - {source_id: "TaiESM1",           variant: "r1i1p1f1", grid_label: "gn", historical: {start: 1950, end: 2014}, ssp245: {start: 2015, end: 2100}, ssp585: {start: 2015, end: 2100}}
+
+# Best-subset (filled by 08_validate_gcm.py at the validation gate, NOT by hand):
+# best_subset: {n_models: null, source_ids: []}

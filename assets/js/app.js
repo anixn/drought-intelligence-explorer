@@ -35,6 +35,12 @@
     { id: 'historical', btn: 'tabHistorical', view: 'viewHistorical' },
     { id: 'events', btn: 'tabEvents', view: 'viewEvents' },
     { id: 'propagation', btn: 'tabPropagation', view: 'viewPropagation' },
+    { id: 'crossval', btn: 'tabCrossval', view: 'viewCrossval' },
+    { id: 'district', btn: 'tabDistrict', view: 'viewDistrict' },
+    { id: 'engine', btn: 'tabEngine', view: 'viewEngine' },
+    { id: 'projections', btn: 'tabProjections', view: 'viewProjections' },
+    { id: 'summary', btn: 'tabSummary', view: 'viewSummary' },
+    { id: 'atlas', btn: 'tabAtlas', view: 'viewAtlas' },
     { id: 'data', btn: 'tabData', view: 'viewData' }
   ];
   const TAB_LABELS = {
@@ -42,12 +48,34 @@
     historical: 'Historical',
     events: 'Events',
     propagation: 'Propagation',
+    crossval: 'Cross-validation',
+    district: 'District profile',
+    engine: 'Engine Lab',
+    projections: 'Projections',
+    summary: 'Drought to 2100',
+    atlas: 'Atlas 1901–2025',
     data: 'Documentation'
   };
+  // Product-first navigation (M10.3c): one top-level destination per
+  // era/product; its analytical lenses are the existing tab buttons beneath.
+  const TAB_GROUP = {
+    overview: 'record',
+    historical: 'record',
+    events: 'record',
+    propagation: 'record',
+    crossval: 'record',
+    district: 'record',
+    projections: 'projections',
+    summary: 'projections',
+    atlas: 'atlas',
+    data: 'docs',
+    engine: 'tools'
+  };
+  const GROUP_WITH_LENSES = { record: true, projections: true };
   let currentTab = 'overview';
   // Tabs are marked dirty on state changes while hidden and re-render only
   // when entered. This avoids updating 5 workspaces on every slider tick.
-  const DIRTY = { overview: true, historical: true, events: true, propagation: true, data: true };
+  const DIRTY = { overview: true, historical: true, events: true, propagation: true, crossval: true, district: true, engine: true, projections: true, summary: true, atlas: true, data: true };
   const markDirty = (tab) => { DIRTY[tab] = true; };
 
   /** Run work when the browser is idle (never blocks interaction). */
@@ -87,11 +115,12 @@
     stack.appendChild(t);
     setTimeout(() => t.remove(), 7000);
   }
+  DIE.toast = toast;   // shared with permalink.js (copy confirmation)
 
   function currentDataset() { return DIE.datasets.get(DIE.state.indicator); }
   function ids() { return DIE.Filters.regionIds(); }
   function isDemo() { return /synthetic|demonstration/i.test(String(DIE.meta.data_mode || '')); }
-  function run(fn) { try { fn(); } catch (e) { console.error(e); } }
+  function run(fn) { try { return fn(); } catch (e) { console.error(e); } }
   function debounce(fn, ms) {
     let t;
     return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
@@ -165,8 +194,7 @@
       await DIE.loader.indicator(DIE.state.indicator);
 
       const ds0 = currentDataset();
-      DIE.state.dateIdx = ds0.availableEndIndex >= 0
-        ? ds0.availableEndIndex : ds0.dates.length - 1;
+      DIE.state.dateIdx = DIE.Filters.defaultDateIdx(ds0);
       DIE.state.period.from = +(ds0.availableFrom || DIE.meta.period.start).slice(0, 4);
       DIE.state.period.to = +(ds0.availableTo || DIE.meta.period.end).slice(0, 4);
 
@@ -178,17 +206,26 @@
       DIE.MapView.fitRegion();
 
       wireShell();
+      wireChrome();
+      wireNavTips();
+      wireRailConsoles();
       // Deep event instrumentation (GTM dataLayer). Never throws into the
       // boot path; wire() only subscribes listeners.
       if (DIE.Telemetry) run(() => DIE.Telemetry.wire());
       renderStaticText();
-      routeFromHash();
+      // The era pill and currency chips describe the whole record, not one
+      // tab: paint them once at boot so a deep link to Documentation or the
+      // Engine Lab does not show empty "—" chips until Overview is opened.
+      renderTopbar();
+      await routeFromHash();
+      if (DIE.Permalink) DIE.Permalink.init();
 
       setBoot('Ready', 100);
       setTimeout(() => { $('bootOverlay').classList.add('is-hidden'); busy(false); }, 250);
       // Warm the next likely indicators while the main thread is idle; CSV
       // text is cached without parsing until the user actually switches.
       idle(() => {
+        renderImdValidation();
         ['spei_3', 'spi_6', 'vci'].forEach((id) => {
           if (id !== DIE.state.indicator) DIE.loader.prefetchIndicator(id);
         });
@@ -207,6 +244,7 @@
   function switchTab(which, push) {
     const tab = TABS.find((t) => t.id === which) || TABS[0];
     currentTab = tab.id;
+    DIE.currentTab = tab.id;
     TABS.forEach((t) => {
       const view = $(t.view), btn = $(t.btn);
       const active = t.id === tab.id;
@@ -218,14 +256,23 @@
         btn.tabIndex = active ? 0 : -1;
       }
     });
-    if (push !== false && location.hash !== '#' + tab.id) {
+    if (push !== false && DIE.Permalink) {
+      // M10.4: the address bar carries the restorable view, not just the tab.
+      DIE.Permalink.sync(tab.id);
+    } else if (push !== false && location.hash !== '#' + tab.id) {
       history.replaceState(null, '', '#' + tab.id);
     }
     // Lazy init + render only when the tab needs it. DIRTY starts true for
     // every tab and is set on state changes while the tab is hidden.
     if (DIRTY[tab.id]) {
-      run(() => Views[tab.id] && Views[tab.id]());
+      const pending = run(() => Views[tab.id] && Views[tab.id]());
       DIRTY[tab.id] = false;
+      // The product consoles mirror controls that a lazily-initialised module
+      // fills in (scenario list, month list, variable list), so refresh the
+      // rail once that first render settles too (M7.4).
+      if (pending && typeof pending.then === "function") {
+        pending.then(syncRailConsoles, syncRailConsoles);
+      }
     }
     // Leaflet needs a size recalculation after its container becomes visible.
     setTimeout(() => {
@@ -240,11 +287,58 @@
         if (Propagation.mapB) Propagation.mapB.invalidateSize();
       } else if (tab.id === 'events' && DIE.MapView.evtDetailMap) {
         DIE.MapView.evtDetailMap.invalidateSize();
+      } else if (tab.id === 'projections' && DIE.Projections) {
+        // v2: the Plotly band chart and the Leaflet choropleth need a
+        // laid-out container; re-querying is near-free (engine query cache)
+        DIE.Projections.invalidate();
+      } else if (tab.id === 'summary' && DIE.Summary) {
+        DIE.Summary.invalidate();
+      } else if (tab.id === 'atlas' && DIE.AtlasView) {
+        DIE.AtlasView.invalidate();
+      } else if (tab.id === 'crossval' && DIE.CrossvalView) {
+        DIE.CrossvalView.invalidate();
       }
     }, 60);
     document.body.dataset.tab = tab.id;
+    syncNavGroup(tab.id);
     syncSidebar(tab.id);
+    syncRailConsoles();
     if (DIE.Telemetry) DIE.Telemetry.track('tab_view', { tab: tab.id });
+  }
+
+  /** Open the dedicated district profile route (#/district/<id>, M10.6). */
+  function openDistrict(id) {
+    const did = id || DIE.state.districtId || 'gujarat-ahmedabad';
+    const next = '#/district/' + did;
+    if (location.hash === next) {
+      routeFromHash();
+      return;
+    }
+    location.hash = '/district/' + did;   // hashchange routes + keeps Back working
+  }
+
+  /** Product-first navigation state: mark the owning era/product destination
+   *  and reveal only that product's lenses. The Documentation and Engine Lab
+   *  groups own a single surface, so their lens strip stays out of the way. */
+  function syncNavGroup(tabId) {
+    const group = TAB_GROUP[tabId] || 'record';
+    document.querySelectorAll('.tab-group').forEach((a) => {
+      if (a.dataset.group === group) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+    // Documentation left the product bar in M7.4 (it is reference material,
+    // not a data product): its topbar utility carries the current state.
+    const docsLink = $('topDocsLink');
+    if (docsLink) {
+      if (group === 'docs') docsLink.setAttribute('aria-current', 'page');
+      else docsLink.removeAttribute('aria-current');
+    }
+    const hasLenses = !!GROUP_WITH_LENSES[group];
+    const wrap = $('tabLenses');
+    if (wrap) wrap.hidden = !hasLenses;
+    document.querySelectorAll('[data-group-panel]').forEach((panel) => {
+      panel.hidden = !hasLenses || panel.dataset.groupPanel !== group;
+    });
   }
 
   /** Contextual sidebar sync: badge, footer export label, and keeping the
@@ -255,7 +349,7 @@
     if (badge) badge.textContent = TAB_LABELS[tabId] || 'Filters';
     const entry = TABS.find((t) => t.id === tabId);
     const btn = entry && $(entry.btn);
-    if (btn && btn.scrollIntoView) {
+    if (btn && btn.scrollIntoView && btn.offsetParent !== null) {
       try { btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); }
       catch (e) { /* older browsers: leave the tab bar as-is */ }
     }
@@ -264,24 +358,210 @@
     if (lbl) {
       const titles = {
         overview: 'Map PNG', historical: 'Ranking CSV',
-        events: 'Events CSV', propagation: 'Downloads', data: 'Downloads'
+        events: 'Events CSV', propagation: 'Downloads', engine: 'Results CSV',
+        projections: 'Downloads', summary: 'Summary CSV',
+        crossval: 'Comparison CSV', district: 'District CSV', data: 'Downloads'
       };
       lbl.textContent = titles[tabId] || 'Export';
     }
+    renderEraPill(tabId);
   }
 
-  function routeFromHash() {
-    const h = (location.hash || '').replace('#', '');
-    const slash = h.indexOf('/');
-    const tab = slash > 0 ? h.slice(0, slash) : h;
-    const doc = slash > 0 ? h.slice(slash + 1) : null;
-    // '#docs' and '#documentation' are friendly aliases for the
-    // Documentation & Resources workspace (whose router id stays 'data').
-    const routed = { docs: 'data', documentation: 'data' }[tab] || tab;
-    switchTab(TABS.some((t) => t.id === routed) ? routed : 'overview', false);
-    // deep link to a documentation section: #data/<section-id-suffix>
-    if (routed === 'data' && doc && DOC_SECTIONS.includes('doc-' + doc)) {
-      goDoc('doc-' + doc);
+  /* ================================================= APPEARANCE THEMES ===
+   * Sepia Paper accent themes (decision D10). They retint chrome only; the
+   * severity ramp, class boundaries and every analytic result are identical
+   * in all four, so a colour quoted in a report means the same thing after
+   * the reader changes their paper. */
+  const ACCENT_THEMES = {
+    reading: 'Reading Room',
+    field: 'Field Notes',
+    drafting: 'Drafting Table',
+    hydro: 'Hydrograph'
+  };
+  function applyAccent(name, persist) {
+    const key = Object.prototype.hasOwnProperty.call(ACCENT_THEMES, name)
+      ? name
+      : 'reading';
+    document.body.dataset.accent = key;
+    document.querySelectorAll('.appearance-swatch').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.theme === key));
+    });
+    const label = $('appearanceName');
+    if (label) label.textContent = ACCENT_THEMES[key];
+    if (persist) {
+      try { localStorage.setItem('die.accent', key); } catch (e) {}
+      if (DIE.Telemetry) DIE.Telemetry.track('appearance_accent', { accent: key });
+    }
+  }
+
+  /* ======================================================== ERA PILL =====
+   * A standing, honest statement of which record the current surface reads.
+   * Era A (reconstruction), B (gridded product) and C (projections) are never
+   * silently spliced; the pill is the always-visible receipt for that rule. */
+  const ERA_BY_TAB = { atlas: 'a', projections: 'c', summary: 'c' };
+  /* The era-B span is extended by the monthly refresh, so every year range is
+   * read from the contract (metadata.period) instead of being hard-coded: a
+   * stale "1981–2025" in the nav or the pill would be an era-honesty defect
+   * (R2) the moment the record moves on. */
+  function recordSpan() {
+    const p = (DIE.meta && DIE.meta.period) || {};
+    const start = String(p.start || '1981-01');
+    const end = String(p.end || p.start || '1981-01');
+    return start.slice(0, 4) + '–' + end.slice(0, 4);
+  }
+  const MONTH_LONG = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  function monthYear(ym) {
+    const m = /^(\d{4})-(\d{2})$/.exec(String(ym || ''));
+    return m ? MONTH_LONG[+m[2] - 1] + ' ' + m[1] : String(ym || '');
+  }
+  const ERA_COPY = {
+    a: {
+      short: 'Era <b>A</b> &middot; Atlas 1901&ndash;2025',
+      long:
+        'Era A — Drought Atlas of India reconstruction (SPEI), 1901–2025. ' +
+        'A reconstruction, served at district level; never spliced with the ' +
+        '%SPAN% gridded product.'
+    },
+    b: {
+      short: 'Era <b>B</b> &middot; Gridded Product',
+      long:
+        'Era B — Gridded Multi-Source Product (CHIRPS, ERA5-Land, MODIS), ' +
+        '%SPAN%. Observation-based gridded sources; each indicator family ' +
+        'reads its own source and they are never merged.'
+    },
+    c: {
+      short: 'Era <b>C</b> &middot; Projections',
+      long:
+        'Era C — Bias-corrected CMIP6 projections under SSP2-4.5 and ' +
+        'SSP5-8.5. Simulations, never forecasts; never spliced with era B.'
+    },
+    'c-minus-b': {
+      short: 'Era <b>C</b> &minus; B &middot; Delta to 2100',
+      long:
+        'A per-era delta: era-C projections compared against the era-B ' +
+        '1981–2014 baseline. Two eras are computed separately and shown ' +
+        'side by side — never as one continuous series.'
+    },
+    'a-vs-b': {
+      short: 'Era <b>A</b> &harr; B &middot; Compared',
+      long:
+        'Era A (Drought Atlas reconstruction, station-based SPEI) and era B ' +
+        '(Gridded Multi-Source Product, CHIRPS precipitation with ERA5-Land ' +
+        'PET) compared over their 1981–2014 overlap. Two independent records ' +
+        'read side by side — never merged, never spliced into one series.'
+    }
+  };
+  function renderEraPill(tabId) {
+    const pill = $('eraPill');
+    if (!pill) return;
+    const key = tabId === 'summary' ? 'c-minus-b'
+      : tabId === 'crossval' ? 'a-vs-b' : ERA_BY_TAB[tabId] || 'b';
+    const copy = ERA_COPY[key];
+    const long = copy.long.replace(/%SPAN%/g, recordSpan());
+    pill.dataset.era = key === 'c-minus-b' ? 'c'
+      : key === 'a-vs-b' ? 'ab' : key;
+    pill.innerHTML = '<span class="era-dot" aria-hidden="true"></span>' + copy.short;
+    pill.title = long;
+    pill.setAttribute('aria-label', long);
+  }
+
+  /* ===================================================== ASK THE RECORD ==
+   * Depth-1 answers: the question cards route to the workspace that holds the
+   * evidence. "latest" additionally snaps the shared date cursor to the most
+   * recent available month, so the answer describes now rather than wherever
+   * the slider was left. */
+  function runAsk(which) {
+    const target = {
+      latest: 'overview',
+      historical: 'historical',
+      events: 'events',
+      projections: 'projections',
+      atlas: 'atlas'
+    }[which] || 'overview';
+    switchTab(target);
+    if (which === 'latest') {
+      const ds = currentDataset();
+      if (ds) {
+        const idx = ds.availableEndIndex >= 0
+          ? ds.availableEndIndex
+          : ds.dates.length - 1;
+        if (idx !== DIE.state.dateIdx) {
+          DIE.Filters.set({ dateIdx: idx });
+        }
+      }
+      const mapPanel = $('mapPanel');
+      if (mapPanel && mapPanel.scrollIntoView) {
+        const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        mapPanel.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+    if (DIE.Telemetry) DIE.Telemetry.track('ask_open', { question: which, tab: target });
+  }
+
+  async function routeFromHash() {
+    if (DIE.Permalink) DIE.Permalink.beginRoute();
+    try {
+      const parsed = DIE.Permalink
+        ? DIE.Permalink.parse(location.hash)
+        : { tab: (location.hash || '').replace('#', ''), doc: null, params: null };
+      const h = parsed.tab || '';
+      const slash = h.indexOf('/');
+      const tab = slash > 0 ? h.slice(0, slash) : h;
+      const doc = parsed.doc || (slash > 0 ? h.slice(slash + 1) : null);
+      // '#docs' and '#documentation' are friendly aliases for the
+      // Documentation & Resources workspace (whose router id stays 'data').
+      const routed = { docs: 'data', documentation: 'data' }[tab] || tab;
+      // Shared study-context state is applied BEFORE the tab renders, so the
+      // first paint of a permalink is already the linked view.
+      if (parsed.params && DIE.Permalink) {
+        try { await DIE.Permalink.applyShared(parsed.params); }
+        catch (err) { console.warn('[permalink] shared state not applied:', err); }
+      }
+      // District profile route (#/district/<id>). The path id is authoritative
+      // after shared params, so a crafted link cannot land on the wrong district.
+      if (parsed.district) {
+        const d = DIE.registry && DIE.registry.districts.get(parsed.district);
+        if (d) {
+          DIE.Filters.set({ extent: 'district', stateId: d.sid, districtId: d.id });
+          switchTab('district', false);
+          if (DIE.DistrictProfile) DIE.DistrictProfile.refresh();
+          return;
+        }
+        switchTab('overview', false);
+        return;
+      }
+      if (routed === 'district') {
+        const id = DIE.state.districtId || 'gujarat-ahmedabad';
+        const d = DIE.registry &&
+          (DIE.registry.districts.get(id) ||
+           DIE.registry.districts.get('gujarat-ahmedabad'));
+        if (d) {
+          DIE.Filters.set({ extent: 'district', stateId: d.sid, districtId: d.id });
+        }
+        switchTab('district', false);
+        if (DIE.DistrictProfile) DIE.DistrictProfile.refresh();
+        return;
+      }
+      switchTab(TABS.some((t) => t.id === routed) ? routed : 'overview', false);
+      if (parsed.params && DIE.Permalink) {
+        try { await DIE.Permalink.applyTab(routed, parsed.params); }
+        catch (err) { console.warn('[permalink] tab state not applied:', err); }
+      }
+      // deep link to a documentation section (optionally a method anchor):
+      // #data/k-methodology/method-events
+      if (routed === 'data' && doc) {
+        const parts = String(doc).split('/');
+        const sec = parts[0];
+        const anchor = parts[1];
+        if (DOC_SECTIONS.includes('doc-' + sec)) {
+          goDoc('doc-' + sec, anchor);
+        }
+      }
+    } finally {
+      if (DIE.Permalink) DIE.Permalink.endRoute();
     }
   }
 
@@ -291,10 +571,12 @@
    * the relevant section instead of opening a duplicated dialog. */
   const DOC_SECTIONS = [
     'doc-a-about', 'doc-b-dataset', 'doc-c-methods', 'doc-d-quality',
-    'doc-e-limits', 'doc-f-repro', 'doc-g-downloads', 'doc-h-versions',
-    'doc-i-guide', 'doc-j-glossary'
+    'doc-e-limits', 'doc-f-repro', 'doc-g-downloads',
+    'doc-k-methodology', 'doc-l-governance', 'doc-m-reality',
+    'doc-n-status', 'doc-p-sql',
+    'doc-h-versions', 'doc-i-guide', 'doc-j-glossary'
   ];
-  function goDoc(sec) {
+  function goDoc(sec, anchor) {
     if (DIE.Telemetry) DIE.Telemetry.track('docs_open', { section: sec });
     switchTab('data');
     // Applied immediately (deep links must work even in an unfocused tab,
@@ -308,14 +590,20 @@
       const el = $(sec);
       if (!el) return;
       el.open = true;
+      const target = (anchor && /^[a-z0-9-]+$/i.test(anchor))
+        ? (document.getElementById(anchor) || el) : el;
       // instant landing: smooth page-scroll would race the measurement and
       // feel laggy for anchor-style navigation
-      el.scrollIntoView({ behavior: 'instant', block: 'start' });
-      el.classList.remove('doc-flash');
+      target.scrollIntoView({ behavior: 'instant', block: 'start' });
+      target.classList.remove('doc-flash');
       // restart the highlight animation
-      void el.offsetWidth;
-      el.classList.add('doc-flash');
-      setTimeout(() => el.classList.remove('doc-flash'), 1800);
+      void target.offsetWidth;
+      target.classList.add('doc-flash');
+      setTimeout(() => target.classList.remove('doc-flash'), 1800);
+      if (target !== el) {
+        target.setAttribute('tabindex', '-1');
+        try { target.focus({ preventScroll: true }); } catch (e) {}
+      }
     };
     apply();
     requestAnimationFrame(apply);
@@ -327,6 +615,34 @@
     document.querySelectorAll('[data-doc]').forEach((btn) => {
       btn.addEventListener('click', () => goDoc(btn.dataset.doc));
     });
+
+    // Living methodology anchors (M10.7): jump + copy a citable sub-anchor.
+    document.querySelectorAll('[data-jump]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const el = document.getElementById(btn.dataset.jump);
+        if (!el) return;
+        el.scrollIntoView({ behavior: 'instant', block: 'start' });
+        el.classList.remove('doc-flash');
+        void el.offsetWidth;
+        el.classList.add('doc-flash');
+        setTimeout(() => el.classList.remove('doc-flash'), 1800);
+      });
+    });
+    document.querySelectorAll('[data-anchor]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const anchor = btn.dataset.anchor;
+        const url = location.href.split('#')[0] + '#data/k-methodology/' + anchor;
+        try {
+          await navigator.clipboard.writeText(url);
+          toast('Anchor copied', 'Citable method link is on your clipboard.');
+        } catch (err) {
+          toast('Could not copy automatically', url, 'warn');
+        }
+        if (DIE.Telemetry) {
+          try { DIE.Telemetry.track('method_anchor_copy', { anchor }); } catch (e) {}
+        }
+      });
+    });
     document.addEventListener('keydown', (e) => {
       // "?" jumps to the user guide section unless the user is typing.
       const typing = /^(INPUT|SELECT|TEXTAREA)$/.test((document.activeElement || {}).tagName || '');
@@ -334,10 +650,15 @@
         goDoc('doc-i-guide');
         e.preventDefault();
       }
-      // arrow-key tab navigation on the tablist (documentation has no tab
-      // button, so it is not part of the tablist cycle)
+      // arrow-key tab navigation stays inside the active product's lens row
+      // (the Documentation group has no lens button, and single-surface
+      // products hide their lens strip entirely)
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-        const navTabs = TABS.filter((t) => $(t.btn));
+        const group = TAB_GROUP[currentTab];
+        const navTabs = TABS.filter((t) => {
+          const b = $(t.btn);
+          return b && TAB_GROUP[t.id] === group && b.offsetParent !== null;
+        });
         const idx = navTabs.findIndex((t) => t.id === currentTab);
         if (idx >= 0 && document.activeElement && document.activeElement.role === 'tab') {
           const next = navTabs[(idx + (e.key === 'ArrowRight' ? 1 : navTabs.length - 1)) % navTabs.length];
@@ -355,35 +676,13 @@
     // Contextual export: triggers the active workspace's primary export
     // (reusing the existing, already-instrumented controls).
     $('footExportBtn').addEventListener('click', () => {
-      const map = { overview: 'mapPngBtn', historical: 'tableCsvBtn', events: 'evtCsvBtn' };
+      const map = { overview: 'mapPngBtn', historical: 'tableCsvBtn', events: 'evtCsvBtn', engine: 'elResultCsv' };
       const target = map[currentTab];
       if (target && $(target)) { $(target).click(); return; }
       goDoc('doc-g-downloads'); // propagation + docs: export centre
     });
-    // Copy a deep link to the current analysis view (hash preserves the view).
-    $('footShareBtn').addEventListener('click', async () => {
-      if (DIE.Telemetry) DIE.Telemetry.track('share_copy', { tab: currentTab });
-      const url = location.href;
-      try {
-        await navigator.clipboard.writeText(url);
-        toast('Link copied', 'The analysis URL is on your clipboard.');
-      } catch (err) {
-        // Clipboard API denied or unavailable: textarea fallback.
-        const ta = document.createElement('textarea');
-        ta.value = url;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-          document.execCommand('copy');
-          toast('Link copied', 'The analysis URL is on your clipboard.');
-        } catch (err2) {
-          toast('Copy failed', url, 'error');
-        }
-        ta.remove();
-      }
-    });
+    // Copy a state-encoding deep link (M10.4): owned by DIE.Permalink, which
+    // serialises indicator + geography + period + date + panel settings.
     // Collapse the panel on desktop (drawer mode ignores this; same code
     // path as the chevron in the sidebar head).
     $('footCollapseBtn').addEventListener('click', () => {
@@ -391,13 +690,39 @@
       setFiltersCollapsed(true, true);
     });
 
-    // tabs (the documentation workspace has no primary tab button — it
-    // opens from the sidebar footer — so btn can be null)
+    // lens tabs (the Documentation group has no lens button - it opens from
+    // the product row or the sidebar footer - so btn can be null)
     TABS.forEach((t) => {
       const btn = $(t.btn);
-      if (btn) btn.addEventListener('click', () => switchTab(t.id));
+      if (btn) btn.addEventListener('click', () => {
+        if (t.id === 'district') {
+          // dedicated path route: #/district/<id>
+          openDistrict(DIE.state.districtId);
+          return;
+        }
+        switchTab(t.id);
+      });
     });
     window.addEventListener('hashchange', routeFromHash);
+
+    /* ------------------------------------------------ appearance (D10) --- */
+    // Four paper accents. Chrome only — the severity ramp is untouched, so a
+    // quoted class colour means the same thing in every theme. Persisted per
+    // browser; resetting the filters never changes it.
+    let savedAccent = 'reading';
+    try { savedAccent = localStorage.getItem('die.accent') || 'reading'; } catch (e) {}
+    applyAccent(savedAccent, false);
+    document.querySelectorAll('.appearance-swatch').forEach((b) => {
+      b.addEventListener('click', () => applyAccent(b.dataset.theme, true));
+    });
+
+    /* --------------------------------------- "Ask the record" entry ------ */
+    // Each card is a question, not a chart title. The handler routes to the
+    // surface that holds the evidence; "latest" also snaps to the most recent
+    // available month so the answer is about now, not about a stale cursor.
+    document.querySelectorAll('[data-ask]').forEach((btn) => {
+      btn.addEventListener('click', () => runAsk(btn.dataset.ask));
+    });
 
     // fullscreen
     $('fullscreenBtn').addEventListener('click', () => {
@@ -547,6 +872,17 @@
     }
     // User-guide download buttons live outside #downloadsTab (guide panel).
     document.addEventListener('click', async (e) => {
+      const btn = e.target.closest && e.target.closest('[data-dl="sqlguide"]');
+      if (!btn || btn.closest('#downloadsTab')) return;
+      try {
+        const text = await DIE.loader.fetchText('docs/sql-guide.md');
+        A().toText('sql-guide.md', text, 'text/markdown;charset=utf-8');
+        toast('SQL guide saved', 'docs/sql-guide.md');
+      } catch (err) { toast('Download failed', String(err.message || err), 'error'); }
+    });
+
+    // User-guide download buttons live outside #downloadsTab (guide panel).
+    document.addEventListener('click', async (e) => {
       const btn = e.target.closest && e.target.closest('[data-dl="userguide"]');
       if (!btn || btn.closest('#downloadsTab')) return;
       try {
@@ -663,6 +999,16 @@
         }
       }
 
+      // District profile follows the selected district, indicator, date and
+      // analysis period (M10.6).
+      if (needsGeo || needsDate || needsPeriod) {
+        if (currentTab === 'district' && DIE.DistrictProfile) {
+          run(() => DIE.DistrictProfile.refresh());
+        } else {
+          markDirty('district');
+        }
+      }
+
       if (window.innerWidth <= 1024) closeDrawer();
     });
 
@@ -697,6 +1043,7 @@
       });
       if (Propagation.mapA) Propagation.mapA.invalidateSize();
       if (Propagation.mapB) Propagation.mapB.invalidateSize();
+      if (DIE.Projections && DIE.Projections.mapSize) DIE.Projections.mapSize();
     }, 250));
   }
 
@@ -704,6 +1051,229 @@
     $('sidebar').classList.remove('is-open');
     $('navToggle').setAttribute('aria-expanded', 'false');
     $('scrim').hidden = true;
+  }
+
+  /* ---- chrome behaviour (M7.4) ----------------------------------------- *
+   * The product bar reads as a child row of the topbar: flush under it and
+   * full-bleed across the content column (CSS). Behaviourally it steps out
+   * of the way while the reader scrolls down and returns on the first
+   * upward scroll, on focus, or near the top — never while a link inside it
+   * has keyboard focus, and never when the reader asked for reduced motion
+   * (the transform is instant then, which is still correct). */
+  function wireChrome() {
+    const nav = document.querySelector('.tab-nav');
+    if (!nav) return;
+    let last = window.scrollY;
+    let frame = 0;
+
+    const step = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const dy = y - last;
+      if (Math.abs(dy) < 6) return;                 // ignore jitter
+      last = y;
+      if (dy > 0 && y > 220 && !nav.contains(document.activeElement)) {
+        nav.classList.add('is-collapsed');
+      } else if (dy < 0 || y < 140) {
+        nav.classList.remove('is-collapsed');
+      }
+    };
+
+    window.addEventListener('scroll', () => {
+      if (!frame) frame = requestAnimationFrame(step);
+    }, { passive: true });
+    nav.addEventListener('focusin', () => nav.classList.remove('is-collapsed'));
+  }
+
+  /* ============================================= NAV EXPLAINERS (M7.4) ===
+   * A short, delayed explanation for every product, lens and topbar utility.
+   * The copy lives on the control itself (data-tip-title / data-tip-body) so a
+   * description sits beside the label it explains; this only places one shared
+   * card. Delayed (~450 ms) so sweeping the pointer across the bar never
+   * flashes it; keyboard focus shows it at once, Escape always dismisses. */
+  function wireNavTips() {
+    const tip = $('navTip');
+    const titleEl = $('navTipTitle');
+    const bodyEl = $('navTipBody');
+    if (!tip || !titleEl || !bodyEl) return;
+    const triggers = Array.prototype.slice.call(
+      document.querySelectorAll('[data-tip-title]')
+    );
+    let timer = 0;
+    let current = null;
+
+    const hide = () => {
+      if (timer) { clearTimeout(timer); timer = 0; }
+      if (current) {
+        current.removeAttribute('aria-describedby');
+        current = null;
+      }
+      tip.classList.remove('is-shown');
+      // keep it out of the a11y tree and any hit-testing once faded out
+      setTimeout(() => {
+        if (!tip.classList.contains('is-shown')) tip.hidden = true;
+      }, 160);
+    };
+
+    const place = (el) => {
+      const r = el.getBoundingClientRect();
+      tip.hidden = false;
+      tip.classList.remove('is-shown');
+      const tw = tip.offsetWidth;
+      const th = tip.offsetHeight;
+      let left = r.left + r.width / 2 - tw / 2;
+      left = Math.max(10, Math.min(left, window.innerWidth - tw - 10));
+      let top = r.bottom + 8;
+      if (top + th > window.innerHeight - 8) top = Math.max(8, r.top - th - 8);
+      tip.style.left = Math.round(left) + 'px';
+      tip.style.top = Math.round(top) + 'px';
+      // one frame from the hidden state so the fade/rise actually runs
+      requestAnimationFrame(() => tip.classList.add('is-shown'));
+    };
+
+    const show = (el) => {
+      if (!el.dataset.tipTitle) return;
+      current = el;
+      el.setAttribute('aria-describedby', 'navTip');
+      titleEl.textContent = el.dataset.tipTitle;
+      bodyEl.textContent = el.dataset.tipBody || '';
+      place(el);
+    };
+
+    triggers.forEach((el) => {
+      el.addEventListener('pointerenter', () => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => show(el), 450);
+      });
+      el.addEventListener('pointerleave', hide);
+      el.addEventListener('focus', () => {
+        if (timer) clearTimeout(timer);
+        show(el);
+      });
+      el.addEventListener('blur', hide);
+      // clicking means the reader has chosen a destination — get out of the way
+      el.addEventListener('click', hide);
+    });
+    window.addEventListener('scroll', hide, { passive: true });
+    window.addEventListener('resize', hide);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hide();
+    });
+  }
+
+  /* ================================================ RAIL CONSOLES (M7.4) ==
+   * Read-outs that mirror the era-C and era-A panel controls, plus quick
+   * presets that drive those same controls through their own change events.
+   * The panel select stays the single source of truth, so no analytic code is
+   * duplicated and a permalink restores both the panel and the rail. */
+  function optionLabel(sel, fallback) {
+    if (!sel || sel.selectedIndex < 0) return fallback;
+    const opt = sel.options[sel.selectedIndex];
+    return opt ? opt.textContent.trim().replace(/\s*\(.*$/, "") : fallback;
+  }
+
+  function syncRailConsoles() {
+    const pv = $('projVariable'), ps = $('projStatistic'), pw = $('projWindow');
+    if (pv && $('railProjVariable')) $('railProjVariable').textContent = optionLabel(pv, '—');
+    if (ps && $('railProjStat')) $('railProjStat').textContent = optionLabel(ps, '—');
+    if (pw && $('railProjWindow')) $('railProjWindow').textContent = optionLabel(pw, '—');
+    const sc = document.querySelector('input[name="projScenario"]:checked');
+    if (sc && $('railProjScenario')) {
+      $('railProjScenario').textContent =
+        sc.value === 'ssp585' ? 'SSP5-8.5' : 'SSP2-4.5';
+    }
+    document.querySelectorAll('[data-proj-stat]').forEach((b) => {
+      b.setAttribute('aria-pressed',
+        String(!!ps && ps.value === b.dataset.projStat));
+    });
+    document.querySelectorAll('[data-proj-window]').forEach((b) => {
+      b.setAttribute('aria-pressed',
+        String(!!pw && pw.value === b.dataset.projWindow));
+    });
+
+    const av = $('atlasVariable'), am = $('atlasMonth'), ay = $('atlasYear');
+    if (av && $('railAtlasVariable')) $('railAtlasVariable').textContent = optionLabel(av, '—');
+    if (am && $('railAtlasMonth')) $('railAtlasMonth').textContent = optionLabel(am, '—');
+    if (ay && $('railAtlasYear')) $('railAtlasYear').textContent = ay.value;
+    document.querySelectorAll('[data-atlas-year]').forEach((b) => {
+      b.setAttribute('aria-pressed',
+        String(!!ay && ay.value === b.dataset.atlasYear));
+    });
+  }
+
+  function wireRailConsoles() {
+    ['projVariable', 'projStatistic', 'projWindow',
+      'atlasVariable', 'atlasMonth', 'atlasYear'].forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener('change', syncRailConsoles);
+      if (id === 'atlasYear') el.addEventListener('input', syncRailConsoles);
+    });
+    document.querySelectorAll('input[name="projScenario"]').forEach((r) => {
+      r.addEventListener('change', syncRailConsoles);
+    });
+
+    const applyProj = (selectId, value) => {
+      const sel = $(selectId);
+      if (!sel) return;
+      const commit = () => {
+        sel.value = value;
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+        syncRailConsoles();
+      };
+      // never fight the module's first render: wait for it, then apply
+      if (DIE.Projections && DIE.Projections.whenReady) {
+        DIE.Projections.whenReady().then(commit, commit);
+      } else {
+        commit();
+      }
+    };
+    document.querySelectorAll('[data-proj-stat]').forEach((btn) => {
+      btn.addEventListener('click', () => applyProj('projStatistic', btn.dataset.projStat));
+    });
+    document.querySelectorAll('[data-proj-window]').forEach((btn) => {
+      btn.addEventListener('click', () => applyProj('projWindow', btn.dataset.projWindow));
+    });
+
+    document.querySelectorAll('[data-atlas-year]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const go = () => {
+          // reuse the panel's own anchor button: one implementation of
+          // "jump to 1918", not a second copy of the state change
+          const src = document.querySelector(
+            '.atlas-anchor[data-year="' + btn.dataset.atlasYear + '"]'
+          );
+          if (src) {
+            src.click();
+            // the panel handler updates the slider synchronously; mirror it
+            syncRailConsoles();
+            return;
+          }
+          const y = $('atlasYear');
+          if (y) {
+            y.value = btn.dataset.atlasYear;
+            y.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        };
+        if (DIE.AtlasView && DIE.AtlasView.whenReady) {
+          DIE.AtlasView.whenReady().then(go, go);
+        } else {
+          go();
+        }
+      });
+    });
+
+    // The era-C/era-A modules fill some option lists during their first
+    // render (projection indicators, atlas months). Mirror them whenever the
+    // list changes so the rail can never show a stale "—".
+    if (window.MutationObserver) {
+      const mo = new MutationObserver(syncRailConsoles);
+      ['projVariable', 'atlasMonth'].forEach((id) => {
+        const el = $(id);
+        if (el) mo.observe(el, { childList: true });
+      });
+    }
+    syncRailConsoles();
   }
 
   /* Drawer mode (= mobile/tablet) owns the sidebar entirely; on desktop the
@@ -725,6 +1295,220 @@
   }
 
   /* ===================================================== STATIC TEXTS === */
+  function escHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  /** IMD benchmark table (M4, built 2026-11-22) — from data/imd_validation.json,
+   * written by validation-studies/imd/99_memo.py from the Owner's local archive.
+   * No numbers are typed here; if the artifact is absent the section says so. */
+  async function renderImdValidation() {
+    const el = $('imdValidation');
+    if (!el || el.dataset.loaded === '1') return;
+    let d;
+    try {
+      d = JSON.parse(await DIE.loader.fetchText('data/imd_validation.json'));
+    } catch (err) {
+      console.warn('[validation] IMD artifact unavailable:', err);
+      el.innerHTML = '<p class="table-help">The IMD benchmark artifact is not ' +
+        'available in this checkout, so no comparison numbers are shown (R3). ' +
+        'Re-run <code>python validation-studies/imd/99_memo.py</code>.</p>';
+      return;
+    }
+    el.dataset.loaded = '1';
+    const pct = (v) => (Number.isFinite(v) ? (100 * v).toFixed(1) + ' %' : '—');
+    const num = (v, nd = 3, sign = false) => (Number.isFinite(v)
+      ? (sign && v >= 0 ? '+' : '') + v.toFixed(nd).replace('-', '−') : '—');
+    const rows = (d.indicators || []).map((i) =>
+      '<tr><td>' + escHtml(i.label) + '</td>' +
+      '<td class="num">' + i.districts + '</td>' +
+      '<td class="num">' + Number(i.pairs).toLocaleString('en-GB') + '</td>' +
+      '<td class="num">' + num(i.r_median) + '</td>' +
+      '<td class="num">' + num(i.bias, 3, true) + '</td>' +
+      '<td class="num">' + num(i.rmsd) + '</td>' +
+      '<td class="num">' + pct(i.state) + '</td>' +
+      '<td class="num">' + pct(i.class_exact) + '</td></tr>').join('');
+    const trends = (d.trends || []).map((t) =>
+      '<tr><td>' + escHtml(t.label) + '</td>' +
+      '<td class="num">' + t.imd_fdr + '</td>' +
+      '<td class="num">' + t.era_b_fdr + '</td>' +
+      '<td class="num">' + t.both_fdr + '</td>' +
+      '<td class="num">' + pct(t.sign_agree) + '</td></tr>').join('');
+
+    el.innerHTML =
+      '<div class="table-scroll"><table class="comp-table"><thead><tr>' +
+      '<th>Indicator</th><th class="num">Districts</th><th class="num">Pairs</th>' +
+      '<th class="num">Median r</th><th class="num">Bias (IMD − era B)</th>' +
+      '<th class="num">RMSD</th><th class="num">State</th><th class="num">Class</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="table-help">Window ' + d.period[0] + '–' + d.period[1] +
+      ', base ' + d.base[0] + '–' + d.base[1] +
+      '. Bias is mean(IMD − era B): a negative value means the independent IMD ' +
+      'reference is drier. “State” is agreement on which side of −1.00 a month ' +
+      'falls; “class” is exact McKee-class agreement (the near-normal bin ' +
+      'dominates it, as expected).</p>' +
+      (trends
+        ? '<h3 class="gov-h">Trend detection — Mann–Kendall + Sen, BH-FDR q = 0.05</h3>' +
+          '<div class="table-scroll"><table class="comp-table"><thead><tr>' +
+          '<th>Indicator</th><th class="num">IMD significant</th>' +
+          '<th class="num">era B significant</th><th class="num">Both</th>' +
+          '<th class="num">Sign agreement</th></tr></thead><tbody>' + trends +
+          '</tbody></table></div>' +
+          '<p class="table-help">Detection power differs (the records differ in ' +
+          'input, length and, for SPEI, PET method), but among districts that ' +
+          'trend significantly in both, the direction agrees — a discrepancy in ' +
+          'detection, not a contradiction in sign.</p>'
+        : '');
+  }
+
+  /** Reality-check boxes (M10.7) — rendered from the committed JSON so the
+   * numbers cannot drift from the shipped record. */
+  async function renderRealityChecks() {
+    const el = $('realityBoxes');
+    if (!el || el.dataset.loaded === '1') return;
+    let data;
+    try {
+      const text = await DIE.loader.fetchText('data/reality_checks.json');
+      data = JSON.parse(text);
+    } catch (err) {
+      console.warn('[evidence] reality checks unavailable:', err);
+      el.innerHTML = '<p class="table-help">Reality checks are unavailable in this ' +
+        'checkout; no placeholder numbers are shown (R3). Re-run ' +
+        '<code>python scripts/verify_reality_checks.py</code>.</p>';
+      return;
+    }
+    const n2 = (v) => (Number.isFinite(v) ? v.toFixed(2).replace('-', '−') : '—');
+    const n1 = (v) => (Number.isFinite(v) ? v.toFixed(1).replace('-', '−') : '—');
+    const pct = (v) => (Number.isFinite(v) ? Math.round(v * 100) + '%' : '—');
+    const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthLabel = (ym) => MON[Number(ym.slice(5, 7)) - 1] || ym;
+    const boxes = (data.checks || []).map((c) => {
+      let nums = '';
+      if (c.id === 'rajasthan-2002') {
+        const m = c.numbers.months;
+        nums = m.map((x) => monthLabel(x.date) + ': ' + x.n_drought + '/' + x.n +
+          ' districts ≤ −1.00 (mean ' + n2(x.mean_area_weighted) + ')').join(' · ');
+      } else if (c.id === 'all-india-spi3') {
+        nums = c.numbers.n_at_or_below + ' of ' + c.numbers.n_months +
+          ' months ≤ −1.00 — ' + c.numbers.months.map((x) =>
+            monthLabel(x.date) + ' ' + x.date.slice(0, 4) + ' (' +
+            n2(x.value) + ')').join(', ') + '.';
+      } else if (c.id === 'marathwada-2015') {
+        const n = c.numbers;
+        nums = 'Sep 2015 SPI-3 mean ' + n2(n.spi3_2015_09.mean) + ' (' +
+          pct(n.spi3_2015_09.share_le_minus1) + ' ≤ −1.00); ' +
+          'Nov 2015 VCI mean ' + n1(n.vci_2015_11.mean) + ' (' +
+          pct(n.vci_2015_11.share_below_30) + ' < 30); ' +
+          'Jan 2016 mean ' + n1(n.vci_2016_01.mean) + ' (' +
+          pct(n.vci_2016_01.share_below_30) + ' < 30).';
+      }
+      return '<article class="reality-box"><h3>' + escHtml(c.title) + '</h3>' +
+        '<p>' + escHtml(c.claim) + '</p>' +
+        '<div class="reality-num">' + escHtml(nums) + '</div>' +
+        '<p class="reality-src"><b>Window:</b> ' + escHtml(c.window) +
+        ' · <b>Checked against:</b> ' + escHtml(c.checked_against) + '</p>' +
+        '<p class="reality-src"><b>Source:</b> <span class="mono">' +
+        escHtml(c.source) + '</span></p></article>';
+    }).join('');
+    el.innerHTML = boxes;
+    el.dataset.loaded = '1';
+    if ($('realityMeta')) {
+      $('realityMeta').textContent = 'external consistency · data v' +
+        (data.data_version || '?') + ' · methodology ' +
+        (data.methodology_version || '?') + ' · ' +
+        (data.checks || []).length + ' checks';
+    }
+  }
+
+  /** Public data-status panel (M3.2), rendered from data/status.json. */
+  async function renderStatusPanel() {
+    const cards = $('statusCards');
+    if (!cards || cards.dataset.loaded === '1') return;
+    let st;
+    try {
+      st = JSON.parse(await DIE.loader.fetchText('data/status.json'));
+    } catch (err) {
+      console.warn('[status] unavailable:', err);
+      cards.innerHTML = '<p class="table-help">Status record unavailable in this ' +
+        'checkout; rebuild it with <code>python scripts/build_status.py</code>.</p>';
+      return;
+    }
+    const d = st.data || {};
+    const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const ym = (s) => {
+      if (!s) return '—';
+      const m = /^(\d{4})-(\d{2})$/.exec(s);
+      return m ? MON[+m[2] - 1] + ' ' + m[1] : s;
+    };
+    const era = d.eras || {};
+    const eraList = ['observed', 'atlas', 'projections']
+      .map((k) => era[k] && era[k].available ? (k === 'observed' ? 'B'
+        : k === 'atlas' ? 'A' : 'C') : null)
+      .filter(Boolean).join(' · ') || '—';
+    const lagCls = d.lag_status === 'amber' ? ' is-amber' : ' is-ok';
+    cards.innerHTML =
+      '<div class="status-card"><div class="k">Data current to</div>' +
+        '<div class="v">' + escHtml(ym(d.data_month)) + '</div>' +
+        '<div class="s' + lagCls + '">' + (Number.isFinite(d.lag_days)
+          ? d.lag_days + ' days behind · target ≤ ' + d.lag_threshold_days
+          : 'lag unknown') + '</div></div>' +
+      '<div class="status-card"><div class="k">Record</div>' +
+        '<div class="v">' + escHtml(ym(d.period && d.period.start)) + ' – ' +
+        escHtml(ym(d.period && d.period.end)) + '</div>' +
+        '<div class="s">' + (d.indicators ? d.indicators.length : 0) +
+        ' indicators · one fix per calendar month</div></div>' +
+      '<div class="status-card"><div class="k">Version</div>' +
+        '<div class="v">data v' + escHtml(d.version || '?') + '</div>' +
+        '<div class="s">' + escHtml(d.methodology_version || '') +
+        ' · pipeline ' + escHtml(d.pipeline_version || '?') + '</div></div>' +
+      '<div class="status-card"><div class="k">Last pipeline run</div>' +
+        '<div class="v">' + escHtml(st.run && st.run.last_run || '—') + '</div>' +
+        '<div class="s">data updated ' + escHtml(d.updated || '—') + '</div></div>' +
+      '<div class="status-card"><div class="k">Eras available</div>' +
+        '<div class="v">' + escHtml(eraList) + '</div>' +
+        '<div class="s">labelled, never spliced</div></div>';
+
+    const indBody = $('statusIndicators').querySelector('tbody');
+    indBody.innerHTML = (d.indicators || []).map((i) => (
+      '<tr><td>' + escHtml(i.label || i.id) + '</td><td>' + escHtml(i.from) +
+      '</td><td>' + escHtml(i.to) + '</td><td class="num">' + (i.months || '—') +
+      '</td><td class="num">' + (Number.isFinite(i.completeness_pct)
+        ? i.completeness_pct.toFixed(2) + '%' : '—') + '</td></tr>'
+    )).join('');
+
+    $('statusIssues').innerHTML = (st.known_issues || []).map((it) => (
+      '<li><span class="issue-sev issue-' + escHtml(it.severity || 'info') +
+      '">' + escHtml(it.severity || 'info') + '</span> ' + escHtml(it.text) + '</li>'
+    )).join('') || '<li>No known issues recorded.</li>';
+
+    const checkBody = $('statusChecks').querySelector('tbody');
+    checkBody.innerHTML = (st.verification || []).map((c) => (
+      '<tr><td>' + escHtml(c.label) + '</td><td>' + escHtml(c.detail) +
+      '</td><td><code>' + escHtml(c.command) + '</code></td></tr>'
+    )).join('');
+
+    if ($('statusAsOf')) {
+      $('statusAsOf').textContent = 'status as of ' + (st.as_of || '—') +
+        ' · lag ' + (d.lag_days ?? '—') + ' d';
+    }
+    // M3.3 currency chip: data month + lag on every page, amber >45 days.
+    const chip = $('chipUpdated');
+    if (chip) {
+      chip.textContent = 'Data · ' + ym(d.data_month) +
+        (Number.isFinite(d.lag_days) ? ' · ' + d.lag_days + ' d lag' : '');
+      chip.classList.toggle('chip-warn', d.lag_status === 'amber');
+      chip.title = 'Data current to ' + (d.data_month || '—') +
+        ' · ' + (Number.isFinite(d.lag_days) ? d.lag_days + ' days behind' : 'lag unknown') +
+        ' (target ≤ ' + (d.lag_threshold_days || 45) + ' days) · build updated ' +
+        (d.updated || '—');
+    }
+    cards.dataset.loaded = '1';
+  }
+
   function renderStaticText() {
     $('chipUpdated').textContent = 'Updated · ' + DIE.meta.last_updated;
 
@@ -746,7 +1530,17 @@
         'remains a documented, swappable contract: the static CSVs under <span class="mono">data/drought/</span> can ' +
         'be replaced with a real Earth-Engine extract without code changes (see README and ' +
         '<span class="mono">data-pipeline/docs/gee-update-guide.md</span>).'
-      : '<strong>This build ships a historical research dataset</strong> derived with Google Earth Engine from CHIRPS, ERA5-Land and MODIS MOD13A3. SPI, SPEI and the soil-moisture anomaly cover January 1981 to December 2025; the Vegetation Condition Index starts in February 2000 (MODIS record). The data layer is a documented, swappable contract.';
+      : '<strong>This build ships a historical research dataset</strong> derived with Google Earth Engine from CHIRPS, ERA5-Land and MODIS MOD13A3. SPI, SPEI and the soil-moisture anomaly cover ' +
+        monthYear(DIE.meta.period.start) + ' to ' + monthYear(DIE.meta.period.end) +
+        '; the Vegetation Condition Index starts in February 2000 (MODIS record). The data layer is a documented, swappable contract.';
+
+    // The product bar and its explainer quote the record span, which the
+    // monthly refresh moves: keep both in step with metadata.period (R2).
+    const span = recordSpan();
+    const recLink = document.querySelector('.tab-group[data-group="record"]');
+    const recYears = $('recordYears');
+    if (recYears) recYears.textContent = span;
+    if (recLink) recLink.setAttribute('data-tip-title', 'Record · ' + span);
 
     if ($('chipDataMode')) {
       $('chipDataMode').textContent = 'Data mode · ' +
@@ -764,7 +1558,25 @@
     $('methCitation').textContent = DIE.meta.citation;
     $('methReferencePeriod').textContent = DIE.meta.reference_period;
     $('aboutCitation').textContent = DIE.meta.citation;
-    $('footerProvenance').textContent = DIE.meta.data_provenance;
+
+    // Living evidence surfaces (M10.7). Version/date come from metadata; the
+    // page revision is this build's date, stated explicitly.
+    const mv = DIE.meta.methodology_version || '—';
+    document.querySelectorAll('[data-method-version]').forEach((el) => {
+      el.textContent = mv;
+    });
+    if ($('methodReference')) $('methodReference').textContent = DIE.meta.reference_period;
+    if ($('methodRevision')) {
+      $('methodRevision').textContent = 'methodology ' + mv + ' · page revised 2026-11-21';
+    }
+    if ($('govRevision')) {
+      $('govRevision').textContent = 'methodology ' + mv + ' · register current to 2026-11-21';
+    }
+    if ($('govDisclaimer')) $('govDisclaimer').textContent = DIE.meta.disclaimer;
+    renderRealityChecks();
+    renderStatusPanel();
+    // footer provenance is a COMPACT pointer; the full data_provenance text
+    // stays in data/metadata.json and renders live in Docs section B
     $('footerDisclaimer').textContent = DIE.meta.disclaimer;
     $('footerVersion').textContent = 'v' + DIE.meta.version + ' · methodology ' + DIE.meta.methodology_version +
       ' · ' + (demo ? 'demonstration build (synthetic data)' : 'historical research build (GEE-derived data)');
@@ -790,7 +1602,7 @@
       }).join('') + '</tbody>';
 
     $('sidebarFootMeta') && ($('sidebarFootMeta').textContent = '');
-    $('footPeriod').textContent = 'Observations ' + DIE.meta.period.start + ' – ' + DIE.meta.period.end;
+    $('footPeriod').textContent = 'Gridded Multi-Source Product ' + DIE.meta.period.start + ' – ' + DIE.meta.period.end;
     $('footRes').textContent = DIE.meta.temporal_resolution + ' · ' + DIE.meta.spatial_units;
     $('footMode').textContent = isDemo()
       ? 'Demonstration dataset (synthetic · seed ' + DIE.meta.random_seed + ')'
@@ -854,7 +1666,10 @@
     $('kpiIntensity').querySelector('[data-value]').textContent = DIE.fmt.val(s.mean, ind);
     $('kpiIntensity').querySelector('[data-value]').classList.toggle('is-na', !Number.isFinite(s.mean));
     $('kpiIntensity').querySelector('[data-class]').innerHTML =
-      (c ? '<span class="cat-chip" style="background:' + c.color + '">' + c.label + '</span>' : '—') +
+      (c
+        ? '<span class="cat-chip" style="background:' + c.color +
+          ';color:' + DIE.inkOn(c.color) + '">' + c.label + '</span>'
+        : '—') +
       ' <span class="small">(' + ind.label + ', ' + ind.units + ')</span>';
     $('kpiIntensity').querySelector('[data-agg]').textContent =
       'Area-weighted mean · ' + (Number.isFinite(s.n) ? Math.round(s.n) : 0) + '/' + s.districtsTotal +
@@ -864,12 +1679,60 @@
     dVal.querySelector('[data-value]').textContent =
       (Number.isFinite(s.nDrought) ? Math.round(s.nDrought) : 'N/A') + ' / ' + s.districtsTotal;
     dVal.querySelector('[data-severe]').innerHTML =
-      '<b style="color:#8F252F">' + (Number.isFinite(s.nSevere) ? Math.round(s.nSevere) : 'N/A') +
+      '<b style="color:var(--danger)">' + (Number.isFinite(s.nSevere) ? Math.round(s.nSevere) : 'N/A') +
       '</b> under severe or extreme drought';
     dVal.querySelector('[data-coverage]').textContent =
       'districts in drought · ' + ymLabel;
 
     $('mapPanelMeta').textContent = ind.label + ' · ' + DIE.Filters.regionLabel() + ' · ' + ymLabel;
+    renderEvidence(s, ind);
+  }
+
+  /* ===================================================== EVIDENCE LINE ===
+   * Every quoted number needs its receipt: which era, which product, which
+   * window, which baseline, how many districts actually carry data. Values
+   * come from the loaded metadata and the computed region statistics — the
+   * line is never hand-typed and reports n = 0 honestly. */
+  const PRODUCT_BY_INDICATOR = [
+    { test: /^spi_/, label: 'CHIRPS v2.0 precipitation' },
+    { test: /^spei_/, label: 'CHIRPS + ERA5-Land PET' },
+    { test: /^soil_moisture/, label: 'ERA5-Land 0–100 cm soil water' },
+    { test: /^vci/, label: 'MODIS MOD13A3 NDVI' }
+  ];
+  function productLabel(indicator) {
+    const id = (indicator && indicator.id) || '';
+    const hit = PRODUCT_BY_INDICATOR.find((p) => p.test.test(id));
+    return hit ? hit.label : 'Gridded Multi-Source Product';
+  }
+  function baselineLabel(indicator) {
+    if (indicator && /^vci/.test(indicator.id || '')) return 'VCI 2000–present';
+    const text = (DIE.meta && DIE.meta.reference_period) || '';
+    const m = text.match(/(\d{4})\D{1,6}(\d{4})/);
+    return m ? m[1] + '–' + m[2] : '1981–2020';
+  }
+  function renderEvidence(s, ind) {
+    const box = $('evidenceLine');
+    if (!box) return;
+    const st = DIE.state;
+    const season = st.period && st.period.season && st.period.season !== 'all'
+      ? ' · ' + st.period.season
+      : '';
+    const windowText = st.period && st.period.from && st.period.to
+      ? st.period.from + '–' + st.period.to + season
+      : (DIE.meta && DIE.meta.period
+        ? DIE.meta.period.start + ' to ' + DIE.meta.period.end : '—');
+    const n = Number.isFinite(s.n) ? Math.round(s.n) : 0;
+    const nText = n + ' of ' + s.districtsTotal + ' districts with data';
+    const chip = (k, v) =>
+      '<span class="ev"><b>' + k + '</b><i class="ev-sep" aria-hidden="true">&middot;</i>' + v + '</span>';
+    box.innerHTML =
+      '<span class="ev-k">Receipts</span>' +
+      chip('Era B', 'Gridded Multi-Source Product') +
+      chip('Product', productLabel(ind)) +
+      chip('Window', windowText) +
+      chip('Baseline', baselineLabel(ind)) +
+      chip('n', nText) +
+      '<a class="ev-how" href="#data/k-methodology/method-indicators">How this is made &rarr;</a>';
   }
 
   function setKpi(id, o) {
@@ -920,7 +1783,8 @@
       '<div><div class="k">District area</div><div class="v">' + DIE.fmt.int.format(Math.round(d.area)) + ' km²</div></div>' +
       '<div><div class="k">Availability</div><div class="v">' + (comp * 100).toFixed(0) + '%</div></div>' +
       '</div>' +
-      '<p class="rail-note">All tabs now focus on this district.</p>';
+      '<p class="rail-note">All tabs now focus on this district.</p>' +
+      '<a class="btn btn-ghost sel-profile-link" href="#/district/' + id + '">Open district profile →</a>';
     btn.hidden = false;
   }
 
@@ -1023,7 +1887,7 @@
       const c = DIE.classify(r.v, ds.indicator);
       return {
         name: r.d.name, value: r.v, area: r.d.area,
-        color: c ? c.color : '#9AA7B5',
+        color: c ? c.color : '#968A74',
         classLabel: c ? c.label : 'no data'
       };
     });
@@ -1222,9 +2086,10 @@
 
       $('freqMeta').textContent = label + ' · ' + periodLabel();
       $('freqStats').innerHTML =
-        '<span class="stat"><b>' + h.droughtMonths + '</b><i>months in drought (of ' + h.validScopeMonths + ' valid)</i></span>' +
-        '<span class="stat"><b>' + h.nEvents + '</b><i>drought events (runs ≥ 3 months)</i></span>' +
-        '<span class="stat"><b>' + DIE.fmt.pct(h.droughtMonths / Math.max(1, h.validScopeMonths) * 100) + '</b><i>of valid months</i></span>';
+        statBlk(h.droughtMonths, 'months in drought', 'of ' + h.validScopeMonths + ' valid') +
+        statBlk(h.nEvents, h.nEvents === 1 ? 'drought event' : 'drought events', 'runs ≥ 3 months') +
+        statBlk(DIE.fmt.pct(h.droughtMonths / Math.max(1, h.validScopeMonths) * 100),
+          'of valid months', 'share in drought');
       DIE.Charts.frequencyByYear($('freqChart'), { years: h.years, counts: h.counts });
 
       // district-wise frequency histogram (share of months in drought)
@@ -1243,11 +2108,11 @@
             marker: { color: '#B94747' },
             hovertemplate: '<b>%{x}%</b><br>%{y} districts<extra></extra>'
           }], {
-            font: { family: 'Inter, sans-serif', size: 11, color: '#1F2937' },
+            font: { family: 'Inter, sans-serif', size: 11, color: '#2E2820' },
             margin: { l: 34, r: 10, t: 8, b: 30 },
-            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: '#FFFFFF',
-            xaxis: { title: { text: '% of valid months in drought', font: { size: 10, color: '#687588' } }, gridcolor: '#F0F3F7', linecolor: '#CBD5E1', tickfont: { size: 9 } },
-            yaxis: { title: { text: 'districts', font: { size: 9.5, color: '#687588' } }, gridcolor: '#E2E7EE', linecolor: '#CBD5E1', rangemode: 'tozero' }
+            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+            xaxis: { title: { text: '% of valid months in drought', font: { size: 10, color: '#6E6250' } }, gridcolor: '#EFE8D8', linecolor: '#CFC2A8', tickfont: { size: 9 } },
+            yaxis: { title: { text: 'districts', font: { size: 9.5, color: '#6E6250' } }, gridcolor: '#E1D7C3', linecolor: '#CFC2A8', rangemode: 'tozero' }
           }, { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'] });
         }
       }
@@ -1410,6 +2275,16 @@
   function statCell(v, label) {
     const shown = (v === null || v === undefined || (typeof v === 'number' && !Number.isFinite(v))) ? '—' : v;
     return '<div class="stat-cell"><b>' + shown + '</b><i>' + label + '</i></div>';
+  }
+
+  /* Decorative value-over-label block for the frequency strip (M7.4): the
+     number is the headline, the label reads as prose, and the qualifying
+     clause (sample size / run rule / denominator) is muted so the three
+     blocks scan as one line rather than three sentences. */
+  function statBlk(v, label, qualifier) {
+    const shown = (v === null || v === undefined || (typeof v === 'number' && !Number.isFinite(v))) ? '—' : v;
+    return '<div class="stat-blk"><b>' + shown + '</b><span>' + label +
+      (qualifier ? ' <em>(' + qualifier + ')</em>' : '') + '</span></div>';
   }
 
   /* ============================================= VIEW 3 · EVENTS ===== */
@@ -1959,7 +2834,7 @@
         return r ? r.lag : NaN;
       }, (id) => {
         const r = results.get(id);
-        if (!r) return '#D7DEE7';
+        if (!r) return '#E8E1D2';
         const t = hi === lo ? 0 : (r.lag - lo) / (hi - lo);
         const blue = [42, 95, 133], white = [255, 255, 255], red = [185, 71, 71];
         const c = t < 0.5
@@ -1971,9 +2846,9 @@
         ' · ' + periodLabel();
       $('propMapFoot').innerHTML = 'Optimal lag per district (only districts with |r| ≥ 0.40 and ≥ 60 matched months are coloured). ' +
         '<span class="legend-swatch" style="background:rgb(42,95,133)"></span> A leads by ' + Math.abs(lo) + ' mo &nbsp; ' +
-        '<span class="legend-swatch" style="background:#FFFFFF"></span> synchronous &nbsp; ' +
+        '<span class="legend-swatch" style="background:#FBF7EE"></span> synchronous &nbsp; ' +
         '<span class="legend-swatch" style="background:rgb(185,71,71)"></span> B lags by ' + hi + ' mo' +
-        ' · <span class="legend-swatch" style="background:#D7DEE7"></span> no robust relationship (' +
+        ' · <span class="legend-swatch" style="background:#E8E1D2"></span> no robust relationship (' +
         (regionIds.length - results.size) + ' districts)';
     },
 
@@ -1999,7 +2874,7 @@
       this.mapB.map.on('moveend', sync(this.mapB.map, this.mapA.map));
 
       const diffRamp = (v) => {
-        if (!Number.isFinite(v)) return '#D7DEE7';
+        if (!Number.isFinite(v)) return '#E8E1D2';
         const t = Math.max(-1, Math.min(1, v / 3));
         const lerp = (a, b, u) => a + (b - a) * u;
         const dry = [143, 37, 47], mid = [255, 255, 255], wet = [42, 95, 133];
@@ -2059,7 +2934,7 @@
             statsAnnotation: {
               x: 0.02, xref: 'paper', y: 0.97, yref: 'paper', showarrow: false,
               text: 'r = ' + (Number.isFinite(st.r) ? st.r.toFixed(2) : '—') + ' · n = ' + st.n,
-              font: { family: 'IBM Plex Mono, monospace', size: 11, color: '#687588' }
+              font: { family: 'IBM Plex Mono, monospace', size: 11, color: '#6E6250' }
             }
           });
           $('cmpFoot').textContent = 'Matched date: ' + DIE.dates.label(dsA.dates[idx]) +
@@ -2298,6 +3173,127 @@
       ' Methodology version ' + DIE.meta.methodology_version + '.';
   }
 
+  /* ---- citation plumbing (M10.5) ---------------------------------------- *
+   * One citation string, one export header, one share card. The DOI in the
+   * metadata is the archived v1.0.0 release; the v2.0.0 DOI is minted at
+   * release (M7.2) and is never pre-claimed (R3). */
+  function citationText() {
+    const m = DIE.meta || {};
+    return String(m.citation || 'Drought Intelligence Explorer') +
+      '\nAccessed: ' + new Date().toISOString().slice(0, 10) + '.';
+  }
+
+  /** `#`-comment lines prepended to every CSV/text export (X6). */
+  function citationLines(extra) {
+    const m = DIE.meta || {};
+    const L = [
+      '# Drought Intelligence Explorer v' + (m.version || '?') + ' - research export',
+      '# Cite: ' + (m.citation || 'see Documentation > Downloads and citation'),
+      '# Licence: application code MIT; datasets per their source terms (data/metadata.json > sources)',
+      '# Generated (UTC): ' + new Date().toISOString() +
+        ' | methodology ' + (m.methodology_version || '-') +
+        ' | data mode ' + (m.data_mode || '-'),
+    ];
+    (extra || []).forEach((l) => L.push('# ' + l));
+    return L;
+  }
+
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+    const words = String(text).split(/\s+/);
+    let line = '';
+    let lines = 0;
+    for (const word of words) {
+      const test = line ? line + ' ' + word : word;
+      if (ctx.measureText(test).width > maxWidth && line) {
+        ctx.fillText(line, x, y + lines * lineHeight);
+        lines += 1;
+        line = word;
+        if (maxLines && lines >= maxLines - 1) break;
+      } else {
+        line = test;
+      }
+    }
+    if (line && (!maxLines || lines < maxLines)) {
+      ctx.fillText(line, x, y + lines * lineHeight);
+    }
+  }
+
+  /** Social-ready citation card for the current view (M10.5). */
+  function shareCard() {
+    const W = 1200, H = 630;
+    const c = document.createElement('canvas');
+    c.width = W;
+    c.height = H;
+    const ctx = c.getContext('2d');
+    const m = DIE.meta || {};
+    if (!ctx) return;
+    ctx.fillStyle = '#FBF7EE';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#6B2B1F';
+    ctx.fillRect(0, 0, W, 14);
+    ctx.fillStyle = '#211C15';
+    ctx.font = '600 46px Georgia, "Times New Roman", serif';
+    ctx.fillText('Drought Intelligence Explorer', 64, 104);
+    ctx.fillStyle = '#6E6250';
+    ctx.font = '500 19px Inter, Arial, sans-serif';
+    ctx.fillText('INDIA  ·  HYDROCLIMATIC ANALYTICS  ·  v2.0 development build',
+      66, 138);
+
+    const ind = DIE.indicatorById && DIE.indicatorById.get(DIE.state.indicator);
+    const ym = DIE.Filters.dateYm();
+    const region = DIE.Filters.regionLabel();
+    const period = DIE.state.period || {};
+    ctx.fillStyle = '#2E2820';
+    ctx.font = '600 34px Georgia, "Times New Roman", serif';
+    ctx.fillText(TAB_LABELS[currentTab] || currentTab, 64, 220);
+    ctx.font = '400 24px Inter, Arial, sans-serif';
+    ctx.fillText((ind ? ind.label : DIE.state.indicator) + '  ·  ' + region +
+      (ym ? '  ·  ' + DIE.dates.label(ym) : ''), 64, 262);
+    ctx.fillStyle = '#6E6250';
+    ctx.font = '400 18px Inter, Arial, sans-serif';
+    const refShort = String(m.reference_period || '—').split(';')[0].trim();
+    const baseMeta = 'Analysis ' + (period.from != null ? period.from : '—') + '–' +
+      (period.to != null ? period.to : '—') +
+      (period.season && period.season !== 'all' ? '  ·  season ' + period.season : '') +
+      '  ·  reference ' + refShort;
+    let meta = baseMeta;
+    while (ctx.measureText(meta).width > W - 128 && meta.length > 20) {
+      meta = meta.slice(0, -2);
+    }
+    if (meta !== baseMeta) meta += '…';
+    ctx.fillText(meta, 64, 298);
+
+    ctx.strokeStyle = '#E1D7C3';
+    ctx.beginPath();
+    ctx.moveTo(64, 340);
+    ctx.lineTo(W - 64, 340);
+    ctx.stroke();
+
+    ctx.fillStyle = '#6E6250';
+    ctx.font = '600 15px Inter, Arial, sans-serif';
+    ctx.fillText('CITE', 64, 388);
+    ctx.fillStyle = '#2E2820';
+    ctx.font = '400 20px Georgia, "Times New Roman", serif';
+    wrapText(ctx, citationText(), 64, 422, W - 128, 28, 4);
+
+    ctx.fillStyle = '#6E6250';
+    ctx.font = '400 15px Inter, Arial, sans-serif';
+    ctx.fillText('Archived v1.0.0 DOI: 10.5281/zenodo.24113364  ·  ' +
+      'v2.0.0 DOI minted at release  ·  check licence/terms before reuse',
+      64, 560);
+    ctx.fillText('drought.ankitdeshmukh.com  ·  generated ' +
+      new Date().toISOString().slice(0, 10), 64, 590);
+
+    const a = document.createElement('a');
+    a.download = 'die-share-card-' + (ym || 'view') + '.png';
+    a.href = c.toDataURL('image/png');
+    a.click();
+    if (DIE.Telemetry) {
+      try { DIE.Telemetry.track('export_data', { file_type: 'png', file_name: a.download, card: true }); } catch (e) {}
+    }
+    toast('Share card saved', 'Citation card for the current view downloaded as PNG.');
+  }
+
   function renderDownloads(container) {
     if (!container || container.dataset.ready) return;
     container.dataset.ready = '1';
@@ -2356,10 +3352,14 @@
       '<div class="dl-desc">Full indicator definitions, classification thresholds, standardization, aggregation, event identification, missing-data policy and limitations; data-source register.</div>' +
       '<div class="dl-actions"><button class="btn" data-dl="methodology">Download docs/methodology.md</button>' +
       '<button class="btn" data-dl="datasources">Download docs/data-sources.md</button></div></div>' +
+      '<div class="dl-card"><div class="dl-title">SQL guide (Markdown)</div>' +
+      '<div class="dl-desc">The Parquet store field reference: file layout, identifier vocabularies, missing-data rules and copy-paste queries for Engine Lab, Python or R - the same content as Documentation P.</div>' +
+      '<div class="dl-actions"><button class="btn" data-dl="sqlguide">Download docs/sql-guide.md</button></div></div>' +
 
       '<div class="dl-group-title">Citation</div>' +
-      '<div class="cite-box">' + DIE.meta.citation + '\n' + datasetCitation() + '</div>' +
-      '<div class="dl-actions"><button class="btn" data-dl="cite">Copy citation</button></div>';
+      '<div class="cite-box">' + citationText() + '\n' + datasetCitation() + '</div>' +
+      '<div class="dl-actions"><button class="btn" data-dl="cite">Copy citation</button>' +
+      '<button class="btn" data-dl="sharecard">Share card (PNG)</button></div>';
 
     container.addEventListener('click', async (e) => {
       const btn = e.target.closest('[data-dl]');
@@ -2388,14 +3388,15 @@
           toast('Export complete', 'Analysis metadata saved as JSON.');
         } else if (kind === 'map') {
           await DIE.MapView.exportPNG();
-        } else if (kind === 'methodology' || kind === 'datasources' || kind === 'userguide') {
+        } else if (kind === 'methodology' || kind === 'datasources' || kind === 'userguide' || kind === 'sqlguide') {
           const file = kind === 'methodology' ? 'docs/methodology.md'
-            : kind === 'datasources' ? 'docs/data-sources.md' : 'docs/user-guide.md';
+            : kind === 'datasources' ? 'docs/data-sources.md'
+            : kind === 'sqlguide' ? 'docs/sql-guide.md' : 'docs/user-guide.md';
           const text = await DIE.loader.fetchText(file);
           A().toText(file.split('/').pop(), text, 'text/markdown;charset=utf-8');
           toast('Documentation saved', file);
         } else if (kind === 'cite') {
-          const text = DIE.meta.citation + '\n' + datasetCitation();
+          const text = citationText();
           try {
             await navigator.clipboard.writeText(text);
             toast('Citation copied', 'Pasted-ready citation is on your clipboard.');
@@ -2403,6 +3404,8 @@
             A().toText('CITATION.txt', text);
             toast('Citation saved', 'Clipboard unavailable — downloaded as CITATION.txt instead.');
           }
+        } else if (kind === 'sharecard') {
+          shareCard();
         }
       } catch (err) {
         toast('Export failed', String(err.message || err), 'error');
@@ -2422,6 +3425,12 @@
     historical() { Historical.ready ? Historical.renderAll() : Historical.init(); },
     events() { EventsView.ready ? EventsView.refresh() : EventsView.init(); },
     propagation() { Propagation.ready ? Propagation.refresh() : Propagation.init(); },
+    crossval() { DIE.CrossvalView.init(); },
+    district() { DIE.DistrictProfile.init(); },
+    engine() { DIE.EngineLab.init(); },
+    projections() { DIE.Projections.init(); },
+    summary() { DIE.Summary.init(); },
+    atlas() { DIE.AtlasView.init(); },
     data() { DataView.init(); }
   };
 
@@ -2431,7 +3440,10 @@
   }
 
   /* ------------------------------------------------------------- public -- */
-  DIE.App = { init, toast, renderAll, switchTab, Views };
+  DIE.App = {
+    init, toast, renderAll, switchTab, Views,
+    citationText, citationLines, shareCard,
+  };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

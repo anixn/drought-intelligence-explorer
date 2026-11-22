@@ -1,0 +1,62 @@
+# DIE v2.0 - CI (owner amendment O14, scheduled at task M1.9)
+#
+# Green CI is required before merge to v2-dev. This protects the
+# "frozen semantics" promise:
+#   1. data-pipeline/selftest.py      - 82 assertions, seed-deterministic
+#   2. scripts/regression_check.py    - shipped-data regression baseline
+#   3. gcm-pipeline/selftest_gcm.py   - step selftests 02-09 (M2.13;
+#       runs the data-pipeline harness first, then every gcm step's own
+#       --selftest suite; the synthetic end-to-end world joins in M2.13
+#       phase 2)
+# and selftest_atlas.py (M6) later - run them alongside, never instead.
+#
+# Note: the local Windows dev flow needs PROJ_LIB/GDAL_DATA overrides because
+# PostGIS sets global env vars; the rasterio manylinux wheels used here bundle
+# their own PROJ/GDAL data, so no overrides are needed on CI.
+
+name: CI
+
+on:
+  push:
+    branches: [v2-dev, master]
+  pull_request:
+    branches: [v2-dev, master]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r data-pipeline/requirements.txt
+          pip install pyarrow xarray cftime
+
+      - name: Pipeline selftest (82 assertions)
+        working-directory: data-pipeline
+        run: python selftest.py
+
+      - name: Regression harness (shipped-data baseline)
+        run: python scripts/regression_check.py
+
+      - name: Reality checks (re-derived from the shipped record)
+        run: python scripts/verify_reality_checks.py --check
+
+      - name: Reproduce published figures/tables
+        run: python scripts/reproduce_figures.py --check
+
+      - name: Parquet incremental selftest (monthly refresh)
+        run: python scripts/convert_to_parquet.py --selftest
+
+      - name: Status artifact consistency
+        run: python scripts/build_status.py --check
+
+      - name: GCM pipeline selftests (steps 02-09)
+        run: python gcm-pipeline/selftest_gcm.py

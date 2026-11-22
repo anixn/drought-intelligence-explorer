@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+  DEV-ONLY harness — NOT a shipped surface (same class as engine-smoke.html).
+  Frames the dashboard at a phone/tablet viewport so the app's own media
+  queries fire inside the iframe (a real mobile pass needs a real viewport).
+  Usage:  scripts/mobile-harness.html?w=390&h=844&scale=1#/overview
+  The hash after the harness URL is forwarded to the framed app.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DIE mobile harness (dev only)</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; background: #2E2820; font: 12px/1.4 system-ui, sans-serif; color: #F6F1E6; }
+  #bar { display: flex; gap: 8px; align-items: center; padding: 6px 10px; background: #211C15; }
+  #bar label { white-space: nowrap; }
+  #bar input { width: 64px; background: #3A332A; color: inherit; border: 1px solid #6E6250; padding: 2px 4px; }
+  #stage { position: relative; overflow: auto; padding: 12px; }
+  #frameWrap { position: relative; width: var(--fw, 390px); height: var(--fh, 844px); transform-origin: top left; outline: 1px solid #6E6250; }
+  #frame { width: 100%; height: 100%; border: 0; background: #F6F1E6; }
+  #note { padding: 4px 10px; color: #B08947; }
+</style>
+</head>
+<body>
+  <div id="bar">
+    <strong>DIE mobile harness — dev only</strong>
+    <label>W <input id="w" value="390"></label>
+    <label>H <input id="h" value="844"></label>
+    <label>Scale <input id="s" value="1"></label>
+    <button id="apply" type="button">Apply</button>
+  </div>
+  <div id="note">The hash in this harness URL is forwarded to the framed app on Apply/load.</div>
+  <div id="stage">
+    <div id="frameWrap"><iframe id="frame" title="DIE at mobile viewport"></iframe></div>
+  </div>
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search.split('#')[0]);
+    var hash = location.hash;
+    function apply() {
+      var w = parseInt(document.getElementById('w').value, 10) || 390;
+      var h = parseInt(document.getElementById('h').value, 10) || 844;
+      var s = parseFloat(document.getElementById('s').value) || 1;
+      document.documentElement.style.setProperty('--fw', w + 'px');
+      document.documentElement.style.setProperty('--fh', h + 'px');
+      var wrap = document.getElementById('frameWrap');
+      wrap.style.transform = 'scale(' + s + ')';
+      var frame = document.getElementById('frame');
+      var src = '../index.html' + hash;
+      if (frame.getAttribute('src') !== src) { frame.setAttribute('src', src); }
+    }
+    document.getElementById('apply').addEventListener('click', function () {
+      // Re-read the hash from the harness URL bar each Apply (it cannot change after load, but keep it robust)
+      apply();
+    });
+    apply();
+  })();
+</script>
+</body>
+</html>

@@ -33,12 +33,12 @@
       name="author"
       content="Ankit Deshmukh, Ph.D. — Pandit Deendayal Energy University"
     />
-    <meta name="theme-color" content="#14263D" />
+    <meta name="theme-color" content="#F6F1E6" />
     <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&display=swap"
       rel="stylesheet"
     />
     <link
@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-09d" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22r" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -121,10 +121,63 @@
         >
       </div>
 
-      <nav class="topnav" aria-label="Application navigation">
-        <button type="button" id="guideBtn" data-doc="doc-i-guide">
-          How to use
-        </button>
+      <!-- Help lives with the topbar utilities, not in the product bar
+           (2026-11-22 design pass, register I7). The product row below is
+           reserved for eras/products that render data; "How to use" opens the
+           standalone tour, Documentation opens the docs workspace. -->
+      <nav class="topnav" aria-label="Help and reference">
+        <a
+          class="top-util"
+          id="tourLink"
+          href="tour.html"
+          aria-label="Guided tour — how to use this dashboard"
+          data-tip-title="Guided tour"
+          data-tip-body="A five-minute walkthrough: the three eras, the four workspaces, and where every control lives. Start here on a first visit."
+        >
+          <svg
+            class="tu-ic"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z" />
+          </svg>
+          <span class="tu-full">How to use</span>
+          <span class="tu-short">Tour</span>
+        </a>
+        <a
+          class="top-util top-util-docs"
+          id="topDocsLink"
+          href="#data"
+          aria-label="Documentation and resources"
+          data-tip-title="Documentation &amp; resources"
+          data-tip-body="Data sources, methodology, validation and limitations, reproducibility, downloads, licences and version history — the reference centre behind every number."
+        >
+          <svg
+            class="tu-ic"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          </svg>
+          <span class="tu-full">Documentation</span>
+          <span class="tu-short">Docs</span>
+        </a>
         <button
           type="button"
           class="icon-btn"
@@ -150,6 +203,17 @@
 
       <div class="topbar-status" id="topbarStatus" aria-live="polite">
         <span
+          class="era-pill"
+          id="eraPill"
+          data-era="b"
+          role="note"
+          tabindex="0"
+          aria-label="Era B: Gridded Multi-Source Product, 1981 to present"
+          title="Era B — Gridded Multi-Source Product (CHIRPS, ERA5-Land, MODIS), 1981–present. Eras are labelled and never spliced."
+          ><span class="era-dot" aria-hidden="true"></span>Era <b>B</b>
+          &middot; Gridded Product</span
+        >
+        <span
           class="chip chip-static"
           id="chipDataMode"
           title="Data mode declared in data/metadata.json"
@@ -165,6 +229,15 @@
         >
       </div>
     </header>
+
+    <!-- Hover/focus explainer for the product bar, lenses and topbar
+         utilities (M7.4): one shared tooltip element, filled from
+         data-tip-title/data-tip-body on the hovered or focused control after
+         a short delay, so a passing pointer never flashes it. -->
+    <div class="nav-tip" id="navTip" role="tooltip" hidden>
+      <b class="nav-tip-title" id="navTipTitle"></b>
+      <span class="nav-tip-body" id="navTipBody"></span>
+    </div>
 
     <div class="layout" id="layout">
       <!-- ==================== STUDY CONTEXT SIDEBAR ====================
@@ -248,6 +321,50 @@
             Study context
             <span class="group-note">&mdash; applies to every workspace</span>
           </div>
+
+        <!-- OVERVIEW · Observation date (M7.4). The date drives every
+             Overview panel, so the controls lead the rail — reachable without
+             scrolling to the panels they change. Shown only while Overview is
+             the active lens (body[data-tab="overview"]). -->
+        <section
+          class="side-sec tab-sec"
+          data-side="overview"
+          aria-labelledby="secObsH"
+        >
+          <h2 id="secObsH">Observation date</h2>
+          <div class="field-row">
+            <label class="field"
+              ><span class="field-label">Year</span>
+              <select id="yearSelect" aria-label="Observation year"></select
+            ></label>
+            <label class="field"
+              ><span class="field-label">Month</span>
+              <select id="monthSelect" aria-label="Observation month"></select
+            ></label>
+          </div>
+          <div class="date-slider-row">
+            <input
+              type="range"
+              id="dateSlider"
+              min="0"
+              max="239"
+              value="239"
+              step="1"
+              aria-label="Observation date slider"
+            />
+          </div>
+          <span class="mono date-slider-label" id="dateSliderLabel">—</span>
+          <button
+            type="button"
+            class="btn btn-ghost btn-block"
+            id="latestBtn"
+            title="Jump to the latest available observation"
+          >
+            Latest observation
+          </button>
+          <p class="side-note" id="datePanelMeta">—</p>
+        </section>
+
         <!-- GLOBAL · Geography -->
         <section class="side-sec" data-side="global" aria-labelledby="secGeoH">
           <h2 id="secGeoH">Geography</h2>
@@ -324,8 +441,124 @@
             </select>
           </label>
         </section>
+
         </div>
         <!-- /side-group: study context -->
+
+        <!-- ================= PRODUCT CONSOLES (M7.4) =================
+             The rail is never empty and never shows controls that do not
+             apply (Owner request, 2026-11-22). Eras/products that carry their
+             own controls get a console here; the era-B study-context group
+             above is hidden on those tabs by CSS, and Documentation gets a
+             contents index instead of the era-B filters. Readouts mirror the
+             panel controls (one source of truth: the panel select); the
+             chips and anchor buttons drive them through their existing
+             change events, so no analytic code is duplicated. -->
+        <section
+          class="side-sec tab-sec rail-console"
+          data-side="projections"
+          aria-labelledby="secProjRailH"
+        >
+          <h2 id="secProjRailH">Era C console</h2>
+          <dl class="rail-read" aria-live="polite">
+            <div><dt>Scenario</dt><dd id="railProjScenario">—</dd></div>
+            <div><dt>Indicator</dt><dd id="railProjVariable">—</dd></div>
+            <div><dt>Statistic</dt><dd id="railProjStat">—</dd></div>
+            <div><dt>Window</dt><dd id="railProjWindow">—</dd></div>
+          </dl>
+          <div class="rail-chips" role="group" aria-label="Projection presets">
+            <button type="button" class="rail-chip" data-proj-stat="agreement_moderate">
+              Agreement
+            </button>
+            <button type="button" class="rail-chip" data-proj-stat="band">
+              Median + band
+            </button>
+            <button type="button" class="rail-chip" data-proj-stat="dir_agreement_drier">
+              Direction
+            </button>
+            <button type="button" class="rail-chip" data-proj-window="late">
+              Late century
+            </button>
+          </div>
+          <p class="side-note">
+            Era C is <b>model simulation</b>, never a forecast. The same
+            selection also drives the band chart, the map and the events panel.
+          </p>
+        </section>
+
+        <section
+          class="side-sec tab-sec rail-console"
+          data-side="atlas"
+          aria-labelledby="secAtlasRailH"
+        >
+          <h2 id="secAtlasRailH">Atlas scrubber</h2>
+          <dl class="rail-read" aria-live="polite">
+            <div><dt>Timescale</dt><dd id="railAtlasVariable">—</dd></div>
+            <div><dt>Month</dt><dd id="railAtlasMonth">—</dd></div>
+            <div><dt>Year</dt><dd id="railAtlasYear">—</dd></div>
+          </dl>
+          <div class="rail-chips" role="group" aria-label="Historical drought anchors">
+            <button type="button" class="rail-chip" data-atlas-year="1918">1918</button>
+            <button type="button" class="rail-chip" data-atlas-year="1965">1965</button>
+            <button type="button" class="rail-chip" data-atlas-year="1972">1972</button>
+            <button type="button" class="rail-chip" data-atlas-year="1987">1987</button>
+            <button type="button" class="rail-chip" data-atlas-year="2002">2002</button>
+          </div>
+          <p class="side-note">
+            Era A reconstruction, 1901&ndash;2025. One year is fetched per
+            frame; the record is never spliced with era B.
+          </p>
+        </section>
+
+        <section
+          class="side-sec tab-sec rail-console"
+          data-side="data"
+          aria-labelledby="secDocsRailH"
+        >
+          <h2 id="secDocsRailH">Contents</h2>
+          <nav class="rail-nav" aria-label="Documentation sections">
+            <span class="rail-nav-title">Reference</span>
+            <button type="button" data-doc="doc-a-about">A &middot; About the Explorer</button>
+            <button type="button" data-doc="doc-b-dataset">B &middot; Data sources</button>
+            <button type="button" data-doc="doc-c-methods">C &middot; Methodology</button>
+            <button type="button" data-doc="doc-d-quality">D &middot; Validation &amp; quality</button>
+            <button type="button" data-doc="doc-e-limits">E &middot; Uncertainty &amp; limits</button>
+            <button type="button" data-doc="doc-f-repro">F &middot; Reproducibility</button>
+            <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citation</button>
+            <button type="button" data-doc="doc-p-sql">P &middot; Querying the data (SQL)</button>
+            <span class="rail-nav-title">v2.0 evidence</span>
+            <button type="button" data-doc="doc-k-methodology">K &middot; Living methodology</button>
+            <button type="button" data-doc="doc-l-governance">L &middot; Governance &amp; licences</button>
+            <button type="button" data-doc="doc-m-reality">M &middot; Reality checks</button>
+            <button type="button" data-doc="doc-n-status">N &middot; Data status</button>
+            <span class="rail-nav-title">Version &amp; handbook</span>
+            <button type="button" data-doc="doc-h-versions">H &middot; Version history</button>
+            <button type="button" data-doc="doc-i-guide">I &middot; User guide</button>
+            <button type="button" data-doc="doc-j-glossary">J &middot; Glossary</button>
+          </nav>
+          <a class="rail-link" href="tour.html">Start the guided tour &rarr;</a>
+        </section>
+
+        <section
+          class="side-sec tab-sec rail-console"
+          data-side="engine"
+          aria-labelledby="secEngineRailH"
+        >
+          <h2 id="secEngineRailH">Engine Lab</h2>
+          <p class="side-note">
+            SQL runs inside your browser on the published Parquet store &mdash;
+            nothing is uploaded and no server is involved.
+          </p>
+          <nav class="rail-nav" aria-label="Engine Lab references">
+            <a class="rail-link" href="tour.html#engine">Tour &middot; querying the record</a>
+            <button type="button" data-doc="doc-f-repro">
+              F &middot; Reproducibility
+            </button>
+            <button type="button" data-doc="doc-b-dataset">
+              B &middot; Data sources
+            </button>
+          </nav>
+        </section>
 
         <div class="sidebar-foot">
           <div class="foot-actions">
@@ -445,6 +678,52 @@
               <span>Hide</span>
             </button>
           </div>
+          <div class="appearance" id="appearance">
+            <span class="appearance-label" id="appearanceLabel"
+              >Paper accent</span
+            >
+            <div
+              class="appearance-swatches"
+              role="group"
+              aria-labelledby="appearanceLabel"
+            >
+              <button
+                type="button"
+                class="appearance-swatch"
+                data-theme="reading"
+                aria-pressed="true"
+                aria-label="Reading Room accent (oxblood)"
+                title="Reading Room"
+              ></button>
+              <button
+                type="button"
+                class="appearance-swatch"
+                data-theme="field"
+                aria-pressed="false"
+                aria-label="Field Notes accent (olive)"
+                title="Field Notes"
+              ></button>
+              <button
+                type="button"
+                class="appearance-swatch"
+                data-theme="drafting"
+                aria-pressed="false"
+                aria-label="Drafting Table accent (slate blue)"
+                title="Drafting Table"
+              ></button>
+              <button
+                type="button"
+                class="appearance-swatch"
+                data-theme="hydro"
+                aria-pressed="false"
+                aria-label="Hydrograph accent (deep teal)"
+                title="Hydrograph"
+              ></button>
+            </div>
+            <div class="appearance-name" id="appearanceName">
+              Reading Room
+            </div>
+          </div>
           <div class="foot-line" id="footPeriod">—</div>
           <div class="foot-line" id="footRes">—</div>
           <div class="foot-line" id="footMode">—</div>
@@ -455,107 +734,358 @@
 
       <!-- ======================= WORKSPACE ======================= -->
       <main class="workspace" id="workspace">
-        <!-- Four primary workspaces; documentation lives in the sidebar
-             footer (book icon) and deep-links to #data or #docs. -->
-        <div class="tabs" role="tablist" aria-label="Analytical workspaces">
-          <button
-            type="button"
-            role="tab"
-            id="tabOverview"
-            aria-selected="true"
-            aria-controls="viewOverview"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+        <!-- Product-first navigation (M10.3c): one top-level destination per
+             era/product, with its analytical lenses beneath. The four era-B
+             lenses are four questions about ONE gridded record — never four
+             datasets — so they no longer compete as peer top-level tabs. -->
+        <div class="tab-nav">
+          <nav class="tab-groups" aria-label="Data products and tools">
+            <a
+              class="tab-group"
+              href="#overview"
+              data-group="record"
+              aria-current="page"
+              data-tip-title="Record · gridded product"
+              data-tip-body="The gridded multi-source record: SPI and SPEI at 1/3/6/12 months, soil-moisture anomaly and VCI for 724 districts. Observation-based, era-labelled."
             >
-              <path d="M1 6l7-3 8 3 7-3v15l-7 3-8-3-7 3z" />
-              <path d="M8 3v15M16 6v15" />
-            </svg>
-            Overview
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabHistorical"
-            aria-selected="false"
-            aria-controls="viewHistorical"
-            tabindex="-1"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+              <span class="tg-name">Record</span
+              ><span class="tg-years" id="recordYears">1981–present</span>
+            </a>
+            <a
+              class="tab-group"
+              href="#projections"
+              data-group="projections"
+              data-tip-title="Projections · 2015–2100"
+              data-tip-body="Era C: 24 bias-corrected CMIP6 models under SSP2-4.5 and SSP5-8.5 — ensemble median, spread and model agreement. Simulations, never forecasts."
             >
-              <path d="M18 20V10M12 20V4M6 20v-6" />
-            </svg>
-            Historical Analysis
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabEvents"
-            aria-selected="false"
-            aria-controls="viewEvents"
-            tabindex="-1"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+              <span class="tg-name">Projections</span
+              ><span class="tg-years">2015–2100</span>
+            </a>
+            <a
+              class="tab-group"
+              href="#atlas"
+              data-group="atlas"
+              data-tip-title="Atlas · 1901–2025"
+              data-tip-body="Era A: the Drought Atlas of India SPEI reconstruction, 1901–2025, mapped by district. Long historical droughts, never spliced with the record."
             >
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-            Drought Events
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tabPropagation"
-            aria-selected="false"
-            aria-controls="viewPropagation"
-            tabindex="-1"
-          >
-            <svg
-              class="tab-ic"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+              <span class="tg-name">Atlas</span
+              ><span class="tg-years">1901–2025</span>
+            </a>
+            <a
+              class="tab-group tab-group-tool"
+              href="#engine"
+              data-group="tools"
+              data-tip-title="Engine Lab"
+              data-tip-body="Run SQL directly over the published Parquet store in your browser (DuckDB-WASM): no server, no upload, exact file counts and query timings."
             >
-              <circle cx="6" cy="18" r="3" />
-              <circle cx="18" cy="6" r="3" />
-              <path d="M6 15V9a3 3 0 0 1 3-3h6" />
-            </svg>
-            Propagation &amp; Relationships
-          </button>
+              <span class="tg-name">Engine Lab</span
+              ><span class="tg-years">SQL over the record</span>
+            </a>
+          </nav>
+          <div class="tab-lenses" id="tabLenses">
+            <span class="lens-label" aria-hidden="true">Views</span>
+            <div
+              class="tabs"
+              role="tablist"
+              aria-label="Record views"
+              data-group-panel="record"
+            >
+              <button
+                type="button"
+                role="tab"
+                id="tabOverview"
+                aria-selected="true"
+                aria-controls="viewOverview"
+                data-tip-title="Overview"
+                data-tip-body="One month, district by district: severity map, headline drought area, national series, ranking and evolution."
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M1 6l7-3 8 3 7-3v15l-7 3-8-3-7 3z" />
+                  <path d="M8 3v15M16 6v15" />
+                </svg>
+                Overview
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabHistorical"
+                aria-selected="false"
+                aria-controls="viewHistorical"
+                tabindex="-1"
+                data-tip-title="Historical Analysis"
+                data-tip-body="Frequency, duration, severity of drought runs, plus long-term trends tested with Mann–Kendall, Sen's slope and the Hamed–Rao correction."
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M18 20V10M12 20V4M6 20v-6" />
+                </svg>
+                Historical Analysis
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabEvents"
+                aria-selected="false"
+                aria-controls="viewEvents"
+                tabindex="-1"
+                data-tip-title="Drought Events"
+                data-tip-body="Every qualifying drought run (≥ 3 months below the truncation level): start, duration, severity, recovery, plus the sensitivity panel."
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+                Drought Events
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabPropagation"
+                aria-selected="false"
+                aria-controls="viewPropagation"
+                tabindex="-1"
+                data-tip-title="Propagation &amp; Relationships"
+                data-tip-body="How drought propagates through the system: lagged cross-correlation between rainfall, soil moisture and vegetation, with a moving-block bootstrap confidence band."
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="6" r="3" />
+                  <path d="M6 15V9a3 3 0 0 1 3-3h6" />
+                </svg>
+                Propagation &amp; Relationships
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabCrossval"
+                aria-selected="false"
+                aria-controls="viewCrossval"
+                tabindex="-1"
+                data-tip-title="Cross-validation"
+                data-tip-body="Era A against era B over 1981–2014: agreement, bias, within-one-class share and the X7 seam uncertainty, district by district."
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 7h13l-3-3M21 17H8l3 3" />
+                </svg>
+                Cross-validation
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabDistrict"
+                aria-selected="false"
+                aria-controls="viewDistrict"
+                tabindex="-1"
+                data-tip-title="District profile"
+                data-tip-body="A one-page dossier for any district: this month's state, the ten indicators, the long-term trend, its drought events and the era-by-era evidence."
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                District profile
+              </button>
+            </div>
+            <div
+              class="tabs"
+              role="tablist"
+              aria-label="Projection views"
+              data-group-panel="projections"
+              hidden
+            >
+              <button
+                type="button"
+                role="tab"
+                id="tabProjections"
+                aria-selected="false"
+                aria-controls="viewProjections"
+                tabindex="-1"
+                data-tip-title="Future Projections"
+                data-tip-body="What the models project for this century: pick a scenario, statistic and time window to map median change, spread or model agreement."
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                  <polyline points="16 7 22 7 22 13" />
+                </svg>
+                Future Projections
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="tabSummary"
+                aria-selected="false"
+                aria-controls="viewSummary"
+                tabindex="-1"
+                data-tip-title="Drought to 2100"
+                data-tip-body="The agreement-first summary: how drought area changes by the end of the century, by how much, and how many models agree on the sign."
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="4" y1="20" x2="20" y2="20" />
+                  <rect x="6" y="12" width="3" height="8" />
+                  <rect x="12" y="7" width="3" height="13" />
+                  <rect x="18" y="3" width="3" height="17" />
+                </svg>
+                Drought to 2100
+              </button>
+            </div>
+            <div
+              class="tabs"
+              role="tablist"
+              aria-label="Atlas view"
+              data-group-panel="atlas"
+              hidden
+            >
+              <button
+                type="button"
+                role="tab"
+                id="tabAtlas"
+                aria-selected="false"
+                aria-controls="viewAtlas"
+                tabindex="-1"
+                data-tip-title="Atlas 1901–2025"
+                data-tip-body="Scrub the era-A reconstruction year by year and read drought-class shares for any month — 1918, 1965, 1972, 1987 and 2002 are one click away."
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5l3 3" />
+                </svg>
+                Atlas 1901–2025
+              </button>
+            </div>
+            <div
+              class="tabs"
+              role="tablist"
+              aria-label="Engine Lab"
+              data-group-panel="tools"
+              hidden
+            >
+              <button
+                type="button"
+                role="tab"
+                id="tabEngine"
+                aria-selected="false"
+                aria-controls="viewEngine"
+                tabindex="-1"
+                data-tip-title="Engine Lab"
+                data-tip-body="Query the published store yourself: presets or your own SQL over the Parquet files, with row counts, timings, byte traffic and CSV export."
+              >
+                <svg
+                  class="tab-ic"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <ellipse cx="12" cy="5" rx="9" ry="3" />
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                  <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+                </svg>
+                Engine Lab
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- ============ VIEW 1: OVERVIEW ============ -->
@@ -566,8 +1096,8 @@
               <div class="vi-title">
                 Overview <span class="vi-tag">Start here</span>
                 <span class="vi-hint"
-                  >What the latest observations show &amp; how drought has
-                  changed.</span
+                  >A documented drought month, district by district &mdash; and
+                  how the record has changed.</span
                 >
                 <button
                   type="button"
@@ -616,51 +1146,58 @@
             </div>
           </div>
 
-          <!-- Workspace scope strip: the observation date drives every
-               Overview panel (summary cards, map, time series, ranking,
-               evolution), so it sits directly above them as one bar. -->
-          <div class="ws-strip" id="overviewStrip" role="group" aria-label="Observation date">
-            <span class="ws-strip-label">Observation date</span>
-            <div class="field-row">
-              <label class="field"
-                ><span class="field-label">Year</span>
-                <select
-                  id="yearSelect"
-                  class="panel-ctl"
-                  aria-label="Observation year"
-                ></select
-              ></label>
-              <label class="field"
-                ><span class="field-label">Month</span>
-                <select
-                  id="monthSelect"
-                  class="panel-ctl"
-                  aria-label="Observation month"
-                ></select
-              ></label>
+          <!-- Answers first: one question per card, each routing to the
+               workspace that holds the evidence. The cards never re-state a
+               number — they point at where the number, its window and its
+               sample size live. -->
+          <section class="ask-band" aria-labelledby="askHeading">
+            <div class="ask-head">
+              <h2 id="askHeading">Ask the record</h2>
+              <p>
+                Every answer carries its era, window and sample size.
+                <button type="button" class="ask-more" data-ask="atlas">
+                  Or go back to 1901 &rarr;
+                </button>
+              </p>
             </div>
-            <div class="date-slider-row">
-              <input
-                type="range"
-                id="dateSlider"
-                min="0"
-                max="239"
-                value="239"
-                step="1"
-                aria-label="Observation date slider"
-              />
-              <span class="mono date-slider-label" id="dateSliderLabel">—</span>
-            </div>
-            <button
-              type="button"
-              class="btn btn-ghost"
-              id="latestBtn"
-              title="Jump to the latest available observation"
-            >
-              Latest
+            <button type="button" class="ask-card" data-ask="latest">
+              <span class="q">Where is drought biting right now?</span>
+              <span class="a"
+                >Area-weighted severity for the selected month, district by
+                district.</span
+              >
+              <span class="go">Read the map &rarr;</span>
             </button>
-            <p class="side-note" id="datePanelMeta">—</p>
-          </div>
+            <button type="button" class="ask-card" data-ask="historical">
+              <span class="q">Has drought become more frequent here?</span>
+              <span class="a"
+                >Mann&ndash;Kendall trend, Sen slope and FDR-corrected
+                significance for this region.</span
+              >
+              <span class="go">Open Historical Analysis &rarr;</span>
+            </button>
+            <button type="button" class="ask-card" data-ask="events">
+              <span class="q">Which droughts were the worst on record?</span>
+              <span class="a"
+                >Runs analysis: duration, severity and recovery for every
+                qualifying event.</span
+              >
+              <span class="go">Open Drought Events &rarr;</span>
+            </button>
+            <button type="button" class="ask-card" data-ask="projections">
+              <span class="q">How do the scenarios diverge after 2026?</span>
+              <span class="a"
+                >Bias-corrected CMIP6 ensemble median and spread &mdash;
+                projections, never forecasts.</span
+              >
+              <span class="go">Open Future Projections &rarr;</span>
+            </button>
+          </section>
+
+          <!-- The observation date lives in the sidebar (M7.4): every Overview
+               panel (summary cards, map, time series, ranking, evolution)
+               follows it, and a rail control is easier to reach than a strip
+               that scrolls away with the panels it drives. -->
 
           <!-- Summary statistics -->
           <section class="kpi-row" id="kpiRow" aria-label="Scientific summary">
@@ -734,6 +1271,15 @@
               <div class="kpi-foot" data-coverage>—</div>
             </div>
           </section>
+
+          <!-- Receipts for the four cards above: era · product · window ·
+               baseline · n. Filled by renderKPIs(); never hand-typed. -->
+          <div
+            class="evidence"
+            id="evidenceLine"
+            aria-live="polite"
+            aria-label="Evidence for the summary statistics"
+          ></div>
 
           <!-- Main map -->
           <section class="panel map-panel" id="mapPanel">
@@ -843,7 +1389,9 @@
                 </div>
                 <div class="rail-box" id="regionBox">
                   <h3 class="rail-title">Regional summary</h3>
-                  <div id="regionSummary"><p class="side-note">—</p></div>
+                  <div class="region-summary" id="regionSummary">
+                    <p class="side-note">-</p>
+                  </div>
                 </div>
               </aside>
             </div>
@@ -1093,14 +1641,26 @@
                 <span class="panel-meta" id="freqMeta">—</span>
               </div>
             </div>
+            <!-- Numbers sit above the plots they summarise, one decorative
+                 line: value over label, with the qualifying clause muted
+                 (M7.4 — the old inline stat row pushed the left plot down and
+                 left the two charts misaligned). -->
+            <div
+              class="stat-strip"
+              id="freqStats"
+              role="group"
+              aria-label="Drought frequency summary"
+            >
+              <div class="stat-blk">
+                <b>—</b><span>months in drought</span>
+              </div>
+            </div>
             <div class="hist-2col">
-              <div>
-                <div class="stat-row" id="freqStats">
-                  <span class="stat"><b>—</b><i>months in drought</i></span>
-                </div>
+              <div class="hist-col">
+                <h3 class="sub-title">Months in drought per year</h3>
                 <div class="chart-box chart-box-mini" id="freqChart"></div>
               </div>
-              <div>
+              <div class="hist-col">
                 <h3 class="sub-title">District-wise drought frequency</h3>
                 <div class="chart-box chart-box-mini" id="freqDistChart"></div>
               </div>
@@ -1165,7 +1725,8 @@
               <div class="chart-box trend-chart" id="trendChart"></div>
               <div class="trend-stats" id="trendStats"></div>
             </div>
-            <p class="chart-foot" id="trendFoot">—</p>
+            <p class="chart-foot" id="trendFoot">-</p>
+            <p class="ev-verify"><a href="#data/k-methodology/method-trends">How the trend test is made &rarr;</a></p>
           </section>
 
           <!-- E: recurrence -->
@@ -1438,6 +1999,9 @@
               <div class="pager" id="evtPager"></div>
             </div>
             <p class="panel-note" id="evtNote">—</p>
+            <p class="ev-verify">
+              <a href="#data/k-methodology/method-events">How events are defined &rarr;</a>
+            </p>
           </section>
 
           <!-- Event visualisations -->
@@ -1610,7 +2174,8 @@
               <div class="prop-stats" id="propStats"></div>
             </div>
             <div class="chart-box prop-ts-chart" id="propTsChart"></div>
-            <p class="chart-foot" id="propFoot">—</p>
+            <p class="chart-foot" id="propFoot">-</p>
+            <p class="ev-verify"><a href="#data/k-methodology/method-correlation">How the lag correlation is made &rarr;</a></p>
           </section>
 
           <!-- Correlation heatmap -->
@@ -1738,7 +2303,1026 @@
           </section>
         </div>
 
-        <!-- ============ VIEW 5: DATA, METHODOLOGY & DOWNLOADS ============ -->
+        <!-- ============ VIEW 5: ENGINE LAB (v2.0, M1.7) ============
+             Live proof that every number on the site is queryable: SQL over
+             the Parquet store via DuckDB-WASM, with byte/time readouts and
+             the catalog browser. Engine initialises lazily — first open of
+             this tab is the first time DuckDB is downloaded (docs/v2/04 §4.1). -->
+        <div id="viewEngine" role="tabpanel" aria-labelledby="tabEngine" hidden>
+          <div class="view-intro is-compact" id="introEngine" aria-label="Workspace introduction">
+            <span class="vi-step">5</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                Engine Lab <span class="vi-tag">v2.0</span>
+                <span class="vi-hint"
+                  >Query the Parquet archive directly — every published number,
+                  verifiable.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-grid">
+            <section class="panel" id="elStatusPanel" aria-label="Engine status">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Engine status</h2>
+                  <span class="panel-meta" id="elStatusMeta">not initialised</span>
+                </div>
+                <div class="panel-actions">
+                  <button type="button" class="btn btn-ghost" id="elInitBtn">
+                    Initialise engine
+                  </button>
+                </div>
+              </div>
+              <p class="table-help">
+                The engine is <b>lazy</b>: DuckDB-WASM is fetched from a CDN only
+                when you initialise it (or run your first query). The four
+                analytical workspaces keep using the v1.0 CSV loader; this lab is
+                the SQL view of the same published numbers.
+              </p>
+              <dl class="el-status" id="elStatusList">
+                <div><dt>Engine</dt><dd id="elStatusEngine">not initialised</dd></div>
+                <div><dt>Settings</dt><dd id="elStatusSettings">—</dd></div>
+                <div><dt>Bytes fetched</dt><dd id="elStatusBytes">0</dd></div>
+                <div><dt>HTTP requests</dt><dd id="elStatusRequests">0</dd></div>
+                <div><dt>Last query</dt><dd id="elStatusLast">—</dd></div>
+              </dl>
+            </section>
+
+            <section class="panel" id="elCatalogPanel" aria-label="Catalog browser">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Catalog</h2>
+                  <span class="panel-meta" id="elCatalogMeta">data/parquet/catalog.json</span>
+                </div>
+              </div>
+              <div class="table-scroll" id="elCatalogWrap">
+                <table class="comp-table" id="elCatalogTable">
+                  <thead>
+                    <tr>
+                      <th scope="col">Variable</th>
+                      <th scope="col">Eras</th>
+                      <th scope="col" class="num">Years</th>
+                      <th scope="col">Files</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <p class="table-help" id="elEraNote"></p>
+            </section>
+          </div>
+
+          <section class="panel" id="elQueryPanel" aria-label="SQL query">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">SQL</h2>
+                <span class="panel-meta">read-only · Parquet + DuckDB-WASM</span>
+              </div>
+              <div class="panel-actions">
+                <button type="button" class="btn btn-ghost" data-doc="doc-p-sql" title="Field names, file layout and query recipes">
+                  SQL guide
+                </button>
+                <label class="el-preset-label" for="elPreset">Pattern query</label>
+                <select id="elPreset" class="panel-ctl" aria-label="Pattern query"></select>
+                <button type="button" class="btn btn-solid" id="elRunBtn">Run query</button>
+              </div>
+            </div>
+            <textarea
+              id="elSql"
+              class="el-sql"
+              spellcheck="false"
+              rows="7"
+              aria-label="SQL query editor"
+              placeholder="SELECT year, month, value FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet']) WHERE district_id = 'gujarat-ahmedabad' ORDER BY year, month LIMIT 50;"
+            ></textarea>
+            <p class="table-help" id="elSqlHelp">
+              Paths must be absolute URLs — build them from
+              <code>catalog.json</code> (the presets above show the pattern;
+              Documentation P, §6 has the one-liner). Results stream from Parquet
+              column chunks, and a repeated query costs <b>0 bytes</b>
+              (in-memory cache).
+            </p>
+            <div class="el-result-meta" id="elResultMeta" hidden>
+              <span id="elResultStats"></span>
+              <button type="button" class="btn btn-ghost" id="elResultCsv">Results CSV</button>
+            </div>
+            <div class="table-scroll el-result-wrap" id="elResultWrap" hidden>
+              <table class="comp-table" id="elResultTable">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="el-error" id="elError" hidden></p>
+          </section>
+        </div>
+
+        <!-- ============ VIEW 6: FUTURE PROJECTIONS (v2.0, M5.2) ============
+             Era C surface (docs/v2/04 §4.2). Skeleton (M5.2): controls wired
+             against the committed catalog — scenario switch, variable +
+             timescale, statistic, time window, geography — plus the
+             projection banner and era seam notes. Charts, maps and the
+             agreement layer land in M5.3–M5.8; nothing here renders
+             synthetic data (R3). Simulations are labelled, never forecasts
+             (R2); the honest ensemble n is shown (X3). -->
+        <div id="viewProjections" role="tabpanel" aria-labelledby="tabProjections" hidden>
+          <div class="view-intro is-compact" id="introProjections" aria-label="Workspace introduction">
+            <span class="vi-step">6</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                Future Projections <span class="vi-tag">v2.0</span>
+                <span class="vi-hint"
+                  >Climate-model drought futures &mdash; simulations, never
+                  forecasts.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-banner" id="projBanner" role="note"></div>
+
+          <div class="panel-grid">
+            <section class="panel" id="projStatusPanel" aria-label="Projection store status">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Store status</h2>
+                  <span class="panel-meta" id="projStatusMeta">loading catalog…</span>
+                </div>
+                <div class="panel-actions">
+                  <button type="button" class="btn btn-ghost" id="projReloadBtn" hidden>
+                    Retry
+                  </button>
+                </div>
+              </div>
+              <dl class="el-status" id="projStatusList">
+                <div><dt>Status</dt><dd id="projStatusEra">—</dd></div>
+                <div><dt>Scenarios</dt><dd id="projStatusScenarios">—</dd></div>
+                <div><dt>Years published</dt><dd id="projStatusYears">—</dd></div>
+                <div><dt>Ensemble</dt><dd id="projStatusEnsemble">—</dd></div>
+                <div><dt>PET</dt><dd id="projStatusPet">—</dd></div>
+              </dl>
+              <p class="table-help" id="projSeamNote">
+                Era B (Gridded Multi-Source Product): 1981-01 → 2025-12 ·
+                Projections (era
+                C): from 2015 · <b>The two are never spliced</b> — the
+                2015–2025 overlap holds free-running model realisations, not
+                observations.
+              </p>
+            </section>
+
+            <section class="panel" id="projControlPanel" aria-label="Selection controls">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Selection</h2>
+                  <span class="panel-meta">validated era C products only</span>
+                </div>
+              </div>
+              <div class="proj-controls">
+                <fieldset class="proj-field proj-scenario">
+                  <legend>Scenario</legend>
+                  <label
+                    ><input type="radio" name="projScenario" value="ssp245" checked />
+                    SSP2-4.5</label
+                  >
+                  <label
+                    ><input type="radio" name="projScenario" value="ssp585" />
+                    SSP5-8.5</label
+                  >
+                </fieldset>
+                <div class="proj-field">
+                  <label class="proj-label" for="projVariable"
+                    >Indicator &amp; timescale</label
+                  >
+                  <select id="projVariable" class="panel-ctl" aria-label="Indicator and timescale"></select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="projStatistic">Statistic</label>
+                  <select id="projStatistic" class="panel-ctl" aria-label="Ensemble statistic">
+                    <option value="agreement_moderate" selected>
+                      Agreement — moderate (&le; &minus;1.0)
+                    </option>
+                    <option value="agreement_severe">
+                      Agreement — severe (&le; &minus;1.5)
+                    </option>
+                    <option value="median">Ensemble median</option>
+                    <option value="band">Median + 25–75 % band</option>
+                    <option value="dir_agreement_drier">
+                      Direction of change — models agreeing drier
+                    </option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="projWindow">Time window</label>
+                  <select id="projWindow" class="panel-ctl" aria-label="Time window">
+                    <option value="near" selected>Near term (2026–2040)</option>
+                    <option value="mid">Mid century (2041–2060)</option>
+                    <option value="late">Late century (2081–2100)</option>
+                    <option value="custom">Custom range</option>
+                  </select>
+                  <span class="proj-custom-years" id="projCustomYears" hidden>
+                    <input
+                      type="number"
+                      id="projFromYear"
+                      min="2015"
+                      max="2100"
+                      value="2026"
+                      aria-label="Custom window from year"
+                    />
+                    <span aria-hidden="true">–</span>
+                    <input
+                      type="number"
+                      id="projToYear"
+                      min="2015"
+                      max="2100"
+                      value="2040"
+                      aria-label="Custom window to year"
+                    />
+                  </span>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="projGeography">Geography</label>
+                  <select id="projGeography" class="panel-ctl" aria-label="Geography">
+                    <option value="national" selected>National</option>
+                    <option value="state">State</option>
+                    <option value="district">District</option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Share</span>
+                  <button type="button" class="btn btn-ghost" data-share title="Copy a link to this projection view">Copy link</button>
+                </div>
+              </div>
+              <p class="table-help" id="projControlNote">
+                The band chart and map below consume this selection; the
+                choropleth maps the chosen statistic (the band statistic maps
+                the median). Agreement — moderate is the default (X2:
+                agreement-first). The events panel reuses the scenario,
+                indicator and window chosen here.
+              </p>
+            </section>
+          </div>
+
+          <section class="panel" id="projCheckPanel" aria-label="Selection check">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">Selection check</h2>
+                <span class="panel-meta" id="projCheckMeta"
+                  >catalog.json — no engine required</span
+                >
+              </div>
+            </div>
+            <div class="table-scroll" id="projCheckWrap">
+              <table class="comp-table" id="projCheckTable">
+                <thead>
+                  <tr>
+                    <th scope="col">Partition group</th>
+                    <th scope="col" class="num">Files</th>
+                    <th scope="col" class="num">Years in window</th>
+                    <th scope="col">Coverage</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="table-help" id="projCheckNote"></p>
+          </section>
+
+          <div class="panel-grid" id="projViewsGrid">
+            <section class="panel" id="projBandPanel" aria-label="Ensemble band chart">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Ensemble band</h2>
+                  <span class="panel-meta" id="projBandMeta">era C · median + 25–75 %</span>
+                </div>
+                <div class="panel-actions">
+                  <select id="projState" class="panel-ctl" aria-label="State" hidden></select>
+                  <select id="projDistrict" class="panel-ctl" aria-label="District" hidden></select>
+                </div>
+              </div>
+              <div class="proj-chart" id="projBandChart" role="img"
+                aria-label="Ensemble median with 25 to 75 percent band over time"></div>
+              <p class="table-help" id="projBandNote"></p>
+            </section>
+
+            <section class="panel" id="projMapPanel" aria-label="Ensemble choropleth">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Map</h2>
+                  <span class="panel-meta" id="projMapMeta">—</span>
+                </div>
+                <div class="panel-actions">
+                  <select id="projMapYear" class="panel-ctl" aria-label="Map year"></select>
+                  <select id="projMapMonth" class="panel-ctl" aria-label="Map month"></select>
+                </div>
+              </div>
+              <div class="proj-map" id="projMap"></div>
+              <div class="proj-legend" id="projLegend"></div>
+              <p class="table-help" id="projMapNote"></p>
+            </section>
+          </div>
+
+          <section class="panel" id="projRankingPanel" aria-label="Model ranking">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">Model ranking</h2>
+                <span class="panel-meta" id="projRankingMeta"
+                  >8 skill metrics vs IMD 1981–2014 · composite, never single-metric</span
+                >
+              </div>
+            </div>
+            <div class="table-scroll" id="projRankingWrap">
+              <table class="comp-table" id="projRankingTable">
+                <thead>
+                  <tr>
+                    <th scope="col" class="num">Rank</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Subset</th>
+                    <th scope="col" class="num">Composite</th>
+                    <th scope="col" class="num">Pearson r</th>
+                    <th scope="col" class="num">|Bias|</th>
+                    <th scope="col" class="num">RMSD</th>
+                    <th scope="col" class="num">Class agr.</th>
+                    <th scope="col" class="num">Freq ratio</th>
+                    <th scope="col" class="num">Dur. ratio</th>
+                    <th scope="col" class="num">Sev. ratio</th>
+                    <th scope="col" class="num">Spatial r</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="table-help" id="projRankingNote"></p>
+          </section>
+
+          <section class="panel" id="projDivPanel" aria-label="SPI-SPEI divergence map">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">SPI&#8211;SPEI divergence</h2>
+                <span class="panel-meta" id="projDivMeta">&#8212;</span>
+              </div>
+              <div class="panel-actions">
+                <select id="projDivYear" class="panel-ctl" aria-label="Divergence year"></select>
+                <select id="projDivMonth" class="panel-ctl" aria-label="Divergence month"></select>
+              </div>
+            </div>
+            <div class="proj-map" id="projDivMap"></div>
+            <div class="proj-legend" id="projDivLegend"></div>
+            <p class="table-help" id="projDivNote"></p>
+          </section>
+
+          <section class="panel" id="projEventsPanel" aria-label="Future drought events">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">Future drought events</h2>
+                <span class="panel-meta" id="projEventsMeta"
+                  >frozen runs analysis on era-C medians vs the era-B 1981&#8211;2014 baseline</span
+                >
+              </div>
+              <div class="panel-actions">
+                <select id="projEventsMetric" class="panel-ctl" aria-label="Ranking metric">
+                  <option value="freq" selected>Sort by frequency ratio</option>
+                  <option value="duration">Sort by duration change</option>
+                  <option value="severity">Sort by severity ratio</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-scroll" id="projEventsWrap">
+              <table class="comp-table" id="projEventsTable">
+                <thead>
+                  <tr>
+                    <th scope="col">District</th>
+                    <th scope="col" class="num">Base ev/yr</th>
+                    <th scope="col" class="num">Era-C ev/yr</th>
+                    <th scope="col" class="num">Freq ratio</th>
+                    <th scope="col" class="num">Mean dur (base &#8594; era C)</th>
+                    <th scope="col" class="num">Max dur era C</th>
+                    <th scope="col" class="num">Sev ratio</th>
+                    <th scope="col" class="num">Mean agr. (of 8)</th>
+                    <th scope="col" class="num">Valid months</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="table-help" id="projEventsNote"></p>
+          </section>
+
+          <section class="panel" id="projRoadmapPanel" aria-label="Pending compute">
+            <div class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">Pending compute &amp; next steps</h2>
+                <span class="panel-meta">Owner compute pending — not yet rendered</span>
+              </div>
+            </div>
+            <ul class="proj-roadmap">
+              <li><span class="proj-ms">SSP</span> 2015–2100 download <strong>complete</strong> (8 models × 2 scenarios × 3 variables, 4,128 files) — full-record recompute (02→09) in progress; the late-century window (2081–2100) enables itself when the store is republished</li>
+              <li><span class="proj-ms">07→09</span> <code>dir_agreement_drier</code> + <code>dir_agreement_n</code> are coded and self-tested; this statistic enables itself only after the full-record recompute passes 08 and 09 <code>--publish</code> (M5.4 / F10)</li>
+              <li><span class="proj-ms">M6.8</span> era A↔B cross-validation delivers per-district <code>seam_uncertainty</code> for tooltips (X7)</li>
+              <li><span class="proj-ms">O14</span> optional standardisation-baseline sensitivity (fixed 1981–2020 vs rolling) — memo section, not a UI default</li>
+              <li><span class="proj-ms">M7</span> release: era-C store hosting decision (commit vs R2 + Zenodo)</li>
+            </ul>
+            <p class="table-help">
+              Until each item lands, this surface shows only committed catalog
+              facts — no synthetic placeholders (R3).
+            </p>
+          </section>
+        </div>
+
+        <!-- ============ VIEW 8: SUMMARY — DROUGHT CHANGE NOW → 2100 (E19/M9) ============ -->
+        <div id="viewSummary" role="tabpanel" aria-labelledby="tabSummary" hidden>
+          <div class="view-intro is-compact" id="introSummary" aria-label="Workspace introduction">
+            <span class="vi-step">7</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                Drought to 2100 <span class="vi-tag">v2.0</span>
+                <span class="vi-hint"
+                  >How drought changes from the era-B 1981&ndash;2014
+                  baseline to the model windows &mdash; simulations, never
+                  forecasts.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-banner" id="sumBanner" role="note"></div>
+
+          <div class="panel-grid">
+            <section class="panel" id="sumControlPanel" aria-label="Summary selection controls">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Selection</h2>
+                  <span class="panel-meta">validated era C products · era-B 1981–2014 baseline (D6)</span>
+                </div>
+              </div>
+              <div class="proj-controls">
+                <fieldset class="proj-field proj-scenario">
+                  <legend>Scenario</legend>
+                  <label
+                    ><input type="radio" name="sumScenario" value="ssp245" checked />
+                    SSP2-4.5</label
+                  >
+                  <label
+                    ><input type="radio" name="sumScenario" value="ssp585" />
+                    SSP5-8.5</label
+                  >
+                </fieldset>
+                <div class="proj-field">
+                  <label class="proj-label" for="sumVariable"
+                    >Indicator &amp; timescale</label
+                  >
+                  <select id="sumVariable" class="panel-ctl" aria-label="Indicator and timescale"></select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="sumWindow">Future window</label>
+                  <select id="sumWindow" class="panel-ctl" aria-label="Future window">
+                    <option value="near">Near term (2026–2040)</option>
+                    <option value="mid">Mid century (2041–2060)</option>
+                    <option value="late" selected>Late century (2081–2100)</option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="sumMetric">Map statistic</label>
+                  <select id="sumMetric" class="panel-ctl" aria-label="Map statistic">
+                    <option value="agreement" selected>
+                      Model agreement — share of models drier (default)
+                    </option>
+                    <option value="frequency">
+                      Drought-month share change (pp, median-based)
+                    </option>
+                    <option value="duration">
+                      Mean event duration change (months, median-based)
+                    </option>
+                    <option value="severity">
+                      Mean severity per event change (z, median-based)
+                    </option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Download</span>
+                  <button type="button" class="btn btn-ghost" id="sumCsvBtn">
+                    Export CSV
+                  </button>
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Share</span>
+                  <button type="button" class="btn btn-ghost" data-share title="Copy a link to this summary view">Copy link</button>
+                </div>
+              </div>
+              <p class="table-help" id="sumNationalNote">
+                Loading national figures…
+              </p>
+            </section>
+
+            <section class="panel" id="sumMapPanel" aria-label="Drought change and agreement map">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Model agreement &amp; drought change vs the 1981–2014 baseline</h2>
+                  <span class="panel-meta" id="sumMapMeta">—</span>
+                </div>
+              </div>
+              <div id="sumMap" class="proj-map" style="height: 420px" role="img" aria-label="Choropleth map of model agreement and drought change by district"></div>
+              <div id="sumLegend" class="proj-legend" aria-hidden="true"></div>
+              <p class="table-help" id="sumMapNote">loading…</p>
+            </section>
+
+            <section class="panel" id="sumStatePanel" aria-label="Per-state summary">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Per-state summary</h2>
+                  <span class="panel-meta" id="sumStateMeta">—</span>
+                </div>
+              </div>
+              <div class="table-scroll" id="sumStateWrap">
+                <table class="comp-table" id="sumStateTable">
+                  <thead>
+                    <tr>
+                      <th>State / UT</th>
+                      <th class="num">Districts (n)</th>
+                      <th class="num">Baseline drought-month share</th>
+                      <th class="num">Future window share</th>
+                      <th class="num">Change (pp)</th>
+                      <th class="num">Models agreeing drier (of n)</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <p class="table-help" id="sumStateNote"></p>
+            </section>
+
+            <section class="panel" id="sumCaveatPanel" aria-label="Reading guide and caveats">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">How to read this workspace</h2>
+                  <span class="panel-meta">interpretation guardrails</span>
+                </div>
+              </div>
+              <ul class="table-help" id="sumCaveats" style="margin: 10px 16px; padding-left: 18px">
+                <li>
+                  <b>Projections are simulations, not forecasts</b> (era C,
+                  QDM-bias-corrected CMIP6, 8-model committed subset): no model
+                  reproduces the actual weather of any future year.
+                </li>
+                <li>
+                  <b>The comparison baseline is the era-B Gridded Multi-Source
+                  Product 1981–2014 record</b> (34 years) — window per register
+                  D6; the future windows
+                  are 15–20 years, and every statistic reports its sample size.
+                </li>
+                <li>
+                  <b>The map defaults to model agreement (X2)</b>: the share of
+                  the 8-model subset drier than their own 1981–2014 base. The
+                  median-based change metrics are one click away and labelled
+                  — the ensemble median concentrates, so it is never read
+                  alone.
+                </li>
+                <li>
+                  <b>Event statistics are median-based</b> where shown: runs of
+                  the
+                  ensemble-median series ≤ −1.0 with the frozen v1.0 machinery
+                  (min 3 months, censoring flagged); spread across models is
+                  shown by the agreement statistic, never hidden.
+                </li>
+                <li>
+                  <b>Historical seam uncertainty (X7):</b> the two historical
+                  records disagree by a median <span id="sumSeamVal">&hellip;</span> z
+                  per district (1 SD of era A &minus; era B SPEI-12 over
+                  1981&ndash;2014, <span id="sumSeamN">&hellip;</span> districts).
+                  This is a measured disagreement between the records, not a
+                  projection confidence interval; per-district values are in
+                  the projection SPEI-12 tooltips and the cross-validation
+                  table.
+                </li>
+                <li>
+                  <b>PET seam:</b> era C SPEI uses Hargreaves PET on corrected
+                  temperature; era B uses ERA5-Land reanalysis PET (documented
+                  seam, never bridged). Its sensitivity is a registered
+                  follow-up (O14/E16).
+                </li>
+              </ul>
+              <p class="ev-verify" style="margin: 4px 16px 12px">
+                How these numbers are made:
+                <a href="#data/k-methodology/method-era-c">era-C chain</a> ·
+                <a href="#data/k-methodology/method-events">event rule</a> ·
+                <a href="#data/k-methodology/method-crossval">era A↔B seam</a>
+              </p>
+            </section>
+          </div>
+        </div>
+
+        <!-- ============ VIEW 9: ATLAS CONTEXT 1901–2025 (era A, M6.3) ============ -->
+        <div id="viewAtlas" role="tabpanel" aria-labelledby="tabAtlas" hidden>
+          <div class="view-intro is-compact" id="introAtlas" aria-label="Workspace introduction">
+            <span class="vi-step">8</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                Atlas 1901&ndash;2025 <span class="vi-tag">era A</span>
+                <span class="vi-hint"
+                  >The Drought Atlas reconstruction &mdash; 125 years of SPEI,
+                  era-labelled, never spliced with the observed record.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-banner" id="atlasBanner" role="note"></div>
+
+          <div class="panel-grid">
+            <section class="panel" id="atlasControlPanel" aria-label="Atlas scrubber controls">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Time scrubber</h2>
+                  <span class="panel-meta">one year fetched per frame (per-year partition)</span>
+                </div>
+              </div>
+              <div class="proj-controls">
+                <div class="proj-field">
+                  <label class="proj-label" for="atlasVariable">Timescale</label>
+                  <select id="atlasVariable" class="panel-ctl" aria-label="Atlas timescale">
+                    <option value="spei_01" selected>SPEI-1 (monthly)</option>
+                    <option value="spei_04">SPEI-4</option>
+                    <option value="spei_12">SPEI-12 (annual)</option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="atlasMonth">Month</label>
+                  <select id="atlasMonth" class="panel-ctl" aria-label="Month"></select>
+                </div>
+                <div class="proj-field" style="min-width: 260px">
+                  <label class="proj-label" for="atlasYear">Year
+                    <span class="proj-year-readout" id="atlasYearReadout">1901</span>
+                  </label>
+                  <input
+                    type="range"
+                    id="atlasYear"
+                    min="1901"
+                    max="2025"
+                    step="1"
+                    value="1901"
+                    aria-label="Atlas year scrubber"
+                  />
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Drought anchors</span>
+                  <div class="atlas-anchors" role="group" aria-label="Historical drought anchors">
+                    <button type="button" class="btn btn-ghost atlas-anchor" data-year="1918">1918</button>
+                    <button type="button" class="btn btn-ghost atlas-anchor" data-year="1965">1965</button>
+                    <button type="button" class="btn btn-ghost atlas-anchor" data-year="1972">1972</button>
+                    <button type="button" class="btn btn-ghost atlas-anchor" data-year="1987">1987</button>
+                    <button type="button" class="btn btn-ghost atlas-anchor" data-year="2002">2002</button>
+                  </div>
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Share</span>
+                  <button type="button" class="btn btn-ghost" data-share title="Copy a link to this Atlas frame">Copy link</button>
+                </div>
+              </div>
+              <p class="table-help" id="atlasScrubNote">
+                Loading the era-A store…
+              </p>
+            </section>
+
+            <section class="panel" id="atlasMapPanel" aria-label="Atlas choropleth">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Reconstruction map</h2>
+                  <span class="panel-meta" id="atlasMapMeta">—</span>
+                </div>
+              </div>
+              <div id="atlasMap" class="proj-map" style="height: 460px" role="img" aria-label="Choropleth map of the Drought Atlas reconstruction"></div>
+              <div id="atlasLegend" class="proj-legend" aria-hidden="true"></div>
+              <p class="table-help" id="atlasMapNote">loading…</p>
+            </section>
+
+            <section class="panel" id="atlasSharePanel" aria-label="Class shares">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Drought-class shares</h2>
+                  <span class="panel-meta" id="atlasShareMeta">—</span>
+                </div>
+              </div>
+              <dl class="el-status" id="atlasShareList">
+                <div><dt>Moderate-or-worse</dt><dd id="atlasShareMod">—</dd></div>
+                <div><dt>Severe-or-worse</dt><dd id="atlasShareSev">—</dd></div>
+                <div><dt>Extreme</dt><dd id="atlasShareExt">—</dd></div>
+                <div><dt>Wetter than normal</dt><dd id="atlasShareWet">—</dd></div>
+                <div><dt>With data (n districts)</dt><dd id="atlasShareN">—</dd></div>
+              </dl>
+              <p class="table-help" id="atlasShareNote"></p>
+            </section>
+
+            <section class="panel" id="atlasCaveatPanel" aria-label="Reading guide">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">How to read this workspace</h2>
+                  <span class="panel-meta">interpretation guardrails</span>
+                </div>
+              </div>
+              <ul class="table-help" id="atlasCaveats" style="margin: 10px 16px; padding-left: 18px">
+                <li>
+                  <b>Era A is a reconstruction</b> built from the Drought Atlas
+                  of India (SPEI at 1/4/12-month scales) — attribution and
+                  licence are rendered in the banner from the data contract.
+                </li>
+                <li>
+                  <b>Never spliced</b> with the era-B Gridded Multi-Source
+                  Product or era-C projections: the 1981–2025 overlap is
+                  cross-validation material (the <code>#crossval</code>
+                  panel), never one continuous line.
+                </li>
+                <li>
+                  <b>Six island districts have no Atlas grid cells</b>
+                  (documented ocean mask) — grey on every map, never imputed
+                  (R10).
+                </li>
+                <li>
+                  <b>A reconstruction is not an observation:</b> early-20th-
+                  century station density is lower; treat pre-1951 values
+                  with correspondingly wider uncertainty (quantified in the
+                  cross-validation panel).
+                </li>
+                <li>
+                  <b>Accumulation months are real:</b> SPEI-4 is defined from
+                  April to December and SPEI-12 only in December in this
+                  reconstruction; selecting an earlier month is genuinely empty
+                  (not missing data, and never filled).
+                </li>
+                <li>
+                  <a href="#data/k-methodology/method-crossval">How the era A↔B comparison is made →</a>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+
+        <!-- ============ VIEW 9: ERA A vs ERA B CROSS-VALIDATION ============
+             A lens on the Record product (D11): the same 1981-2014 window
+             read from two independent records and compared, never spliced. -->
+        <div id="viewCrossval" role="tabpanel" aria-labelledby="tabCrossval" hidden>
+          <div class="view-intro is-compact" id="introCrossval" aria-label="Workspace introduction">
+            <span class="vi-step">9</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                Cross-validation <span class="vi-tag">era A &harr; B</span>
+                <span class="vi-hint"
+                  >Two independent records over the same 1981&ndash;2014
+                  window, compared &mdash; never merged into one series.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-banner" id="cvBanner" role="note"></div>
+
+          <div class="panel-grid">
+            <section class="panel" id="cvControlPanel" aria-label="Cross-validation selection controls">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Selection</h2>
+                  <span class="panel-meta" id="cvStatMeta">&mdash;</span>
+                </div>
+              </div>
+              <div class="proj-controls">
+                <div class="proj-field">
+                  <label class="proj-label" for="cvVariable">Timescale</label>
+                  <select id="cvVariable" class="panel-ctl" aria-label="Cross-validated timescale">
+                    <option value="spei_01" selected>SPEI-1 (monthly)</option>
+                    <option value="spei_12">SPEI-12 (annual accumulation)</option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <label class="proj-label" for="cvMetric">Map statistic</label>
+                  <select id="cvMetric" class="panel-ctl" aria-label="Map statistic">
+                    <option value="bias" selected>Bias &mdash; era B minus era A (default)</option>
+                    <option value="state_agree">Drought-state agreement</option>
+                    <option value="r">Correlation r</option>
+                    <option value="class_near">Severity class (within one)</option>
+                    <option value="rmsd">RMSD</option>
+                  </select>
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Download</span>
+                  <button type="button" class="btn btn-ghost" id="cvCsvBtn">
+                    Export CSV
+                  </button>
+                </div>
+                <div class="proj-field">
+                  <span class="proj-label">Share</span>
+                  <button type="button" class="btn btn-ghost" data-share title="Copy a link to this comparison view">Copy link</button>
+                </div>
+              </div>
+              <p class="table-help" id="cvStatNote">Loading the comparison store&hellip;</p>
+            </section>
+
+            <section class="panel" id="cvKpiPanel" aria-label="Agreement summary">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Agreement at a glance</h2>
+                  <span class="panel-meta">every figure carries its sample size</span>
+                </div>
+              </div>
+              <dl class="el-status">
+                <div><dt>Districts compared</dt><dd id="cvDistricts">&mdash;</dd></div>
+                <div><dt>Matched district-months</dt><dd id="cvMonths">&mdash;</dd></div>
+                <div><dt>Median r (unweighted)</dt><dd id="cvMedianR">&mdash;</dd></div>
+                <div><dt>Area-weighted bias</dt><dd id="cvBias">&mdash;</dd></div>
+                <div><dt>Median RMSD</dt><dd id="cvRmsd">&mdash;</dd></div>
+                <div><dt>Area-weighted drought-state agreement</dt><dd id="cvState">&mdash;</dd></div>
+                <div><dt>Area-weighted within-one-class</dt><dd id="cvClass">&mdash;</dd></div>
+                <div><dt>Area-weighted both-drought</dt><dd id="cvBoth">&mdash;</dd></div>
+              </dl>
+            </section>
+
+            <section class="panel" id="cvMapPanel" aria-label="Agreement and divergence map">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Where the two records diverge</h2>
+                  <span class="panel-meta" id="cvMapMeta">&mdash;</span>
+                </div>
+              </div>
+              <div id="cvMap" class="proj-map" style="height: 440px" role="img" aria-label="Choropleth map of era A versus era B agreement by district"></div>
+              <div id="cvLegend" class="proj-legend" aria-hidden="true"></div>
+              <p class="table-help" id="cvMapNote">loading&hellip;</p>
+            </section>
+
+            <section class="panel" id="cvMonthlyPanel" aria-label="Monthly agreement series">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Agreement through time</h2>
+                  <span class="panel-meta">area-weighted national series, 1981&ndash;2014</span>
+                </div>
+              </div>
+              <div class="chart-box" id="cvMonthlyChart" style="height: 230px" role="img" aria-label="Line chart of monthly agreement"></div>
+              <p class="chart-foot" id="cvMonthlyNote">loading&hellip;</p>
+            </section>
+
+            <section class="panel" id="cvTablePanel" aria-label="District agreement table">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">District evidence</h2>
+                  <span class="panel-meta" id="cvTableMeta">&mdash;</span>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table class="comp-table" id="cvTable">
+                  <thead>
+                    <tr>
+                      <th>District</th>
+                      <th>State / UT</th>
+                      <th class="num">n months</th>
+                      <th class="num">r</th>
+                      <th class="num">Bias (z)</th>
+                      <th class="num">Seam SD (z)</th>
+                      <th class="num">State agree</th>
+                      <th class="num">Exact class</th>
+                      <th class="num">Within one</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <p class="table-help" id="cvTableNote"></p>
+            </section>
+
+            <section class="panel" id="cvCaveatPanel" aria-label="Reading guide and caveats">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">How to read this workspace</h2>
+                  <span class="panel-meta">interpretation guardrails</span>
+                </div>
+              </div>
+              <ul class="table-help" id="cvCaveats" style="margin: 10px 16px; padding-left: 18px">
+                <li>
+                  <b>Disagreement is expected and is the content.</b> The two
+                  records use different precipitation and PET chains and are
+                  standardised against their own fitting baselines, so a
+                  systematic offset is a property of the inputs, not an error
+                  in either record.
+                </li>
+                <li>
+                  <b>Compared, never merged</b> (R2): no district-month is
+                  averaged into a single "consensus" value, and the overlap is
+                  never spliced into the 1981&ndash;2025 record.
+                </li>
+                <li>
+                  <b>Missing stays missing</b> (R10): a district-month present
+                  in only one era is absent from every metric; the six island
+                  districts with no Atlas grid cells stay grey.
+                </li>
+                <li>
+                  <b>Correlation is not agreement</b> (R9): r measures
+                  co-movement only. Read it with the bias map; a district can
+                  track closely and still sit half a class away.
+                </li>
+                <li>
+                  <b>Window</b>: 1981&ndash;2014 (register D6, the GCM-native
+                  comparison window). The full 1981&ndash;2025 overlap is a
+                  sensitivity variant and is not part of this build.
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+
+        <!-- ============ VIEW 10: DISTRICT PROFILE (#/district/<id>, M10.6) ==== -->
+        <div id="viewDistrict" role="tabpanel" aria-labelledby="tabDistrict" hidden>
+          <div class="view-intro is-compact" aria-label="Workspace introduction">
+            <span class="vi-step">10</span>
+            <div class="vi-body">
+              <div class="vi-title">
+                District profile <span class="vi-tag">era B</span>
+                <span class="vi-hint"
+                  >One district: the headline answer, all ten indicators for
+                  the selected month, its long-term trend, drought events and
+                  the era context &mdash; deep-linkable and never spliced.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-banner" id="dpBanner" role="note"></div>
+
+          <div class="dp-toolbar">
+            <a class="btn btn-ghost" href="#overview">&larr; Back to the record</a>
+            <button type="button" class="btn btn-ghost" id="dpShareBtn">Copy link</button>
+          </div>
+
+          <div class="panel-grid">
+            <section class="panel panel-span-all" id="dpHeadlinePanel" aria-label="District headline">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title" id="dpTitle">District profile</h2>
+                  <span class="panel-meta" id="dpSub">&mdash;</span>
+                </div>
+              </div>
+              <p class="dp-headline" id="dpHeadline">Loading the district record&hellip;</p>
+              <p class="table-help" id="dpReceipts"></p>
+            </section>
+
+            <section class="panel panel-span-all" id="dpStripPanel" aria-label="All indicators this month">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">All indicators this month</h2>
+                  <span class="panel-meta" id="dpStripMeta">&mdash;</span>
+                </div>
+              </div>
+              <div class="dp-strip" id="dpStrip" role="group" aria-label="Indicators for the selected month"></div>
+              <p class="table-help" id="dpStripNote"></p>
+            </section>
+
+            <section class="panel panel-span-all" id="dpTrendPanel" aria-label="Long-term trend">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Long-term trend</h2>
+                  <span class="panel-meta" id="dpTrendMeta">&mdash;</span>
+                </div>
+              </div>
+              <div class="chart-box" id="dpTrendChart" style="height: 300px" role="img" aria-label="Annual series with Sen trend for this district"></div>
+              <div class="dp-stats" id="dpTrendStats"></div>
+              <p class="chart-foot" id="dpTrendFoot"></p>
+            </section>
+
+            <section class="panel" id="dpEventPanel" aria-label="Drought events for this district">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Drought events</h2>
+                  <span class="panel-meta" id="dpEventMeta">&mdash;</span>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table class="comp-table" id="dpEventTable">
+                  <thead>
+                    <tr>
+                      <th>Start</th>
+                      <th>End</th>
+                      <th class="num">Duration (mo)</th>
+                      <th class="num">Peak (z)</th>
+                      <th class="num">Severity</th>
+                      <th class="num">Recovery (mo)</th>
+                      <th>Edge</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <p class="table-help" id="dpEventNote"></p>
+            </section>
+
+            <section class="panel" id="dpEraPanel" aria-label="Era context">
+              <div class="panel-head">
+                <div class="panel-titles">
+                  <h2 class="panel-title">Era context</h2>
+                  <span class="panel-meta">labelled, never spliced</span>
+                </div>
+              </div>
+              <div class="dp-era" id="dpEra"></div>
+              <p class="table-help" id="dpEraNote"></p>
+            </section>
+          </div>
+        </div>
+
+        <!-- ============ VIEW 11: DATA, METHODOLOGY & DOWNLOADS ============ -->
         <div id="viewData" role="tabpanel" aria-label="Documentation and Resources" hidden>
           <div class="view-intro is-compact" aria-label="Workspace introduction">
             <span class="vi-step" aria-hidden="true">
@@ -1764,7 +3348,9 @@
                 <span class="vi-hint"
                   >About, data sources, methodology, validation, uncertainty,
                   reproducibility, downloads &amp; version history &mdash; open
-                  any time from the book icon in the sidebar footer.</span
+                  any time from the <b>Documentation</b> link in the topbar or
+                  the book icon in the sidebar footer. First visit? Start with
+                  the guided tour in the topbar.</span
                 >
                 <button
                   type="button"
@@ -1815,6 +3401,11 @@
               <button type="button" data-doc="doc-e-limits">E &middot; Uncertainty &amp; limitations</button>
               <button type="button" data-doc="doc-f-repro">F &middot; Reproducibility</button>
               <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citations</button>
+              <button type="button" data-doc="doc-p-sql">P &middot; Querying the data (SQL)</button>
+              <button type="button" data-doc="doc-k-methodology">K &middot; Living methodology (v2)</button>
+              <button type="button" data-doc="doc-l-governance">L &middot; Governance &amp; licences</button>
+              <button type="button" data-doc="doc-m-reality">M &middot; Reality checks</button>
+              <button type="button" data-doc="doc-n-status">N &middot; Data status</button>
               <button type="button" data-doc="doc-h-versions">H &middot; Version history</button>
             </div>
             <span class="doc-nav-title">Handbook</span>
@@ -1920,7 +3511,9 @@
                 This dashboard turns district-month drought indicators into
                 maps, statistics, event catalogues and downloadable research
                 outputs. Everything runs in your browser &mdash; no account,
-                backend or API key is required.
+                backend or API key is required. New here? The five-minute
+                <a href="tour.html">guided tour</a> (topbar &rarr;
+                <em>How to use</em>) covers the same ground with live links.
               </p>
 
               <h3>Quick start</h3>
@@ -1928,11 +3521,11 @@
                 <li>
                   <b>Choose the scope.</b> Set <em>Geographic extent</em>,
                   <em>State / UT</em>, <em>Drought indicator</em> and
-                  <em>Analysis period</em> in the dark control panel. These are
-                  global: every tab, chart and export follows them. The panel
-                  adapts to the active workspace &mdash; tab-specific controls
-                  (observation date, map display, event filters, indicator
-                  pairs) appear in it as you switch tabs.
+                  <em>Analysis period</em> in the control rail (the sidebar; a
+                  drawer on phones). These are global: every Record tab, chart
+                  and export follows them. The rail also adapts: Projections and
+                  Atlas get their own console, and Documentation gets a contents
+                  index instead of controls that would not apply.
                 </li>
                 <li>
                   <b>Pick a date (Overview).</b> The observation date controls
@@ -2173,6 +3766,29 @@
             <button type="button" class="doc-top" data-doc="doc-top">
               &uarr; Back to top
             </button>
+
+            <!-- Independent benchmark (M4, built 2026-11-22). Values come from
+                 data/imd_validation.json, written by validation-studies/imd/
+                 (99_memo.py) from the Owner's local IMD archive. -->
+            <h3 class="gov-h">Independent benchmark — IMD (M4)</h3>
+            <p class="panel-note">
+              The checks above test internal consistency. This table tests the
+              record against a source that shares none of its inputs: IMD
+              station-interpolated gridded observations, processed with the same
+              indicator code, the same 1981–2020 base and the same calibration
+              gates as era B. SPI is like-for-like (rainfall only); SPEI also
+              changes the PET method and is labelled accordingly.
+            </p>
+            <div id="imdValidation" aria-live="polite">
+              <p class="table-help">Loading the IMD benchmark…</p>
+            </div>
+            <p class="table-help">
+              Full memo (inputs, coverage, seasonal tables, trend maps,
+              limitations): <a href="validation-studies/imd/report/validation-memo.md">validation-memo.md</a>
+              · machine-readable: <a href="data/imd_validation.json">data/imd_validation.json</a>
+              · reproduce with <code>python validation-studies/imd/00_verify_imd.py</code>
+              … <code>99_memo.py</code>.
+            </p>
           </details>
 
           <!-- E: uncertainty and limitations -->
@@ -2880,11 +4496,638 @@
             <div class="dl-citation">
               <h3 class="dl-cite-h">Version and citation</h3>
               <p class="mono small" id="methCitation">&mdash;</p>
+              <p class="small">
+                Software DOI (concept): <a href="https://doi.org/10.5281/zenodo.24113363" target="_blank" rel="noopener">10.5281/zenodo.24113363</a>
+                &mdash; always resolves to the latest archived release; the v2.0.0
+                version DOI is minted when the GitHub release is published.
+                Archived v1.0.0 DOI:
+                <a href="https://doi.org/10.5281/zenodo.24113364" target="_blank" rel="noopener">10.5281/zenodo.24113364</a>.
+                Dataset snapshot: <a href="https://data.ankitdeshmukh.com/v2026.09/" target="_blank" rel="noopener">v2026.09</a>.
+              </p>
               <p class="small" id="methVersion">&mdash;</p>
             </div>
             <button type="button" class="doc-top" data-doc="doc-top">
               &uarr; Back to top
             </button>
+          </details>
+
+          <!-- K/L/M: living evidence surfaces (M10.7) -->
+          <details class="panel acc-panel doc-sec" id="doc-k-methodology">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">K</span>Living methodology (v2)</h2>
+                <span class="panel-meta" id="methodRevision">versioned · anchored · every block dated</span>
+              </div>
+            </summary>
+            <div class="meth-body">
+              <p class="panel-note">
+                The citable everyday reference for the methods this platform applies.
+                It consolidates the v1 methodology (section&nbsp;C) with the era A/B/C
+                pipelines; the manuscript remains the archival descriptor and the two
+                cross-reference each other. Each block has a stable anchor
+                (<code>#data/k-methodology/&lt;anchor&gt;</code>) and carries the
+                methodology version and page revision drawn from
+                <code>data/metadata.json</code>.
+              </p>
+              <div class="ev-jump" role="group" aria-label="Method anchors">
+                <button type="button" data-jump="method-indicators">Indicators</button>
+                <button type="button" data-jump="method-standardisation">Standardisation</button>
+                <button type="button" data-jump="method-classification">Classification</button>
+                <button type="button" data-jump="method-aggregation">Aggregation</button>
+                <button type="button" data-jump="method-events">Events</button>
+                <button type="button" data-jump="method-trends">Trends</button>
+                <button type="button" data-jump="method-correlation">Correlation</button>
+                <button type="button" data-jump="method-era-c">Era C chain</button>
+                <button type="button" data-jump="method-crossval">Era A↔B</button>
+                <button type="button" data-jump="method-missing">Missing data</button>
+              </div>
+
+              <article class="ev-method" id="method-indicators">
+                <h3>Indicators and accumulation windows <button type="button" class="ev-anchor" data-anchor="method-indicators">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>Ten district-level indicators: SPI and SPEI at 1, 3, 6 and 12 months, a root-zone Soil Moisture Anomaly (SMA) and the Vegetation Condition Index (VCI). SPI standardises accumulated CHIRPS precipitation; SPEI standardises the water balance P − PET with ERA5-Land PET; SMA is the percent departure of ERA5-Land 0–100 cm soil water; VCI rescales MODIS NDVI between its historical stress and optimum. The reference period is fixed (<span id="methodReference">—</span>), because standardised values are only comparable within one climatology.</p>
+              </article>
+
+              <article class="ev-method" id="method-standardisation">
+                <h3>Standardisation and fit gates <button type="button" class="ev-anchor" data-anchor="method-standardisation">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>SPI uses a two-parameter gamma fitted by maximum likelihood with a mixed-distribution treatment of zeros; SPEI uses a three-parameter log-logistic fitted by L-moments. Fits are per district and calendar month over the reference period, with at least 20 base years. A fit must keep the base mean within ±0.2 and the base standard deviation within 0.75–1.3; otherwise the Gringorten plotting-position fallback is applied to the whole district–calendar-month series. The reference fit is a <strong>40-year</strong> window (1981–2020), not a WMO 30-year normal; values after 2020 are intentionally out-of-sample and are not re-fitted.</p>
+              </article>
+
+              <article class="ev-method" id="method-classification">
+                <h3>Classification thresholds <button type="button" class="ev-anchor" data-anchor="method-classification">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>SPI/SPEI use the nine-class McKee convention (extreme ≤ −2.0; severe −2.0 to −1.5; moderate −1.5 to −1.0; mild −1.0 to −0.5; near-normal −0.5 to +0.5; then three wet classes). SMA uses ±5 % / ±15 % / ±30 % / ±50 % classes; VCI uses the Kogan percentile bands. Every class boundary is read from <code>data/metadata.json</code>, so the interface, exports and this page cannot drift apart.</p>
+              </article>
+
+              <article class="ev-method" id="method-aggregation">
+                <h3>Spatial aggregation and areas <button type="button" class="ev-anchor" data-anchor="method-aggregation">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>Google Earth Engine aggregates native pixels to the 724-district fabric with <code>ee.Image.pixelArea()</code> weights; a documented buffer fallback (6/16/16/2 km) is used only when a district has zero source pixels, and the affected units are flagged. Areas use the Lambert Azimuthal Equal-Area projection centred at 22.5° N, 79.5° E. Areal statistics renormalise weights over valid districts each month and report the valid count.</p>
+              </article>
+
+              <article class="ev-method" id="method-events">
+                <h3>Drought events (runs analysis) <button type="button" class="ev-anchor" data-anchor="method-events">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>Events are runs at or below the truncation level (the upper bound of the moderate class: −1.00 z, −15 % SMA, 30 % VCI) lasting at least three consecutive months (Yevjevich 1967). Severity is the sum of (truncation − value) over the event; intensity is the event minimum; recovery is months to the first value ≥ 0 for signed families (not defined for VCI). Events touching the record or period edge are <strong>censored</strong> and excluded from duration/severity rankings; missing months break runs. The sensitivity panel re-runs the catalogue at durations 4/6/9/12 and truncations −0.50/−1.50/−2.00.</p>
+              </article>
+
+              <article class="ev-method" id="method-trends">
+                <h3>Trend tests <button type="button" class="ev-anchor" data-anchor="method-trends">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>The inferential test is Mann–Kendall with tie-corrected variance, reported as S, Z and two-sided p, with Sen's slope (median pairwise slope) and its rank-based 90 % confidence interval. When significant serial autocorrelation exists at lags 1–12, the Hamed–Rao variance correction is applied and the effective sample size reported. The default input is annual means requiring at least nine valid months; tests need at least four values. District trend maps are exploratory until a multiple-testing correction is applied.</p>
+              </article>
+
+              <article class="ev-method" id="method-correlation">
+                <h3>Correlation and propagation <button type="button" class="ev-anchor" data-anchor="method-correlation">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>Temporal cross-correlation is Pearson r over lags −12 to +12 months on matched months, requiring at least 30 pairs; the optimal lag maximises |r|. Its 95 % interval uses a moving-block bootstrap (1,000 resamples, block n<sup>1/3</sup> capped 4–24, seed 20261103). Correlation is association, never causation; nested SPI/SPEI windows correlate by construction. Streamflow and groundwater propagation are marked unavailable because the record contains no such observations.</p>
+              </article>
+
+              <article class="ev-method" id="method-era-c">
+                <h3>Era C projection chain <button type="button" class="ev-anchor" data-anchor="method-era-c">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>CMIP6 historical and SSP simulations are interpolated to 0.25°, bias-corrected with monthly quantile mapping (QDM; Cannon et al. 2015) against IMD 0.25° reference data over 1981–2020, and bounded to [−5, +5] with clip counts reported. PET uses Hargreaves–Samani identically on reference and model temperature (the era seam with era B ERA5-Land PET is documented, never bridged). SPI/SPEI are computed on the grid, aggregated to districts, and summarised as ensemble median, p25/p75, threshold-agreement counts and direction-of-change counts over the honest 8-model subset. Projections are simulations, never forecasts.</p>
+              </article>
+
+              <article class="ev-method" id="method-crossval">
+                <h3>Era A ↔ era B cross-validation <button type="button" class="ev-anchor" data-anchor="method-crossval">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>The Atlas reconstruction (era A) and the Gridded Multi-Source Product (era B) are compared over their <strong>1981–2014</strong> overlap (register D6) for the two shared timescales, SPEI-1 and SPEI-12. Metrics are Pearson r, bias (B − A), RMSD, drought-state agreement, both-drought co-occurrence and McKee-class agreement. The per-district SD of the difference is the X7 seam uncertainty: a measured historical disagreement, never a projection confidence interval. The two records are never averaged or spliced.</p>
+              </article>
+
+              <article class="ev-method" id="method-missing">
+                <h3>Missing data and uncertainty <button type="button" class="ev-anchor" data-anchor="method-missing">Copy anchor</button></h3>
+                <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
+                <p>Missing district-months are never imputed, interpolated or carried forward. Gaps are rendered as no-data, break event runs, and are reported with every statistic's sample size; comparisons use pairwise deletion and state the excluded count. VCI has no history before 2000 and the interface clamps its analysis window. Censoring, fixed-climatology effects, spatial dependence and the PET seam are stated limitations, not hidden assumptions.</p>
+              </article>
+
+              <p class="ev-verify">
+                Verify: <code>python data-pipeline/selftest.py</code> (pipeline semantics),
+                <code>python scripts/regression_check.py</code> (shipped-data baseline) and
+                <code>python scripts/verify_reality_checks.py --check</code> (external checks).
+                The full narrative is in <a href="manuscript/main_v2.tex">manuscript/main_v2.tex</a>
+                and <a href="docs/v2/03-scientific-pipelines.md">docs/v2/03-scientific-pipelines.md</a>.
+              </p>
+            </div>
+          </details>
+
+          <details class="panel acc-panel doc-sec" id="doc-l-governance">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">L</span>Governance &amp; licences</h2>
+                <span class="panel-meta" id="govRevision">decisions · gates · terms of use</span>
+              </div>
+            </summary>
+            <div class="meth-body">
+              <p class="panel-note">
+                How this platform decides what to publish. The full typed decision
+                register and the append-only progress log are public repository
+                documents; this is the curated view.
+              </p>
+              <div class="table-scroll">
+                <table class="comp-table">
+                  <thead><tr><th>Decision</th><th>Date</th><th>What changed</th><th>Why it matters</th></tr></thead>
+                  <tbody>
+                    <tr><td>D6 · Window discipline</td><td>2026-11-18</td><td>Comparisons between eras use <strong>1981–2014</strong>; standardisation stays 1981–2020.</td><td>The model-native historical window, without project years inside a baseline.</td></tr>
+                    <tr><td>D8 · Era-B naming</td><td>2026-11-20</td><td>Era B is the <strong>Gridded Multi-Source Product</strong>, not “observed”.</td><td>CHIRPS, ERA5-Land and MODIS are observation-based gridded sources, not in-situ observations.</td></tr>
+                    <tr><td>D9 · Map interaction</td><td>2026-11-20</td><td>Click zooms to a district; zoom-out stops at the fitted national view.</td><td>One consistent, keyboard-operable map contract.</td></tr>
+                    <tr><td>D10 · Design system</td><td>2026-11-20</td><td>Sepia Paper theme, Depth-1 answers with receipts.</td><td>Chrome may change; published data colours may not.</td></tr>
+                    <tr><td>D11 · Product-first navigation</td><td>2026-11-20</td><td>Products/eras on top, analytical lenses beneath.</td><td>Visitors meet the record, not the internal taxonomy.</td></tr>
+                    <tr><td>D13 · Seam uncertainty</td><td>2026-11-21</td><td>X7 `sd_diff` published once in the cross-validation artifact.</td><td>A measured historical disagreement, never a projection error bar.</td></tr>
+                    <tr><td>D14 · Permalinks</td><td>2026-11-21</td><td>The URL carries shared and panel state.</td><td>Every figure is citable and re-openable.</td></tr>
+                    <tr><td>D15 · Citation &amp; DOI</td><td>2026-11-21</td><td>Archived v1.0.0 DOI is real; v2.0.0 stays unclaimed until release.</td><td>No DOI is invented or pre-claimed.</td></tr>
+                    <tr><td>D16 · District profiles</td><td>2026-11-21</td><td>Districts get a dedicated route and page.</td><td>The highest-value public entry point.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="table-help">
+                Full register: <a href="docs/v2/05-decision-register.md">docs/v2/05-decision-register.md</a> ·
+                progress log: <a href="PROGRESS.md">PROGRESS.md</a> ·
+                citation metadata: <a href="CITATION.cff">CITATION.cff</a>.
+                Gates before every commit: the 82-assertion pipeline self-test and
+                the numeric regression baseline.
+              </p>
+
+              <h3 class="gov-h">Licences</h3>
+              <div class="table-scroll">
+                <table class="comp-table">
+                  <thead><tr><th>Artefact</th><th>Licence</th><th>Notes</th></tr></thead>
+                  <tbody>
+                    <tr><td>Application code</td><td>MIT</td><td><a href="LICENSE">LICENSE</a></td></tr>
+                    <tr><td>Archived v1.0.0 bundle</td><td>CC BY 4.0</td><td><a href="https://doi.org/10.5281/zenodo.24113364" target="_blank" rel="noopener">10.5281/zenodo.24113364</a>; v2.0.0 at release</td></tr>
+                    <tr><td>CHIRPS v2.0 precipitation</td><td>Public domain</td><td>Climate Hazards Center; see <a href="docs/data-sources.md">data sources</a></td></tr>
+                    <tr><td>ERA5-Land reanalysis</td><td>Copernicus licence (attribution)</td><td>ECMWF/Copernicus; PET and 0–100 cm soil water</td></tr>
+                    <tr><td>MODIS MOD13A3 NDVI</td><td>NASA open data</td><td>LP DAAC; VCI input, 2000 onward</td></tr>
+                    <tr><td>District boundaries</td><td>Community source, no explicit redistribution licence</td><td>Attribution + source disclaimer; separable layer (<a href="docs/data-sources.md">data sources</a>)</td></tr>
+                    <tr><td>Drought Atlas of India v2</td><td>CC BY 4.0</td><td>Era A source; <a href="https://doi.org/10.5281/zenodo.20368514" target="_blank" rel="noopener">10.5281/zenodo.20368514</a></td></tr>
+                    <tr><td>CMIP6 model output</td><td>Per-model terms (ESGF)</td><td>Era C; see <code>metadata.json → era_c.source</code></td></tr>
+                    <tr><td>IMD reference data</td><td>Per IMD terms</td><td>Bias-correction reference; not redistributed</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 class="gov-h">What this platform is — and is not</h3>
+              <p class="small" id="govDisclaimer">—</p>
+              <p class="small">
+                It is a historical and analytical explorer with a reproducible pipeline
+                and a labelled era model. It is <strong>not</strong> an operational or
+                real-time monitoring system, and its values are not official drought
+                declarations or a substitute for IMD or government bulletins.
+                No LLM-generated or unverified finding is published; the decision
+                register and the gates are the proof.
+              </p>
+            </div>
+          </details>
+
+          <details class="panel acc-panel doc-sec" id="doc-m-reality">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">M</span>Reality checks</h2>
+                <span class="panel-meta" id="realityMeta">external consistency · re-derived from the shipped record</span>
+              </div>
+            </summary>
+            <div class="meth-body">
+              <p class="panel-note">
+                Three independent consistency checks, computed from the shipped
+                district matrices with the platform's own definitions — no
+                event-specific tuning. Each box states the claim, the numbers, the
+                window and what it is checked against. Values are re-derived from the
+                released matrices; small differences from the preprint's Table&nbsp;5
+                reflect the released build, not a change in the event record.
+              </p>
+              <div class="reality-grid" id="realityBoxes" aria-live="polite">
+                <p class="table-help">Loading the committed reality checks…</p>
+              </div>
+              <p class="ev-verify">
+                Re-derive in one command:
+                <code>python scripts/verify_reality_checks.py --check</code>.
+                The machine-readable record is
+                <a href="data/reality_checks.json">data/reality_checks.json</a>.
+              </p>
+            </div>
+          </details>
+
+          <details class="panel acc-panel doc-sec" id="doc-n-status">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title"><span class="doc-letter">N</span>Data status</h2>
+                <span class="panel-meta" id="statusAsOf">loading status.json…</span>
+              </div>
+            </summary>
+            <div class="meth-body">
+              <p class="panel-note">
+                The public freshness record, derived from the committed contract
+                by <code>scripts/build_status.py</code>: what the record covers,
+                how far it lags, which pipeline produced it, and the standing
+                known issues. The same artifact drives the currency banner.
+              </p>
+              <div class="status-grid" id="statusCards" aria-live="polite">
+                <p class="table-help">Loading the status record…</p>
+              </div>
+              <h3 class="gov-h">Indicator coverage</h3>
+              <div class="table-scroll">
+                <table class="comp-table" id="statusIndicators">
+                  <thead><tr><th>Indicator</th><th>From</th><th>To</th><th class="num">Months</th><th class="num">Completeness</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <h3 class="gov-h">Known issues</h3>
+              <ul class="status-issues" id="statusIssues"></ul>
+              <h3 class="gov-h">Verification</h3>
+              <div class="table-scroll">
+                <table class="comp-table" id="statusChecks">
+                  <thead><tr><th>Gate</th><th>Detail</th><th>Command</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <p class="ev-verify">
+                Machine-readable record: <a href="data/status.json">data/status.json</a> ·
+                rebuild with <code>python scripts/build_status.py</code> after every refresh.
+              </p>
+            </div>
+          </details>
+
+          <!-- P: querying the data (SQL) — M7.3b, 2026-11-22.
+               The field reference and recipe book for the Parquet store. The
+               same content ships as docs/sql-guide.md for offline use. -->
+          <details class="panel acc-panel doc-sec" id="doc-p-sql">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">
+                  <span class="doc-letter">P</span>Querying the data (SQL)
+                </h2>
+                <span class="panel-meta"
+                  >Field names, file layout and copy-paste queries for the
+                  Parquet store</span
+                >
+              </div>
+            </summary>
+            <div class="meth-body">
+              <p class="panel-note">
+                The dashboard's analytics run on the same files you can query
+                yourself. There is no server and no API: DuckDB reads the
+                Parquet store directly — in the browser (Engine Lab, over HTTP
+                Range requests) or locally (Python/R). This section is the field
+                reference; every query below works unchanged in
+                <a href="#engine">Engine Lab</a> once the file list is pasted.
+              </p>
+              <div class="guide-actions">
+                <button type="button" class="btn btn-ghost" data-dl="sqlguide">
+                  Download the SQL guide (Markdown)
+                </button>
+                <a class="btn btn-ghost" href="data/parquet/catalog.json">catalog.json</a>
+              </div>
+
+              <h3 class="gov-h">The store at a glance</h3>
+              <div class="table-scroll">
+                <table class="comp-table">
+                  <thead>
+                    <tr>
+                      <th>Path</th>
+                      <th>Era</th>
+                      <th>Partitioning</th>
+                      <th class="num">Rows (approx.)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>observed/variable=&lt;id&gt;/part-0.parquet</code></td>
+                      <td>B · record</td>
+                      <td>one file per indicator (10)</td>
+                      <td class="num">0.39 M each</td>
+                    </tr>
+                    <tr>
+                      <td><code>atlas/variable=&lt;id&gt;/year=&lt;yyyy&gt;/part-0.parquet</code></td>
+                      <td>A · reconstruction</td>
+                      <td>per year (1901–2025), 3 indicators</td>
+                      <td class="num">≈ 8.6 k / year</td>
+                    </tr>
+                    <tr>
+                      <td><code>projections/scenario=&lt;s&gt;/stat=&lt;st&gt;/variable=&lt;id&gt;/year=&lt;yyyy&gt;/</code></td>
+                      <td>C · projections</td>
+                      <td>scenario → statistic → variable → year</td>
+                      <td class="num">≈ 8.6 k / file</td>
+                    </tr>
+                    <tr>
+                      <td><code>projections/…/stat=members/variable=&lt;id&gt;/model=&lt;GCM&gt;/year=…</code></td>
+                      <td>C · per model</td>
+                      <td>one branch per CMIP6 model</td>
+                      <td class="num">≈ 8.6 k / file</td>
+                    </tr>
+                    <tr>
+                      <td><code>_national_monthly.parquet</code></td>
+                      <td>B (all variables)</td>
+                      <td>single file, area-weighted</td>
+                      <td class="num">5,135</td>
+                    </tr>
+                    <tr>
+                      <td><code>cross_validation/*_1981_2014.parquet</code></td>
+                      <td>A ↔ B</td>
+                      <td>overlap · per district · monthly</td>
+                      <td class="num">577,971 · 1,436 · 805</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="table-help">
+                Partition keys are directories, not columns. Era A and era C
+                stores are provisioned at publish time (they are not in the git
+                checkout), so their queries 404 until then — the catalog still
+                lists every exact path.
+              </p>
+
+              <h3 class="gov-h">Fields</h3>
+              <div class="table-scroll">
+                <table class="comp-table">
+                  <thead>
+                    <tr>
+                      <th>Table</th>
+                      <th>Columns (type)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>district_month<br /><span class="table-help">observed · atlas · projections · members</span></td>
+                      <td>
+                        <code>district_id</code> (string slug) ·
+                        <code>year</code> (int16) · <code>month</code> (int8,
+                        <b>1–12</b>) · <code>value</code> (float32; z-score,
+                        <b>%</b> for soil moisture, 0–100 for VCI)
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>national monthly</td>
+                      <td>
+                        <code>variable</code> · <code>year</code> ·
+                        <code>month</code> · <code>value</code> (area-weighted) ·
+                        <code>n_districts</code> (int16, sample size)
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>cross-validation<br />overlap</td>
+                      <td>
+                        <code>variable</code> · <code>district_id</code> ·
+                        <code>date</code> (<b>string</b> “YYYY-MM”) ·
+                        <code>era_a_value</code> · <code>era_b_value</code> ·
+                        <code>diff</code> · <code>flag_a</code> ·
+                        <code>flag_b</code> · <code>event_match</code> ·
+                        <code>class_a</code> · <code>class_b</code> ·
+                        <code>class_match</code> · <code>class_near</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>cross-validation<br />per district</td>
+                      <td>
+                        <code>n</code> · <code>n_window</code> ·
+                        <code>coverage</code> · <code>r</code> ·
+                        <code>bias</code> · <code>rmsd</code> ·
+                        <code>sd_diff</code> (X7 seam) ·
+                        <code>state_agree</code> · <code>both_drought</code> ·
+                        <code>severe_agree</code> · <code>class_exact</code> ·
+                        <code>class_near</code> · <code>a_/b_drought_share</code> ·
+                        <code>a_/b_mean</code>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 class="gov-h">Identifiers</h3>
+              <ul class="guide-list">
+                <li>
+                  <b>Districts</b> — <code>state-district</code>, lower-case and
+                  hyphenated: <code>gujarat-ahmedabad</code>,
+                  <code>andaman-and-nicobar-islands-nicobars</code>. 724 in era B,
+                  718 in era A (six islands have no Atlas cells), 720 in era C.
+                </li>
+                <li>
+                  <b>Era B variables</b> — <code>spi_01/03/06/12</code>,
+                  <code>spei_01/03/06/12</code>, <code>sma</code>, <code>vci</code>.
+                </li>
+                <li>
+                  <b>Era A variables</b> — <code>spei_01</code>,
+                  <code>spei_04</code>, <code>spei_12</code> (the Atlas has no SPI
+                  and no SPEI-3/6).
+                </li>
+                <li>
+                  <b>Era C</b> — scenarios <code>ssp245</code> /
+                  <code>ssp585</code>; statistics <code>median</code>,
+                  <code>p25</code>, <code>p75</code>,
+                  <code>agreement_moderate</code>, <code>agreement_severe</code>,
+                  <code>n_models</code>, <code>dir_agreement_drier</code>,
+                  <code>dir_agreement_n</code>, <code>members</code>.
+                  Agreement values are <b>fractions of models</b>, so always quote
+                  <code>n_models</code> beside them.
+                </li>
+              </ul>
+
+              <h3 class="gov-h">Five rules that keep a query honest</h3>
+              <ul class="guide-list">
+                <li>
+                  <b>Missing data is an absent row.</b> There are no NULLs;
+                  <code>count(*)</code> is the number of valid district-months, and
+                  a gap is proved by comparing against the calendar (R4).
+                </li>
+                <li>
+                  <b>Cast in the select list.</b> Values are
+                  <code>float32</code>; use <code>value::DOUBLE</code>, never in
+                  <code>WHERE</code> (it disables filter pushdown over HTTP).
+                </li>
+                <li>
+                  <b>Never union eras.</b> A reconstruction, the observed record
+                  and model simulations are different evidence; compare them with
+                  <code>#crossval</code>, never splice them.
+                </li>
+                <li>
+                  <b>National means are area-weighted.</b> A plain
+                  <code>avg(value)</code> over districts will not match the
+                  dashboard — use <code>_national_monthly.parquet</code>.
+                </li>
+                <li>
+                  <b>Report n.</b> Every statistic here has a denominator
+                  (<code>count(*)</code>, <code>n_districts</code>,
+                  <code>n_models</code>); a share without one is not a result.
+                </li>
+              </ul>
+
+              <h3 class="gov-h">Recipes</h3>
+
+              <p class="panel-note">
+                Paths are <b>checkout-relative</b>, so a recipe runs as-is in
+                Python or R. In Engine Lab they must be <b>absolute URLs</b>
+                (the engine reads over HTTP Range); prefix each path with
+                <code>new URL(path, location.origin).href</code> — §6 of the
+                downloadable guide shows the catalog one-liner, and the presets
+                in the SQL panel already do it.
+              </p>
+
+              <p class="panel-note">
+                <b>R1 · One district, full series.</b> Replace the list with the
+                variable's path from <code>catalog.json</code>; in Engine Lab use
+                the absolute URL.
+              </p>
+              <pre class="sql-block">SELECT year, month, round(value::DOUBLE, 2) AS spi3
+FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet'])
+WHERE district_id = 'gujarat-ahmedabad'
+ORDER BY year, month;</pre>
+
+              <p class="panel-note">
+                <b>R2 · One month, every district (ranked).</b>
+              </p>
+              <pre class="sql-block">SELECT district_id, round(value::DOUBLE, 2) AS spi3
+FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet'])
+WHERE year = 2002 AND month = 7
+ORDER BY value;</pre>
+
+              <p class="panel-note">
+                <b>R3 · Annual mean with an honest sample size</b> — the
+                dashboard's ≥ 9 valid months rule.
+              </p>
+              <pre class="sql-block">SELECT year, round(avg(value)::DOUBLE, 3) AS mean_spi3, count(*) AS months_present
+FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet'])
+WHERE district_id = 'gujarat-ahmedabad'
+GROUP BY year
+HAVING count(*) >= 9
+ORDER BY year;</pre>
+
+              <p class="panel-note">
+                <b>R4 · Drought months and their share of valid months</b> — the
+                completeness denominator travels with the share.
+              </p>
+              <pre class="sql-block">SELECT district_id,
+       count(*)                              AS valid_months,
+       count(*) FILTER (WHERE value &lt;= -1.0) AS drought_months,
+       round(100.0 * count(*) FILTER (WHERE value &lt;= -1.0) / count(*), 1) AS pct
+FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet'])
+WHERE year BETWEEN 1981 AND 2025
+GROUP BY district_id
+ORDER BY pct DESC
+LIMIT 20;</pre>
+
+              <p class="panel-note">
+                <b>R5 · National series</b> — use the pre-aggregate, do not
+                re-weight districts by hand.
+              </p>
+              <pre class="sql-block">SELECT year, month, round(value::DOUBLE, 3) AS national, n_districts
+FROM read_parquet(['data/parquet/_national_monthly.parquet'])
+WHERE variable = 'spi_03'
+ORDER BY year, month;</pre>
+
+              <p class="panel-note">
+                <b>R6 · Event runs (≥ 3 consecutive dry months)</b> — because
+                <code>t</code> comes from the calendar, a missing month breaks the
+                run, exactly as in the dashboard. Severity is Σ(τ − x) with
+                τ = −1.0.
+              </p>
+              <pre class="sql-block">WITH m AS (
+  SELECT year, month, year::INT * 12 + month AS t, value::DOUBLE AS v
+  FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet'])
+  WHERE district_id = 'gujarat-ahmedabad'
+),
+g AS (
+  SELECT *, t - row_number() OVER (PARTITION BY (v &lt; -1.0) ORDER BY t) AS grp
+  FROM m
+)
+SELECT min(year::INT * 100 + month) AS onset_ym,
+       count(*)                AS duration_months,
+       round(-sum(v + 1.0), 3) AS severity,
+       round(min(v), 3)        AS worst_month
+FROM g
+WHERE v &lt; -1.0
+GROUP BY grp
+HAVING count(*) >= 3
+ORDER BY onset_ym;</pre>
+
+              <p class="panel-note">
+                <b>R7 · Projection agreement over a window</b> — the statistic is
+                a share of models; join its denominator.
+              </p>
+              <pre class="sql-block">WITH a AS (
+  SELECT district_id, avg(value)::DOUBLE AS agreement
+  FROM read_parquet([ /* stat=agreement_moderate/variable=spei_12, 2081–2100 */ ])
+  WHERE year BETWEEN 2081 AND 2100
+  GROUP BY district_id
+),
+n AS (
+  SELECT district_id, min(value)::DOUBLE AS models
+  FROM read_parquet([ /* stat=n_models/variable=spei_12, same years */ ])
+  GROUP BY district_id
+)
+SELECT a.district_id, round(a.agreement, 3) AS agreement, n.models
+FROM a JOIN n USING (district_id)
+ORDER BY agreement DESC
+LIMIT 20;</pre>
+
+              <p class="panel-note">
+                <b>R8 · Worst agreement districts (cross-validation)</b> — the
+                divergence map, as a table.
+              </p>
+              <pre class="sql-block">SELECT district_id, n, round(r, 3) AS r, round(bias, 3) AS bias, round(sd_diff, 3) AS seam_sd
+FROM read_parquet(['data/parquet/cross_validation/per_district_1981_2014.parquet'])
+WHERE variable = 'spei_12'
+ORDER BY bias
+LIMIT 15;</pre>
+
+              <h3 class="gov-h">Gotchas that cost time</h3>
+              <div class="table-scroll">
+                <table class="comp-table">
+                  <thead>
+                    <tr>
+                      <th>Symptom</th>
+                      <th>Cause</th>
+                      <th>Fix</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>404 on an <code>atlas/</code> or <code>projections/</code> path</td>
+                      <td>era A/C store not provisioned in this checkout</td>
+                      <td>published at release; see N</td>
+                    </tr>
+                    <tr>
+                      <td><code>No files found</code></td>
+                      <td>a glob over HTTP</td>
+                      <td>pass an explicit file list (catalog)</td>
+                    </tr>
+                    <tr>
+                      <td>Far fewer rows than expected</td>
+                      <td>filtering a dictionary column with a non-string</td>
+                      <td>quote it: <code>district_id = 'gujarat-ahmedabad'</code></td>
+                    </tr>
+                    <tr>
+                      <td>National mean ≠ dashboard</td>
+                      <td>unweighted <code>avg()</code> over districts</td>
+                      <td>use <code>_national_monthly.parquet</code></td>
+                    </tr>
+                    <tr>
+                      <td><code>date</code> comparison fails</td>
+                      <td>cross-validation <code>date</code> is a string</td>
+                      <td><code>date &gt;= '2002-07'</code> or parse the year</td>
+                    </tr>
+                    <tr>
+                      <td>Values end in …0002384</td>
+                      <td><code>float32</code> storage</td>
+                      <td>cast <code>::DOUBLE</code> in the select list</td>
+                    </tr>
+                    <tr>
+                      <td><code>Out of Range Error: Overflow in multiplication of INT16</code></td>
+                      <td><code>year</code> is <code>int16</code>; <code>year * 100</code> overflows at 1982</td>
+                      <td>cast first: <code>year::INT * 100 + month</code></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p class="table-help">
+                Outside the browser, a glob is fine:
+                <code>read_parquet('data/parquet/observed/variable=*/part-0.parquet')</code>
+                in Python or R DuckDB. The full recipe book — model-level
+                <code>members</code>, completeness audits, Atlas class shares and
+                reproducibility notes — is in
+                <code>docs/sql-guide.md</code>, downloadable above.
+              </p>
+            </div>
           </details>
 
           <!-- H: version history -->
@@ -2903,24 +5146,25 @@
               <h3>Changelog</h3>
               <ul>
                 <li>
-                  <b>2026-11</b> &mdash; Four-workspace navigation redesign:
-                  Data &amp; Methods moved out of the primary tabs into a
-                  dedicated Documentation &amp; Resources entry (book icon in
-                  the sidebar footer), a persistent study-context group,
-                  per-workspace accent identity and footer actions (export,
-                  copy link, reset, collapse).
+                  <b>2.0.0 — 2026-11-22</b> &mdash; Three labelled eras in one
+                  queryable record: the Drought Atlas reconstruction (era A,
+                  1901&ndash;2025), the gridded multi-source product (era B,
+                  1981&ndash;2026-09) and 24-model bias-corrected CMIP6
+                  projections (era C, 2015&ndash;2100); a product-first
+                  navigation with a guided tour and hover explainers; the Engine
+                  Lab (SQL over Parquet in the browser);
+                  era A &harr; era B cross-validation and seam uncertainty; an
+                  independent IMD benchmark (719 districts, median r 0.60&ndash;0.71,
+                  state agreement 82&ndash;87&nbsp;%); Documentation A&ndash;P
+                  including the SQL field reference; bulk data moved to an
+                  immutable Cloudflare R2 snapshot with a committed pointer.
                 </li>
                 <li>
-                  <b>2026-11</b> &mdash; Contextual control sidebar
-                  (workspace-specific sections in one rail), mobile ergonomics
-                  (drawer, safe-area layout, touch targets) and deep event
-                  instrumentation.
-                </li>
-                <li>
-                  <b>Initial release</b> &mdash; historical research dataset
-                  (CHIRPS v2.0, ERA5-Land, MODIS MOD13A3 via Google Earth
-                  Engine), four analytical workspaces, documentation centre and
-                  download centre.
+                  <b>1.0.0 — 2026-11-10</b> &mdash; Initial public release:
+                  historical research dataset (CHIRPS v2.0, ERA5-Land, MODIS
+                  MOD13A3 via Google Earth Engine), four analytical workspaces,
+                  documentation centre and download centre. Archived at
+                  <span class="mono">10.5281/zenodo.24113364</span>.
                 </li>
               </ul>
               <p class="small">
@@ -2943,19 +5187,17 @@
           <div class="footer-grid">
             <div class="footer-col footer-about">
               <div class="footer-title">Drought Intelligence Explorer</div>
-              <p class="footer-text">
-                Developed as a geospatial research application by
-              </p>
               <p class="footer-author">
-                Ankit Deshmukh, Ph.D.<br />
+                Developed as a geospatial research application by Ankit
+                Deshmukh, Ph.D.
                 <span class="footer-role"
-                  >Assistant Professor, Department of Civil Engineering<br />Pandit
-                  Deendayal Energy University, India.</span
+                  >Assistant Professor, Department of Civil Engineering,
+                  Pandit Deendayal Energy University, India</span
                 >
               </p>
               <p class="footer-domains">
-                Computational Hydrology | Drought Analysis | Geospatial
-                Modelling | Hydroclimatic Extremes
+                Computational Hydrology &middot; Drought Analysis &middot;
+                Geospatial Modelling &middot; Hydroclimatic Extremes
               </p>
               <nav class="footer-more" aria-label="More from Ankit Deshmukh">
                 <span class="footer-title-sm">More from Ankit Deshmukh</span>
@@ -2989,8 +5231,13 @@
             </div>
             <div class="footer-col">
               <div class="footer-title-sm">Provenance</div>
-              <p class="footer-text" id="footerProvenance">—</p>
-              <div class="footer-title-sm" style="margin-top: 10px">
+              <p class="footer-text" id="footerProvenance">
+                Sources: CHIRPS v2.0 &middot; ERA5-Land &middot; MODIS NDVI
+                &middot; India district boundaries.
+                <a href="#data">Full provenance, build contract &amp;
+                checksums &rarr;</a>
+              </p>
+              <div class="footer-title-sm" style="margin-top: 6px">
                 Disclaimer
               </div>
               <p class="footer-disclaimer" id="footerDisclaimer">
@@ -3005,10 +5252,6 @@
           </div>
           <div class="footer-bottom">
             <span id="footerVersion">—</span>
-            <span
-              >Static client-side application &middot; no backend, no API
-              keys</span
-            >
           </div>
         </footer>
       </main>
@@ -3019,7 +5262,6 @@
       class="toast-stack"
       id="toastStack"
       aria-live="polite"
-      aria-label="Notifications"
     ></div>
 
     <!-- boot overlay -->
@@ -3078,18 +5320,18 @@
          * directly from disk. Explain clearly instead of failing silently. */
         if (location.protocol === "file:") {
           document.body.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f7fa;font-family:Inter,\u0027Segoe UI\u0027,system-ui,sans-serif;padding:24px;box-sizing:border-box">' +
-            '<div style="max-width:560px;background:#fff;border:1px solid #e2e7ee;border-radius:10px;padding:28px 30px;box-shadow:0 1px 2px rgba(20,38,61,.06),0 1px 6px rgba(20,38,61,.05)">' +
-            '<div style="font-size:12px;font-weight:700;letter-spacing:.08em;color:#687588;text-transform:uppercase">Drought Intelligence Explorer</div>' +
-            '<h1 style="margin:10px 0 14px;font-size:22px;line-height:1.3;color:#14263d">The app can\u2019t run from this location</h1>' +
-            '<p style="margin:0 0 12px;color:#1f2937;line-height:1.55">This page was opened straight from your disk (<code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#f5f7fa;padding:1px 5px;border-radius:4px">file://</code>). For security, browsers block data files (CSV/JSON) from loading that way, so the app has nothing to display.</p>' +
-            '<p style="margin:0 0 18px;color:#1f2937;line-height:1.55"><strong>How to open it:</strong> double-click <strong>Start Drought Explorer.bat</strong> in the same folder as this file. A small local server starts and the app opens in your browser automatically.</p>' +
-            '<p style="margin:0;color:#687588;font-size:13px;line-height:1.5">Technical detail: <code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#f5f7fa;padding:1px 5px;border-radius:4px">fetch()</code> to <code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#f5f7fa;padding:1px 5px;border-radius:4px">file://</code> URLs is blocked by CORS (origin <code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#f5f7fa;padding:1px 5px;border-radius:4px">null</code>), which is why the app cannot boot here.</p>' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F6F1E6;font-family:Inter,\u0027Segoe UI\u0027,system-ui,sans-serif;padding:24px;box-sizing:border-box">' +
+            '<div style="max-width:560px;background:#FBF7EE;border:1px solid #E1D7C3;border-left:3px solid #6B2B1F;border-radius:6px;padding:28px 30px;box-shadow:0 1px 2px rgba(62,52,38,.05),0 1px 6px rgba(62,52,38,.04)">' +
+            '<div style="font-size:12px;font-weight:700;letter-spacing:.08em;color:#6E6250;text-transform:uppercase">Drought Intelligence Explorer</div>' +
+            '<h1 style="margin:10px 0 14px;font-size:24px;line-height:1.3;color:#211C15;font-family:Georgia,\u0027Times New Roman\u0027,serif;font-weight:600">The app can\u2019t run from this location</h1>' +
+            '<p style="margin:0 0 12px;color:#2E2820;line-height:1.55">This page was opened straight from your disk (<code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#EFE8D8;padding:1px 5px;border-radius:3px">file://</code>). For security, browsers block data files (CSV/JSON) from loading that way, so the app has nothing to display.</p>' +
+            '<p style="margin:0 0 18px;color:#2E2820;line-height:1.55"><strong>How to open it:</strong> double-click <strong>Start Drought Explorer.bat</strong> in the same folder as this file. A small local server starts and the app opens in your browser automatically.</p>' +
+            '<p style="margin:0;color:#6E6250;font-size:13px;line-height:1.5">Technical detail: <code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#EFE8D8;padding:1px 5px;border-radius:3px">fetch()</code> to <code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#EFE8D8;padding:1px 5px;border-radius:3px">file://</code> URLs is blocked by CORS (origin <code style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#EFE8D8;padding:1px 5px;border-radius:3px">null</code>), which is why the app cannot boot here.</p>' +
             "</div></div>";
           return;
         }
 
-        var ASSET_VERSION = "2026-11-09d";
+        var ASSET_VERSION = "2026-11-22r";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
@@ -3118,6 +5360,15 @@
           "map",
           "charts",
           "analytics",
+          "ducklab",
+          "engine-data",
+          "engine-lab",
+          "projections",
+          "summary",
+          "atlas",
+          "crossval",
+          "district-profile",
+          "permalink",
         ];
         var inflight = {};
 
