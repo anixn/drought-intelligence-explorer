@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22f" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22i" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -525,6 +525,7 @@
             <button type="button" data-doc="doc-e-limits">E &middot; Uncertainty &amp; limits</button>
             <button type="button" data-doc="doc-f-repro">F &middot; Reproducibility</button>
             <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citation</button>
+            <button type="button" data-doc="doc-p-sql">P &middot; Querying the data (SQL)</button>
             <span class="rail-nav-title">v2.0 evidence</span>
             <button type="button" data-doc="doc-k-methodology">K &middot; Living methodology</button>
             <button type="button" data-doc="doc-l-governance">L &middot; Governance &amp; licences</button>
@@ -2380,6 +2381,9 @@
                 <span class="panel-meta">read-only · Parquet + DuckDB-WASM</span>
               </div>
               <div class="panel-actions">
+                <button type="button" class="btn btn-ghost" data-doc="doc-p-sql" title="Field names, file layout and query recipes">
+                  SQL guide
+                </button>
                 <label class="el-preset-label" for="elPreset">Pattern query</label>
                 <select id="elPreset" class="panel-ctl" aria-label="Pattern query"></select>
                 <button type="button" class="btn btn-solid" id="elRunBtn">Run query</button>
@@ -2394,9 +2398,11 @@
               placeholder="SELECT year, month, value FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet']) WHERE district_id = 'gujarat-ahmedabad' ORDER BY year, month LIMIT 50;"
             ></textarea>
             <p class="table-help" id="elSqlHelp">
-              Absolute paths are optional — the served site root is the URL root.
-              Heavy scans are fine: results stream from Apache Parquet column
-              chunks, and repeat queries cost <b>0 bytes</b> (in-memory cache).
+              Paths must be absolute URLs — build them from
+              <code>catalog.json</code> (the presets above show the pattern;
+              Documentation P, §6 has the one-liner). Results stream from Parquet
+              column chunks, and a repeated query costs <b>0 bytes</b>
+              (in-memory cache).
             </p>
             <div class="el-result-meta" id="elResultMeta" hidden>
               <span id="elResultStats"></span>
@@ -3395,6 +3401,7 @@
               <button type="button" data-doc="doc-e-limits">E &middot; Uncertainty &amp; limitations</button>
               <button type="button" data-doc="doc-f-repro">F &middot; Reproducibility</button>
               <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citations</button>
+              <button type="button" data-doc="doc-p-sql">P &middot; Querying the data (SQL)</button>
               <button type="button" data-doc="doc-k-methodology">K &middot; Living methodology (v2)</button>
               <button type="button" data-doc="doc-l-governance">L &middot; Governance &amp; licences</button>
               <button type="button" data-doc="doc-m-reality">M &middot; Reality checks</button>
@@ -4715,6 +4722,388 @@
             </div>
           </details>
 
+          <!-- P: querying the data (SQL) — M7.3b, 2026-11-22.
+               The field reference and recipe book for the Parquet store. The
+               same content ships as docs/sql-guide.md for offline use. -->
+          <details class="panel acc-panel doc-sec" id="doc-p-sql">
+            <summary class="panel-head">
+              <div class="panel-titles">
+                <h2 class="panel-title">
+                  <span class="doc-letter">P</span>Querying the data (SQL)
+                </h2>
+                <span class="panel-meta"
+                  >Field names, file layout and copy-paste queries for the
+                  Parquet store</span
+                >
+              </div>
+            </summary>
+            <div class="meth-body">
+              <p class="panel-note">
+                The dashboard's analytics run on the same files you can query
+                yourself. There is no server and no API: DuckDB reads the
+                Parquet store directly — in the browser (Engine Lab, over HTTP
+                Range requests) or locally (Python/R). This section is the field
+                reference; every query below works unchanged in
+                <a href="#engine">Engine Lab</a> once the file list is pasted.
+              </p>
+              <div class="guide-actions">
+                <button type="button" class="btn btn-ghost" data-dl="sqlguide">
+                  Download the SQL guide (Markdown)
+                </button>
+                <a class="btn btn-ghost" href="data/parquet/catalog.json">catalog.json</a>
+              </div>
+
+              <h3 class="gov-h">The store at a glance</h3>
+              <div class="table-scroll">
+                <table class="comp-table">
+                  <thead>
+                    <tr>
+                      <th>Path</th>
+                      <th>Era</th>
+                      <th>Partitioning</th>
+                      <th class="num">Rows (approx.)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>observed/variable=&lt;id&gt;/part-0.parquet</code></td>
+                      <td>B · record</td>
+                      <td>one file per indicator (10)</td>
+                      <td class="num">0.39 M each</td>
+                    </tr>
+                    <tr>
+                      <td><code>atlas/variable=&lt;id&gt;/year=&lt;yyyy&gt;/part-0.parquet</code></td>
+                      <td>A · reconstruction</td>
+                      <td>per year (1901–2025), 3 indicators</td>
+                      <td class="num">≈ 8.6 k / year</td>
+                    </tr>
+                    <tr>
+                      <td><code>projections/scenario=&lt;s&gt;/stat=&lt;st&gt;/variable=&lt;id&gt;/year=&lt;yyyy&gt;/</code></td>
+                      <td>C · projections</td>
+                      <td>scenario → statistic → variable → year</td>
+                      <td class="num">≈ 8.6 k / file</td>
+                    </tr>
+                    <tr>
+                      <td><code>projections/…/stat=members/variable=&lt;id&gt;/model=&lt;GCM&gt;/year=…</code></td>
+                      <td>C · per model</td>
+                      <td>one branch per CMIP6 model</td>
+                      <td class="num">≈ 8.6 k / file</td>
+                    </tr>
+                    <tr>
+                      <td><code>_national_monthly.parquet</code></td>
+                      <td>B (all variables)</td>
+                      <td>single file, area-weighted</td>
+                      <td class="num">5,135</td>
+                    </tr>
+                    <tr>
+                      <td><code>cross_validation/*_1981_2014.parquet</code></td>
+                      <td>A ↔ B</td>
+                      <td>overlap · per district · monthly</td>
+                      <td class="num">577,971 · 1,436 · 805</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="table-help">
+                Partition keys are directories, not columns. Era A and era C
+                stores are provisioned at publish time (they are not in the git
+                checkout), so their queries 404 until then — the catalog still
+                lists every exact path.
+              </p>
+
+              <h3 class="gov-h">Fields</h3>
+              <div class="table-scroll">
+                <table class="comp-table">
+                  <thead>
+                    <tr>
+                      <th>Table</th>
+                      <th>Columns (type)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>district_month<br /><span class="table-help">observed · atlas · projections · members</span></td>
+                      <td>
+                        <code>district_id</code> (string slug) ·
+                        <code>year</code> (int16) · <code>month</code> (int8,
+                        <b>1–12</b>) · <code>value</code> (float32; z-score,
+                        <b>%</b> for soil moisture, 0–100 for VCI)
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>national monthly</td>
+                      <td>
+                        <code>variable</code> · <code>year</code> ·
+                        <code>month</code> · <code>value</code> (area-weighted) ·
+                        <code>n_districts</code> (int16, sample size)
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>cross-validation<br />overlap</td>
+                      <td>
+                        <code>variable</code> · <code>district_id</code> ·
+                        <code>date</code> (<b>string</b> “YYYY-MM”) ·
+                        <code>era_a_value</code> · <code>era_b_value</code> ·
+                        <code>diff</code> · <code>flag_a</code> ·
+                        <code>flag_b</code> · <code>event_match</code> ·
+                        <code>class_a</code> · <code>class_b</code> ·
+                        <code>class_match</code> · <code>class_near</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>cross-validation<br />per district</td>
+                      <td>
+                        <code>n</code> · <code>n_window</code> ·
+                        <code>coverage</code> · <code>r</code> ·
+                        <code>bias</code> · <code>rmsd</code> ·
+                        <code>sd_diff</code> (X7 seam) ·
+                        <code>state_agree</code> · <code>both_drought</code> ·
+                        <code>severe_agree</code> · <code>class_exact</code> ·
+                        <code>class_near</code> · <code>a_/b_drought_share</code> ·
+                        <code>a_/b_mean</code>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 class="gov-h">Identifiers</h3>
+              <ul class="guide-list">
+                <li>
+                  <b>Districts</b> — <code>state-district</code>, lower-case and
+                  hyphenated: <code>gujarat-ahmedabad</code>,
+                  <code>andaman-and-nicobar-islands-nicobars</code>. 724 in era B,
+                  718 in era A (six islands have no Atlas cells), 720 in era C.
+                </li>
+                <li>
+                  <b>Era B variables</b> — <code>spi_01/03/06/12</code>,
+                  <code>spei_01/03/06/12</code>, <code>sma</code>, <code>vci</code>.
+                </li>
+                <li>
+                  <b>Era A variables</b> — <code>spei_01</code>,
+                  <code>spei_04</code>, <code>spei_12</code> (the Atlas has no SPI
+                  and no SPEI-3/6).
+                </li>
+                <li>
+                  <b>Era C</b> — scenarios <code>ssp245</code> /
+                  <code>ssp585</code>; statistics <code>median</code>,
+                  <code>p25</code>, <code>p75</code>,
+                  <code>agreement_moderate</code>, <code>agreement_severe</code>,
+                  <code>n_models</code>, <code>dir_agreement_drier</code>,
+                  <code>dir_agreement_n</code>, <code>members</code>.
+                  Agreement values are <b>fractions of models</b>, so always quote
+                  <code>n_models</code> beside them.
+                </li>
+              </ul>
+
+              <h3 class="gov-h">Five rules that keep a query honest</h3>
+              <ul class="guide-list">
+                <li>
+                  <b>Missing data is an absent row.</b> There are no NULLs;
+                  <code>count(*)</code> is the number of valid district-months, and
+                  a gap is proved by comparing against the calendar (R4).
+                </li>
+                <li>
+                  <b>Cast in the select list.</b> Values are
+                  <code>float32</code>; use <code>value::DOUBLE</code>, never in
+                  <code>WHERE</code> (it disables filter pushdown over HTTP).
+                </li>
+                <li>
+                  <b>Never union eras.</b> A reconstruction, the observed record
+                  and model simulations are different evidence; compare them with
+                  <code>#crossval</code>, never splice them.
+                </li>
+                <li>
+                  <b>National means are area-weighted.</b> A plain
+                  <code>avg(value)</code> over districts will not match the
+                  dashboard — use <code>_national_monthly.parquet</code>.
+                </li>
+                <li>
+                  <b>Report n.</b> Every statistic here has a denominator
+                  (<code>count(*)</code>, <code>n_districts</code>,
+                  <code>n_models</code>); a share without one is not a result.
+                </li>
+              </ul>
+
+              <h3 class="gov-h">Recipes</h3>
+
+              <p class="panel-note">
+                Paths are <b>checkout-relative</b>, so a recipe runs as-is in
+                Python or R. In Engine Lab they must be <b>absolute URLs</b>
+                (the engine reads over HTTP Range); prefix each path with
+                <code>new URL(path, location.origin).href</code> — §6 of the
+                downloadable guide shows the catalog one-liner, and the presets
+                in the SQL panel already do it.
+              </p>
+
+              <p class="panel-note">
+                <b>R1 · One district, full series.</b> Replace the list with the
+                variable's path from <code>catalog.json</code>; in Engine Lab use
+                the absolute URL.
+              </p>
+              <pre class="sql-block">SELECT year, month, round(value::DOUBLE, 2) AS spi3
+FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet'])
+WHERE district_id = 'gujarat-ahmedabad'
+ORDER BY year, month;</pre>
+
+              <p class="panel-note">
+                <b>R2 · One month, every district (ranked).</b>
+              </p>
+              <pre class="sql-block">SELECT district_id, round(value::DOUBLE, 2) AS spi3
+FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet'])
+WHERE year = 2002 AND month = 7
+ORDER BY value;</pre>
+
+              <p class="panel-note">
+                <b>R3 · Annual mean with an honest sample size</b> — the
+                dashboard's ≥ 9 valid months rule.
+              </p>
+              <pre class="sql-block">SELECT year, round(avg(value)::DOUBLE, 3) AS mean_spi3, count(*) AS months_present
+FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet'])
+WHERE district_id = 'gujarat-ahmedabad'
+GROUP BY year
+HAVING count(*) >= 9
+ORDER BY year;</pre>
+
+              <p class="panel-note">
+                <b>R4 · Drought months and their share of valid months</b> — the
+                completeness denominator travels with the share.
+              </p>
+              <pre class="sql-block">SELECT district_id,
+       count(*)                              AS valid_months,
+       count(*) FILTER (WHERE value &lt;= -1.0) AS drought_months,
+       round(100.0 * count(*) FILTER (WHERE value &lt;= -1.0) / count(*), 1) AS pct
+FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet'])
+WHERE year BETWEEN 1981 AND 2025
+GROUP BY district_id
+ORDER BY pct DESC
+LIMIT 20;</pre>
+
+              <p class="panel-note">
+                <b>R5 · National series</b> — use the pre-aggregate, do not
+                re-weight districts by hand.
+              </p>
+              <pre class="sql-block">SELECT year, month, round(value::DOUBLE, 3) AS national, n_districts
+FROM read_parquet(['data/parquet/_national_monthly.parquet'])
+WHERE variable = 'spi_03'
+ORDER BY year, month;</pre>
+
+              <p class="panel-note">
+                <b>R6 · Event runs (≥ 3 consecutive dry months)</b> — because
+                <code>t</code> comes from the calendar, a missing month breaks the
+                run, exactly as in the dashboard. Severity is Σ(τ − x) with
+                τ = −1.0.
+              </p>
+              <pre class="sql-block">WITH m AS (
+  SELECT year, month, year::INT * 12 + month AS t, value::DOUBLE AS v
+  FROM read_parquet(['data/parquet/observed/variable=spi_03/part-0.parquet'])
+  WHERE district_id = 'gujarat-ahmedabad'
+),
+g AS (
+  SELECT *, t - row_number() OVER (PARTITION BY (v &lt; -1.0) ORDER BY t) AS grp
+  FROM m
+)
+SELECT min(year::INT * 100 + month) AS onset_ym,
+       count(*)                AS duration_months,
+       round(-sum(v + 1.0), 3) AS severity,
+       round(min(v), 3)        AS worst_month
+FROM g
+WHERE v &lt; -1.0
+GROUP BY grp
+HAVING count(*) >= 3
+ORDER BY onset_ym;</pre>
+
+              <p class="panel-note">
+                <b>R7 · Projection agreement over a window</b> — the statistic is
+                a share of models; join its denominator.
+              </p>
+              <pre class="sql-block">WITH a AS (
+  SELECT district_id, avg(value)::DOUBLE AS agreement
+  FROM read_parquet([ /* stat=agreement_moderate/variable=spei_12, 2081–2100 */ ])
+  WHERE year BETWEEN 2081 AND 2100
+  GROUP BY district_id
+),
+n AS (
+  SELECT district_id, min(value)::DOUBLE AS models
+  FROM read_parquet([ /* stat=n_models/variable=spei_12, same years */ ])
+  GROUP BY district_id
+)
+SELECT a.district_id, round(a.agreement, 3) AS agreement, n.models
+FROM a JOIN n USING (district_id)
+ORDER BY agreement DESC
+LIMIT 20;</pre>
+
+              <p class="panel-note">
+                <b>R8 · Worst agreement districts (cross-validation)</b> — the
+                divergence map, as a table.
+              </p>
+              <pre class="sql-block">SELECT district_id, n, round(r, 3) AS r, round(bias, 3) AS bias, round(sd_diff, 3) AS seam_sd
+FROM read_parquet(['data/parquet/cross_validation/per_district_1981_2014.parquet'])
+WHERE variable = 'spei_12'
+ORDER BY bias
+LIMIT 15;</pre>
+
+              <h3 class="gov-h">Gotchas that cost time</h3>
+              <div class="table-scroll">
+                <table class="comp-table">
+                  <thead>
+                    <tr>
+                      <th>Symptom</th>
+                      <th>Cause</th>
+                      <th>Fix</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>404 on an <code>atlas/</code> or <code>projections/</code> path</td>
+                      <td>era A/C store not provisioned in this checkout</td>
+                      <td>published at release; see N</td>
+                    </tr>
+                    <tr>
+                      <td><code>No files found</code></td>
+                      <td>a glob over HTTP</td>
+                      <td>pass an explicit file list (catalog)</td>
+                    </tr>
+                    <tr>
+                      <td>Far fewer rows than expected</td>
+                      <td>filtering a dictionary column with a non-string</td>
+                      <td>quote it: <code>district_id = 'gujarat-ahmedabad'</code></td>
+                    </tr>
+                    <tr>
+                      <td>National mean ≠ dashboard</td>
+                      <td>unweighted <code>avg()</code> over districts</td>
+                      <td>use <code>_national_monthly.parquet</code></td>
+                    </tr>
+                    <tr>
+                      <td><code>date</code> comparison fails</td>
+                      <td>cross-validation <code>date</code> is a string</td>
+                      <td><code>date &gt;= '2002-07'</code> or parse the year</td>
+                    </tr>
+                    <tr>
+                      <td>Values end in …0002384</td>
+                      <td><code>float32</code> storage</td>
+                      <td>cast <code>::DOUBLE</code> in the select list</td>
+                    </tr>
+                    <tr>
+                      <td><code>Out of Range Error: Overflow in multiplication of INT16</code></td>
+                      <td><code>year</code> is <code>int16</code>; <code>year * 100</code> overflows at 1982</td>
+                      <td>cast first: <code>year::INT * 100 + month</code></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p class="table-help">
+                Outside the browser, a glob is fine:
+                <code>read_parquet('data/parquet/observed/variable=*/part-0.parquet')</code>
+                in Python or R DuckDB. The full recipe book — model-level
+                <code>members</code>, completeness audits, Atlas class shares and
+                reproducibility notes — is in
+                <code>docs/sql-guide.md</code>, downloadable above.
+              </p>
+            </div>
+          </details>
+
           <!-- H: version history -->
           <details class="panel acc-panel doc-sec" id="doc-h-versions">
             <summary class="panel-head">
@@ -4915,7 +5304,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-22f";
+        var ASSET_VERSION = "2026-11-22i";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

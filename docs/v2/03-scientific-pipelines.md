@@ -41,6 +41,7 @@ The v1.0.0 pipeline (`data-pipeline/`) produced the released record (`research-g
 - Compression zstd; row groups aligned to district boundaries (60 districts/group — measured prototype finding).
 - Print per-variable row counts and file sizes; expected era B total ≈ 25–30 MB (measured prototype: 18.4 MB wide CSV → 4.6 MB Parquet for the same content; v1.0 CSVs total ≈ 17 MB).
 - Round-trip verification: ≥ 5 random cells per variable must match the CSV exactly (task M1.4).
+- **Field reference for external users:** `docs/sql-guide.md` (served in-app as Documentation P, built M7.3b) documents every column, type, unit, partition key and identifier vocabulary, with copy-paste recipes for Engine Lab, Python and R. It is the canonical answer to “what do I query, and what does each field mean?” — keep it in step with any schema change.
 
 ### 1.3 Pre-aggregates (task M1.10)
 

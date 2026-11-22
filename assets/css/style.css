@@ -6775,3 +6775,40 @@ body[data-tab="engine"] .side-sec[data-side="global"] {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Documentation P — SQL recipe blocks (M7.3b, 2026-11-22). The queries are
+   long lines by nature, so the block scrolls horizontally instead of wrapping
+   (a wrapped SELECT is easier to misread than a scrolled one).
+   ------------------------------------------------------------------------- */
+/* Deep links land below the sticky chrome (M7.3b): without a scroll margin a
+   section opened from the rail or a #data/<section> URL hides its own heading
+   behind the topbar and product bar. */
+.doc-sec,
+.meth-block,
+.doc-top {
+  scroll-margin-top: calc(var(--topbar-h) + 60px);
+}
+
+.sql-block {
+  margin: 6px 0 16px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--ink-strong);
+  overflow-x: auto;
+  white-space: pre;
+  tab-size: 2;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 760px) {
+  .sql-block {
+    font-size: 11px;
+    padding: 10px 11px;
+  }
+}
+

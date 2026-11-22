@@ -213,6 +213,10 @@
       // boot path; wire() only subscribes listeners.
       if (DIE.Telemetry) run(() => DIE.Telemetry.wire());
       renderStaticText();
+      // The era pill and currency chips describe the whole record, not one
+      // tab: paint them once at boot so a deep link to Documentation or the
+      // Engine Lab does not show empty "—" chips until Overview is opened.
+      renderTopbar();
       await routeFromHash();
       if (DIE.Permalink) DIE.Permalink.init();
 
@@ -551,7 +555,7 @@
     'doc-a-about', 'doc-b-dataset', 'doc-c-methods', 'doc-d-quality',
     'doc-e-limits', 'doc-f-repro', 'doc-g-downloads',
     'doc-k-methodology', 'doc-l-governance', 'doc-m-reality',
-    'doc-n-status',
+    'doc-n-status', 'doc-p-sql',
     'doc-h-versions', 'doc-i-guide', 'doc-j-glossary'
   ];
   function goDoc(sec, anchor) {
@@ -848,6 +852,17 @@
         DataView.validateAll();
       });
     }
+    // User-guide download buttons live outside #downloadsTab (guide panel).
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest && e.target.closest('[data-dl="sqlguide"]');
+      if (!btn || btn.closest('#downloadsTab')) return;
+      try {
+        const text = await DIE.loader.fetchText('docs/sql-guide.md');
+        A().toText('sql-guide.md', text, 'text/markdown;charset=utf-8');
+        toast('SQL guide saved', 'docs/sql-guide.md');
+      } catch (err) { toast('Download failed', String(err.message || err), 'error'); }
+    });
+
     // User-guide download buttons live outside #downloadsTab (guide panel).
     document.addEventListener('click', async (e) => {
       const btn = e.target.closest && e.target.closest('[data-dl="userguide"]');
@@ -3248,6 +3263,9 @@
       '<div class="dl-desc">Full indicator definitions, classification thresholds, standardization, aggregation, event identification, missing-data policy and limitations; data-source register.</div>' +
       '<div class="dl-actions"><button class="btn" data-dl="methodology">Download docs/methodology.md</button>' +
       '<button class="btn" data-dl="datasources">Download docs/data-sources.md</button></div></div>' +
+      '<div class="dl-card"><div class="dl-title">SQL guide (Markdown)</div>' +
+      '<div class="dl-desc">The Parquet store field reference: file layout, identifier vocabularies, missing-data rules and copy-paste queries for Engine Lab, Python or R - the same content as Documentation P.</div>' +
+      '<div class="dl-actions"><button class="btn" data-dl="sqlguide">Download docs/sql-guide.md</button></div></div>' +
 
       '<div class="dl-group-title">Citation</div>' +
       '<div class="cite-box">' + citationText() + '\n' + datasetCitation() + '</div>' +
@@ -3281,9 +3299,10 @@
           toast('Export complete', 'Analysis metadata saved as JSON.');
         } else if (kind === 'map') {
           await DIE.MapView.exportPNG();
-        } else if (kind === 'methodology' || kind === 'datasources' || kind === 'userguide') {
+        } else if (kind === 'methodology' || kind === 'datasources' || kind === 'userguide' || kind === 'sqlguide') {
           const file = kind === 'methodology' ? 'docs/methodology.md'
-            : kind === 'datasources' ? 'docs/data-sources.md' : 'docs/user-guide.md';
+            : kind === 'datasources' ? 'docs/data-sources.md'
+            : kind === 'sqlguide' ? 'docs/sql-guide.md' : 'docs/user-guide.md';
           const text = await DIE.loader.fetchText(file);
           A().toText(file.split('/').pop(), text, 'text/markdown;charset=utf-8');
           toast('Documentation saved', file);
