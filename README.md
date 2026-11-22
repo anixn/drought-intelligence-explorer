@@ -3,7 +3,7 @@
 **An interactive geospatial platform for historical drought analysis in India.**
 A fully static, client-side research application: HTML5 + CSS3 + vanilla JavaScript (ES6+), Leaflet, Plotly and PapaParse. No frameworks, no backend, no database, no API keys, no mandatory external services. Leaflet and PapaParse are the only blocking libraries; Plotly loads in the background and html2canvas is fetched only when a map PNG is exported.
 
-[![Software DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24113363.svg)](https://doi.org/10.5281/zenodo.24113363)
+[![Software DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24444860.svg)](https://doi.org/10.5281/zenodo.24444860)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Live app](https://img.shields.io/badge/Live%20app-drought.ankitdeshmukh.com-2A5F85)](https://drought.ankitdeshmukh.com/)
 [![Data](https://img.shields.io/badge/Data-data.ankitdeshmukh.com-6E6238)](https://data.ankitdeshmukh.com/)
@@ -240,12 +240,12 @@ If the platform or the dataset contributes to your research, please cite it. The
              record and analytics platform for India},
   year    = {2026},
   version = {2.0.0},
-  doi     = {10.5281/zenodo.24113363},
+  doi     = {10.5281/zenodo.24444860},
   url     = {https://github.com/anixn/drought-intelligence-explorer}
 }
 ```
 
-The DOI shown is the **concept DOI**, which always resolves to the latest archived release; each release also receives its own version DOI (v2.0.0 is minted by the GitHub–Zenodo integration when the release is published).
+This is the **v2.0.0 version DOI**; the concept DOI `10.5281/zenodo.24113363` always resolves to the latest archived release, and v1.0.0 remains archived at `10.5281/zenodo.24113364`.
 
 **Dataset — the district record (snapshot `v2026.09`, 1901–2100):**
 

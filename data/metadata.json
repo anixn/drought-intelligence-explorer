@@ -1095,14 +1095,15 @@
       "access_date": "2026-11-22"
     }
   ],
-  "citation": "Deshmukh, A. (2026). Drought Intelligence Explorer: a multi-era district drought record and analytics platform for India (Version 2.0.0) [computer software]. Zenodo. https://doi.org/10.5281/zenodo.24113363 · data snapshot v2026.09, archived at https://data.ankitdeshmukh.com/v2026.09/ · archived v1.0.0 release: https://doi.org/10.5281/zenodo.24113364",
+  "citation": "Deshmukh, A. (2026). Drought Intelligence Explorer: a multi-era district drought record and analytics platform for India (Version 2.0.0) [computer software]. Zenodo. https://doi.org/10.5281/zenodo.24444860 · data snapshot v2026.09, archived at https://data.ankitdeshmukh.com/v2026.09/ · concept DOI (latest version): https://doi.org/10.5281/zenodo.24113363 · archived v1.0.0 release: https://doi.org/10.5281/zenodo.24113364",
   "doi": {
     "archived_v1_0_0": "10.5281/zenodo.24113364",
     "archived_v1_0_0_url": "https://doi.org/10.5281/zenodo.24113364",
-    "v2_0_0": null,
-    "v2_0_0_note": "minted by the GitHub-Zenodo integration when the v2.0.0 GitHub release is published; the concept DOI always resolves to the latest version",
+    "v2_0_0": "10.5281/zenodo.24444860",
+    "v2_0_0_note": "version DOI for v2.0.0, minted 2026-11-22 by the GitHub-Zenodo integration; the concept DOI 10.5281/zenodo.24113363 always resolves to the latest version",
     "concept": "10.5281/zenodo.24113363",
-    "concept_url": "https://doi.org/10.5281/zenodo.24113363"
+    "concept_url": "https://doi.org/10.5281/zenodo.24113363",
+    "v2_0_0_url": "https://doi.org/10.5281/zenodo.24444860"
   },
   "disclaimer": "Research build: values are derived from the cited public datasets and gridded sources, aggregated to administrative districts. They are model/reanalysis-based estimates, not official drought declarations, and must not be used as the sole basis for operational decisions.",
   "era_c": {

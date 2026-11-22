@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software or dataset in your research, please cite the following."
 title: "Drought Intelligence Explorer: a multi-era district drought record and analytics platform for India"
 version: "2.0.0"
-doi: 10.5281/zenodo.24113363
+doi: 10.5281/zenodo.24444860
 date-released: 2026-11-22
 authors:
   - family-names: Deshmukh

@@ -64,7 +64,9 @@ One queryable drought record for India, presented as **three labelled eras that 
 ```
 Deshmukh, A. (2026). Drought Intelligence Explorer: a multi-era district drought
 record and analytics platform for India (Version 2.0.0) [Software].
-Zenodo. https://doi.org/10.5281/zenodo.24113363
+Zenodo. https://doi.org/10.5281/zenodo.24444860
 ```
+
+Concept DOI (always latest): https://doi.org/10.5281/zenodo.24113363 · v1.0.0: https://doi.org/10.5281/zenodo.24113364
 
 Data: *Drought Intelligence Explorer v2.0.0 — district drought record for India (1901–2100)*, snapshot v2026.09, CC-BY-4.0 (dataset DOI pending; archived at https://data.ankitdeshmukh.com/v2026.09/).
