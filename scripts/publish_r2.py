@@ -76,14 +76,14 @@ def plan(version: str, include_csv: bool, only: set[str] | None = None) -> list[
         return group in wanted
 
     for path in sorted(parquet.rglob("*.parquet")):
-        rel = str(path.relative_to(parquet)).replace("\\", "/")
-        group = ("national" if rel.startswith("_national_monthly")
-                 else rel.split("/")[0])
+        rel = "parquet/" + str(path.relative_to(parquet)).replace("\\", "/")
+        group = ("national" if rel.startswith("parquet/_national_monthly")
+                 else rel.split("/")[1])
         if keep(group):
             items.append((path, rel))
     catalog = parquet / "catalog.json"
     if catalog.exists() and keep("catalog"):
-        items.append((catalog, "catalog.json"))
+        items.append((catalog, "parquet/catalog.json"))
     if keep("csv"):
         for path in sorted((REPO / "data" / "drought").glob("*.csv")):
             items.append((path, "drought/" + path.name))
@@ -146,6 +146,9 @@ def main(argv=None) -> int:
                     help="comma-separated subset for a smoke test: "
                          "observed,atlas,projections,cross_validation,national,catalog,csv")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--prune", action="store_true",
+                    help="after a full upload, delete objects under this version "
+                         "that are not in the local manifest (cleans stale keys)")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--write-pointer", action="store_true")
     ap.add_argument("--public-base", default=None,
@@ -278,6 +281,28 @@ def main(argv=None) -> int:
                   ContentType="application/json", CacheControl=CACHE_CONTROL)
     print(f"\nuploaded {uploaded:,} object(s), {skipped:,} already present")
     print(f"snapshot ready at {prefix}")
+
+    if args.prune:
+        keep = {prefix + key for _p, key in items}
+        keep |= {prefix + "SHA256SUMS.txt", prefix + "_READY"}
+        stale = []
+        token = None
+        while True:
+            kw = {"Bucket": args.bucket, "Prefix": prefix, "MaxKeys": 1000}
+            if token:
+                kw["ContinuationToken"] = token
+            resp = s3.list_objects_v2(**kw)
+            for obj in resp.get("Contents", []):
+                if obj["Key"] not in keep:
+                    stale.append(obj["Key"])
+            if not resp.get("IsTruncated"):
+                break
+            token = resp.get("NextContinuationToken")
+        for i in range(0, len(stale), 1000):
+            batch = [{"Key": k} for k in stale[i:i + 1000]]
+            s3.delete_objects(Bucket=args.bucket, Delete={"Objects": batch,
+                                                          "Quiet": True})
+        print(f"pruned {len(stale):,} stale object(s) under {prefix}")
 
     if args.write_pointer:
         base = args.public_base or ""

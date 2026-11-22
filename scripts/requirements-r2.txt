@@ -1,3 +1,8 @@
 # R2 publishing only (scripts/publish_r2.py). The repository's scientific
 # pipeline does not need these; the dashboard runs entirely in the browser.
-boto3>=1.34
+#
+# Pin both halves: this environment also carries aiobotocore/s3fs, which require
+# botocore <1.43.118. Installing plain `boto3` upgrades botocore past that and
+# breaks the s3fs stack.
+boto3==1.43.117
+botocore==1.43.117
