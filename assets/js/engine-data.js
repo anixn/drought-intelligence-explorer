@@ -110,7 +110,7 @@
     const dateIndex = new Map(dates.map((d, j) => [d, j]));
 
     // --- districts: distinct ids in file, filtered by the registry --------
-    const fileUrl = new URL('/' + files[0].replace(/^\/+/, ''), location.origin).href;
+    const fileUrl = DIE.Engine.absPath(files[0]);
     const idTable = await DIE.Engine.query(
       "SELECT DISTINCT district_id::VARCHAR AS district_id " +
       "FROM read_parquet(['" + fileUrl + "']) ORDER BY district_id");

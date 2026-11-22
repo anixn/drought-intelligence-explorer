@@ -113,7 +113,7 @@
   /** Build the preloaded pattern queries from the live catalog (no hardcoded
    *  file paths: the catalog is the single source of truth, P7). */
   function buildPresets(cat) {
-    const abs = (rel) => new URL("/" + rel.replace(/^\/+/, ""), location.origin).href;
+    const abs = (rel) => DIE.Engine.absPath(rel);
     const file = (varId, era) => {
       const v = (cat.variables || []).find((x) => x.id === varId);
       if (!v || !v.files || !v.files[era || "observed"] || !v.files[era || "observed"].length) return null;

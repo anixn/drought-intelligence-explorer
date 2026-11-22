@@ -133,6 +133,34 @@ def bucket_bytes(s3, bucket: str) -> int:
         token = resp.get("NextContinuationToken")
 
 
+def write_pointer(version: str, prefix: str, public_base: str | None,
+                  dry: bool = False) -> Path:
+    base = (public_base or "").strip()
+    if not base:
+        raise SystemExit("--write-pointer needs --public-base "
+                         "(e.g. https://pub-xxxx.r2.dev/)")
+    if not base.endswith("/"):
+        base += "/"
+    pointer = {
+        "schema": "die-data-source/1.0",
+        "note": ("Committed pointer to the immutable bulk-data snapshot. Only the "
+                 "Parquet store and the era-B wide CSVs move; metadata.json, "
+                 "status.json, reality_checks.json and the boundary GeoJSON stay "
+                 "with the code. base=null means same-origin."),
+        "base": base + prefix,
+        "snapshot": version,
+        "public_base": base,
+        "updated": date.today().isoformat(),
+        "uploaded_by": "scripts/publish_r2.py",
+    }
+    out = REPO / "data" / "data-source.json"
+    out.write_text(json.dumps(pointer, indent=1) + "\n", encoding="utf-8")
+    print("wrote", out, "->", pointer["base"])
+    print("commit data/data-source.json (and the refreshed status/metadata) "
+          "to switch the live site; do not commit the data itself.")
+    return out
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Publish a data snapshot to R2")
     ap.add_argument("--version", required=True,
@@ -215,6 +243,11 @@ def main(argv=None) -> int:
     except Exception:
         exists = False
     if exists and not args.force:
+        if args.write_pointer:
+            print(f"{version} is already complete (_READY marker present); "
+                  f"skipping the upload and writing the pointer only.")
+            write_pointer(version, prefix, args.public_base)
+            return 0
         raise SystemExit(f"{version} already has a _READY marker; pass --force to "
                          f"overwrite (snapshots are meant to be immutable)")
 
@@ -305,29 +338,7 @@ def main(argv=None) -> int:
         print(f"pruned {len(stale):,} stale object(s) under {prefix}")
 
     if args.write_pointer:
-        base = args.public_base or ""
-        if not base:
-            raise SystemExit("--write-pointer needs --public-base "
-                             "(e.g. https://pub-xxxx.r2.dev/)")
-        if not base.endswith("/"):
-            base += "/"
-        pointer = {
-            "schema": "die-data-source/1.0",
-            "note": ("Committed pointer to the immutable bulk-data snapshot. Only the "
-                     "Parquet store and the era-B wide CSVs move; metadata.json, "
-                     "status.json, reality_checks.json and the boundary GeoJSON stay "
-                     "with the code. base=null means same-origin."),
-            "base": base + prefix,
-            "snapshot": version,
-            "public_base": base,
-            "updated": date.today().isoformat(),
-            "uploaded_by": "scripts/publish_r2.py",
-        }
-        out = REPO / "data" / "data-source.json"
-        out.write_text(json.dumps(pointer, indent=1) + "\n", encoding="utf-8")
-        print("wrote", out, "->", pointer["base"])
-        print("commit data/data-source.json (and the refreshed status/metadata) "
-              "to switch the live site; do not commit the data itself.")
+        write_pointer(version, prefix, args.public_base)
     return 0
 
 

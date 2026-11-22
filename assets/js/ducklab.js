@@ -592,6 +592,7 @@
     ensureEngine, ensureCatalog, query, slice, mapMonth, national, ensemble,
     atlasYear, crossval, seamUncertainty, observedAt,
     bytes, lastMs,
+    absPath,                       // repo-relative data path -> absolute URL
     version: DUCKDB_VERSION,
     catalog: () => state.catalog,
     isReady: () => !!state.conn,

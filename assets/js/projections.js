@@ -101,7 +101,11 @@
    * Engine Lab); direct no-store fetch as the fallback (P1/P2). */
 
   function fetchCatalogDirect() {
-    const url = new URL("/data/parquet/catalog.json", location.origin).href;
+    // Same base resolution as the engine: the catalog travels with the data
+    // snapshot (R2) when data/data-source.json names one.
+    const url = DIE.dataBase
+      ? DIE.dataBase + "parquet/catalog.json"
+      : new URL("/data/parquet/catalog.json", location.origin).href;
     return fetch(url, { cache: "no-store" }).then((r) => {
       if (!r.ok) throw new Error("catalog.json HTTP " + r.status);
       return r.json();
