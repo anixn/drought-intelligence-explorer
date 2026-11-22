@@ -154,17 +154,19 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 
 **Exit gate M3:** a simulated month increments era B end-to-end; banner + status correct; v1.0 numbers unchanged (regression harness).
 
-### M4 — IMD benchmark validation study (E08)
-*Suggested: Jan 2027. Depends on: IMD data (Owner downloads). Independent of M2/M3.*
+### M4 — IMD benchmark validation study (E08) — **BUILT 2026-11-22**
+*Depends on: IMD data (the Owner's local archive). Independent of M2/M3.*
+
+**Result (measured 2026-11-22, record to 2026-09):** 719 districts × 540 months compared for SPI-1/3/6/12, 714 for SPEI-3/12. Median district r 0.60–0.71 (national series 0.73–0.86), area-weighted bias −0.038…+0.002 z, state agreement 82.2–86.9 %, exact class 31.7–36.5 %. Trend maps (BH-FDR q = 0.05): era B flags more districts than IMD (SPI-3 324 vs 155), with 89.3 % slope-sign agreement among districts significant in both. Memo: `validation-studies/imd/report/validation-memo.md`; UI: Documentation D.
 
 | Task | Content | Gate |
 |---|---|---|
-| M4.1 | `validation-studies/imd/` acquisition scripts: IMD 0.25° daily rainfall → monthly (Pai et al. 2014 product); IMD temperature product (verify current resolution/version, record in register) | Owner-run download succeeds; grid metadata recorded |
-| M4.2 | IMD-SPI/SPEI computation reusing `indicators.py` (same gates, same reference window 1981–2020) | fit-report parity with era B machinery |
-| M4.3 | Comparison framework: correlation, bias, RMSD, drought-class agreement, event match — by season and region; BH-FDR trend-map view (**mandatory, amendment 06 §2 — not optional**) | metrics table generated from Owner-run outputs |
-| M4.4 | Validation memo template + methodology page v2 section; discrepancies published; **explicit statement (X8): IMD temperature begins 1951 — comparison restricted to 1951– onwards, pre-1951 era A temperature basis is the Atlas reconstruction** | memo drafted with real numbers (Owner-gated) |
+| M4.1 | `validation-studies/imd/` acquisition **verification** + inventory (the archive was already complete: rain 0.25° 1901–2025, temperature **1.0°** 1951–2025 — OD3 resolved) | inventory PASS; grid/units/fill recorded |
+| M4.2 | IMD monthly aggregation → fractional-area district fabric → IMD-SPI/SPEI using the **era-B indicator code** (same estimators, base 1981–2020, gates) | 47,047 fits (88 % fitted, 10 % Gringorten, 2.6 % calibration fallback) |
+| M4.3 | Comparison framework (r, bias, RMSD, state/class/event; seasonal; national) + BH-FDR trend maps | metrics from the run; no hand-typed numbers |
+| M4.4 | Validation memo + dashboard summary (Documentation D) + reproduction commands; X8 statement (temperature ≥ 1951) | memo populated with real numbers |
 
-**Exit gate M4:** validation memo exists with real IMD comparison numbers, or the memo ships with the flagged "pending Owner run" sections clearly marked (never with synthetic values).
+**Exit gate M4:** validation memo with real IMD comparison numbers — **MET 2026-11-22** (no pending sections).
 
 ### M5 - Future Projections workspace (E05, E13)
 **Build-order constraint (amendment 06 §5 X1):** `#crossval` (M6.6) gates ANY projections surface going live; fixture-based development may proceed in parallel. Default view is AGREEMENT, not median (X2); banner states the honest ensemble n, never "24 models" (X3).

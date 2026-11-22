@@ -94,6 +94,9 @@ def build(today: date | None = None) -> dict:
         {"id": "figures", "label": "Published figures",
          "detail": "Fig 2/5/6 + Table 5 reproduced from the shipped record",
          "command": "python scripts/reproduce_figures.py --check"},
+        {"id": "imd_benchmark", "label": "IMD benchmark (M4)",
+         "detail": "independent IMD comparison; memo + machine-readable artifact",
+         "command": "python validation-studies/imd/04_compare.py"},
     ]
 
     issues = []

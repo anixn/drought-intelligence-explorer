@@ -1,0 +1,66 @@
+# IMD benchmark validation study (task M4.1–M4.4, docs/v2/03 §5)
+#
+# Inputs are the Owner's local IMD archive (not committed):
+#   rainfall     0.25 deg daily, 1901-2025   (Pai et al. 2014 lineage)
+#   tmax / tmin  1.00 deg daily, 1951-2025   (Srivastava et al. 2009 lineage)
+# The temperature product's actual resolution (1.0 deg) is recorded here because
+# register OD3 asked for it to be verified rather than assumed.
+imd:
+  root: "D:/Websites/die-data/imd"
+  rainfall:
+    dir: pr
+    pattern: "IMD_rain_{year}.nc"
+    var: rain
+    grid_deg: 0.25
+    units: mm/day
+  tmax:
+    dir: tmax
+    pattern: "IMD_tmax_{year}.nc"
+    var: tmax
+    grid_deg: 1.0
+    units: degC
+  tmin:
+    dir: tmin
+    pattern: "IMD_tmin_{year}.nc"
+    var: tmin
+    grid_deg: 1.0
+    units: degC
+
+# District fabric and study windows
+fabric:
+  districts_csv: data/districts.csv
+  boundaries: data/boundaries/india_districts.geojson
+  # supersampling factor used to turn cell-centre assignment into fractional
+  # area weights (see _common.build_weights). 8 gives 0.03125 deg sub-cells on
+  # the rainfall grid and 0.125 deg on the 1 deg temperature grid, which is
+  # fine enough for the small hill districts.
+  supersample: 8
+
+study:
+  period: [1981, 2025]        # comparison window (era B covers 1981-present)
+  base: [1981, 2020]          # standardisation base, identical to era B
+  min_base_years: 20          # era-B gate
+  # X8: IMD temperature starts in 1951, so any temperature-based comparison is
+  # restricted to >= 1951 (never extrapolated backwards)
+  temperature_from: 1951
+
+indicators:
+  spi: [1, 3, 6, 12]
+  spei: [3, 12]               # P - PET, Hargreaves PET from IMD tmax/tmin
+
+thresholds:
+  drought_z: -1.0             # McKee moderate-drought truncation
+  severe_z: -1.5
+
+comparison:
+  # season keys follow the app (metadata.json seasons)
+  seasons:
+    all: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    jjas: [6, 7, 8, 9]
+    ondj: [10, 11, 12, 1]
+  min_pairs: 60               # district-season pairs required for a metric
+  fdr_q: 0.05
+
+outputs:
+  work: validation-studies/imd/work
+  report: validation-studies/imd/report

@@ -295,6 +295,19 @@ Comparison suite (by season: JJAS, ONDJ, annual; by region: state clusters; per 
 
 Deliverables: `validation_report.json` + a validation memo (Markdown) + the Methodology-page-v2 section (docs/v2/04 §5). **Rule: numbers come only from Owner-executed runs; pending runs leave the memo sections explicitly marked, never filled with synthetic values.**
 
+**Computed 2026-11-22 (M4 exit gate met).** The Owner's archive was already complete, so M4.1 became a verification step: rainfall 0.25° daily 1901–2025 passes (125 files, contiguous, no negative values), temperature is the **1.0° daily** product 1951–2025 (75 files each of tmax/tmin) — the resolution OD3 asked to confirm, and the reason every temperature statement is bounded at 1951. The pipeline is `validation-studies/imd/` (see its README): monthly aggregation → fractional-area district weights (8×8 sub-cells, cos-lat) → IMD-SPI/SPEI through `die_pipeline.indicators` (same estimators, mixed zeros, 1981–2020 base, gates) → comparison → BH-FDR trend maps → memo.
+
+| Indicator | Districts | Pairs | Median r | Area bias | State | Class | Event |
+|---|---|---|---|---|---|---|---|
+| SPI-1 | 719 | 388,260 | 0.675 | +0.002 | 86.9 % | 36.5 % | 33.2 % |
+| SPI-3 | 719 | 386,822 | 0.659 | −0.018 | 83.9 % | 33.7 % | 32.5 % |
+| SPI-6 | 719 | 384,665 | 0.643 | −0.027 | 83.4 % | 33.0 % | 31.8 % |
+| SPI-12 | 719 | 380,351 | 0.604 | −0.030 | 82.2 % | 31.7 % | 29.4 % |
+| SPEI-3 | 714 | 384,068 | 0.714 | −0.028 | 84.9 % | 35.6 % | 36.2 % |
+| SPEI-12 | 714 | 377,624 | 0.647 | −0.038 | 84.3 % | 32.7 % | 34.7 % |
+
+Trend maps (annual means, ≥ 9 months, MK + Sen, BH q = 0.05): era B detects more significant districts than IMD (SPI-3 324 vs 155; SPI-12 397 vs 239; SPEI-12 505 vs 191) while the slope **sign agrees in 83–89 %** of districts significant in both — a detection-power difference, not a contradiction in direction. Districts without a grid cell are reported (2 for rainfall: Lakshadweep, Mahé; 7 for the 1° temperature grid) and never filled.
+
 ## 6. Era A ↔ Era B cross-validation (`validation-studies/crossval/`)
 
 Standing panel at the **1981–2014 primary window (register D6 — the GCM-native historical window; the full 1981–2025 overlap is the sensitivity variant)** (task M6.6):

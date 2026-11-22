@@ -1,0 +1,153 @@
+{
+ "schema": "die-imd-validation/1.0",
+ "period": [
+  1981,
+  2025
+ ],
+ "base": [
+  1981,
+  2020
+ ],
+ "inputs": {
+  "rainfall": "IMD 0.25° daily gridded rain (Pai et al. 2014 lineage)",
+  "temperature": "IMD 1.0° daily gridded tmax/tmin (Srivastava et al. 2009 lineage), 1951–2025"
+ },
+ "indicators": [
+  {
+   "label": "SPI-1",
+   "districts": 719,
+   "pairs": 388260,
+   "r_median": 0.6746534088524544,
+   "bias": 0.002196161589607767,
+   "rmsd": 0.8002458363873024,
+   "state": 0.8685346878884616,
+   "class_exact": 0.3649674386734644,
+   "event": 0.33213775173094345
+  },
+  {
+   "label": "SPI-3",
+   "districts": 719,
+   "pairs": 386822,
+   "r_median": 0.6592919376207198,
+   "bias": -0.01839578792114764,
+   "rmsd": 0.8435233626238351,
+   "state": 0.8389908953162027,
+   "class_exact": 0.3371548096251898,
+   "event": 0.32544415754083467
+  },
+  {
+   "label": "SPI-6",
+   "districts": 719,
+   "pairs": 384665,
+   "r_median": 0.6430776878868956,
+   "bias": -0.027152785431516186,
+   "rmsd": 0.8618182478734456,
+   "state": 0.8337451253715827,
+   "class_exact": 0.3295351822239927,
+   "event": 0.31782118962412986
+  },
+  {
+   "label": "SPI-12",
+   "districts": 719,
+   "pairs": 380351,
+   "r_median": 0.6038770610917705,
+   "bias": -0.030494917581290998,
+   "rmsd": 0.8909534480863263,
+   "state": 0.8216616359010354,
+   "class_exact": 0.31715091078956376,
+   "event": 0.2937791707168426
+  },
+  {
+   "label": "SPEI-3",
+   "districts": 714,
+   "pairs": 384068,
+   "r_median": 0.7138895285183957,
+   "bias": -0.028126841572385396,
+   "rmsd": 0.7598311080943322,
+   "state": 0.8487106155454252,
+   "class_exact": 0.35588537985031143,
+   "event": 0.3618124924563882
+  },
+  {
+   "label": "SPEI-12",
+   "districts": 714,
+   "pairs": 377624,
+   "r_median": 0.6471914756440572,
+   "bias": -0.03848979417476303,
+   "rmsd": 0.8065565013001209,
+   "state": 0.8428403167657275,
+   "class_exact": 0.3269787121813333,
+   "event": 0.3467273105141532
+  }
+ ],
+ "national": {
+  "spi_01": {
+   "r": 0.8640451269273135,
+   "bias": 0.002272481786880905,
+   "rmsd": 0.24309286164807403,
+   "n_months": 540
+  },
+  "spi_03": {
+   "r": 0.8239632395048128,
+   "bias": -0.018309298126766214,
+   "rmsd": 0.2760953412900537,
+   "n_months": 538
+  },
+  "spi_06": {
+   "r": 0.786358650751415,
+   "bias": -0.027058717979058237,
+   "rmsd": 0.3069248638212687,
+   "n_months": 535
+  },
+  "spi_12": {
+   "r": 0.7303061796316417,
+   "bias": -0.030391993311965633,
+   "rmsd": 0.35646768375849647,
+   "n_months": 529
+  },
+  "spei_03": {
+   "r": 0.8378224741178206,
+   "bias": -0.0280279795362926,
+   "rmsd": 0.2926598613021759,
+   "n_months": 538
+  },
+  "spei_12": {
+   "r": 0.7771067712923961,
+   "bias": -0.03845154410663981,
+   "rmsd": 0.3582814094906196,
+   "n_months": 529
+  }
+ },
+ "trends": [
+  {
+   "label": "SPI-3",
+   "testable": 719,
+   "imd_fdr": 155,
+   "era_b_fdr": 324,
+   "both_fdr": 75,
+   "sign_agree": 0.8933333333333333
+  },
+  {
+   "label": "SPI-12",
+   "testable": 719,
+   "imd_fdr": 239,
+   "era_b_fdr": 397,
+   "both_fdr": 115,
+   "sign_agree": 0.8347826086956521
+  },
+  {
+   "label": "SPEI-12",
+   "testable": 714,
+   "imd_fdr": 191,
+   "era_b_fdr": 505,
+   "both_fdr": 105,
+   "sign_agree": 0.8476190476190476
+  }
+ ],
+ "memo": "validation-studies/imd/report/validation-memo.md",
+ "generated_from": [
+  "validation-studies/imd/work/imd_inventory.json",
+  "validation-studies/imd/report/validation_report.json",
+  "validation-studies/imd/report/trend_comparison.json"
+ ]
+}

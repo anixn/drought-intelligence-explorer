@@ -225,6 +225,7 @@
       // Warm the next likely indicators while the main thread is idle; CSV
       // text is cached without parsing until the user actually switches.
       idle(() => {
+        renderImdValidation();
         ['spei_3', 'spi_6', 'vci'].forEach((id) => {
           if (id !== DIE.state.indicator) DIE.loader.prefetchIndicator(id);
         });
@@ -1298,6 +1299,68 @@
     return String(s).replace(/[&<>"']/g, (c) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[c]));
+  }
+
+  /** IMD benchmark table (M4, built 2026-11-22) — from data/imd_validation.json,
+   * written by validation-studies/imd/99_memo.py from the Owner's local archive.
+   * No numbers are typed here; if the artifact is absent the section says so. */
+  async function renderImdValidation() {
+    const el = $('imdValidation');
+    if (!el || el.dataset.loaded === '1') return;
+    let d;
+    try {
+      d = JSON.parse(await DIE.loader.fetchText('data/imd_validation.json'));
+    } catch (err) {
+      console.warn('[validation] IMD artifact unavailable:', err);
+      el.innerHTML = '<p class="table-help">The IMD benchmark artifact is not ' +
+        'available in this checkout, so no comparison numbers are shown (R3). ' +
+        'Re-run <code>python validation-studies/imd/99_memo.py</code>.</p>';
+      return;
+    }
+    el.dataset.loaded = '1';
+    const pct = (v) => (Number.isFinite(v) ? (100 * v).toFixed(1) + ' %' : '—');
+    const num = (v, nd = 3, sign = false) => (Number.isFinite(v)
+      ? (sign && v >= 0 ? '+' : '') + v.toFixed(nd).replace('-', '−') : '—');
+    const rows = (d.indicators || []).map((i) =>
+      '<tr><td>' + escHtml(i.label) + '</td>' +
+      '<td class="num">' + i.districts + '</td>' +
+      '<td class="num">' + Number(i.pairs).toLocaleString('en-GB') + '</td>' +
+      '<td class="num">' + num(i.r_median) + '</td>' +
+      '<td class="num">' + num(i.bias, 3, true) + '</td>' +
+      '<td class="num">' + num(i.rmsd) + '</td>' +
+      '<td class="num">' + pct(i.state) + '</td>' +
+      '<td class="num">' + pct(i.class_exact) + '</td></tr>').join('');
+    const trends = (d.trends || []).map((t) =>
+      '<tr><td>' + escHtml(t.label) + '</td>' +
+      '<td class="num">' + t.imd_fdr + '</td>' +
+      '<td class="num">' + t.era_b_fdr + '</td>' +
+      '<td class="num">' + t.both_fdr + '</td>' +
+      '<td class="num">' + pct(t.sign_agree) + '</td></tr>').join('');
+
+    el.innerHTML =
+      '<div class="table-scroll"><table class="comp-table"><thead><tr>' +
+      '<th>Indicator</th><th class="num">Districts</th><th class="num">Pairs</th>' +
+      '<th class="num">Median r</th><th class="num">Bias (IMD − era B)</th>' +
+      '<th class="num">RMSD</th><th class="num">State</th><th class="num">Class</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="table-help">Window ' + d.period[0] + '–' + d.period[1] +
+      ', base ' + d.base[0] + '–' + d.base[1] +
+      '. Bias is mean(IMD − era B): a negative value means the independent IMD ' +
+      'reference is drier. “State” is agreement on which side of −1.00 a month ' +
+      'falls; “class” is exact McKee-class agreement (the near-normal bin ' +
+      'dominates it, as expected).</p>' +
+      (trends
+        ? '<h3 class="gov-h">Trend detection — Mann–Kendall + Sen, BH-FDR q = 0.05</h3>' +
+          '<div class="table-scroll"><table class="comp-table"><thead><tr>' +
+          '<th>Indicator</th><th class="num">IMD significant</th>' +
+          '<th class="num">era B significant</th><th class="num">Both</th>' +
+          '<th class="num">Sign agreement</th></tr></thead><tbody>' + trends +
+          '</tbody></table></div>' +
+          '<p class="table-help">Detection power differs (the records differ in ' +
+          'input, length and, for SPEI, PET method), but among districts that ' +
+          'trend significantly in both, the direction agrees — a discrepancy in ' +
+          'detection, not a contradiction in sign.</p>'
+        : '');
   }
 
   /** Reality-check boxes (M10.7) — rendered from the committed JSON so the

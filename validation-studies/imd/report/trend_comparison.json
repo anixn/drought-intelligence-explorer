@@ -1,0 +1,62 @@
+{
+ "schema": "die-imd-trends/1.0",
+ "period": [
+  1981,
+  2025
+ ],
+ "q": 0.05,
+ "annual_rule": ">= 9 valid months",
+ "indicators": {
+  "spi_03": {
+   "districts_testable": 719,
+   "imd": {
+    "sig_raw": 261,
+    "sig_fdr": 155
+   },
+   "era_b": {
+    "sig_raw": 382,
+    "sig_fdr": 324
+   },
+   "both_fdr": 75,
+   "sign_agree_share_both": 0.8933333333333333,
+   "median_slope": {
+    "imd": 0.0017731369047619058,
+    "era_b": 0.01128224206349206
+   }
+  },
+  "spi_12": {
+   "districts_testable": 719,
+   "imd": {
+    "sig_raw": 317,
+    "sig_fdr": 239
+   },
+   "era_b": {
+    "sig_raw": 445,
+    "sig_fdr": 397
+   },
+   "both_fdr": 115,
+   "sign_agree_share_both": 0.8347826086956521,
+   "median_slope": {
+    "imd": 0.0024792549818840586,
+    "era_b": 0.020847617056856192
+   }
+  },
+  "spei_12": {
+   "districts_testable": 714,
+   "imd": {
+    "sig_raw": 293,
+    "sig_fdr": 191
+   },
+   "era_b": {
+    "sig_raw": 521,
+    "sig_fdr": 505
+   },
+   "both_fdr": 105,
+   "sign_agree_share_both": 0.8476190476190476,
+   "median_slope": {
+    "imd": 0.0014673118842364538,
+    "era_b": 0.029974969474969478
+   }
+  }
+ }
+}

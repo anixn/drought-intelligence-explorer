@@ -310,6 +310,22 @@ def compute() -> dict:
             (v, sum(1 for k in mon_vars if k == v))
             for v in ("spei_01", "spei_12"))
         out["crossval"] = cv
+
+    # --- 8. IMD benchmark artifact (M4.3/M4.4) ----------------------------
+    imd_path = REPO / "data" / "imd_validation.json"
+    if imd_path.exists():
+        imd = json.loads(imd_path.read_text(encoding="utf-8"))
+        out["imd"] = OrderedDict([
+            ("sha256", sha256(imd_path)),
+            ("period", imd.get("period")),
+            ("indicators", OrderedDict(
+                (i["label"], [round(i["r_median"], 4), round(i["bias"], 4),
+                              round(i["state"], 4), i["districts"]])
+                for i in imd.get("indicators", []))),
+            ("trends", OrderedDict(
+                (t["label"], [t["imd_fdr"], t["era_b_fdr"], t["both_fdr"]])
+                for t in imd.get("trends", []))),
+        ])
     return out
 
 

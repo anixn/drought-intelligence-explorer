@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22l" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22m" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -3766,6 +3766,29 @@
             <button type="button" class="doc-top" data-doc="doc-top">
               &uarr; Back to top
             </button>
+
+            <!-- Independent benchmark (M4, built 2026-11-22). Values come from
+                 data/imd_validation.json, written by validation-studies/imd/
+                 (99_memo.py) from the Owner's local IMD archive. -->
+            <h3 class="gov-h">Independent benchmark — IMD (M4)</h3>
+            <p class="panel-note">
+              The checks above test internal consistency. This table tests the
+              record against a source that shares none of its inputs: IMD
+              station-interpolated gridded observations, processed with the same
+              indicator code, the same 1981–2020 base and the same calibration
+              gates as era B. SPI is like-for-like (rainfall only); SPEI also
+              changes the PET method and is labelled accordingly.
+            </p>
+            <div id="imdValidation" aria-live="polite">
+              <p class="table-help">Loading the IMD benchmark…</p>
+            </div>
+            <p class="table-help">
+              Full memo (inputs, coverage, seasonal tables, trend maps,
+              limitations): <a href="validation-studies/imd/report/validation-memo.md">validation-memo.md</a>
+              · machine-readable: <a href="data/imd_validation.json">data/imd_validation.json</a>
+              · reproduce with <code>python validation-studies/imd/00_verify_imd.py</code>
+              … <code>99_memo.py</code>.
+            </p>
           </details>
 
           <!-- E: uncertainty and limitations -->
@@ -5304,7 +5327,7 @@ LIMIT 15;</pre>
           return;
         }
 
-        var ASSET_VERSION = "2026-11-22l";
+        var ASSET_VERSION = "2026-11-22m";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
