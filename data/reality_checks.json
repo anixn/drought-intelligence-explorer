@@ -48,13 +48,13 @@
     },
     {
       "id": "all-india-spi3",
-      "title": "All-India SPI-3, 1981–2025",
-      "claim": "The national area-weighted SPI-3 fell to or below −1.00 in only four months of the 538-month record — July 1987 and July–September 2002.",
-      "window": "1981-03 to 2025-12",
+      "title": "All-India SPI-3, 1981–2026",
+      "claim": "The national area-weighted SPI-3 fell to or below −1.00 in only four months of the 547-month record — July 1987 and July–September 2002.",
+      "window": "1981-03 to 2026-09",
       "indicator": "spi_03",
       "threshold": -1.0,
       "numbers": {
-        "n_months": 538,
+        "n_months": 547,
         "n_at_or_below": 4,
         "months": [
           {

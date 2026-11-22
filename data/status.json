@@ -1,18 +1,18 @@
 {
   "schema": "die-status/1.0",
-  "as_of": "2026-11-21",
+  "as_of": "2026-11-22",
   "data": {
     "version": "1.0.0",
     "methodology_version": "research-gee-1.0.2",
     "pipeline_version": "1.1.0",
     "mode": "static-research",
-    "updated": "2026-11-10",
+    "updated": "2026-11-22",
     "period": {
       "start": "1981-01",
-      "end": "2025-12"
+      "end": "2026-09"
     },
-    "data_month": "2025-12",
-    "lag_days": 325,
+    "data_month": "2026-09",
+    "lag_days": 53,
     "lag_threshold_days": 45,
     "lag_status": "amber",
     "indicators": [
@@ -20,80 +20,80 @@
         "id": "spi_1",
         "label": "SPI-1",
         "from": "1981-01",
-        "to": "2025-12",
-        "months": 540,
+        "to": "2026-09",
+        "months": 549,
         "completeness_pct": 100.0
       },
       {
         "id": "spi_3",
         "label": "SPI-3",
         "from": "1981-03",
-        "to": "2025-12",
-        "months": 538,
+        "to": "2026-09",
+        "months": 547,
         "completeness_pct": 100.0
       },
       {
         "id": "spi_6",
         "label": "SPI-6",
         "from": "1981-06",
-        "to": "2025-12",
-        "months": 535,
+        "to": "2026-09",
+        "months": 544,
         "completeness_pct": 100.0
       },
       {
         "id": "spi_12",
         "label": "SPI-12",
         "from": "1981-12",
-        "to": "2025-12",
-        "months": 529,
+        "to": "2026-09",
+        "months": 538,
         "completeness_pct": 100.0
       },
       {
         "id": "spei_1",
         "label": "SPEI-1",
         "from": "1981-01",
-        "to": "2025-12",
-        "months": 540,
+        "to": "2026-09",
+        "months": 549,
         "completeness_pct": 99.86
       },
       {
         "id": "spei_3",
         "label": "SPEI-3",
         "from": "1981-03",
-        "to": "2025-12",
-        "months": 538,
+        "to": "2026-09",
+        "months": 547,
         "completeness_pct": 99.86
       },
       {
         "id": "spei_6",
         "label": "SPEI-6",
         "from": "1981-06",
-        "to": "2025-12",
-        "months": 535,
+        "to": "2026-09",
+        "months": 544,
         "completeness_pct": 99.86
       },
       {
         "id": "spei_12",
         "label": "SPEI-12",
         "from": "1981-12",
-        "to": "2025-12",
-        "months": 529,
+        "to": "2026-09",
+        "months": 538,
         "completeness_pct": 99.86
       },
       {
         "id": "sma",
         "label": "Soil Moisture Anomaly",
         "from": "1981-01",
-        "to": "2025-12",
-        "months": 540,
+        "to": "2026-09",
+        "months": 549,
         "completeness_pct": 99.86
       },
       {
         "id": "vci",
         "label": "Vegetation Condition Index",
         "from": "2000-02",
-        "to": "2025-12",
-        "months": 311,
+        "to": "2026-09",
+        "months": 320,
         "completeness_pct": 100.0
       }
     ],
@@ -209,7 +209,7 @@
     }
   },
   "run": {
-    "last_run": "2026-11-10",
+    "last_run": "2026-11-22",
     "manifest": "data/pipeline_manifest.json",
     "catalog_version": "2.0.0"
   },
@@ -243,7 +243,7 @@
     {
       "id": "refresh-due",
       "severity": "amber",
-      "text": "Era B ends 2025-12; the monthly refresh is 325 days behind (target ≤ 45 days)."
+      "text": "Era B ends 2026-09; the monthly refresh is 53 days behind (target ≤ 45 days)."
     },
     {
       "id": "era-c-local",

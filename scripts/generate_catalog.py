@@ -86,9 +86,19 @@ def build() -> dict:
         catalog["eras"][key] = OrderedDict([
             ("label", label), ("path", path), ("available", available),
         ])
-    # era-level global years for eras that have files (resolution M)
-    if catalog["eras"]["observed"]["available"]:
-        catalog["eras"]["observed"]["years"] = [1981, 2025]
+    # era-level years come from the files, never a nominal window: the monthly
+    # refresh extends the record, and a hard-coded end year here would make the
+    # catalog disagree with metadata.json and the UI's era label (R2).
+    observed_ranges = [
+        r for r in (era_years(v, "observed") for v, _, _ in VARIABLES) if r
+    ]
+    era_span = None
+    if catalog["eras"]["observed"]["available"] and observed_ranges:
+        era_span = [
+            min(r[0] for r in observed_ranges),
+            max(r[1] for r in observed_ranges),
+        ]
+        catalog["eras"]["observed"]["years"] = era_span
 
     catalog["variables"] = []
     for var_id, label, unit in VARIABLES:
@@ -103,8 +113,8 @@ def build() -> dict:
             ("files", files),
         ])
         yrs = era_years(var_id, "observed")
-        if yrs and yrs != [1981, 2025]:
-            entry["observed_years"] = yrs   # e.g. vci [2000, 2025]
+        if yrs and yrs != era_span:
+            entry["observed_years"] = yrs   # e.g. vci [2000, current]
         catalog["variables"].append(entry)
 
     # national pre-aggregate: emitted only once the file exists (exact-path

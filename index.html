@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22i" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22l" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -208,8 +208,8 @@
           data-era="b"
           role="note"
           tabindex="0"
-          aria-label="Era B: Gridded Multi-Source Product, 1981 to 2025"
-          title="Era B — Gridded Multi-Source Product (CHIRPS, ERA5-Land, MODIS), 1981–2025. Eras are labelled and never spliced."
+          aria-label="Era B: Gridded Multi-Source Product, 1981 to present"
+          title="Era B — Gridded Multi-Source Product (CHIRPS, ERA5-Land, MODIS), 1981–present. Eras are labelled and never spliced."
           ><span class="era-dot" aria-hidden="true"></span>Era <b>B</b>
           &middot; Gridded Product</span
         >
@@ -745,11 +745,11 @@
               href="#overview"
               data-group="record"
               aria-current="page"
-              data-tip-title="Record · 1981–2025"
+              data-tip-title="Record · gridded product"
               data-tip-body="The gridded multi-source record: SPI and SPEI at 1/3/6/12 months, soil-moisture anomaly and VCI for 724 districts. Observation-based, era-labelled."
             >
               <span class="tg-name">Record</span
-              ><span class="tg-years">1981–2025</span>
+              ><span class="tg-years" id="recordYears">1981–present</span>
             </a>
             <a
               class="tab-group"
@@ -5304,7 +5304,7 @@ LIMIT 15;</pre>
           return;
         }
 
-        var ASSET_VERSION = "2026-11-22i";
+        var ASSET_VERSION = "2026-11-22l";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

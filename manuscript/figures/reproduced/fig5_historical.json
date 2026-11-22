@@ -1,7 +1,7 @@
 {
   "figure": "fig5_historical",
   "series": "All-India SPI-3 (area-weighted national monthly)",
-  "n_months": 538,
+  "n_months": 547,
   "n_at_or_below_minus1": 4,
   "months": [
     {

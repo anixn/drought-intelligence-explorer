@@ -398,19 +398,35 @@
    * Era A (reconstruction), B (gridded product) and C (projections) are never
    * silently spliced; the pill is the always-visible receipt for that rule. */
   const ERA_BY_TAB = { atlas: 'a', projections: 'c', summary: 'c' };
+  /* The era-B span is extended by the monthly refresh, so every year range is
+   * read from the contract (metadata.period) instead of being hard-coded: a
+   * stale "1981–2025" in the nav or the pill would be an era-honesty defect
+   * (R2) the moment the record moves on. */
+  function recordSpan() {
+    const p = (DIE.meta && DIE.meta.period) || {};
+    const start = String(p.start || '1981-01');
+    const end = String(p.end || p.start || '1981-01');
+    return start.slice(0, 4) + '–' + end.slice(0, 4);
+  }
+  const MONTH_LONG = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  function monthYear(ym) {
+    const m = /^(\d{4})-(\d{2})$/.exec(String(ym || ''));
+    return m ? MONTH_LONG[+m[2] - 1] + ' ' + m[1] : String(ym || '');
+  }
   const ERA_COPY = {
     a: {
       short: 'Era <b>A</b> &middot; Atlas 1901&ndash;2025',
       long:
         'Era A — Drought Atlas of India reconstruction (SPEI), 1901–2025. ' +
         'A reconstruction, served at district level; never spliced with the ' +
-        '1981–2025 gridded product.'
+        '%SPAN% gridded product.'
     },
     b: {
       short: 'Era <b>B</b> &middot; Gridded Product',
       long:
         'Era B — Gridded Multi-Source Product (CHIRPS, ERA5-Land, MODIS), ' +
-        '1981–2025. Observation-based gridded sources; each indicator family ' +
+        '%SPAN%. Observation-based gridded sources; each indicator family ' +
         'reads its own source and they are never merged.'
     },
     c: {
@@ -441,11 +457,12 @@
     const key = tabId === 'summary' ? 'c-minus-b'
       : tabId === 'crossval' ? 'a-vs-b' : ERA_BY_TAB[tabId] || 'b';
     const copy = ERA_COPY[key];
+    const long = copy.long.replace(/%SPAN%/g, recordSpan());
     pill.dataset.era = key === 'c-minus-b' ? 'c'
       : key === 'a-vs-b' ? 'ab' : key;
     pill.innerHTML = '<span class="era-dot" aria-hidden="true"></span>' + copy.short;
-    pill.title = copy.long;
-    pill.setAttribute('aria-label', copy.long);
+    pill.title = long;
+    pill.setAttribute('aria-label', long);
   }
 
   /* ===================================================== ASK THE RECORD ==
@@ -1450,7 +1467,17 @@
         'remains a documented, swappable contract: the static CSVs under <span class="mono">data/drought/</span> can ' +
         'be replaced with a real Earth-Engine extract without code changes (see README and ' +
         '<span class="mono">data-pipeline/docs/gee-update-guide.md</span>).'
-      : '<strong>This build ships a historical research dataset</strong> derived with Google Earth Engine from CHIRPS, ERA5-Land and MODIS MOD13A3. SPI, SPEI and the soil-moisture anomaly cover January 1981 to December 2025; the Vegetation Condition Index starts in February 2000 (MODIS record). The data layer is a documented, swappable contract.';
+      : '<strong>This build ships a historical research dataset</strong> derived with Google Earth Engine from CHIRPS, ERA5-Land and MODIS MOD13A3. SPI, SPEI and the soil-moisture anomaly cover ' +
+        monthYear(DIE.meta.period.start) + ' to ' + monthYear(DIE.meta.period.end) +
+        '; the Vegetation Condition Index starts in February 2000 (MODIS record). The data layer is a documented, swappable contract.';
+
+    // The product bar and its explainer quote the record span, which the
+    // monthly refresh moves: keep both in step with metadata.period (R2).
+    const span = recordSpan();
+    const recLink = document.querySelector('.tab-group[data-group="record"]');
+    const recYears = $('recordYears');
+    if (recYears) recYears.textContent = span;
+    if (recLink) recLink.setAttribute('data-tip-title', 'Record · ' + span);
 
     if ($('chipDataMode')) {
       $('chipDataMode').textContent = 'Data mode · ' +

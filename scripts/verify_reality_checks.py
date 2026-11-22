@@ -9,7 +9,9 @@ one command and compare:
 
   1. Rajasthan, July-September 2002 — every Rajasthan district at or below
      -1.00 SPI-3 in each month (the documented 2002 monsoon failure).
-  2. All-India SPI-3 — months at or below -1.00 across the 538-month record
+  2. All-India SPI-3 - months at or below -1.00 across the full national
+     record (547 months as of the 2026-09 refresh; the count is re-derived
+     from the shipped series, never hand-typed)
      (the two deepest national rainfall deficits).
   3. Marathwada 2015-16 — rainfall deficit in Jul-Sep 2015 followed by severe
      vegetation stress in Nov 2015 - Jan 2016 (why the platform shows more
@@ -59,6 +61,38 @@ def month(frame: pd.DataFrame, ym: str, ids: list[str] | None = None) -> pd.Seri
 def fmean(values) -> float:
     vals = [float(v) for v in values if math.isfinite(float(v))]
     return math.fsum(vals) / len(vals) if vals else float("nan")
+
+
+def fmt_low_months(low: list[dict]) -> str:
+    """Render the drought months as prose ("July 1987 and July–September 2002")
+    without hard-coding them: the record moves with every monthly refresh, and
+    a stale count or month list in the claim is exactly the drift this artifact
+    exists to prevent."""
+    names = ["January", "February", "March", "April", "May", "June", "July",
+             "August", "September", "October", "November", "December"]
+    groups: list[list[tuple[int, int]]] = []
+    for s in low:
+        y, m = (int(x) for x in s["date"].split("-"))
+        if groups:
+            py, pm = groups[-1][-1]
+            if (y * 12 + m) - (py * 12 + pm) == 1:
+                groups[-1].append((y, m))
+                continue
+        groups.append([(y, m)])
+
+    def one(g):
+        y0, m0 = g[0]
+        y1, m1 = g[-1]
+        if len(g) == 1:
+            return f"{names[m0 - 1]} {y0}"
+        if y0 == y1:
+            return f"{names[m0 - 1]}–{names[m1 - 1]} {y1}"
+        return f"{names[m0 - 1]} {y0}–{names[m1 - 1]} {y1}"
+
+    parts = [one(g) for g in groups]
+    if len(parts) == 1:
+        return parts[0]
+    return ", ".join(parts[:-1]) + " and " + parts[-1]
 
 
 def build() -> dict:
@@ -135,11 +169,11 @@ def build() -> dict:
         },
         {
             "id": "all-india-spi3",
-            "title": "All-India SPI-3, 1981–2025",
+            "title": f"All-India SPI-3, {series[0]['date'][:4]}–{series[-1]['date'][:4]}",
             "claim": "The national area-weighted SPI-3 fell to or below −1.00 in "
-                     "only four months of the 538-month record — July 1987 and "
-                     "July–September 2002.",
-            "window": "1981-03 to 2025-12",
+                     f"only {'four' if len(low) == 4 else len(low)} months of the "
+                     f"{len(series)}-month record — {fmt_low_months(low)}.",
+            "window": f"{series[0]['date']} to {series[-1]['date']}",
             "indicator": "spi_03",
             "threshold": -1.0,
             "numbers": {

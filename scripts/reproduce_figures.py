@@ -12,7 +12,8 @@ committed reference artifacts under manuscript/figures/reproduced/:
      data/metadata.json as a deterministic SVG (the plotted bars are also
      written as JSON).
   2. Figure 5 — the All-India SPI-3 series: months at or below -1.00 (four of
-     538), the series minimum, and the qualifying event count.
+     547 as of the 2026-09 refresh; re-derived each run), the series minimum,
+     and the qualifying event count.
   3. Figure 6 — propagation: SPI-3 (lead) vs SPEI-3 (response) over All India,
      Pearson r, n and the moving-block bootstrap 95% interval
      (1,000 resamples, seed 20261103).
