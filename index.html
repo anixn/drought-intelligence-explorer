@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22d" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22f" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -121,10 +121,63 @@
         >
       </div>
 
-      <nav class="topnav" aria-label="Application navigation">
-        <button type="button" id="guideBtn" data-doc="doc-i-guide">
-          How to use
-        </button>
+      <!-- Help lives with the topbar utilities, not in the product bar
+           (2026-11-22 design pass, register I7). The product row below is
+           reserved for eras/products that render data; "How to use" opens the
+           standalone tour, Documentation opens the docs workspace. -->
+      <nav class="topnav" aria-label="Help and reference">
+        <a
+          class="top-util"
+          id="tourLink"
+          href="tour.html"
+          aria-label="Guided tour — how to use this dashboard"
+          data-tip-title="Guided tour"
+          data-tip-body="A five-minute walkthrough: the three eras, the four workspaces, and where every control lives. Start here on a first visit."
+        >
+          <svg
+            class="tu-ic"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z" />
+          </svg>
+          <span class="tu-full">How to use</span>
+          <span class="tu-short">Tour</span>
+        </a>
+        <a
+          class="top-util top-util-docs"
+          id="topDocsLink"
+          href="#data"
+          aria-label="Documentation and resources"
+          data-tip-title="Documentation &amp; resources"
+          data-tip-body="Data sources, methodology, validation and limitations, reproducibility, downloads, licences and version history — the reference centre behind every number."
+        >
+          <svg
+            class="tu-ic"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          </svg>
+          <span class="tu-full">Documentation</span>
+          <span class="tu-short">Docs</span>
+        </a>
         <button
           type="button"
           class="icon-btn"
@@ -176,6 +229,15 @@
         >
       </div>
     </header>
+
+    <!-- Hover/focus explainer for the product bar, lenses and topbar
+         utilities (M7.4): one shared tooltip element, filled from
+         data-tip-title/data-tip-body on the hovered or focused control after
+         a short delay, so a passing pointer never flashes it. -->
+    <div class="nav-tip" id="navTip" role="tooltip" hidden>
+      <b class="nav-tip-title" id="navTipTitle"></b>
+      <span class="nav-tip-body" id="navTipBody"></span>
+    </div>
 
     <div class="layout" id="layout">
       <!-- ==================== STUDY CONTEXT SIDEBAR ====================
@@ -383,6 +445,120 @@
         </div>
         <!-- /side-group: study context -->
 
+        <!-- ================= PRODUCT CONSOLES (M7.4) =================
+             The rail is never empty and never shows controls that do not
+             apply (Owner request, 2026-11-22). Eras/products that carry their
+             own controls get a console here; the era-B study-context group
+             above is hidden on those tabs by CSS, and Documentation gets a
+             contents index instead of the era-B filters. Readouts mirror the
+             panel controls (one source of truth: the panel select); the
+             chips and anchor buttons drive them through their existing
+             change events, so no analytic code is duplicated. -->
+        <section
+          class="side-sec tab-sec rail-console"
+          data-side="projections"
+          aria-labelledby="secProjRailH"
+        >
+          <h2 id="secProjRailH">Era C console</h2>
+          <dl class="rail-read" aria-live="polite">
+            <div><dt>Scenario</dt><dd id="railProjScenario">—</dd></div>
+            <div><dt>Indicator</dt><dd id="railProjVariable">—</dd></div>
+            <div><dt>Statistic</dt><dd id="railProjStat">—</dd></div>
+            <div><dt>Window</dt><dd id="railProjWindow">—</dd></div>
+          </dl>
+          <div class="rail-chips" role="group" aria-label="Projection presets">
+            <button type="button" class="rail-chip" data-proj-stat="agreement_moderate">
+              Agreement
+            </button>
+            <button type="button" class="rail-chip" data-proj-stat="band">
+              Median + band
+            </button>
+            <button type="button" class="rail-chip" data-proj-stat="dir_agreement_drier">
+              Direction
+            </button>
+            <button type="button" class="rail-chip" data-proj-window="late">
+              Late century
+            </button>
+          </div>
+          <p class="side-note">
+            Era C is <b>model simulation</b>, never a forecast. The same
+            selection also drives the band chart, the map and the events panel.
+          </p>
+        </section>
+
+        <section
+          class="side-sec tab-sec rail-console"
+          data-side="atlas"
+          aria-labelledby="secAtlasRailH"
+        >
+          <h2 id="secAtlasRailH">Atlas scrubber</h2>
+          <dl class="rail-read" aria-live="polite">
+            <div><dt>Timescale</dt><dd id="railAtlasVariable">—</dd></div>
+            <div><dt>Month</dt><dd id="railAtlasMonth">—</dd></div>
+            <div><dt>Year</dt><dd id="railAtlasYear">—</dd></div>
+          </dl>
+          <div class="rail-chips" role="group" aria-label="Historical drought anchors">
+            <button type="button" class="rail-chip" data-atlas-year="1918">1918</button>
+            <button type="button" class="rail-chip" data-atlas-year="1965">1965</button>
+            <button type="button" class="rail-chip" data-atlas-year="1972">1972</button>
+            <button type="button" class="rail-chip" data-atlas-year="1987">1987</button>
+            <button type="button" class="rail-chip" data-atlas-year="2002">2002</button>
+          </div>
+          <p class="side-note">
+            Era A reconstruction, 1901&ndash;2025. One year is fetched per
+            frame; the record is never spliced with era B.
+          </p>
+        </section>
+
+        <section
+          class="side-sec tab-sec rail-console"
+          data-side="data"
+          aria-labelledby="secDocsRailH"
+        >
+          <h2 id="secDocsRailH">Contents</h2>
+          <nav class="rail-nav" aria-label="Documentation sections">
+            <span class="rail-nav-title">Reference</span>
+            <button type="button" data-doc="doc-a-about">A &middot; About the Explorer</button>
+            <button type="button" data-doc="doc-b-dataset">B &middot; Data sources</button>
+            <button type="button" data-doc="doc-c-methods">C &middot; Methodology</button>
+            <button type="button" data-doc="doc-d-quality">D &middot; Validation &amp; quality</button>
+            <button type="button" data-doc="doc-e-limits">E &middot; Uncertainty &amp; limits</button>
+            <button type="button" data-doc="doc-f-repro">F &middot; Reproducibility</button>
+            <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citation</button>
+            <span class="rail-nav-title">v2.0 evidence</span>
+            <button type="button" data-doc="doc-k-methodology">K &middot; Living methodology</button>
+            <button type="button" data-doc="doc-l-governance">L &middot; Governance &amp; licences</button>
+            <button type="button" data-doc="doc-m-reality">M &middot; Reality checks</button>
+            <button type="button" data-doc="doc-n-status">N &middot; Data status</button>
+            <span class="rail-nav-title">Version &amp; handbook</span>
+            <button type="button" data-doc="doc-h-versions">H &middot; Version history</button>
+            <button type="button" data-doc="doc-i-guide">I &middot; User guide</button>
+            <button type="button" data-doc="doc-j-glossary">J &middot; Glossary</button>
+          </nav>
+          <a class="rail-link" href="tour.html">Start the guided tour &rarr;</a>
+        </section>
+
+        <section
+          class="side-sec tab-sec rail-console"
+          data-side="engine"
+          aria-labelledby="secEngineRailH"
+        >
+          <h2 id="secEngineRailH">Engine Lab</h2>
+          <p class="side-note">
+            SQL runs inside your browser on the published Parquet store &mdash;
+            nothing is uploaded and no server is involved.
+          </p>
+          <nav class="rail-nav" aria-label="Engine Lab references">
+            <a class="rail-link" href="tour.html#engine">Tour &middot; querying the record</a>
+            <button type="button" data-doc="doc-f-repro">
+              F &middot; Reproducibility
+            </button>
+            <button type="button" data-doc="doc-b-dataset">
+              B &middot; Data sources
+            </button>
+          </nav>
+        </section>
+
         <div class="sidebar-foot">
           <div class="foot-actions">
             <button
@@ -562,29 +738,45 @@
              lenses are four questions about ONE gridded record — never four
              datasets — so they no longer compete as peer top-level tabs. -->
         <div class="tab-nav">
-          <nav class="tab-groups" aria-label="Workspace groups">
+          <nav class="tab-groups" aria-label="Data products and tools">
             <a
               class="tab-group"
               href="#overview"
               data-group="record"
               aria-current="page"
+              data-tip-title="Record · 1981–2025"
+              data-tip-body="The gridded multi-source record: SPI and SPEI at 1/3/6/12 months, soil-moisture anomaly and VCI for 724 districts. Observation-based, era-labelled."
             >
               <span class="tg-name">Record</span
               ><span class="tg-years">1981–2025</span>
             </a>
-            <a class="tab-group" href="#projections" data-group="projections">
+            <a
+              class="tab-group"
+              href="#projections"
+              data-group="projections"
+              data-tip-title="Projections · 2015–2100"
+              data-tip-body="Era C: 24 bias-corrected CMIP6 models under SSP2-4.5 and SSP5-8.5 — ensemble median, spread and model agreement. Simulations, never forecasts."
+            >
               <span class="tg-name">Projections</span
               ><span class="tg-years">2015–2100</span>
             </a>
-            <a class="tab-group" href="#atlas" data-group="atlas">
+            <a
+              class="tab-group"
+              href="#atlas"
+              data-group="atlas"
+              data-tip-title="Atlas · 1901–2025"
+              data-tip-body="Era A: the Drought Atlas of India SPEI reconstruction, 1901–2025, mapped by district. Long historical droughts, never spliced with the record."
+            >
               <span class="tg-name">Atlas</span
               ><span class="tg-years">1901–2025</span>
             </a>
-            <a class="tab-group" href="#data" data-group="docs">
-              <span class="tg-name">Documentation</span
-              ><span class="tg-years">Methods &amp; downloads</span>
-            </a>
-            <a class="tab-group" href="#engine" data-group="tools">
+            <a
+              class="tab-group tab-group-tool"
+              href="#engine"
+              data-group="tools"
+              data-tip-title="Engine Lab"
+              data-tip-body="Run SQL directly over the published Parquet store in your browser (DuckDB-WASM): no server, no upload, exact file counts and query timings."
+            >
               <span class="tg-name">Engine Lab</span
               ><span class="tg-years">SQL over the record</span>
             </a>
@@ -603,6 +795,8 @@
                 id="tabOverview"
                 aria-selected="true"
                 aria-controls="viewOverview"
+                data-tip-title="Overview"
+                data-tip-body="One month, district by district: severity map, headline drought area, national series, ranking and evolution."
               >
                 <svg
                   class="tab-ic"
@@ -628,6 +822,8 @@
                 aria-selected="false"
                 aria-controls="viewHistorical"
                 tabindex="-1"
+                data-tip-title="Historical Analysis"
+                data-tip-body="Frequency, duration, severity of drought runs, plus long-term trends tested with Mann–Kendall, Sen's slope and the Hamed–Rao correction."
               >
                 <svg
                   class="tab-ic"
@@ -652,6 +848,8 @@
                 aria-selected="false"
                 aria-controls="viewEvents"
                 tabindex="-1"
+                data-tip-title="Drought Events"
+                data-tip-body="Every qualifying drought run (≥ 3 months below the truncation level): start, duration, severity, recovery, plus the sensitivity panel."
               >
                 <svg
                   class="tab-ic"
@@ -676,6 +874,8 @@
                 aria-selected="false"
                 aria-controls="viewPropagation"
                 tabindex="-1"
+                data-tip-title="Propagation &amp; Relationships"
+                data-tip-body="How drought propagates through the system: lagged cross-correlation between rainfall, soil moisture and vegetation, with a moving-block bootstrap confidence band."
               >
                 <svg
                   class="tab-ic"
@@ -702,6 +902,8 @@
                 aria-selected="false"
                 aria-controls="viewCrossval"
                 tabindex="-1"
+                data-tip-title="Cross-validation"
+                data-tip-body="Era A against era B over 1981–2014: agreement, bias, within-one-class share and the X7 seam uncertainty, district by district."
               >
                 <svg
                   class="tab-ic"
@@ -726,6 +928,8 @@
                 aria-selected="false"
                 aria-controls="viewDistrict"
                 tabindex="-1"
+                data-tip-title="District profile"
+                data-tip-body="A one-page dossier for any district: this month's state, the ten indicators, the long-term trend, its drought events and the era-by-era evidence."
               >
                 <svg
                   class="tab-ic"
@@ -759,6 +963,8 @@
                 aria-selected="false"
                 aria-controls="viewProjections"
                 tabindex="-1"
+                data-tip-title="Future Projections"
+                data-tip-body="What the models project for this century: pick a scenario, statistic and time window to map median change, spread or model agreement."
               >
                 <svg
                   class="tab-ic"
@@ -784,6 +990,8 @@
                 aria-selected="false"
                 aria-controls="viewSummary"
                 tabindex="-1"
+                data-tip-title="Drought to 2100"
+                data-tip-body="The agreement-first summary: how drought area changes by the end of the century, by how much, and how many models agree on the sign."
               >
                 <svg
                   class="tab-ic"
@@ -819,6 +1027,8 @@
                 aria-selected="false"
                 aria-controls="viewAtlas"
                 tabindex="-1"
+                data-tip-title="Atlas 1901–2025"
+                data-tip-body="Scrub the era-A reconstruction year by year and read drought-class shares for any month — 1918, 1965, 1972, 1987 and 2002 are one click away."
               >
                 <svg
                   class="tab-ic"
@@ -852,6 +1062,8 @@
                 aria-selected="false"
                 aria-controls="viewEngine"
                 tabindex="-1"
+                data-tip-title="Engine Lab"
+                data-tip-body="Query the published store yourself: presets or your own SQL over the Parquet files, with row counts, timings, byte traffic and CSV export."
               >
                 <svg
                   class="tab-ic"
@@ -3130,7 +3342,9 @@
                 <span class="vi-hint"
                   >About, data sources, methodology, validation, uncertainty,
                   reproducibility, downloads &amp; version history &mdash; open
-                  any time from the book icon in the sidebar footer.</span
+                  any time from the <b>Documentation</b> link in the topbar or
+                  the book icon in the sidebar footer. First visit? Start with
+                  the guided tour in the topbar.</span
                 >
                 <button
                   type="button"
@@ -3290,7 +3504,9 @@
                 This dashboard turns district-month drought indicators into
                 maps, statistics, event catalogues and downloadable research
                 outputs. Everything runs in your browser &mdash; no account,
-                backend or API key is required.
+                backend or API key is required. New here? The five-minute
+                <a href="tour.html">guided tour</a> (topbar &rarr;
+                <em>How to use</em>) covers the same ground with live links.
               </p>
 
               <h3>Quick start</h3>
@@ -3298,11 +3514,11 @@
                 <li>
                   <b>Choose the scope.</b> Set <em>Geographic extent</em>,
                   <em>State / UT</em>, <em>Drought indicator</em> and
-                  <em>Analysis period</em> in the dark control panel. These are
-                  global: every tab, chart and export follows them. The panel
-                  adapts to the active workspace &mdash; tab-specific controls
-                  (observation date, map display, event filters, indicator
-                  pairs) appear in it as you switch tabs.
+                  <em>Analysis period</em> in the control rail (the sidebar; a
+                  drawer on phones). These are global: every Record tab, chart
+                  and export follows them. The rail also adapts: Projections and
+                  Atlas get their own console, and Documentation gets a contents
+                  index instead of controls that would not apply.
                 </li>
                 <li>
                   <b>Pick a date (Overview).</b> The observation date controls
@@ -4699,7 +4915,7 @@
           return;
         }
 
-        var ASSET_VERSION = "2026-11-22d";
+        var ASSET_VERSION = "2026-11-22f";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

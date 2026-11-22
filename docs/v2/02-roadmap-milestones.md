@@ -207,6 +207,7 @@ Ordering logic: **engine + regression protection first** (nothing is built on a 
 | M7.1 | Download portal: versioned Parquet + CSV bundles generated from catalog, schema docs, checksums; **every bundle + export carries era/source/base_period/pet_method/seam_note headers (X6) with a regression check** | files identical to dashboard-served |
 | M7.2 | CITATION.cff update + Zenodo v2.0.0 deposit + DOI + citation line | DOI resolves |
 | M7.3 | Mobile + WCAG 2.1 AA pass; permalink hardening; Engine Lab polish — **BUILT 2026-11-22** (mobile touch targets ≥ 44 px, drawer stacking, topbar status row, contrast fixes, malformed-permalink guards, byte-counter port isolation; Owner design pass: footer card, viewport-fitted map, product bar attached to topbar + scroll collapse, observation date in the rail, aligned Historical A strip) | checklist in 04 §7 green |
+| M7.3a | Help model (Owner design pass 2026-11-22): Documentation moved to the topbar utilities, standalone `tour.html`, delayed hover/focus explainers on every product/lens/utility, per-product rail consoles, Documentation contents rail — register I7–I10 | `tour.html` internal links resolve; rails mirror and drive the panel controls |
 | M7.4 | Methodology page v2 complete; changelog; release notes; version-history panel updated | no leftover placeholders |
 | M7.5 | Definition-of-Done checklist (docs/v2/01 §6) walked item by item | all boxes checked or explicitly deferred with Owner sign-off |
 

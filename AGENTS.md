@@ -86,6 +86,7 @@ drought-intelligence-explorer/
 ├── AGENTS.md                    # this file (repo root — OpenCode auto-loads it)
 ├── PROGRESS.md                  # persistent tracker (repo root)
 ├── index.html                   # v1.0 shell, extended (never rewritten)
+├── tour.html                    # NEW: standalone guided tour ("How to use"), same design system
 ├── assets/{css,js,vendor,images}/
 │   └── js/ducklab.js            # NEW: DuckDB-WASM engine service (see docs/v2/04)
 ├── data/

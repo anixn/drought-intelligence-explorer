@@ -120,7 +120,7 @@
   function currentDataset() { return DIE.datasets.get(DIE.state.indicator); }
   function ids() { return DIE.Filters.regionIds(); }
   function isDemo() { return /synthetic|demonstration/i.test(String(DIE.meta.data_mode || '')); }
-  function run(fn) { try { fn(); } catch (e) { console.error(e); } }
+  function run(fn) { try { return fn(); } catch (e) { console.error(e); } }
   function debounce(fn, ms) {
     let t;
     return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
@@ -207,6 +207,8 @@
 
       wireShell();
       wireChrome();
+      wireNavTips();
+      wireRailConsoles();
       // Deep event instrumentation (GTM dataLayer). Never throws into the
       // boot path; wire() only subscribes listeners.
       if (DIE.Telemetry) run(() => DIE.Telemetry.wire());
@@ -258,8 +260,14 @@
     // Lazy init + render only when the tab needs it. DIRTY starts true for
     // every tab and is set on state changes while the tab is hidden.
     if (DIRTY[tab.id]) {
-      run(() => Views[tab.id] && Views[tab.id]());
+      const pending = run(() => Views[tab.id] && Views[tab.id]());
       DIRTY[tab.id] = false;
+      // The product consoles mirror controls that a lazily-initialised module
+      // fills in (scenario list, month list, variable list), so refresh the
+      // rail once that first render settles too (M7.4).
+      if (pending && typeof pending.then === "function") {
+        pending.then(syncRailConsoles, syncRailConsoles);
+      }
     }
     // Leaflet needs a size recalculation after its container becomes visible.
     setTimeout(() => {
@@ -289,6 +297,7 @@
     document.body.dataset.tab = tab.id;
     syncNavGroup(tab.id);
     syncSidebar(tab.id);
+    syncRailConsoles();
     if (DIE.Telemetry) DIE.Telemetry.track('tab_view', { tab: tab.id });
   }
 
@@ -312,6 +321,13 @@
       if (a.dataset.group === group) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
+    // Documentation left the product bar in M7.4 (it is reference material,
+    // not a data product): its topbar utility carries the current state.
+    const docsLink = $('topDocsLink');
+    if (docsLink) {
+      if (group === 'docs') docsLink.setAttribute('aria-current', 'page');
+      else docsLink.removeAttribute('aria-current');
+    }
     const hasLenses = !!GROUP_WITH_LENSES[group];
     const wrap = $('tabLenses');
     if (wrap) wrap.hidden = !hasLenses;
@@ -1034,6 +1050,197 @@
       if (!frame) frame = requestAnimationFrame(step);
     }, { passive: true });
     nav.addEventListener('focusin', () => nav.classList.remove('is-collapsed'));
+  }
+
+  /* ============================================= NAV EXPLAINERS (M7.4) ===
+   * A short, delayed explanation for every product, lens and topbar utility.
+   * The copy lives on the control itself (data-tip-title / data-tip-body) so a
+   * description sits beside the label it explains; this only places one shared
+   * card. Delayed (~450 ms) so sweeping the pointer across the bar never
+   * flashes it; keyboard focus shows it at once, Escape always dismisses. */
+  function wireNavTips() {
+    const tip = $('navTip');
+    const titleEl = $('navTipTitle');
+    const bodyEl = $('navTipBody');
+    if (!tip || !titleEl || !bodyEl) return;
+    const triggers = Array.prototype.slice.call(
+      document.querySelectorAll('[data-tip-title]')
+    );
+    let timer = 0;
+    let current = null;
+
+    const hide = () => {
+      if (timer) { clearTimeout(timer); timer = 0; }
+      if (current) {
+        current.removeAttribute('aria-describedby');
+        current = null;
+      }
+      tip.classList.remove('is-shown');
+      // keep it out of the a11y tree and any hit-testing once faded out
+      setTimeout(() => {
+        if (!tip.classList.contains('is-shown')) tip.hidden = true;
+      }, 160);
+    };
+
+    const place = (el) => {
+      const r = el.getBoundingClientRect();
+      tip.hidden = false;
+      tip.classList.remove('is-shown');
+      const tw = tip.offsetWidth;
+      const th = tip.offsetHeight;
+      let left = r.left + r.width / 2 - tw / 2;
+      left = Math.max(10, Math.min(left, window.innerWidth - tw - 10));
+      let top = r.bottom + 8;
+      if (top + th > window.innerHeight - 8) top = Math.max(8, r.top - th - 8);
+      tip.style.left = Math.round(left) + 'px';
+      tip.style.top = Math.round(top) + 'px';
+      // one frame from the hidden state so the fade/rise actually runs
+      requestAnimationFrame(() => tip.classList.add('is-shown'));
+    };
+
+    const show = (el) => {
+      if (!el.dataset.tipTitle) return;
+      current = el;
+      el.setAttribute('aria-describedby', 'navTip');
+      titleEl.textContent = el.dataset.tipTitle;
+      bodyEl.textContent = el.dataset.tipBody || '';
+      place(el);
+    };
+
+    triggers.forEach((el) => {
+      el.addEventListener('pointerenter', () => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => show(el), 450);
+      });
+      el.addEventListener('pointerleave', hide);
+      el.addEventListener('focus', () => {
+        if (timer) clearTimeout(timer);
+        show(el);
+      });
+      el.addEventListener('blur', hide);
+      // clicking means the reader has chosen a destination — get out of the way
+      el.addEventListener('click', hide);
+    });
+    window.addEventListener('scroll', hide, { passive: true });
+    window.addEventListener('resize', hide);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hide();
+    });
+  }
+
+  /* ================================================ RAIL CONSOLES (M7.4) ==
+   * Read-outs that mirror the era-C and era-A panel controls, plus quick
+   * presets that drive those same controls through their own change events.
+   * The panel select stays the single source of truth, so no analytic code is
+   * duplicated and a permalink restores both the panel and the rail. */
+  function optionLabel(sel, fallback) {
+    if (!sel || sel.selectedIndex < 0) return fallback;
+    const opt = sel.options[sel.selectedIndex];
+    return opt ? opt.textContent.trim().replace(/\s*\(.*$/, "") : fallback;
+  }
+
+  function syncRailConsoles() {
+    const pv = $('projVariable'), ps = $('projStatistic'), pw = $('projWindow');
+    if (pv && $('railProjVariable')) $('railProjVariable').textContent = optionLabel(pv, '—');
+    if (ps && $('railProjStat')) $('railProjStat').textContent = optionLabel(ps, '—');
+    if (pw && $('railProjWindow')) $('railProjWindow').textContent = optionLabel(pw, '—');
+    const sc = document.querySelector('input[name="projScenario"]:checked');
+    if (sc && $('railProjScenario')) {
+      $('railProjScenario').textContent =
+        sc.value === 'ssp585' ? 'SSP5-8.5' : 'SSP2-4.5';
+    }
+    document.querySelectorAll('[data-proj-stat]').forEach((b) => {
+      b.setAttribute('aria-pressed',
+        String(!!ps && ps.value === b.dataset.projStat));
+    });
+    document.querySelectorAll('[data-proj-window]').forEach((b) => {
+      b.setAttribute('aria-pressed',
+        String(!!pw && pw.value === b.dataset.projWindow));
+    });
+
+    const av = $('atlasVariable'), am = $('atlasMonth'), ay = $('atlasYear');
+    if (av && $('railAtlasVariable')) $('railAtlasVariable').textContent = optionLabel(av, '—');
+    if (am && $('railAtlasMonth')) $('railAtlasMonth').textContent = optionLabel(am, '—');
+    if (ay && $('railAtlasYear')) $('railAtlasYear').textContent = ay.value;
+    document.querySelectorAll('[data-atlas-year]').forEach((b) => {
+      b.setAttribute('aria-pressed',
+        String(!!ay && ay.value === b.dataset.atlasYear));
+    });
+  }
+
+  function wireRailConsoles() {
+    ['projVariable', 'projStatistic', 'projWindow',
+      'atlasVariable', 'atlasMonth', 'atlasYear'].forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener('change', syncRailConsoles);
+      if (id === 'atlasYear') el.addEventListener('input', syncRailConsoles);
+    });
+    document.querySelectorAll('input[name="projScenario"]').forEach((r) => {
+      r.addEventListener('change', syncRailConsoles);
+    });
+
+    const applyProj = (selectId, value) => {
+      const sel = $(selectId);
+      if (!sel) return;
+      const commit = () => {
+        sel.value = value;
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+        syncRailConsoles();
+      };
+      // never fight the module's first render: wait for it, then apply
+      if (DIE.Projections && DIE.Projections.whenReady) {
+        DIE.Projections.whenReady().then(commit, commit);
+      } else {
+        commit();
+      }
+    };
+    document.querySelectorAll('[data-proj-stat]').forEach((btn) => {
+      btn.addEventListener('click', () => applyProj('projStatistic', btn.dataset.projStat));
+    });
+    document.querySelectorAll('[data-proj-window]').forEach((btn) => {
+      btn.addEventListener('click', () => applyProj('projWindow', btn.dataset.projWindow));
+    });
+
+    document.querySelectorAll('[data-atlas-year]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const go = () => {
+          // reuse the panel's own anchor button: one implementation of
+          // "jump to 1918", not a second copy of the state change
+          const src = document.querySelector(
+            '.atlas-anchor[data-year="' + btn.dataset.atlasYear + '"]'
+          );
+          if (src) {
+            src.click();
+            // the panel handler updates the slider synchronously; mirror it
+            syncRailConsoles();
+            return;
+          }
+          const y = $('atlasYear');
+          if (y) {
+            y.value = btn.dataset.atlasYear;
+            y.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        };
+        if (DIE.AtlasView && DIE.AtlasView.whenReady) {
+          DIE.AtlasView.whenReady().then(go, go);
+        } else {
+          go();
+        }
+      });
+    });
+
+    // The era-C/era-A modules fill some option lists during their first
+    // render (projection indicators, atlas months). Mirror them whenever the
+    // list changes so the rail can never show a stale "—".
+    if (window.MutationObserver) {
+      const mo = new MutationObserver(syncRailConsoles);
+      ['projVariable', 'atlasMonth'].forEach((id) => {
+        const el = $(id);
+        if (el) mo.observe(el, { childList: true });
+      });
+    }
+    syncRailConsoles();
   }
 
   /* Drawer mode (= mobile/tablet) owns the sidebar entirely; on desktop the

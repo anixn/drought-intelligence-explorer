@@ -303,15 +303,36 @@ Four persisted paper accents selected from the sidebar "Paper accent" control (R
 - **Era pill** in the topbar: standing `Era A/B/C` label per tab ("C − B · Delta to 2100" on `#summary`), colour-coded by era, with the no-splice wording in its accessible label. This is R2 made visible on every surface without adding a banner to each view.
 - **Default reading position (D12):** boot and Reset open on **July 2002**, the documented monsoon failure (410/724 districts ≤ −1.0; 151 ≤ −2.0; 76.8 % area in drought; 23.3 % extreme), not the newest month — December 2025 is wet and made the landing view look as if drought had disappeared. Implemented in `filters.js` (`DEFAULT_DATE`, `resolveDefaultDate`); **Latest** still snaps to the newest observation, and indicators that do not cover 2002 fall back to latest.
 
-### 9.5 Product-first navigation (M10.3c)
+### 9.5 Product-first navigation (M10.3c, revised 2026-11-22 — register I7)
 
 The review's "question-first, not technique-first" principle is implemented as a two-tier navigation, not by renaming workspaces:
 
-- **Top row — products/eras.** `Record 1981–2025` (era B), `Projections 2015–2100` (era C), `Atlas 1901–2025` (era A), `Documentation`, `Engine Lab`. Each is a hash link, so routes stay stable and no custom click handler is needed.
-- **Second row — lenses.** The analytical tabs of the active product: four record lenses (Overview, Historical Analysis, Drought Events, Propagation & Relationships), two projection lenses (Future Projections, Drought to 2100). Single-surface groups hide the lens strip.
+- **Top row — products/eras.** `Record 1981–2025` (era B), `Projections 2015–2100` (era C), `Atlas 1901–2025` (era A), then a hairline, then `Engine Lab` (a tool, not an era). Each is a hash link, so routes stay stable and no custom click handler is needed.
+- **Topbar utilities — help and reference.** `How to use` (opens `tour.html`) and `Documentation` (`#data`) moved out of the product row: they are reference material, so they sit with the brand and the fullscreen control. `Documentation` carries `aria-current="page"` while `#data` is open. On phones both become icon-only 44 px targets and fullscreen is dropped, keeping the topbar at two rows.
+- **Second row — lenses.** The analytical tabs of the active product: four record lenses (Overview, Historical Analysis, Drought Events, Propagation & Relationships, plus Cross-validation and District profile), two projection lenses (Future Projections, Drought to 2100). Single-surface groups hide the lens strip.
+- **Hover/focus explainers (2026-11-22).** Every product link, lens button and topbar utility carries `data-tip-title` / `data-tip-body`; one shared `#navTip` card appears after a 450 ms hover delay, immediately on keyboard focus, and is dismissed by leaving, clicking, scrolling, resizing or `Escape`. The tooltip is `role="tooltip"` and is linked with `aria-describedby` only while visible.
 - The active product link carries `aria-current="page"`; each lens row remains a real `role="tablist"` with `role="tab"` buttons and roving tabindex. `syncNavGroup()` in `app.js` owns the reveal logic.
 - The four era-B lenses are **not** merged: they answer different questions (current state, statistics/trends, individual events, cross-indicator lag) about one gridded multi-source record. The structure makes that relationship visible instead of presenting four peer products.
 - Fixed group tokens preserve product identity across lenses; the paper accent is not used for the band.
+
+### 9.5b Guided tour (`tour.html`, 2026-11-22 — register I8)
+
+`tour.html` is a standalone, static page in the same Sepia Paper system (it links `assets/css/style.css` and only adds tour-local layout). It exists because the dashboard is dense and the documentation centre is reference, not onboarding:
+
+- **Content:** what the platform is and is not; the three eras as cards (A reconstruction / B gridded record / C projections), never spliced; ten numbered stops, each with what you are looking at, one concrete "try this", and deep links into the live view (`#overview?ind=spi_3&date=2002-07`, `#projections`, `#atlas`, `#crossval`, `#engine`, …); a "where things live" table; a "reading a number honestly" list (era, baseline, n, gaps, uncertainty); the not-operational disclaimer.
+- **No fabrication:** every statement is a published behaviour (event rule, trend method, bootstrap seed, eras, reference period). No screenshots are embedded (they would go stale), and no numbers are invented.
+- **Entry points:** topbar `How to use`; Documentation rail; user-guide section I; `#engine` rail cross-link.
+- Verified: 22 internal links resolve, 0 console warnings, Lighthouse Accessibility 1.00 / Best Practices 1.00 / SEO 1.00, zero horizontal overflow at 390 px.
+
+### 9.5c Rail consoles (2026-11-22 — register I9)
+
+The sidebar is not decoration and not a place to leave controls that do not apply:
+
+- **Record lenses:** the study context (observation date on Overview, geography, indicator, analysis period) — shared state that every Record panel follows.
+- **Projections:** an **Era C console** — live read-outs of scenario, indicator, statistic and window, plus four preset chips (Agreement, Median + band, Direction, Late century) that drive the panel's own selects through their `change` events, so the panel remains the single source of truth.
+- **Atlas:** an **Atlas scrubber console** — live timescale/month/year, plus the five drought anchors, reusing the panel's own anchor buttons.
+- **Documentation:** a **contents index** (Reference / v2.0 evidence / Version & handbook) wired to the existing `data-doc` routing, plus the tour link. The era-B study context is hidden here and on Engine Lab (it would drive nothing).
+- Read-outs refresh on `switchTab`, on control changes, when the lazy module's first render settles, and — for lists built at init (projection indicators, atlas months) — through a `MutationObserver`.
 
 ### 9.6 What must not regress
 

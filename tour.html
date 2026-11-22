@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>How to use the Drought Intelligence Explorer — guided tour</title>
+    <meta
+      name="description"
+      content="A five-minute guided tour of the Drought Intelligence Explorer: the three labelled eras, the four workspaces, where every control lives, and how to read a number honestly."
+    />
+    <meta
+      name="author"
+      content="Ankit Deshmukh, Ph.D. — Pandit Deendayal Energy University"
+    />
+    <meta name="theme-color" content="#F6F1E6" />
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22f" />
+    <style>
+      /* Tour-only layout. Tokens, type and colours come from style.css so the
+         tour reads as the same product, not a brochure. */
+      body.tour-page {
+        background: var(--paper, #f6f1e6);
+        color: var(--ink);
+      }
+      .tour-top {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-height: 60px;
+        padding: 0 20px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--hairline);
+      }
+      .tour-brand {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        line-height: 1.2;
+        text-decoration: none;
+        color: inherit;
+      }
+      .tour-brand b {
+        font-family: var(--font-display, var(--serif));
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink-strong);
+      }
+      .tour-brand span {
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+      }
+      .tour-top nav {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .tour-top nav a {
+        padding: 8px 11px;
+        border-radius: 3px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--ink-soft);
+        text-decoration: none;
+      }
+      .tour-top nav a:hover {
+        background: var(--accent-soft);
+        color: var(--accent-ink);
+      }
+      .tour-top nav a.primary {
+        background: var(--accent-soft);
+        color: var(--accent-ink);
+      }
+      .tour {
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 34px 20px 72px;
+      }
+      .tour-hero {
+        padding-bottom: 22px;
+        border-bottom: 1px solid var(--hairline);
+      }
+      .tour-kicker {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+      }
+      .tour h1 {
+        font-family: var(--font-display, var(--serif));
+        font-size: clamp(26px, 4vw, 38px);
+        line-height: 1.15;
+        margin: 8px 0 10px;
+        color: var(--ink-strong);
+        text-wrap: balance;
+      }
+      .tour-lead {
+        font-size: 15px;
+        line-height: 1.6;
+        max-width: 68ch;
+        color: var(--ink);
+        text-wrap: pretty;
+      }
+      .tour-facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 16px;
+      }
+      .tour-fact {
+        font-family: var(--mono);
+        font-size: 10px;
+        padding: 4px 8px;
+        border: 1px solid var(--hairline);
+        border-radius: 3px;
+        background: var(--surface);
+        color: var(--ink-soft);
+      }
+      .tour-h2 {
+        font-family: var(--font-display, var(--serif));
+        font-size: 20px;
+        margin: 34px 0 6px;
+        color: var(--ink-strong);
+      }
+      .tour-sub {
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+        max-width: 70ch;
+        margin: 0 0 16px;
+      }
+      /* eras */
+      .era-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+      }
+      .era-card {
+        background: var(--surface);
+        border: 1px solid var(--hairline);
+        border-left: 3px solid var(--era, var(--accent));
+        border-radius: var(--radius);
+        padding: 13px 14px;
+      }
+      .era-card h3 {
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--ink-strong);
+      }
+      .era-card .yrs {
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 400;
+        color: var(--ink-faint);
+      }
+      .era-card p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--ink-soft);
+      }
+      .era-card p + p {
+        margin-top: 6px;
+      }
+      /* steps */
+      .steps {
+        display: grid;
+        gap: 12px;
+        counter-reset: step;
+      }
+      .step {
+        display: grid;
+        grid-template-columns: 38px 1fr;
+        gap: 12px;
+        padding: 14px 16px;
+        background: var(--surface);
+        border: 1px solid var(--hairline);
+        border-radius: var(--radius);
+      }
+      .step-n {
+        counter-increment: step;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--surface-2);
+        border: 1px solid var(--hairline);
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ink-strong);
+      }
+      .step-n::before {
+        content: counter(step);
+      }
+      .step h3 {
+        margin: 0 0 5px;
+        font-size: 14px;
+        color: var(--ink-strong);
+      }
+      .step p {
+        margin: 0;
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+        max-width: 66ch;
+      }
+      .step-try {
+        margin-top: 7px !important;
+        color: var(--ink) !important;
+      }
+      .step-try b {
+        color: var(--ink-strong);
+      }
+      .step-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+      .step-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border: 1px solid var(--hairline);
+        border-radius: 3px;
+        background: var(--surface-2);
+        color: var(--accent-ink);
+        font-size: 11.5px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .step-links a:hover {
+        background: var(--accent-soft);
+        border-color: var(--accent-line, var(--hairline));
+      }
+      .step-links a::after {
+        content: "→";
+        font-family: var(--mono);
+        font-size: 11px;
+      }
+      /* tables and lists */
+      .tour-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        background: var(--surface);
+        border: 1px solid var(--hairline);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .tour-table th,
+      .tour-table td {
+        text-align: left;
+        vertical-align: top;
+        padding: 8px 11px;
+        border-bottom: 1px solid var(--hairline);
+      }
+      .tour-table th {
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        background: var(--surface-2);
+      }
+      .tour-table tr:last-child td {
+        border-bottom: 0;
+      }
+      .tour-table td:first-child {
+        font-weight: 600;
+        color: var(--ink-strong);
+        white-space: nowrap;
+      }
+      .tour-list {
+        margin: 0;
+        padding-left: 18px;
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: var(--ink-soft);
+        max-width: 74ch;
+      }
+      .tour-list li + li {
+        margin-top: 5px;
+      }
+      .tour-list b {
+        color: var(--ink-strong);
+      }
+      .tour-note {
+        margin-top: 18px;
+        padding: 11px 13px;
+        border-left: 3px solid var(--era-a, #6e6238);
+        background: var(--surface-2);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+      }
+      .tour-foot {
+        margin-top: 34px;
+        padding-top: 16px;
+        border-top: 1px solid var(--hairline);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        align-items: center;
+        font-size: 11.5px;
+        color: var(--ink-faint);
+      }
+      .tour-foot a {
+        color: var(--accent-ink);
+      }
+      @media (max-width: 620px) {
+        .tour-top {
+          flex-wrap: wrap;
+          padding: 8px 14px;
+        }
+        .tour-top nav {
+          width: 100%;
+          justify-content: flex-start;
+        }
+        .tour {
+          padding: 22px 14px 54px;
+        }
+        .step {
+          grid-template-columns: 30px 1fr;
+          padding: 12px;
+        }
+        .step-n {
+          width: 28px;
+          height: 28px;
+          font-size: 11px;
+        }
+      }
+    </style>
+  </head>
+  <body class="tour-page">
+    <a class="skip-link" href="#tour">Skip to the tour</a>
+
+    <header class="tour-top">
+      <a class="tour-brand" href="index.html">
+        <b>Drought Intelligence Explorer</b>
+        <span>India · Hydroclimatic Analytics</span>
+      </a>
+      <nav aria-label="Tour navigation">
+        <a class="primary" href="index.html">Open the dashboard</a>
+        <a href="index.html#data">Documentation</a>
+      </nav>
+    </header>
+
+    <main class="tour" id="tour">
+      <div class="tour-hero">
+        <div class="tour-kicker">Guided tour · about five minutes</div>
+        <h1>What this is, and how to read it</h1>
+        <p class="tour-lead">
+          The Drought Intelligence Explorer is a research platform for Indian
+          drought: one district fabric, three labelled eras, and the same
+          statistical interrogation layer over all of them. Nothing here is
+          operational monitoring, and no era is silently spliced onto another.
+          This page walks you through the four workspaces, then shows where
+          every control lives.
+        </p>
+        <div class="tour-facts">
+          <span class="tour-fact">724 districts · 36 States/UTs</span>
+          <span class="tour-fact">10 indicators</span>
+          <span class="tour-fact">era A · 1901–2025</span>
+          <span class="tour-fact">era B · 1981–2025</span>
+          <span class="tour-fact">era C · 2015–2100</span>
+        </div>
+      </div>
+
+      <h2 class="tour-h2">Three eras, never one line</h2>
+      <p class="tour-sub">
+        Every chart, map and export says which era it shows. A reconstruction, an
+        observation-based gridded product and a climate-model simulation are
+        different kinds of evidence; the dashboard keeps them apart on purpose.
+      </p>
+      <div class="era-grid">
+        <div class="era-card" style="--era: #6e6238">
+          <h3>Era A · Reconstruction <span class="yrs">1901–2025</span></h3>
+          <p>
+            The Drought Atlas of India SPEI reconstruction, served at district
+            level. Long historical droughts (1918, 1965, 1972, 1987, 2002) in a
+            record that predates instrumental coverage.
+          </p>
+          <p><b>Read it as:</b> a reconstruction, not a measurement.</p>
+        </div>
+        <div class="era-card" style="--era: #4e6b5a">
+          <h3>Era B · Gridded record <span class="yrs">1981–2025</span></h3>
+          <p>
+            The multi-source product: SPI and SPEI at 1/3/6/12 months, soil
+            moisture anomaly and VCI, from CHIRPS rainfall, ERA5-Land and MODIS.
+            Each indicator family keeps its own source — they are never blended.
+          </p>
+          <p><b>Read it as:</b> observation-based, district-aggregated.</p>
+        </div>
+        <div class="era-card" style="--era: #8a4430">
+          <h3>Era C · Projections <span class="yrs">2015–2100</span></h3>
+          <p>
+            24 bias-corrected CMIP6 models under SSP2-4.5 and SSP5-8.5, shown as
+            ensemble median, spread and model agreement.
+          </p>
+          <p><b>Read it as:</b> a simulation of possible futures, never a forecast.</p>
+        </div>
+      </div>
+
+      <h2 class="tour-h2">Walk through the workspaces</h2>
+      <p class="tour-sub">
+        Ten stops. Each one links straight to the view it describes, with the
+        indicator and month already set where that matters.
+      </p>
+
+      <div class="steps">
+        <article class="step">
+          <div class="step-n" aria-hidden="true"></div>
+          <div>
+            <h3>Start with one month</h3>
+            <p>
+              The landing view answers a single question — <i>where is drought
+              biting right now</i> — for the month you choose. It opens on July
+              2002, a documented drought month, so the page is never empty on a
+              first visit. Four numbers lead: drought-affected area, severe plus
+              extreme area, the area-weighted mean indicator, and how many
+              districts are in drought.
+            </p>
+            <p class="step-try">
+              <b>Try this:</b> read the receipts row under the numbers — era,
+              product, window, baseline and <b>n</b>. Those four labels are the
+              difference between a number and a claim.
+            </p>
+            <div class="step-links">
+              <a href="index.html#overview">Open the Overview</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-n" aria-hidden="true"></div>
+          <div>
+            <h3>Choose the indicator and the month</h3>
+            <p>
+              The sidebar is the study context: indicator (SPI / SPEI at four
+              timescales, soil-moisture anomaly, VCI), observation date (year,
+              month, or drag the slider), and the analysis period used by the
+              statistics. On phones the same rail opens as a drawer.
+            </p>
+            <p class="step-try">
+              <b>Try this:</b> switch to <b>SPEI-12</b> and step to September
+              2002 — the same episode seen through a water-balance lens. Missing
+              months stay missing: they are drawn as gaps and counted, never
+              filled in.
+            </p>
+            <div class="step-links">
+              <a href="index.html#overview?ind=spi_3&amp;date=2002-07">SPI-3 · July 2002</a>
+              <a href="index.html#overview?ind=spei_12&amp;date=2002-09">SPEI-12 · September 2002</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-n" aria-hidden="true"></div>
+          <div>
+            <h3>Read the map, then the legend</h3>
+            <p>
+              Districts are coloured with the published McKee severity classes
+              (the same boundaries in every era). The legend carries the exact
+              z-score range for each class; hover or tap a district for its value
+              and class. Areas with no data — including the island districts the
+              Atlas ocean mask omits — are shown as absent, never as “normal”.
+            </p>
+            <p class="step-try">
+              <b>Try this:</b> change <b>Colour</b> to the continuous scale to see
+              the gradient inside a class, then switch back. Export the map as a
+              PNG when you need a figure: the caption strip carries the citation,
+              indicator, date and DOI statement.
+            </p>
+            <div class="step-links">
+              <a href="index.html#overview?ind=spei_12&amp;date=2002-09">Open the severity map</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-n" aria-hidden="true"></div>
+          <div>
+            <h3>Ask whether the record has changed</h3>
+            <p>
+              Historical Analysis answers four questions in order: how often,
+              how long, how severe — and is there a trend? Trends use the
+              Mann–Kendall test with Sen's slope, a 90 % rank-based confidence
+              interval, and the Hamed–Rao correction when serial correlation is
+              present. Annual values need at least nine valid months.
+            </p>
+            <p class="step-try">
+              <b>Try this:</b> read the trend panel's <b>p</b> and the
+              autocorrelation note. A trend map without a multiple-testing
+              correction is labelled exploratory; the FDR-corrected count is given
+              for the district set.
+            </p>
+            <div class="step-links">
+              <a href="index.html#historical">Open Historical Analysis</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-n" aria-hidden="true"></div>
+          <div>
+            <h3>List the events</h3>
+            <p>
+              A drought event is a run of at least three consecutive months below
+              the truncation level (−1.00 z, −15 % soil-moisture anomaly or the
+              30 % VCI class). Each event reports start, duration, severity
+              (Σ(τ − x)) and recovery, with runs censored at the edge of the
+              record and broken by missing months — never extended across a gap.
+            </p>
+            <p class="step-try">
+              <b>Try this:</b> use the sensitivity panel to see how the count
+              changes with duration 4/6/9/12 and truncations −0.50 / −1.50 /
+              −2.00. The default is the published rule, not a preference.
+            </p>
+            <div class="step-links">
+              <a href="index.html#events">Open Drought Events</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-n" aria-hidden="true"></div>
+          <div>
+            <h3>Follow the propagation</h3>
+            <p>
+              Drought propagates: rainfall deficits become soil-moisture deficits,
+              which become vegetation stress. The Propagation workspace shows
+              lagged cross-correlations from −12 to +12 months with at least 30
+              paired months, and a moving-block bootstrap confidence band (1,000
+              resamples, block length n^⅓, seed 20261103).
+            </p>
+            <p class="step-try">
+              <b>Try this:</b> note what the page refrains from claiming — with
+              rainfall, soil moisture and vegetation only, there is no streamflow
+              or groundwater statement, and correlation is never called causation.
+            </p>
+            <div class="step-links">
+              <a href="index.html#propagation">Open Propagation</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-n" aria-hidden="true"></div>
+          <div>
+            <h3>Look forward, carefully</h3>
+            <p>
+              Projections is era C: pick a scenario, an indicator, a statistic
+              and a time window. “Agreement — moderate” is the default because the
+              honest question is <i>how many models agree that drought gets
+              worse</i>, not what one model says. The median and its 25–75 % band
+              are available beside it.
+            </p>
+            <p class="step-try">
+              <b>Try this:</b> compare near-term (2026–2040) with late-century
+              (2081–2100) on the agreement map. The 2015–2025 overlap holds
+              free-running model realisations, not observations — so it is never
+              drawn as a continuation of the record.
+            </p>
+            <div class="step-links">
+              <a href="index.html#projections">Open Projections</a>
+              <a href="index.html#summary">Drought to 2100 summary</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-n" aria-hidden="true"></div>
+          <div>
+            <h3>Go back to 1901</h3>
+            <p>
+              The Atlas scrubs the era-A reconstruction one year at a time (only
+              the year you ask for is fetched), for SPEI-1, SPEI-4 and SPEI-12.
+              Class shares for the frame are shown beside the map. Five historical
+              anchors are one click away: 1918, 1965, 1972, 1987 and 2002.
+            </p>
+            <p class="step-try">
+              <b>Try this:</b> pick SPEI-12 and step to December 1918. Note that
+              SPEI-4 starts in April and SPEI-12 is a December value — an empty
+              frame explains why, rather than showing placeholder colours.
+            </p>
+            <div class="step-links">
+              <a href="index.html#atlas">Open the Atlas</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-n" aria-hidden="true"></div>
+          <div>
+            <h3>Check the two records against each other</h3>
+            <p>
+              Cross-validation compares era A with era B over the 1981–2014
+              overlap: correlation, bias, state and class agreement, and the X7
+              seam uncertainty (the spread of the era B − era A difference). This
+              is the honest bridge between the reconstruction and the record.
+            </p>
+            <p class="step-try">
+              <b>Try this:</b> read the bias map first — it is the divergence
+              between the two products, not an error bar for either.
+            </p>
+            <div class="step-links">
+              <a href="index.html#crossval">Open Cross-validation</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="step">
+          <div class="step-n" aria-hidden="true"></div>
+          <div>
+            <h3>Take it with you, and check it yourself</h3>
+            <p>
+              Every export (CSV, PNG, share card) carries a `<code>#</code>`
+              header with the citation, licence and generation statement, so a
+              file can be traced back to this version. Copy-link captures the full
+              view — indicator, month, geography, period and panel state. The
+              Engine Lab runs SQL over the published Parquet store in your
+              browser, with row counts and byte traffic, if you want to verify a
+              number directly.
+            </p>
+            <div class="step-links">
+              <a href="index.html#data/doc-g-downloads">Downloads &amp; citations</a>
+              <a href="index.html#engine">Engine Lab</a>
+              <a href="index.html#data/doc-k-methodology">Living methodology</a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <h2 class="tour-h2" id="where">Where things live</h2>
+      <p class="tour-sub">
+        The same layout works at every width; on phones the rail becomes a
+        drawer and the product bar stays attached to the topbar.
+      </p>
+      <table class="tour-table">
+        <thead>
+          <tr>
+            <th scope="col">Place</th>
+            <th scope="col">What it holds</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Topbar</td>
+            <td>
+              The era pill for the active workspace, the data month and lag, the
+              month on view, indicator availability — plus <b>How to use</b>
+              (this tour) and <b>Documentation</b>.
+            </td>
+          </tr>
+          <tr>
+            <td>Product bar</td>
+            <td>
+              The four data products: <b>Record</b> 1981–2025,
+              <b>Projections</b> 2015–2100, <b>Atlas</b> 1901–2025, and the
+              <b>Engine Lab</b> SQL console. Hover or focus any of them for a
+              one-line explanation.
+            </td>
+          </tr>
+          <tr>
+            <td>Lens row</td>
+            <td>
+              The questions you can ask of the active product — for the Record:
+              Overview, Historical Analysis, Drought Events, Propagation,
+              Cross-validation and District profile.
+            </td>
+          </tr>
+          <tr>
+            <td>Sidebar</td>
+            <td>
+              On the Record: the study context (indicator, observation date,
+              geography, analysis period). On Projections and Atlas: that
+              product's console, with live read-outs and quick presets. On
+              Documentation: a contents index.
+            </td>
+          </tr>
+          <tr>
+            <td>Panel heads</td>
+            <td>
+              Each panel names what it shows and carries its own controls and
+              <b>Share</b> button; the receipts row states era, window, baseline
+              and sample size.
+            </td>
+          </tr>
+          <tr>
+            <td>Footer</td>
+            <td>
+              Version, methodology version, provenance, licence and the
+              disclaimer. The same information is in Documentation A, E and L.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="tour-h2" id="honestly">Reading a number honestly</h2>
+      <ul class="tour-list">
+        <li>
+          <b>Era first.</b> A value without an era label is not interpretable: the
+          reconstruction, the gridded record and the projections are different
+          kinds of evidence.
+        </li>
+        <li>
+          <b>Reference period.</b> Standardised indices are fitted on
+          1981–2020 (VCI 2000 onwards); a change of baseline changes the z-scores,
+          so the baseline is printed beside the number.
+        </li>
+        <li>
+          <b>Sample size.</b> Every statistic reports <b>n</b>. “718 of 724” and
+          “724 of 724” are different statements, and the six absent island
+          districts are a structural property of the Atlas grid, not a bug.
+        </li>
+        <li>
+          <b>Gaps are data.</b> Missing months are never imputed, interpolated or
+          carried forward; they break runs and are counted in the completeness
+          column.
+        </li>
+        <li>
+          <b>Uncertainty is named.</b> Confidence intervals, the FDR-corrected
+          trend count, the X7 seam spread and the model-agreement share each have
+          a definition in Documentation K.
+        </li>
+      </ul>
+
+      <div class="tour-note">
+        <b>Not operational.</b> This is a research and communication platform. It
+        does not issue drought declarations, and it does not replace the weekly
+        monitors published by IMD or the India Drought Monitor. For decisions
+        that affect people, use the operational product.
+      </div>
+
+      <div class="tour-foot">
+        <span>Drought Intelligence Explorer v2.0 development build</span>
+        <span>·</span>
+        <a href="index.html">Dashboard</a>
+        <span>·</span>
+        <a href="index.html#data">Documentation</a>
+        <span>·</span>
+        <a href="index.html#data/doc-i-guide">User guide</a>
+        <span>·</span>
+        <a href="index.html#data/doc-l-governance">Licences</a>
+      </div>
+    </main>
+  </body>
+</html>
