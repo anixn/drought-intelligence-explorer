@@ -6812,3 +6812,321 @@ body[data-tab="engine"] .side-sec[data-side="global"] {
   }
 }
 
+/* ===========================================================================
+   UX pass — 2026-11-23 (Owner review + the 23 Nov 2026 usability audit)
+   ---------------------------------------------------------------------------
+   1. The Paper Accent now reaches real chrome: the topbar rule, brand
+      strapline, panel titles, KPI labels, links, buttons and table heads.
+      Data colours (severity ramp, era identities) are untouched — D10.
+   2. Plotly mode bars are gone; charts yield one-finger gestures to the page
+      and expose a "Reset zoom" chip after a pinch.
+   3. Small fixes: h1 in the outline, a readable micro-copy floor, a
+      skeleton state for the district strip, an edge fade on the mobile view
+      strip, a collapsed Projections methodology note, and a pinch hint on
+      touch maps.
+   =========================================================================== */
+
+/* --- 1. Accent in the chrome -------------------------------------------- */
+.topbar {
+  border-bottom: 2px solid var(--accent);
+}
+.brand-title {
+  margin: 0;
+  /* 2026-11-23: h1 must keep the one-line word mark. `text-wrap: balance`
+     (typography layer) otherwise wins over the old `white-space: nowrap`
+     and balances the brand into two lines. */
+  white-space: nowrap;
+  text-wrap: nowrap;
+}
+@media (max-width: 760px) {
+  .brand-title {
+    white-space: normal;
+    text-wrap: wrap;
+  }
+}
+.brand-sub {
+  color: var(--accent-ink);
+  font-size: 10px;
+}
+.panel-title {
+  color: var(--accent-ink);
+}
+.panel-head {
+  border-bottom-color: var(--accent-line);
+}
+.kpi-label {
+  color: var(--accent-ink);
+}
+.stat-cell i {
+  color: var(--accent-ink);
+}
+.side-sec h2,
+.side-sec .side-h {
+  color: var(--accent-ink);
+}
+a {
+  color: var(--accent-ink);
+  text-underline-offset: 2px;
+}
+a:hover {
+  color: var(--ink-strong);
+}
+.btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent-ink);
+}
+.icon-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent-ink);
+}
+.comp-table thead th,
+.comp-table th {
+  color: var(--accent-ink);
+  border-bottom-color: var(--accent-line);
+}
+.view-intro {
+  border-left-color: var(--accent);
+}
+.proj-banner {
+  border-left-color: var(--accent);
+}
+.proj-banner b {
+  color: var(--accent-ink);
+}
+.appearance-name {
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.appearance-hint {
+  margin-top: 2px;
+  max-width: 22ch;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: var(--ink-faint);
+}
+.rail-sec-ref {
+  margin-left: 6px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* --- 2. A readable micro-copy floor (audit F4) -------------------------- */
+.chip {
+  font-size: 10.5px;
+}
+.era-pill {
+  font-size: 10px;
+}
+.lens-label {
+  font-size: 9.5px;
+}
+.kpi-label {
+  font-size: 10.5px;
+}
+.kpi-sub,
+.kpi-foot {
+  font-size: 11px;
+}
+.panel-meta {
+  font-size: 11px;
+}
+.chart-foot,
+.table-help {
+  font-size: 11px;
+}
+
+/* --- 3. Plotly: no mode bar, and a reset chip after a pinch ------------- */
+.js-plotly-plot {
+  position: relative;
+}
+.die-zoom-reset {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 20;
+  padding: 4px 8px;
+  border: 1px solid var(--accent-line);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--accent-ink);
+  font-family: var(--font);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.die-zoom-reset:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+@media (pointer: coarse), (max-width: 760px) {
+  /* Swiping a chart scrolls the page; the pinch handler in charts.js owns
+     only two-finger zoom. */
+  .js-plotly-plot .nsewdrag,
+  .js-plotly-plot .draglayer,
+  .js-plotly-plot .svg-container,
+  .js-plotly-plot .main-svg {
+    touch-action: pan-y;
+  }
+}
+
+/* --- 4. District strip skeleton (audit F1) ------------------------------ */
+.dp-chip.is-skeleton {
+  justify-content: center;
+  gap: 6px;
+  min-height: 66px;
+  pointer-events: none;
+}
+.sk-line {
+  display: block;
+  height: 9px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #ece4d4 25%, #f6f1e6 37%, #ece4d4 63%);
+  background-size: 400% 100%;
+  animation: die-skeleton 1.25s ease-in-out infinite;
+}
+.sk-name {
+  width: 58%;
+  height: 8px;
+}
+.sk-val {
+  width: 44%;
+  height: 15px;
+}
+.sk-class {
+  width: 70%;
+  height: 12px;
+  border-radius: 999px;
+}
+@keyframes die-skeleton {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk-line {
+    animation: none;
+  }
+}
+
+/* --- 5. Mobile view strip: edge fade + snap (audit F8) ------------------- */
+@media (max-width: 760px) {
+  .tab-lenses .tabs {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 30px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 30px), transparent);
+    padding-right: 30px;
+    scroll-padding-right: 30px;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+  }
+  .tab-lenses .tabs button {
+    scroll-snap-align: start;
+  }
+}
+
+/* --- 6. Projections: methodology behind a disclosure (audit F5) --------- */
+.proj-banner details {
+  margin-top: 4px;
+}
+.proj-banner summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--accent-ink);
+  cursor: pointer;
+  list-style: none;
+}
+.proj-banner summary::-webkit-details-marker {
+  display: none;
+}
+.proj-banner summary::before {
+  content: "+";
+  display: inline-block;
+  width: 1em;
+  text-align: center;
+  font-family: var(--mono);
+}
+.proj-banner details[open] summary::before {
+  content: "\2212";
+}
+.proj-banner details p {
+  margin: 6px 0 0;
+}
+
+/* --- 7. Touch map hint --------------------------------------------------- */
+.map-gesture-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  z-index: 640;
+  padding: 4px 9px;
+  border: 1px solid var(--accent-line);
+  border-radius: 999px;
+  background: rgba(251, 247, 238, 0.94);
+  color: var(--accent-ink);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+.map-gesture-hint.is-hidden {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-gesture-hint {
+    transition: none;
+  }
+}
+
+/* --- 8. Phone status row: keep the two honesty chips on one line -------- *
+ * The 10.5 px floor widened the era pill and the currency chip just past the
+ * 375 px content box, which pushed the page 11 px wide. Tighten the tracking
+ * and padding instead of dropping the type back below the floor. */
+@media (max-width: 760px) {
+  .topbar-status {
+    gap: 4px;
+  }
+  .topbar-status .chip {
+    padding: 3px 4px;
+    letter-spacing: 0.005em;
+  }
+  .topbar-status .era-pill {
+    padding: 3px 6px 3px 5px;
+    gap: 4px;
+    letter-spacing: 0.005em;
+  }
+  .topbar-status .era-pill b {
+    letter-spacing: 0.005em;
+  }
+}
+
+/* --- 9. Mid-width topbar: one-line word mark without losing the nav ----- *
+ * The 19 px Literata word mark is wider than the width the flex row leaves
+ * once the four status chips are laid out, so between 1101 and 1420 px the
+ * title used to lap over the help links. Short labels buy the room back; the
+ * accessible names and tooltips are unchanged. */
+@media (min-width: 1101px) and (max-width: 1420px) {
+  .topnav .tu-full {
+    display: none;
+  }
+  .topnav .tu-short {
+    display: inline;
+  }
+}
+
+
+

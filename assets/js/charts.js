@@ -15,6 +15,16 @@
   const FONT = { family: 'Inter, IBM Plex Sans, sans-serif', size: 11, color: '#2E2820' };
   const MONO = { family: 'IBM Plex Mono, monospace', size: 10, color: '#6E6250' };
 
+  /* Touch-primary devices (phones/tablets). On these the chart must yield
+   * one-finger gestures to the page: scrolling a long panel should never pan
+   * or zoom a chart by accident. Only an explicit two-finger pinch zooms
+   * (handled by installTouchZoom below), and the page keeps its own zoom. */
+  function touchPrimary() {
+    const coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    const narrowTouch = (navigator.maxTouchPoints || 0) > 0 && window.innerWidth <= 760;
+    return coarse || narrowTouch;
+  }
+
   function available() { return !!window.Plotly; }
   function engineFailed() {
     return !!((window.DIE_LIBS && window.DIE_LIBS.failed && window.DIE_LIBS.failed.Plotly) ||
@@ -60,7 +70,10 @@
       yaxis: { gridcolor: '#E1D7C3', zerolinecolor: '#CFC2A8', linecolor: '#CFC2A8' },
       hovermode: 'closest',
       showlegend: false,
-      dragmode: 'pan',
+      // Desktop keeps drag-to-pan. On touch the drag layer is disabled so a
+      // one-finger swipe scrolls the page instead of sliding the plot; pinch
+      // is handled explicitly by installTouchZoom().
+      dragmode: touchPrimary() ? false : 'pan',
       // Preserve user zoom/pan when data are updated on the same element.
       uirevision: 'die-chart'
     };
@@ -72,6 +85,11 @@
     return {
       responsive: true,
       displaylogo: false,
+      // The floating Plotly mode bar sat on top of data and legends (UX
+      // audit F3). Zoom/pan still work; double-click resets the view.
+      displayModeBar: false,
+      scrollZoom: false,
+      doubleClick: 'reset',
       modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
       toImageButtonOptions: { filename: filename || 'drought-intelligence-chart', scale: 2, format: 'png' }
     };
@@ -693,6 +711,92 @@
       plot_bgcolor: 'rgba(0,0,0,0)'
     }), config('correlation-heatmap'));
   }
+
+  /* ------------------------------------------------ touch pinch-to-zoom -- *
+   * Plotly's cartesian build here has no two-finger pinch of its own (its
+   * touch path reuses the single-pointer drag handler), so on touch devices
+   * we zoom the axes ourselves. One-finger gestures stay with the browser
+   * (`touch-action: pan-y` in CSS + dragmode:false), which is the behaviour
+   * the UX pass asked for: swipe scrolls the page, pinch zooms the plot.
+   * A small "Reset zoom" chip appears while zoomed so the state is
+   * recoverable without a mode bar. */
+  function installTouchZoom() {
+    if (!touchPrimary()) return;
+    let start = null;
+    let raf = 0;
+    let pending = null;
+
+    function plotOf(target) {
+      return target && target.closest ? target.closest('.js-plotly-plot') : null;
+    }
+    function distance(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.max(8, Math.hypot(dx, dy));
+    }
+    function showReset(plot) {
+      let btn = plot.querySelector('.die-zoom-reset');
+      if (!btn) {
+        btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'die-zoom-reset';
+        btn.textContent = 'Reset zoom';
+        btn.addEventListener('click', () => {
+          Plotly.relayout(plot, { 'xaxis.autorange': true, 'yaxis.autorange': true })
+            .then(() => btn.remove());
+        });
+        plot.appendChild(btn);
+      }
+    }
+    function apply() {
+      raf = 0;
+      if (!pending || !pending.plot || !Plotly) return;
+      const p = pending;
+      pending = null;
+      Plotly.relayout(p.plot, { 'xaxis.range': p.x, 'yaxis.range': p.y });
+    }
+
+    document.addEventListener('touchstart', (ev) => {
+      if (ev.touches.length !== 2 || !Plotly) { start = null; return; }
+      const plot = plotOf(ev.target);
+      const fl = plot && plot._fullLayout;
+      if (!fl || !fl.xaxis || !fl.yaxis) { start = null; return; }
+      const rect = plot.getBoundingClientRect();
+      start = {
+        plot,
+        rect,
+        d: distance(ev.touches),
+        // Both axes zoom around the pinch midpoint, in data coordinates.
+        xc: fl.xaxis.p2d((ev.touches[0].clientX + ev.touches[1].clientX) / 2 - rect.left),
+        yc: fl.yaxis.p2d((ev.touches[0].clientY + ev.touches[1].clientY) / 2 - rect.top),
+        x: fl.xaxis.range.slice(),
+        y: fl.yaxis.range.slice()
+      };
+      showReset(plot);
+    }, { passive: true, capture: true });
+
+    document.addEventListener('touchmove', (ev) => {
+      if (!start || ev.touches.length !== 2) return;
+      const factor = Math.min(1.6, Math.max(0.4, start.d / distance(ev.touches)));
+      const xlo = Number(start.x[0]), xhi = Number(start.x[1]);
+      const ylo = Number(start.y[0]), yhi = Number(start.y[1]);
+      if (![xlo, xhi, ylo, yhi, start.xc, start.yc].every(Number.isFinite)) return;
+      pending = {
+        plot: start.plot,
+        x: [start.xc + (xlo - start.xc) * factor, start.xc + (xhi - start.xc) * factor],
+        y: [start.yc + (ylo - start.yc) * factor, start.yc + (yhi - start.yc) * factor]
+      };
+      // The pinch belongs to the chart, not the page.
+      if (ev.cancelable) ev.preventDefault();
+      if (!raf) raf = requestAnimationFrame(apply);
+    }, { passive: false, capture: true });
+
+    document.addEventListener('touchend', (ev) => {
+      if (ev.touches.length < 2) start = null;
+    }, { passive: true, capture: true });
+  }
+
+  installTouchZoom();
 
   /* -------------------------------------------------------------- public -- */
   DIE.Charts = {

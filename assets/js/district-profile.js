@@ -61,10 +61,27 @@
   }
 
   /* ---- one district, ten indicators (engine) ---------------------------- */
+  function skeletonStrip(el) {
+    el.setAttribute("aria-busy", "true");
+    el.innerHTML = DIE.meta.indicators.map((ind) =>
+      '<div class="dp-chip is-skeleton" aria-hidden="true">' +
+      '<span class="sk-line sk-name"></span>' +
+      '<span class="sk-line sk-val"></span>' +
+      '<span class="sk-line sk-class"></span>' +
+      "</div>").join("");
+  }
+
   async function renderStrip(d, ym, mySeq) {
     const el = $("dpStrip");
     const note = $("dpStripNote");
     if (!el) return;
+    // UX audit F1: the section used to render its heading alone while a
+    // Parquet query ran. Paint a skeleton immediately (once per district,
+    // not on every month change, so fast queries do not flash).
+    const metaEl = $("dpStripMeta");
+    if (metaEl && el.dataset.district !== d.id) metaEl.textContent = "loading the month…";
+    if (el.dataset.district !== d.id || !el.children.length) skeletonStrip(el);
+    note.textContent = "";
     let byVar = new Map();
     let viaEngine = false;
     if (DIE.Engine && DIE.Engine.observedAt) {
@@ -78,6 +95,8 @@
     }
     if (mySeq !== seq) return;
 
+    el.removeAttribute("aria-busy");
+    el.dataset.district = d.id;
     el.innerHTML = DIE.meta.indicators.map((ind) => {
       let v = byVar.get(ind.id);
       if (!viaEngine) {
@@ -367,6 +386,8 @@
     if (!d) {
       $("dpHeadline").textContent = "Choose a district from the map or the filter panel.";
       $("dpStrip").innerHTML = "";
+      delete $("dpStrip").dataset.district;
+      $("dpStrip").removeAttribute("aria-busy");
       $("dpEventTable").querySelector("tbody").innerHTML = "";
       $("dpEra").innerHTML = "";
       return;

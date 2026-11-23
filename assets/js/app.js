@@ -165,6 +165,31 @@
   }
 
   /* ============================================================== BOOT == */
+  /* ==================================================== PHONE TOPBAR HEIGHT ==
+   * `--topbar-h` is a static design token, but on phones the topbar wraps into
+   * two or three rows (brand row, utility row, status row). Publishing the
+   * measured height keeps the drawer, the sticky view strip and the map heights
+   * aligned with the chrome actually on screen. Only phones are measured; the
+   * desktop token is left alone. */
+  let topbarH = 0;
+  function syncTopbarHeight() {
+    const bar = document.querySelector('.topbar');
+    if (!bar) return;
+    const root = document.documentElement;
+    if (window.innerWidth > 760) {
+      if (topbarH) {
+        root.style.removeProperty('--topbar-h');
+        topbarH = 0;
+      }
+      return;
+    }
+    const h = Math.ceil(bar.getBoundingClientRect().height);
+    if (h > 0 && h !== topbarH) {
+      topbarH = h;
+      root.style.setProperty('--topbar-h', h + 'px');
+    }
+  }
+
   async function init() {
     try {
       if (!window.L || !window.Papa) {
@@ -209,6 +234,10 @@
       wireChrome();
       wireNavTips();
       wireRailConsoles();
+      syncTopbarHeight();
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(syncTopbarHeight).catch(() => {});
+      }
       // Deep event instrumentation (GTM dataLayer). Never throws into the
       // boot path; wire() only subscribes listeners.
       if (DIE.Telemetry) run(() => DIE.Telemetry.wire());
@@ -217,6 +246,9 @@
       // tab: paint them once at boot so a deep link to Documentation or the
       // Engine Lab does not show empty "—" chips until Overview is opened.
       renderTopbar();
+      // The chips inside the phone status row are painted above; remeasure so
+      // the drawer and sticky offsets use the final three-row height.
+      syncTopbarHeight();
       await routeFromHash();
       if (DIE.Permalink) DIE.Permalink.init();
 
@@ -1031,6 +1063,7 @@
     });
 
     window.addEventListener('resize', debounce(() => {
+      syncTopbarHeight();
       if (drawerMq.matches) {
         // entering drawer mode clears the desktop collapsed rail
         if ($('sidebar').classList.contains('is-collapsed')) setFiltersCollapsed(false, false);
@@ -2110,10 +2143,11 @@
           }], {
             font: { family: 'Inter, sans-serif', size: 11, color: '#2E2820' },
             margin: { l: 34, r: 10, t: 8, b: 30 },
+            dragmode: false,
             paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
             xaxis: { title: { text: '% of valid months in drought', font: { size: 10, color: '#6E6250' } }, gridcolor: '#EFE8D8', linecolor: '#CFC2A8', tickfont: { size: 9 } },
             yaxis: { title: { text: 'districts', font: { size: 9.5, color: '#6E6250' } }, gridcolor: '#E1D7C3', linecolor: '#CFC2A8', rangemode: 'tozero' }
-          }, { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'] });
+          }, { responsive: true, displaylogo: false, displayModeBar: false, scrollZoom: false, doubleClick: 'reset', modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'] });
         }
       }
       $('freqFoot').textContent = 'Left: months below the truncation level per year (season filter applies). ' +

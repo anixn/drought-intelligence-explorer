@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-22u" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-23h" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -108,7 +108,7 @@
           />
         </svg>
         <div class="brand-text">
-          <div class="brand-title">Drought Intelligence Explorer</div>
+          <h1 class="brand-title">Drought Intelligence Explorer</h1>
           <div class="brand-sub">India &middot; Hydroclimatic Analytics</div>
         </div>
         <a
@@ -552,10 +552,10 @@
           <nav class="rail-nav" aria-label="Engine Lab references">
             <a class="rail-link" href="tour.html#engine">Tour &middot; querying the record</a>
             <button type="button" data-doc="doc-f-repro">
-              F &middot; Reproducibility
+              Reproducibility notes <span class="rail-sec-ref">section F</span>
             </button>
             <button type="button" data-doc="doc-b-dataset">
-              B &middot; Data sources
+              Data sources <span class="rail-sec-ref">section B</span>
             </button>
           </nav>
         </section>
@@ -722,6 +722,10 @@
             </div>
             <div class="appearance-name" id="appearanceName">
               Reading Room
+            </div>
+            <div class="appearance-hint">
+              Retints rules, titles and selection chrome &mdash; data colours
+              stay fixed.
             </div>
           </div>
           <div class="foot-line" id="footPeriod">—</div>
@@ -5335,7 +5339,7 @@ LIMIT 15;</pre>
           return;
         }
 
-        var ASSET_VERSION = "2026-11-22u";
+        var ASSET_VERSION = "2026-11-23h";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

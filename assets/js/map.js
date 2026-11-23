@@ -173,16 +173,37 @@
 
   function createChoropleth(container, opts) {
     opts = opts || {};
-    const map = L.map(container, {
+    // Phones/tablets: one finger scrolls the page; only a two-finger pinch
+    // zooms the map. Leaflet treats dragging and touchZoom as separate
+    // options, so this keeps pinch while releasing the page scroll.
+    const coarse = !!((window.matchMedia && window.matchMedia('(pointer: coarse)').matches));
+    const touchOnly = coarse ||
+      ((navigator.maxTouchPoints || 0) > 0 && window.innerWidth <= 760);
+    // Callers pass either an element or a container id (app.js passes ids),
+    // so resolve once for the DOM work below.
+    const host = typeof container === "string" ? document.getElementById(container) : container;
+    const map = L.map(host || container, {
       preferCanvas: true,
       renderer: L.canvas({ padding: 0.35 }),
       zoomControl: true,
       attributionControl: true,
       minZoom: 3,
       maxZoom: 10,
-      scrollWheelZoom: !opts.noScroll,
-      attributionControl: true,
+      dragging: !touchOnly,
+      touchZoom: true,
+      scrollWheelZoom: !opts.noScroll && !touchOnly,
+      doubleClickZoom: !touchOnly,
+      boxZoom: !touchOnly,
     }).setView([22.8, 80.5], 4);
+
+    if (touchOnly) {
+      const hint = document.createElement("div");
+      hint.className = "map-gesture-hint";
+      hint.setAttribute("role", "note");
+      hint.textContent = "Pinch to zoom · swipe the page to scroll";
+      if (host) host.appendChild(hint);
+      map.once("zoomstart", () => hint.classList.add("is-hidden"));
+    }
 
     let tileLayer = null;
     let currentBasemap = null;

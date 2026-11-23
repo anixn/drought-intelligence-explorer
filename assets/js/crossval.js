@@ -359,6 +359,7 @@
     }], {
       margin: { l: 46, r: 12, t: 10, b: 30 },
       height: 230,
+      dragmode: (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ? false : "zoom",
       paper_bgcolor: "rgba(0,0,0,0)",
       plot_bgcolor: "rgba(0,0,0,0)",
       font: { family: "Inter, sans-serif", size: 11, color: "#5B5145" },

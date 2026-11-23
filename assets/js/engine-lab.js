@@ -92,10 +92,17 @@
     return era && era.years ? era.years.join("\u2013") : "\u2014";
   }
 
+  function displayLabel(label) {
+    // Catalog ids use zero-padded timescales (SPEI-04, the Atlas 4-month
+    // variable). The rest of the UI says SPEI-4; normalise the display only,
+    // never the stored id (UX audit F11).
+    return String(label || "").replace(/^(SPEI|SPI)-0(\d+)$/i, "$1-$2");
+  }
+
   function renderCatalog(cat) {
     const tb = $("elCatalogTable").querySelector("tbody");
     tb.innerHTML = (cat.variables || []).map((v) =>
-      "<tr><td><b>" + esc(v.label) + "</b> <span class=\"mono\">" +
+      "<tr><td><b>" + esc(displayLabel(v.label)) + "</b> <span class=\"mono\">" +
       esc(v.id) + "</span></td>" +
       "<td>" + esc((v.eras || []).join(", ")) + "</td>" +
       "<td class=\"num\">" + esc(observedYears(v, cat)) + "</td>" +

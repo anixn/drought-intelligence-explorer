@@ -217,12 +217,18 @@
       "<b>Era labels:</b> era C (simulations, " + esc(ec.label) +
       ") is never spliced with era B (1981–2025, Gridded Multi-Source Product) — the two eras are " +
       "presented side by side only, with the seam visible.";
+    // UX pass (audit F5): the first screenful of Projections used to be four
+    // dense methodology paragraphs. Keep one sentence and put the rest behind
+    // a disclosure; the honesty text is one click away, not deleted.
     el.innerHTML =
       "<b>Projections, not forecasts.</b> " + esc(ec.banner) +
       " Published as <b>" + esc(ec.label) + "</b>." +
-      (nLine ? "<br>" + nLine : "") +
-      "<br>" + spreadLine +
-      "<br>" + eraLine;
+      "<details class=\"proj-banner-more\">" +
+      "<summary>How the ensemble, the median band and the era seam work</summary>" +
+      (nLine ? "<p>" + nLine + "</p>" : "") +
+      "<p>" + spreadLine + "</p>" +
+      "<p>" + eraLine + "</p>" +
+      "</details>";
   }
 
   function renderStatus() {
@@ -645,6 +651,9 @@
         margin: { l: 52, r: 16, t: 14, b: 34 },
         hovermode: "x unified",
         showlegend: true,
+        // Phones: a one-finger swipe must scroll the page, not box-zoom the
+        // band chart (the pinch handler in charts.js owns zoom there).
+        dragmode: (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ? false : "zoom",
         legend: { orientation: "h", y: 1.14, font: { size: 10 } },
         shapes: [],
         annotations: [],
