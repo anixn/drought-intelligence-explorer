@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-23h" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-23l" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -132,7 +132,7 @@
           href="tour.html"
           aria-label="Guided tour — how to use this dashboard"
           data-tip-title="Guided tour"
-          data-tip-body="A five-minute walkthrough: the three eras, the four workspaces, and where every control lives. Start here on a first visit."
+          data-tip-body="A five-minute walkthrough: the three eras, the four products and their lenses, and where every control lives. Start here on a first visit."
         >
           <svg
             class="tu-ic"
@@ -313,7 +313,7 @@
         </div>
 
         <div class="sidebar-body" id="sidebarBody">
-        <!-- Persistent study context: shared by all four workspaces. The
+        <!-- Persistent study context: shared by all products. The
              grouping wrapper is purely visual; section visibility and the
              wiring of every control are unchanged. -->
         <div class="side-group" aria-label="Study context">
@@ -2341,9 +2341,9 @@
               </div>
               <p class="table-help">
                 The engine is <b>lazy</b>: DuckDB-WASM is fetched from a CDN only
-                when you initialise it (or run your first query). The four
-                analytical workspaces keep using the v1.0 CSV loader; this lab is
-                the SQL view of the same published numbers.
+                when you initialise it (or run your first query). The analytical
+                views read the published CSV and Parquet files directly; this lab
+                is the SQL view of the same published numbers.
               </p>
               <dl class="el-status" id="elStatusList">
                 <div><dt>Engine</dt><dd id="elStatusEngine">not initialised</dd></div>
@@ -2884,7 +2884,7 @@
                 <li>
                   <b>Event statistics are median-based</b> where shown: runs of
                   the
-                  ensemble-median series ≤ −1.0 with the frozen v1.0 machinery
+                  ensemble-median series ≤ −1.0 with the frozen events machinery
                   (min 3 months, censoring flagged); spread across models is
                   shown by the agreement statistic, never hidden.
                 </li>
@@ -3449,27 +3449,27 @@
                   >ankitdeshmukh.com</a
                 >.
               </p>
-              <h3>Workspaces</h3>
+              <h3>Products and lenses</h3>
               <ol>
                 <li>
-                  <em>Overview</em> &mdash; where is drought, how severe, how has
-                  it changed: map, summary statistics, time series, district
-                  ranking, animated drought evolution.
+                  <em>Record</em> (1981&ndash;present) &mdash; the gridded
+                  multi-source product: Overview, Historical Analysis, Drought
+                  Events, Propagation &amp; Relationships, Cross-validation and
+                  District profile.
                 </li>
                 <li>
-                  <em>Historical Analysis</em> &mdash; frequency, duration,
-                  severity, long-term trends (Mann-Kendall / Sen) and recurrence
-                  over the analysis period.
+                  <em>Projections</em> (2015&ndash;2100) &mdash; era-C CMIP6
+                  simulations under SSP2-4.5 and SSP5-8.5: Future Projections
+                  and Drought to 2100. Never a forecast.
                 </li>
                 <li>
-                  <em>Drought Events</em> &mdash; the event catalogue and
-                  individual events: onset, termination, intensity, recovery,
-                  definition sensitivity.
+                  <em>Atlas</em> (1901&ndash;2025) &mdash; the era-A SPEI
+                  reconstruction, mapped by district and kept separate from the
+                  Record.
                 </li>
                 <li>
-                  <em>Propagation &amp; Relationships</em> &mdash;
-                  cross-indicator correlation, optimal lags and district-wise
-                  propagation patterns.
+                  <em>Engine Lab</em> &mdash; SQL over the published Parquet
+                  store, in the browser.
                 </li>
                 <li>
                   <em>Documentation &amp; Resources</em> &mdash; the book-icon
@@ -3500,7 +3500,7 @@
               <div class="panel-titles">
                 <h2 class="panel-title"><span class="doc-letter">I</span>User guide</h2>
                 <span class="panel-meta"
-                  >Quick start, workspace map and how to read every
+                  >Quick start, product map and how to read every
                   output</span
                 >
               </div>
@@ -3557,18 +3557,18 @@
                 </li>
               </ol>
 
-              <h3>What each workspace is for</h3>
+              <h3>What each product and lens is for</h3>
               <table class="guide-table">
                 <thead>
                   <tr>
-                    <th>Workspace</th>
+                    <th>Product / lens</th>
                     <th>Question it answers</th>
                     <th>Key outputs</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><b>1 &middot; Overview</b></td>
+                    <td><b>Record &middot; Overview</b></td>
                     <td>
                       What do the latest available observations indicate, how
                       severe, and how have conditions changed?
@@ -3580,7 +3580,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td><b>2 &middot; Historical Analysis</b></td>
+                    <td><b>Record &middot; Historical Analysis</b></td>
                     <td>
                       How often, how long and how severely has drought occurred;
                       is there a trend?
@@ -3591,7 +3591,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td><b>3 &middot; Drought Events</b></td>
+                    <td><b>Record &middot; Drought Events</b></td>
                     <td>
                       Which discrete drought episodes occurred, and when did
                       they recover?
@@ -3602,7 +3602,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td><b>4 &middot; Propagation</b></td>
+                    <td><b>Record &middot; Propagation &amp; Relationships</b></td>
                     <td>
                       How do indicators respond to each other, at what lag, and
                       where?
@@ -3613,7 +3613,63 @@
                     </td>
                   </tr>
                   <tr>
-                    <td><b>Docs &middot; Documentation &amp; Resources</b></td>
+                    <td><b>Record &middot; Cross-validation</b></td>
+                    <td>
+                      Do the Atlas reconstruction and the gridded record agree
+                      over their overlap?
+                    </td>
+                    <td>
+                      Matched area and months, correlation, bias, state
+                      agreement, per-district seam uncertainty.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>Record &middot; District profile</b></td>
+                    <td>What happened in one district?</td>
+                    <td>
+                      Headline answer, ten-indicator month strip, long-term
+                      trend, drought events, era context.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>Projections &middot; Future Projections</b></td>
+                    <td>
+                      How do the scenarios diverge after 2026?
+                    </td>
+                    <td>
+                      Ensemble median with its 25&ndash;75&nbsp;% band, model
+                      agreement, choropleth, ranking, events, CSV.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>Projections &middot; Drought to 2100</b></td>
+                    <td>How does drought risk change through the century?</td>
+                    <td>
+                      Change summary, drought counters, per-district table and
+                      CSV.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>Atlas</b></td>
+                    <td>
+                      What do the 1901&ndash;2025 reconstructions say, and how do
+                      they compare with the modern record?
+                    </td>
+                    <td>
+                      Year scrubber, district choropleth, long-run events, era-A
+                      context, CSV.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>Engine Lab</b></td>
+                    <td>Can I query the published store myself?</td>
+                    <td>
+                      SQL editor, presets, row counts, timings, byte traffic,
+                      CSV.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><b>Documentation &amp; Resources</b></td>
                     <td>
                       What exactly is in the data, how was it produced, and how
                       can I reuse it?
@@ -3669,13 +3725,18 @@
               <p>
                 Tabs support <kbd>&larr;</kbd>/<kbd>&rarr;</kbd>.
                 <kbd>?</kbd> opens this guide from anywhere in the
-                application. Each workspace has a stable URL hash so you can
-                deep-link (<span class="mono">#overview</span>,
+                application. Every product and lens has a stable URL hash so you
+                can deep-link (<span class="mono">#overview</span>,
                 <span class="mono">#historical</span>,
                 <span class="mono">#events</span>,
                 <span class="mono">#propagation</span>,
-                <span class="mono">#data</span> or
-                <span class="mono">#docs</span> for Documentation &amp;
+                <span class="mono">#crossval</span>,
+                <span class="mono">#district/&lt;id&gt;</span>,
+                <span class="mono">#projections</span>,
+                <span class="mono">#summary</span>,
+                <span class="mono">#atlas</span>,
+                <span class="mono">#engine</span>, or
+                <span class="mono">#data</span> for Documentation &amp;
                 Resources, or a section of that page such as
                 <span class="mono">#data/c-methods</span>) and refresh
                 without losing the view.
@@ -4529,9 +4590,9 @@
             <div class="meth-body">
               <p class="panel-note">
                 The citable everyday reference for the methods this platform applies.
-                It consolidates the v1 methodology (section&nbsp;C) with the era A/B/C
-                pipelines; the manuscript remains the archival descriptor and the two
-                cross-reference each other. Each block has a stable anchor
+                It consolidates the seasonal methodology (section&nbsp;C) with the era
+                A/B/C pipelines; the manuscript remains the archival descriptor and the
+                two cross-reference each other. Each block has a stable anchor
                 (<code>#data/k-methodology/&lt;anchor&gt;</code>) and carries the
                 methodology version and page revision drawn from
                 <code>data/metadata.json</code>.
@@ -4643,7 +4704,7 @@
                     <tr><td>D11 · Product-first navigation</td><td>2026-11-20</td><td>Products/eras on top, analytical lenses beneath.</td><td>Visitors meet the record, not the internal taxonomy.</td></tr>
                     <tr><td>D13 · Seam uncertainty</td><td>2026-11-21</td><td>X7 `sd_diff` published once in the cross-validation artifact.</td><td>A measured historical disagreement, never a projection error bar.</td></tr>
                     <tr><td>D14 · Permalinks</td><td>2026-11-21</td><td>The URL carries shared and panel state.</td><td>Every figure is citable and re-openable.</td></tr>
-                    <tr><td>D15 · Citation &amp; DOI</td><td>2026-11-21</td><td>Archived v1.0.0 DOI is real; v2.0.0 stays unclaimed until release.</td><td>No DOI is invented or pre-claimed.</td></tr>
+                    <tr><td>D15 · Citation &amp; DOI</td><td>2026-11-21</td><td>Archived v1.0.0 and v2.0.0 DOIs resolve; the v2 dataset DOI is minted.</td><td>Every citation resolves to a real archived record; no DOI is invented.</td></tr>
                     <tr><td>D16 · District profiles</td><td>2026-11-21</td><td>Districts get a dedicated route and page.</td><td>The highest-value public entry point.</td></tr>
                   </tbody>
                 </table>
@@ -4662,7 +4723,7 @@
                   <thead><tr><th>Artefact</th><th>Licence</th><th>Notes</th></tr></thead>
                   <tbody>
                     <tr><td>Application code</td><td>MIT</td><td><a href="LICENSE">LICENSE</a></td></tr>
-                    <tr><td>Archived v1.0.0 bundle</td><td>CC BY 4.0</td><td><a href="https://doi.org/10.5281/zenodo.24113364" target="_blank" rel="noopener">10.5281/zenodo.24113364</a>; v2.0.0 at release</td></tr>
+                    <tr><td>Archived datasets (v1.0.0, v2.0.0)</td><td>CC BY 4.0</td><td>v1.0.0 <a href="https://doi.org/10.5281/zenodo.24113364" target="_blank" rel="noopener">10.5281/zenodo.24113364</a> · v2.0.0 <a href="https://doi.org/10.5281/zenodo.24445534" target="_blank" rel="noopener">10.5281/zenodo.24445534</a></td></tr>
                     <tr><td>CHIRPS v2.0 precipitation</td><td>Public domain</td><td>Climate Hazards Center; see <a href="docs/data-sources.md">data sources</a></td></tr>
                     <tr><td>ERA5-Land reanalysis</td><td>Copernicus licence (attribution)</td><td>ECMWF/Copernicus; PET and 0–100 cm soil water</td></tr>
                     <tr><td>MODIS MOD13A3 NDVI</td><td>NASA open data</td><td>LP DAAC; VCI input, 2000 onward</td></tr>
@@ -5339,7 +5400,7 @@ LIMIT 15;</pre>
           return;
         }
 
-        var ASSET_VERSION = "2026-11-23h";
+        var ASSET_VERSION = "2026-11-23l";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

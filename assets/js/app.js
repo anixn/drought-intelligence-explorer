@@ -424,6 +424,9 @@
       try { localStorage.setItem('die.accent', key); } catch (e) {}
       if (DIE.Telemetry) DIE.Telemetry.track('appearance_accent', { accent: key });
     }
+    // Redraw only the themed chrome of charts already on screen; data traces
+    // are left exactly as published.
+    if (DIE.Charts && DIE.Charts.applyAccent) DIE.Charts.applyAccent();
   }
 
   /* ======================================================== ERA PILL =====
@@ -3208,9 +3211,9 @@
   }
 
   /* ---- citation plumbing (M10.5) ---------------------------------------- *
-   * One citation string, one export header, one share card. The DOI in the
-   * metadata is the archived v1.0.0 release; the v2.0.0 DOI is minted at
-   * release (M7.2) and is never pre-claimed (R3). */
+   * One citation string, one export header, one share card. Both DOIs come
+   * from the metadata contract (software + dataset for v2.0.0); the archived
+   * v1.0.0 DOI stays available for lineage and is never pre-claimed. */
   function citationText() {
     const m = DIE.meta || {};
     return String(m.citation || 'Drought Intelligence Explorer') +
@@ -3312,10 +3315,11 @@
 
     ctx.fillStyle = '#6E6250';
     ctx.font = '400 15px Inter, Arial, sans-serif';
-    ctx.fillText('Archived v1.0.0 DOI: 10.5281/zenodo.24113364  ·  ' +
-      'v2.0.0 DOI minted at release  ·  check licence/terms before reuse',
-      64, 560);
-    ctx.fillText('drought.ankitdeshmukh.com  ·  generated ' +
+    const doi = (DIE.meta && DIE.meta.doi) || {};
+    const doiLine = (doi.v2_0_0 ? 'Software DOI ' + doi.v2_0_0 : 'See Documentation G for DOIs') +
+      (doi.dataset_v2_0_0 ? '  ·  Dataset DOI ' + doi.dataset_v2_0_0 : '');
+    ctx.fillText(doiLine, 64, 560);
+    ctx.fillText('check licence/terms before reuse  ·  drought.ankitdeshmukh.com  ·  generated ' +
       new Date().toISOString().slice(0, 10), 64, 590);
 
     const a = document.createElement('a');

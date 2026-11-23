@@ -83,7 +83,7 @@
       value: (r) => r.state_agree,
       worst: (r) => r.state_agree,
       note: "Operational agreement: the two records place the district on " +
-        "the same side of the v1.0 drought truncation (−1.0 z) in this share " +
+        "the same side of the record's drought truncation (−1.0 z) in this share " +
         "of matched months. This is the number to quote when the question is " +
         "\"would both records have called a drought?\".",
     },
@@ -233,7 +233,7 @@
       rows.reduce((s, r) => s + r.n, 0).toLocaleString("en-US") +
       " district-months; " + (m.length ? m.length : 0) + " calendar months. " +
       "Median r is the unweighted median across districts; the area-weighted " +
-      "figures use the v1.0 LAEA district areas. Both-drought is the share " +
+      "figures use the shared LAEA district areas. Both-drought is the share " +
       "of months where BOTH records flag ≤ −1.0 — it is co-occurrence, not " +
       "agreement. Missing pairs are absent, never imputed (R10).";
   }
@@ -423,10 +423,10 @@
     L.push("# window: 1981-2014 (register D6 comparison window)");
     L.push("# era A: Drought Atlas of India reconstruction (station-based SPEI)");
     L.push("# era B: Gridded Multi-Source Product (CHIRPS precipitation, ERA5-Land PET)");
-    L.push("# drought threshold: -1.0 z (v1.0 moderate-class upper bound); class table from data/metadata.json");
+    L.push("# drought threshold: -1.0 z (moderate-class upper bound); class table from data/metadata.json");
     L.push("# seam SD (sd_diff): per-district population SD of era B - era A over 1981-2014; the X7 seam uncertainty, not a confidence interval");
     L.push("# built by validation-studies/crossval/01_build_overlap.py; per-district file");
-    L.push("# areas: LAEA km2 (v1.0 registry); missing pairs are absent, never imputed (R10)");
+    L.push("# areas: LAEA km2 (shared registry); missing pairs are absent, never imputed (R10)");
     L.push("# map statistic at export time: " + m.short);
     L.push("district_id,district_name,state,area_km2,n_months,n_window,coverage," +
       "r,bias,rmsd,sd_diff,state_agree,both_drought,severe_agree,class_exact," +

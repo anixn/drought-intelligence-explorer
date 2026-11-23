@@ -60,7 +60,9 @@
   --ink-2: var(--ink-soft);
   --border: var(--hairline);
   --border-2: var(--hairline-strong);
-  --focus: #31506b;
+  /* Fallback only: each body[data-accent] block re-declares --focus from its
+   * own --accent, so the ring follows the Paper accent (never a blue default). */
+  --focus: #6b2b1f;
 
   --shadow:
     0 1px 1px rgba(62, 52, 38, 0.04),
@@ -99,24 +101,28 @@ body[data-accent="reading"] {
   --accent-ink: #5a241a;
   --accent-soft: rgba(107, 43, 31, 0.1);
   --accent-line: rgba(107, 43, 31, 0.34);
+  --focus: var(--accent);
 }
 body[data-accent="field"] {
   --accent: #55612f;
   --accent-ink: #47522a;
   --accent-soft: rgba(85, 97, 47, 0.12);
   --accent-line: rgba(85, 97, 47, 0.36);
+  --focus: var(--accent);
 }
 body[data-accent="drafting"] {
   --accent: #31506b;
   --accent-ink: #2a4459;
   --accent-soft: rgba(49, 80, 107, 0.11);
   --accent-line: rgba(49, 80, 107, 0.34);
+  --focus: var(--accent);
 }
 body[data-accent="hydro"] {
   --accent: #14594f;
   --accent-ink: #124a42;
   --accent-soft: rgba(20, 89, 79, 0.11);
   --accent-line: rgba(20, 89, 79, 0.34);
+  --focus: var(--accent);
 }
 
 * {
@@ -442,7 +448,7 @@ select:disabled {
 }
 input[type="range"] {
   width: 100%;
-  accent-color: #4f91b8;
+  accent-color: var(--accent);
   cursor: pointer;
   margin: 6px 0 2px;
 }
@@ -1226,7 +1232,7 @@ body.is-busy input {
   cursor: pointer;
 }
 .check input {
-  accent-color: var(--navy);
+  accent-color: var(--accent);
   width: 14px;
   height: 14px;
 }
@@ -3800,7 +3806,7 @@ body[data-tab="atlas"] {
 .sidebar input[type="checkbox"],
 .sidebar input[type="range"],
 .date-slider-row input[type="range"] {
-  accent-color: var(--ws);
+  accent-color: var(--accent);
 }
 /* indicator list: selected option picks up the workspace accent line */
 .ind-opt input:checked + .ind-body {
@@ -4341,8 +4347,11 @@ body[data-tab="projections"] {
 .panel-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
+  /* Content-driven heights: stretching short panels to match a tall neighbour
+   * left 90–210 px of dead space at the bottom (UX review, 2026-11-23). */
+  align-items: start;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 .el-status {
   margin: 0;
@@ -5266,10 +5275,10 @@ input[type="range"] {
 .workspace {
   /* Content-column padding, published as vars so full-bleed children
      (the product bar, M7.4) can cancel it without hard-coding breakpoints. */
-  --ws-pad-x: 22px;
+  --ws-pad-x: 18px;
   --ws-pad-y: 16px;
   padding: var(--ws-pad-y) var(--ws-pad-x) 0;
-  gap: 12px;
+  gap: 14px;
 }
 .panel,
 .kpi-card,
@@ -5282,7 +5291,7 @@ input[type="range"] {
 .panel-head {
   background: transparent;
   border-bottom: 1px solid var(--hairline);
-  padding: 12px 15px;
+  padding: 12px 14px;
 }
 .panel-title {
   font-family: var(--serif);
@@ -5300,7 +5309,7 @@ input[type="range"] {
   border-left: 3px solid var(--ws);
   border-radius: 0 var(--radius) var(--radius) 0;
   box-shadow: none;
-  padding: 8px 13px;
+  padding: 8px 14px;
 }
 .vi-title {
   font-family: var(--serif);
@@ -7127,6 +7136,69 @@ a:hover {
     display: inline;
   }
 }
+
+/* ===========================================================================
+   Session 69 — Paper accent, spacing scale and micro-copy floor
+   ---------------------------------------------------------------------------
+   Chrome (focus, form controls, table heads, map controls, doc letters,
+   chart hover/range frames) derives from `--accent` so every theme is felt.
+   Data colour — the severity ramp, era identities, product identities — is
+   never re-themed (R9 / D10). Spacing: one 18 px page gutter, one 14 px panel
+   indent and a 14 px stack, so titles, KPI labels and notes share a line.
+   =========================================================================== */
+
+/* --- 10. Accent reaches the remaining chrome ---------------------------- */
+.doc-letter {
+  background: var(--accent);
+}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus-visible {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border-color: var(--accent-line);
+}
+.leaflet-control-attribution a {
+  color: var(--accent-ink);
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--accent-ink);
+}
+
+/* --- 11. Micro-copy floor (10.5 px) ------------------------------------- *
+ * The remaining 8.5–9 px labels were the last sub-10 px text on the page.
+ * The five footer buttons stay at their compact size by design: they are a
+ * 44 px icon row that must fit five across a 260 px rail. */
+.group-note,
+.appearance-label,
+.ind-group-label,
+.sidebar-badge,
+.vi-tag,
+.tg-years,
+.footer-title-sm,
+.map-corner-tag,
+.ask-card .go,
+.evidence .ev-k {
+  font-size: 10.5px;
+}
+
+/* --- 12. Mobile table scroll cue (audit F13) --------------------------- */
+@media (max-width: 760px) {
+  .table-scroll {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+  }
+  /* The user-guide table's first column was nowrap, so the longer
+     "Record · …" labels pushed the table past a phone viewport. Let it wrap
+     instead of clipping or forcing a horizontal scroll. */
+  .guide-table td:first-child {
+    white-space: normal;
+  }
+  .guide-table th,
+  .guide-table td {
+    padding: 6px;
+  }
+}
+
 
 
 

@@ -662,15 +662,15 @@
       ctx.fillRect(0, canvas.height, out.width, Math.max(2, Math.round(3 * scale)));
       const ind = DIE.indicatorById && DIE.indicatorById.get(DIE.state.indicator);
       const ym = DIE.Filters.dateYm();
-      const title = "Drought Intelligence Explorer v2.0 development" +
+      const version = (DIE.meta && DIE.meta.version) ? " v" + DIE.meta.version : "";
+      const title = "Drought Intelligence Explorer" + version +
         "  ·  " + (ind ? ind.label : DIE.state.indicator) +
         (ym ? "  ·  " + DIE.dates.label(ym) : "") +
         "  ·  " + DIE.Filters.regionLabel();
       const cite = (DIE.App && DIE.App.citationText)
         ? DIE.App.citationText().split("\n")[0]
         : (DIE.meta.citation || "");
-      const foot = "Archived v1.0.0 DOI 10.5281/zenodo.24113364  ·  " +
-        "methodology " + (DIE.meta.methodology_version || "") +
+      const foot = "methodology " + (DIE.meta.methodology_version || "") +
         "  ·  generated " + new Date().toISOString().slice(0, 10);
       const pad = Math.round(16 * scale);
       ctx.fillStyle = "#2E2820";

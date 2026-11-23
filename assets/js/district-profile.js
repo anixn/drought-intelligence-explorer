@@ -307,7 +307,7 @@
       (stats ? stats.nEvents : 0) + " complete event(s) and " +
       (stats ? stats.nEventsCensored : 0) + " censored at the record/period edge; " +
       "longest " + (stats ? stats.maxDuration : 0) + " months; mean duration " +
-      num(stats && stats.meanDuration, 1) + " months. Frozen v1.0 runs analysis " +
+      num(stats && stats.meanDuration, 1) + " months. Frozen runs analysis " +
       "(Yevjevich 1967), threshold = upper bound of the moderate class, minimum 3 " +
       "consecutive months, missing months break runs. Severity = Σ(threshold − value) " +
       "over the event; censored events are listed but excluded from duration/severity " +

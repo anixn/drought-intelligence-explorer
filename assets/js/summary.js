@@ -447,7 +447,7 @@
           "property of a median-of-subset standardised series), so its " +
           "drought-month share is lower than any single model's — the " +
           "agreement statistic (default view) is the models' own verdict. " +
-          "Frozen v1.0 runs analysis, τ = −1.0, min 3 months, censoring " +
+          "Frozen runs analysis, τ = −1.0, min 3 months, censoring " +
           "flagged; missing districts grey, never imputed (R10).";
       }
       noteEl.textContent = noteText;
@@ -544,7 +544,7 @@
     }).join("");
     const areaSum = rows.reduce((s, r) => s + (Number.isFinite(r.area) ? r.area : 0), 0);
     noteEl.textContent =
-      "Area-weighted with the v1.0 LAEA district areas; drought-month share " +
+      "Area-weighted with the shared LAEA district areas; drought-month share " +
       "is months ≤ −1.0 z over valid months (era C: " + WINDOW_LABEL[state.window] +
       "median series; baseline: era B 1981–2014). Rows with no area fall " +
       "back to unweighted means of the same districts. Agreement column = " +
@@ -572,9 +572,9 @@
     L.push("# indicator: " + state.variable + (ind ? " (" + ind.label + ")" : ""));
     L.push("# future window: " + w.from + "-" + w.to + " (era C ensemble median series)");
     L.push("# baseline: era B Gridded Multi-Source Product 1981-2014 (data/events/baseline_1981_2014.json, register D6)");
-    L.push("# event machinery: frozen v1.0 runs analysis, threshold -1.0 z, min duration 3 months, censoring flagged");
+    L.push("# event machinery: frozen runs analysis, threshold -1.0 z, min duration 3 months, censoring flagged");
     L.push("# dir_agreement: fraction of the 8-model subset drier than their own 1981-2014 base; effective window " + dirEffectiveWindow());
-    L.push("# areas: LAEA km2 (v1.0 registry); missing values are empty cells, never imputed (R10)");
+    L.push("# areas: LAEA km2 (shared registry); missing values are empty cells, never imputed (R10)");
     L.push("district_id,district_name,state,area_km2," +
       "baseline_drought_share,future_drought_share,change_pp," +
       "baseline_mean_duration_mo,future_mean_duration_mo,duration_change_mo," +

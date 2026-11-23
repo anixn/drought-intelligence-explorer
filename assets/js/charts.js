@@ -15,6 +15,32 @@
   const FONT = { family: 'Inter, IBM Plex Sans, sans-serif', size: 11, color: '#2E2820' };
   const MONO = { family: 'IBM Plex Mono, monospace', size: 10, color: '#6E6250' };
 
+  /* Chart chrome (not data) follows the Paper accent. Read the tokens at
+   * render time so a theme switch can be pushed through Plotly.relayout by
+   * applyAccent() below. Data colours keep coming from metadata.json. */
+  function accentTokens() {
+    const cs = window.getComputedStyle(document.body);
+    const read = (name, fallback) => {
+      const v = cs.getPropertyValue(name);
+      return v && v.trim() ? v.trim() : fallback;
+    };
+    return {
+      ink: read('--ink-strong', '#211C15'),
+      surface: read('--surface', '#FBF7EE'),
+      surface2: read('--surface-2', '#EFE8D8'),
+      soft: read('--accent-soft', 'rgba(107, 43, 31, 0.1)'),
+      line: read('--accent-line', 'rgba(107, 43, 31, 0.34)'),
+    };
+  }
+
+  function hoverLabel(t) {
+    return {
+      bgcolor: t.surface,
+      bordercolor: t.line,
+      font: { family: FONT.family, size: 11, color: t.ink },
+    };
+  }
+
   /* Touch-primary devices (phones/tablets). On these the chart must yield
    * one-finger gestures to the page: scrolling a long panel should never pan
    * or zoom a chart by accident. Only an explicit two-finger pinch zooms
@@ -61,6 +87,7 @@
   }
 
   function baseLayout(extra) {
+    const t = accentTokens();
     const layout = {
       font: FONT,
       paper_bgcolor: 'rgba(0,0,0,0)',
@@ -68,6 +95,8 @@
       margin: { l: 52, r: 16, t: 14, b: 34 },
       xaxis: { gridcolor: '#E1D7C3', zerolinecolor: '#CFC2A8', linecolor: '#CFC2A8' },
       yaxis: { gridcolor: '#E1D7C3', zerolinecolor: '#CFC2A8', linecolor: '#CFC2A8' },
+      // Hover chrome is theme, not data: accent border on paper.
+      hoverlabel: hoverLabel(t),
       hovermode: 'closest',
       showlegend: false,
       // Desktop keeps drag-to-pan. On touch the drag layer is disabled so a
@@ -159,6 +188,7 @@
         }]
       : [];
 
+    const t = accentTokens();
     Plotly.react(el, traces, baseLayout({
       shapes, annotations,
       margin: { l: 46, r: 16, t: 26, b: 20 },
@@ -170,19 +200,18 @@
       },
       xaxis: {
         type: 'date', gridcolor: '#EFE8D8', linecolor: '#CFC2A8',
-        rangeslider: { bgcolor: '#EFE8D8', thickness: 0.085, bordercolor: '#E1D7C3' },
+        rangeslider: { bgcolor: t.surface2, thickness: 0.085, bordercolor: t.line },
         rangeselector: {
           buttons: [
             { count: 5, step: 'year', stepmode: 'backward', label: '5y' },
             { count: 10, step: 'year', stepmode: 'backward', label: '10y' },
             { step: 'all', label: 'All' }
           ],
-          font: FONT, bgcolor: '#FBF7EE', activecolor: '#E4DAC6',
-          bordercolor: '#CFC2A8', borderwidth: 1
+          font: FONT, bgcolor: t.surface, activecolor: t.soft,
+          bordercolor: t.line, borderwidth: 1
         }
       }
-    }), config('timeseries-' + indicator.id + '-' + regionLabel.replace(/\W+/g, '-').toLowerCase()));
-  }
+    }), config('timeseries-' + indicator.id + '-' + regionLabel.replace(/\W+/g, '-').toLowerCase()));  }
 
   /* --------------------------------------------- B · severity bars ------ */
   const DIST_BINS = [
@@ -798,12 +827,38 @@
 
   installTouchZoom();
 
+  /* Push a Paper-accent change into charts that are already drawn. Data
+   * traces are untouched; only the hover card and the range controls are
+   * re-tinted (chrome, never the severity ramp). */
+  function applyAccent() {
+    if (!window.Plotly) return;
+    const t = accentTokens();
+    document.querySelectorAll('.js-plotly-plot').forEach((el) => {
+      const fl = el._fullLayout;
+      if (!fl) return;
+      const update = { hoverlabel: hoverLabel(t) };
+      if (fl.xaxis) {
+        if (fl.xaxis.rangeslider && fl.xaxis.rangeslider.visible) {
+          update['xaxis.rangeslider.bgcolor'] = t.surface2;
+          update['xaxis.rangeslider.bordercolor'] = t.line;
+        }
+        if (fl.xaxis.rangeselector && fl.xaxis.rangeselector.visible) {
+          update['xaxis.rangeselector.bgcolor'] = t.surface;
+          update['xaxis.rangeselector.activecolor'] = t.soft;
+          update['xaxis.rangeselector.bordercolor'] = t.line;
+        }
+      }
+      const p = Plotly.relayout(el, update);
+      if (p && p.catch) p.catch(() => {});
+    });
+  }
+
   /* -------------------------------------------------------------- public -- */
   DIE.Charts = {
     available, unavailable, loading, state, clearState, timeSeries, severityBars, frequencyByYear,
     scatterCompare, areaTimeline, DIST_BINS, dryThresholds,
     rankingBars, statRamp, statRampWarm, statLegendHtml, trendChart, eventTimeline,
     eventDistribution, eventDetailSeries, sensitivityChart,
-    lagCorrelationChart, dualSeriesChart, correlationHeatmap
+    lagCorrelationChart, dualSeriesChart, correlationHeatmap, applyAccent
   };
 })();
