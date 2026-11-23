@@ -1,6 +1,6 @@
 {
   "schema": "die-status/1.0",
-  "as_of": "2026-11-22",
+  "as_of": "2026-11-23",
   "data": {
     "version": "2.0.0",
     "methodology_version": "research-gee-1.0.2",
@@ -12,7 +12,7 @@
       "end": "2026-09"
     },
     "data_month": "2026-09",
-    "lag_days": 53,
+    "lag_days": 54,
     "lag_threshold_days": 45,
     "lag_status": "amber",
     "indicators": [
@@ -249,17 +249,7 @@
     {
       "id": "refresh-due",
       "severity": "amber",
-      "text": "Era B ends 2026-09; the monthly refresh is 53 days behind (target ≤ 45 days)."
-    },
-    {
-      "id": "era-c-local",
-      "severity": "info",
-      "text": "Era-C projections are served from the local store during testing; they are not pushed to the public site until the v2.0 release gate."
-    },
-    {
-      "id": "imd-pending",
-      "severity": "info",
-      "text": "The IMD gridded benchmark (M4) has not been run; era-B indicators are not yet validated against IMD."
+      "text": "Era B ends 2026-09; the monthly refresh is 54 days behind (target ≤ 45 days)."
     },
     {
       "id": "atlas-islands",

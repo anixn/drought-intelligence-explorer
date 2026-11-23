@@ -106,17 +106,6 @@ def build(today: date | None = None) -> dict:
             "text": f"Era B ends {end}; the monthly refresh is {lag} days behind "
                     f"(target ≤ {LAG_AMBER_DAYS} days).",
         })
-    issues.append({
-        "id": "era-c-local", "severity": "info",
-        "text": "Era-C projections are served from the local store during "
-                "testing; they are not pushed to the public site until the "
-                "v2.0 release gate.",
-    })
-    issues.append({
-        "id": "imd-pending", "severity": "info",
-        "text": "The IMD gridded benchmark (M4) has not been run; era-B "
-                "indicators are not yet validated against IMD.",
-    })
     era_a = meta.get("era_a") or {}
     if era_a.get("missing"):
         issues.append({
