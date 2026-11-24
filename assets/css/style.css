@@ -2356,8 +2356,16 @@ td .sparse-tag {
   word-break: break-all;
 }
 .validation-report {
-  font-family: var(--mono);
-  font-size: 11px;
+  /* This is prose, not a code log: use the dashboard sans so it reads like
+   * the rest of the Documentation centre. It is the first child of section D
+   * and needed its own inset (it was flush against the panel edge). */
+  font-family: var(--font);
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 6px 14px 4px;
+}
+.validation-report b {
+  color: var(--ink-strong);
 }
 .validation-report .vr-ok {
   color: var(--ok);
@@ -3300,6 +3308,16 @@ kbd {
 details.acc-panel > summary.panel-head {
   list-style: none;
   cursor: pointer;
+  /* Keep the disclosure marker on the heading row at every width. With the
+   * base .panel-head flex-wrap:wrap, wide titles pushed the marker onto a
+   * line of its own at the left edge (the mobile bug in the E-N panels). */
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+}
+details.acc-panel > summary.panel-head > .panel-titles {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 details.acc-panel > summary.panel-head::-webkit-details-marker {
   display: none;
@@ -3312,8 +3330,8 @@ details.acc-panel > summary.panel-head::after {
   height: 8px;
   border-right: 2px solid var(--ink-2);
   border-bottom: 2px solid var(--ink-2);
-  transform: rotate(135deg); /* points right when closed */
-  margin-left: 4px;
+  transform: rotate(-45deg); /* points right when closed */
+  margin-left: auto;
   transition: transform 0.15s ease;
 }
 details.acc-panel[open] > summary.panel-head::after {
@@ -3333,6 +3351,13 @@ details.acc-panel > summary.panel-head:focus-visible {
 .acc-panel .about-body,
 .acc-panel .meth-body {
   border-top: 1px solid var(--border);
+}
+/* Section-heading blocks that sit directly inside an accordion (section D's
+ * IMD benchmark) share the 14 px content inset used by .panel-note and
+ * .validation-report; they were flush against the panel edge. */
+#viewData .doc-sec > .gov-h {
+  padding-left: 14px;
+  padding-right: 14px;
 }
 
 .dl-citation {
@@ -7495,6 +7520,13 @@ input[type="search"],
 .panel-head {
   padding-top: 10px;
   padding-bottom: 10px;
+}
+/* Documentation prose never inherits a code face; only <code>, <pre> and
+ * .mono carry the mono family. */
+#viewData .table-help,
+#viewData .panel-note,
+#viewData .side-note {
+  font-family: var(--font);
 }
 
 @media (max-width: 760px) {
