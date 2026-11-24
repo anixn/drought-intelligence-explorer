@@ -7409,6 +7409,154 @@ a:hover {
   }
 }
 
+/* ===========================================================================
+   Aesthetic pass — compact, rounded controls (D23, 2026-11-24)
+   ---------------------------------------------------------------------------
+   Owner request: buttons and selectors feel too tall and too square in both
+   the rail and the panels. One control scale now applies everywhere: 30 px
+   tall on the desktop, 34-38 px on phones (still above the 24 px WCAG 2.5.8
+   minimum), with a soft 9-10 px radius. The map head keeps its title and
+   Export PNG on one row on phones. Data colours and the severity ramp are
+   untouched (R2/R9/D10). */
+:root {
+  --ctl-h: 30px;
+  --ctl-r: 9px;
+}
+.btn {
+  min-height: var(--ctl-h);
+  padding: 4px 11px;
+  border-radius: var(--ctl-r);
+}
+.icon-btn {
+  width: var(--ctl-h);
+  height: var(--ctl-h);
+  border-radius: 8px;
+}
+.topnav a.top-util,
+.topnav .icon-btn {
+  border-radius: var(--ctl-r);
+}
+select,
+input[type="search"],
+.panel-ctl,
+.evo-speed,
+.mini-field select {
+  min-height: var(--ctl-h);
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-radius: var(--ctl-r);
+}
+.seg {
+  border-radius: 10px;
+}
+.seg span,
+.panel-actions .seg span {
+  padding: 4px 10px;
+}
+.chip {
+  border-radius: 6px;
+}
+.pager button {
+  height: var(--ctl-h);
+  min-width: var(--ctl-h);
+  border-radius: 8px;
+}
+.foot-btn {
+  min-height: 38px;
+  padding: 4px 2px 3px;
+  gap: 2px;
+  border-radius: 8px;
+}
+.map-toolbar {
+  padding: 7px 14px;
+  gap: 7px 14px;
+}
+.map-toolbar .switch {
+  margin-bottom: 0;
+}
+.panel-head {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --topbar-h: 54px;
+  }
+  .topbar {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+  }
+  .icon-btn,
+  .topnav a.top-util,
+  .topnav button {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0;
+  }
+  .vi-title .icon-btn.vi-toggle {
+    width: 30px;
+    height: 30px;
+    margin: -3px;
+  }
+  .btn {
+    min-height: 34px;
+    padding: 5px 11px;
+    border-radius: 10px;
+  }
+  select,
+  input[type="search"],
+  .panel-ctl,
+  .evo-speed {
+    min-height: 34px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 10px;
+  }
+  .seg span,
+  .panel-actions .seg span {
+    padding: 8px 12px;
+  }
+  .ind-opt,
+  .switch {
+    min-height: 38px;
+  }
+  .doc-nav-links button {
+    min-height: 36px;
+  }
+  .doc-top,
+  .ev-jump button {
+    min-height: 38px;
+  }
+  .pager button {
+    height: 38px;
+    min-width: 38px;
+  }
+  /* Title and Export PNG stay on one row; the title wraps inside its column
+   * instead of pushing the action to a second line. */
+  .map-panel > .panel-head {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .map-panel > .panel-head .panel-titles {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .map-panel > .panel-head .panel-actions {
+    flex: 0 0 auto;
+    width: auto;
+  }
+  .map-panel .panel-title {
+    font-size: 14px;
+  }
+  .map-panel > .panel-head .btn {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+}
+
 
 
 
