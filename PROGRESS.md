@@ -12,11 +12,12 @@
 |        Dataset 10.5281/zenodo.24445534 (CC-BY-4.0, snapshot v2026.09).    |
 |        Site live on data.ankitdeshmukh.com. Remaining: manuscript sync.   |
 | PHASE:         Post-release. Next: manuscript numbers + IMD section;      |
-|                M4 done; M9 exit review optional; M8+ backlog.            |
-| ROADMAP:       M0-M7 complete (v2.0.0 released 2026-11-22).              |
-| LAST SESSION:  2026-11-23 (row 70 - status honesty; row 69 - docs/accent) |
+|                M4 done; M9 exit review optional; M8+ backlog.             |
+| ROADMAP:       M0-M7 complete (v2.0.0 released 2026-11-22).               |
+| LAST SESSION:  2026-11-24 (row 71 - colour rule, mobile map, flowchart)   |
 | BLOCKERS:      none. Owner-side: push the DOI commit, optional bucket     |
-|                housekeeping (lifecycle rule, budget alert, cache rule)    |
+|                housekeeping (lifecycle/budget/cache rules); pre-existing  |
+|                reality-check --check drift needs an Owner re-bless.       |
 | BRANCH:        master (v2.0.0 merged; v2-dev to be fast-forwarded)        |
 ```
 
@@ -24,14 +25,14 @@ Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2
 
 ## 2. Current phase
 
-**The bulk data is now published (session 63, 2026-11-22)** — snapshot
-`v2026.09` lives on Cloudflare R2 (20,304 objects, 951 MB, bucket `die-data`),
-the repository keeps only the code and a ~200-byte pointer, and the monthly
-refresh is no longer a 13 MB git commit. The public base is the `r2.dev` staging
-URL; before release it should move to `data.ankitdeshmukh.com` (custom domain),
-which is a one-line pointer change. Current phase: the **M7 release gate** —
-next buildable item is the **M7.1 download portal** (bundles generated from the
-same manifest), then **M7.2** (manuscript values, CITATION, DOI).
+**v2.0.0 is live and archived (session 66, 2026-11-22)** — software DOI
+`10.5281/zenodo.24444860`, dataset DOI `10.5281/zenodo.24445534`, snapshot
+`v2026.09` on Cloudflare R2, public base `data.ankitdeshmukh.com`. The
+repository carries only code plus the pointer. Session 71 (2026-11-24) added the
+post-release design pass: the surface colour rule (D22, no theme picker), a
+compacted lens row, the mobile map-first Overview, the Documentation system
+flowchart and a stale-copy sweep. Remaining: the **manuscript sync** and the
+monthly era-B refresh, both Owner-gated.
 
 **Background — M7.3 (session 57, 2026-11-22), complete.** Mobile + WCAG 2.1 AA
 pass, permalink hardening, Engine Lab byte-interceptor fix and the design pass
@@ -845,26 +846,29 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-> **Updated 2026-11-22 (session 66): v2.0.0 is released.** Software
-> `10.5281/zenodo.24444860` (concept `24113363`, MIT) and dataset
+> **Updated 2026-11-24 (session 71): v2.0.0 released; post-release polish built.**
+> Software `10.5281/zenodo.24444860` (concept `24113363`, MIT) and dataset
 > `10.5281/zenodo.24445534` (CC-BY-4.0, snapshot `v2026.09`) are minted, the
 > site is live on `data.ankitdeshmukh.com`, and the MD5 checksums of the six
-> archived files match the local bundles byte for byte.
->
-> **Owner, now:** `git push origin master` (the dataset-DOI commit is local),
-> then `git checkout v2-dev && git merge --ff-only master && git push origin
-> v2-dev`. Optional bucket housekeeping: lifecycle rule on prefix `v`, $1 budget
-> alert, Cache Rule for `data.ankitdeshmukh.com`. Optional Zenodo tidying: add
-> `is supplemented by → 10.5281/zenodo.24445534` on the software record, and
-> change the dataset record's related identifier type from *dataset* to
-> *software*.
+> archived files match the local bundles byte for byte. Session 71 delivered the
+> post-release design pass (D22 colour rule, compact lens row, mobile map-first
+> Overview, Documentation flowchart, stale-copy sweep).
 >
 > **OpenCode, next:** the **manuscript sync** — Fig 5 (4/547), Fig 6
 > (r = 0.8716, n = 547, CI [0.8356, 0.8999]), the record-coverage sentences
 > (1981 → 2026-09) and a new IMD validation paragraph quoting the memo. After
 > that: M9 exit-gate review (optional) and the M8+ backlog.
+>
+> **Owner, next:** the monthly era-B refresh (the record ends 2026-09; the lag is
+> amber in N · Data status) and a re-bless of `verify_reality_checks.py --check`,
+> which currently reports pre-existing drift. Optional bucket housekeeping:
+> lifecycle rule on prefix `v`, $1 budget alert, Cache Rule for
+> `data.ankitdeshmukh.com`.
 
-### M7.1 — download portal (next buildable task)
+### M7.1 — download portal (DELIVERED in v2.0.0; historical design record)
+
+> Status 2026-11-24: the portal and the Zenodo bundles shipped with v2.0.0
+> (sessions 64–66); the text below is retained as the build record.
 
 Versioned download bundles (era A / era B / era C + cross-validation), each
 with a SHA-256 manifest, the per-artefact licence statement from
@@ -874,7 +878,10 @@ byte-identical to the files the dashboard serves (docs/v2/04 parity rule) and
 the page states the v2.0 DOI as pending until M7.2 mints it. Final bundle
 contents wait on the Owner's hosting decision; build the generator + page now.
 
-### M6.2 – Atlas ingestion (next task; M6.1 gate PASSED 2026-11-18)
+### M6.2 – Atlas ingestion (DELIVERED in M6.3; historical build record)
+
+> Status 2026-11-24: era A is ingested, promoted and live on `#atlas`
+> (M6.3, session 47). The text below is the build record, not a pending task.
 
 **Updated 2026-11-18 (session 34):** the source gate is GREEN
 (`atlas-pipeline/00_verify_atlas.py`: 30 checks / 9 notes PASS) and the
@@ -1021,3 +1028,4 @@ X1 refusal. WORLD SELFTEST PASS.
 | 68 | 2026-11-23 | **UX/usability pass for the three reported complaints, plus the audit's P1 fixes.** (a) CHARTS: Plotly mode bars removed everywhere (`displayModeBar:false` in `charts.config()`, the frequency histogram and the two bespoke configs; panel **Export PNG** remains), `scrollZoom` off and `doubleClick:'reset'`. On touch-primary devices `dragmode:false`, so a one-finger swipe scrolls the page; a small two-finger pinch handler in `charts.js` zooms both axes around the pinch midpoint and appends a "Reset zoom" chip (the vendored Plotly build has no pinch of its own). MAPS: Leaflet gets `dragging:false` + `touchZoom:true` and loses wheel/double-click/box zoom on touch, with a "Pinch to zoom · swipe the page to scroll" hint. Building that exposed a latent bug — `app.js` passes container **ids** to `createChoropleth`, so appending the hint threw `container.appendChild is not a function` and took the whole app down on phones; the factory now resolves id→element. (b) ACCENT: the Paper accent now reaches real chrome — 2 px topbar rule, brand strapline, panel titles/heads, KPI and stat labels, links (fixing browser-blue `ev-verify` links), button/icon hover, table heads, view-intro and projections banner, rail headings — while severity/era/product data colours stay fixed (D10). The sidebar copy now says what the control retints. (c) AUDIT: `h1` word mark (F2), kept on one line; short Tour/Docs labels between 1101–1420 px so the 19 px Literata mark no longer laps the nav; district-strip skeleton chips with `aria-busy` (F1); 10.5 px micro-copy floor (F4); Projections methodology behind a `<details>` (F5); Engine Lab rail links spelled out (F7); phone view-strip edge fade (F8); `SPEI-04`→`SPEI-4` display only (F11); phone topbar height measured into `--topbar-h` so the drawer and sticky strip are no longer clipped by the wrapped three-row chrome; phone status chips tightened so the 375 px page stays overflow-free after the type floor. | assets/js/{charts,map,district-profile,engine-lab,projections,crossval,app}.js, assets/css/style.css, index.html, tour.html, PROGRESS.md | 9 routes: 0 console errors, 0 mode bars, 0 empty panels, one h1, no horizontal overflow at 1286 px; 375 px iframe: scrollW 375, topbar 135 px = `--topbar-h` (drawer clears it), both honesty chips fit; touch map factory exercised with a stubbed coarse pointer (no throw, hint rendered); accent switch verified on three themes; `selftest.py` PASS; `regression_check.py` PASS (735 values) | Owner review + push; optional remaining audit items F6/F9/F10/F13/F15 |
 | 69 | 2026-11-23 | **Documentation currency, v1.0 narrative trim, Paper-accent expansion and spacing pass (Owner: stale four-tab text, too many v1 references, off margins, "make more of paper accent").** (a) DOCS: the About list and the User-guide table now describe today's **products and lenses** (Record · Overview/Historical/Events/Propagation/Cross-validation/District profile; Projections · Future Projections/Drought to 2100; Atlas; Engine Lab; Documentation) instead of the retired four-workspace list; the hash list names every current route; the tour and the topbar tooltip say "four products and their lenses". (b) v1 TRIM: narrative v1 references removed from rendered copy (Engine Lab loader note, Projections event note, living-methodology intro, district-event note, cross-validation and Drought-to-2100 notes/CSV headers); the map PNG title no longer says "v2.0 development" (reads `metadata.version`), its footer and the share-card footer now carry the current software/dataset DOIs instead of "v2.0 DOI minted at release". Archived v1.0.0 DOI, the CC-BY licence row and the changelog entry stay (citation honesty, as agreed). D15 and the licence table no longer claim the v2 DOI is unclaimed/at release. (c) ACCENT: `--focus` is re-declared per theme from `--accent` (was hardcoded blue), `accent-color` on checkboxes and the date slider follows the accent, doc letters take the accent, Leaflet control hover/attribution do too, and Plotly hover cards plus the time-series range slider/selector are theme-aware; `DIE.Charts.applyAccent()` re-tints existing plots on a swatch click without touching data traces. Verified across Reading/Field/Drafting/Hydro. (d) SPACING: one 18 px page gutter (was 22), 14 px panel indent (panel heads and intros aligned with KPI labels at the same x), 14 px stack, and `align-items:start` on `.panel-grid` so panels are content-height — the measured 94 px Projections-band, 19 px Selection and 212 px Engine-status dead spaces are gone. Remaining 8.5–9 px micro-copy raised to 10.5 px; the user-guide table wraps on phones and scrolling table wrappers get a mobile edge fade. Rules recorded in AGENTS.md §8 and decision **D21**. | index.html, tour.html, assets/css/style.css, assets/js/{app,charts,map,district-profile,crossval,summary}.js, AGENTS.md, docs/v2/05-decision-register.md, PROGRESS.md | 10 routes: 0 console errors, 0 mode bars, 0 horizontal overflow at 1286 px; 375 px: scrollW 375, user-guide table 317 px inside a 349 px host, no clipping, `four workspaces` absent; focus token = accent on all four themes; chart hover border retints on switch; panel voids 0 (>6 px filter); selftest PASS; regression PASS (735 values) | Owner review + push; optional audit items F6 (duplicate Overview choropleths), F15 long-form chart descriptions |
 | 70 | 2026-11-23 | **Status artifact corrected after the release.** `data/status.json` still carried two curated known issues that the release had made false — “Era-C projections are served locally and not pushed until the release gate” and “the IMD benchmark has not been run” — so Documentation N was telling visitors the opposite of the published product. Both entries were removed at source in `scripts/build_status.py`; the artifact now lists only the true issues (refresh due, Atlas island mask, preprint Table 5 drift). Regenerated and `--check` PASS. | scripts/build_status.py, data/status.json, PROGRESS.md | `build_status.py` writes 6,349 B · status panel renders 3 issues (amber refresh; Atlas islands; preprint drift); `build_status.py --check` PASS | Owner: monthly refresh (era B ends 2026-09) and manuscript Table 5 sync |
+| 71 | 2026-11-24 | **Surface colour rule, compact lenses, mobile map-first and a Documentation flowchart (Owner: "ditch Paper accent ... colours should say something ... subtabs bigger ... map on mobile ... flowchart ... some old information").** (a) COLOUR (register **D22**, supersedes the user-selectable part of D10/D21): `--accent*` and `--focus` now alias the active surface's identity hue (`--ws*`); the four `body[data-accent]` themes, `ACCENT_THEMES`, the sidebar swatches and `localStorage['die.accent']` are gone. The rail footer states the rule ("Colour follows the view") with a dot in the current hue. Added explicit `crossval` (teal `#2f6a6a`) and `district` (indigo-taupe `#59556e`); `data-lens` on the ten lens buttons keeps each inactive icon in its own hue at 60 %. `DIE.Charts.applyAccent()` runs on every `switchTab`; the palette is declared once (a duplicate early block that silently lost to a later one was removed). Severity/era/product data colours untouched (R2/R9/D10). (b) LENSES: 12 px type, 6-11 px padding, 13 px icons -> 28 px desktop row; >=40 px targets on phones. (c) MOBILE: CSS `order` on `#viewOverview` at <=760 px gives intro -> map -> KPIs -> evidence -> ask band -> charts -> grid; measured map top 372 px in a 900 px viewport. (d) MAP STAMP: "GEE-derived research data" is no longer shown on either map; the tag is hidden for real data and retained only for synthetic builds (R3); markup ships `hidden`. (e) DOCS: new dependency-free HTML/CSS system flowchart in section A (sources -> pipelines -> era partitions -> store -> readers; 3-col sources, 4-col pipelines, 3 eras, chain; dashboard category hues only; two-column/stacked on phones) with a legend; the stale Projections "Pending compute - not yet rendered" panel is replaced by true maintenance items (monthly refresh, R2 mirror, manuscript sync, Atlas island gap, optional sensitivity); "workspaces" wording fixed in the About meta, guardrails, rail note, three headings and the tour; the 24-model claim in the topbar tooltip, flowchart, changelog and tour corrected to the committed **8-model subset** of the 22-model archive (R3). Also repaired double-encoded UTF-8 left by a PowerShell version-bump round-trip (all non-ASCII verified). | index.html, tour.html, assets/css/style.css, assets/js/app.js, docs/v2/05-decision-register.md, AGENTS.md, PROGRESS.md | 11 routes: 0 console errors/warnings, 0 overflow, distinct accent per surface (#4e6b5a overview ... #6e6250 docs), one `h1`; 390x844 iframe: map top 372 of 900, order verified, scrollW 380, lens targets 40 px; desktop lens row 28 px; flowchart 926 px (3+3, 4, 3) and 318 px on mobile (2-col, no overflow); absent: "Pending compute", "not yet rendered", "GEE-derived research data", "24 GCM/24 bias"; selftest PASS; regression PASS (735); `build_status.py --check` PASS; `verify_reality_checks.py --check` reports pre-existing drift (data untouched; Owner re-bless) | Owner review + push; manuscript sync (Table 5, Fig 5/6) |

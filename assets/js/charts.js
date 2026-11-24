@@ -28,8 +28,8 @@
       ink: read('--ink-strong', '#211C15'),
       surface: read('--surface', '#FBF7EE'),
       surface2: read('--surface-2', '#EFE8D8'),
-      soft: read('--accent-soft', 'rgba(107, 43, 31, 0.1)'),
-      line: read('--accent-line', 'rgba(107, 43, 31, 0.34)'),
+      soft: read('--accent-soft', 'rgba(110, 98, 80, 0.1)'),
+      line: read('--accent-line', 'rgba(110, 98, 80, 0.38)'),
     };
   }
 

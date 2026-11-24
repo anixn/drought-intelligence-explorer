@@ -120,6 +120,15 @@
   function currentDataset() { return DIE.datasets.get(DIE.state.indicator); }
   function ids() { return DIE.Filters.regionIds(); }
   function isDemo() { return /synthetic|demonstration/i.test(String(DIE.meta.data_mode || '')); }
+  /* The maps used to carry a permanent "GEE-derived research data" stamp.
+   * Provenance is documented in section B and in the rail's source line, so
+   * the stamp is now reserved for the one case where it is a warning rather
+   * than a label: synthetic demonstration data (R3). */
+  function stampMapTag(el, demo) {
+    if (!el) return;
+    el.textContent = demo ? 'synthetic demonstration data' : '';
+    el.hidden = !demo;
+  }
   function run(fn) { try { return fn(); } catch (e) { console.error(e); } }
   function debounce(fn, ms) {
     let t;
@@ -332,6 +341,9 @@
       }
     }, 60);
     document.body.dataset.tab = tab.id;
+    // D22: the chrome colour follows the surface. Re-tint any chart that is
+    // already drawn (hover card, range controls) without re-querying data.
+    if (DIE.Charts && DIE.Charts.applyAccent) DIE.Charts.applyAccent();
     syncNavGroup(tab.id);
     syncSidebar(tab.id);
     syncRailConsoles();
@@ -399,35 +411,12 @@
     renderEraPill(tabId);
   }
 
-  /* ================================================= APPEARANCE THEMES ===
-   * Sepia Paper accent themes (decision D10). They retint chrome only; the
-   * severity ramp, class boundaries and every analytic result are identical
-   * in all four, so a colour quoted in a report means the same thing after
-   * the reader changes their paper. */
-  const ACCENT_THEMES = {
-    reading: 'Reading Room',
-    field: 'Field Notes',
-    drafting: 'Drafting Table',
-    hydro: 'Hydrograph'
-  };
-  function applyAccent(name, persist) {
-    const key = Object.prototype.hasOwnProperty.call(ACCENT_THEMES, name)
-      ? name
-      : 'reading';
-    document.body.dataset.accent = key;
-    document.querySelectorAll('.appearance-swatch').forEach((b) => {
-      b.setAttribute('aria-pressed', String(b.dataset.theme === key));
-    });
-    const label = $('appearanceName');
-    if (label) label.textContent = ACCENT_THEMES[key];
-    if (persist) {
-      try { localStorage.setItem('die.accent', key); } catch (e) {}
-      if (DIE.Telemetry) DIE.Telemetry.track('appearance_accent', { accent: key });
-    }
-    // Redraw only the themed chrome of charts already on screen; data traces
-    // are left exactly as published.
-    if (DIE.Charts && DIE.Charts.applyAccent) DIE.Charts.applyAccent();
-  }
+  /* ================================================ SURFACE COLOUR (D22) ==
+   * Colour is a location, not a preference: the CSS derives every chrome
+   * accent from `--ws`, which is set by `body[data-tab]`. There is no theme
+   * picker and nothing to persist — switching surface is the only control.
+   * Charts already on screen are re-tinted by DIE.Charts.applyAccent() from
+   * switchTab(), so hover and range chrome follow without touching data. */
 
   /* ======================================================== ERA PILL =====
    * A standing, honest statement of which record the current surface reads.
@@ -739,17 +728,6 @@
       });
     });
     window.addEventListener('hashchange', routeFromHash);
-
-    /* ------------------------------------------------ appearance (D10) --- */
-    // Four paper accents. Chrome only — the severity ramp is untouched, so a
-    // quoted class colour means the same thing in every theme. Persisted per
-    // browser; resetting the filters never changes it.
-    let savedAccent = 'reading';
-    try { savedAccent = localStorage.getItem('die.accent') || 'reading'; } catch (e) {}
-    applyAccent(savedAccent, false);
-    document.querySelectorAll('.appearance-swatch').forEach((b) => {
-      b.addEventListener('click', () => applyAccent(b.dataset.theme, true));
-    });
 
     /* --------------------------------------- "Ask the record" entry ------ */
     // Each card is a question, not a chart title. The handler routes to the
@@ -1549,7 +1527,7 @@
     $('chipUpdated').textContent = 'Updated · ' + DIE.meta.last_updated;
 
     const demo = isDemo();
-    $('mapTag').textContent = demo ? 'synthetic demonstration data' : 'GEE-derived research data';
+    stampMapTag($('mapTag'), demo);
     // Single data-source label (previously repeated on every KPI card).
     const dpm = $('datePanelMeta');
     dpm.textContent = demo
@@ -2022,7 +2000,7 @@
       const idx = this.frame;
       evoMap.applyData(ds, idx, DIE.state.colourMode, null);
       $('evoDate').textContent = DIE.dates.label(ds.dates[idx]);
-      $('evoMapTag').textContent = isDemo() ? 'synthetic demonstration data' : 'GEE-derived research data';
+      stampMapTag($('evoMapTag'), isDemo());
       const slider = $('evoSlider');
       if (+slider.value !== idx) slider.value = idx;
 
@@ -2063,7 +2041,7 @@
       $('evoFoot').textContent = ds.indicator.label + ' · ' + DIE.Filters.regionLabel() +
         ' · press Play to animate the full record (use the speed selector for slower/faster playback); ' +
         'drag the slider to set the observation date for the whole dashboard; ' +
-        (isDemo() ? 'demonstration data (synthetic)' : 'GEE-derived research data') + '.';
+        (isDemo() ? 'demonstration data (synthetic)' : 'research data') + '.';
     }
   };
 

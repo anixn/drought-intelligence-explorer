@@ -60,9 +60,9 @@
   --ink-2: var(--ink-soft);
   --border: var(--hairline);
   --border-2: var(--hairline-strong);
-  /* Fallback only: each body[data-accent] block re-declares --focus from its
-   * own --accent, so the ring follows the Paper accent (never a blue default). */
-  --focus: #6b2b1f;
+  /* Fallback only: body re-declares --focus from the active surface accent
+   * (see the accent block just below), so the ring is never a blue default. */
+  --focus: #6e6250;
 
   --shadow:
     0 1px 1px rgba(62, 52, 38, 0.04),
@@ -91,37 +91,18 @@
   --topbar-h: 64px;
 }
 
-/* --- Accent themes ------------------------------------------------------ *
- * One accent per view (D10): chrome only — never data. body[data-accent] is
- * set by the Appearance control and persisted in localStorage. "Reading
- * Room" (oxblood) is the default. */
-body,
-body[data-accent="reading"] {
-  --accent: #6b2b1f;
-  --accent-ink: #5a241a;
-  --accent-soft: rgba(107, 43, 31, 0.1);
-  --accent-line: rgba(107, 43, 31, 0.34);
-  --focus: var(--accent);
-}
-body[data-accent="field"] {
-  --accent: #55612f;
-  --accent-ink: #47522a;
-  --accent-soft: rgba(85, 97, 47, 0.12);
-  --accent-line: rgba(85, 97, 47, 0.36);
-  --focus: var(--accent);
-}
-body[data-accent="drafting"] {
-  --accent: #31506b;
-  --accent-ink: #2a4459;
-  --accent-soft: rgba(49, 80, 107, 0.11);
-  --accent-line: rgba(49, 80, 107, 0.34);
-  --focus: var(--accent);
-}
-body[data-accent="hydro"] {
-  --accent: #14594f;
-  --accent-ink: #124a42;
-  --accent-soft: rgba(20, 89, 79, 0.11);
-  --accent-line: rgba(20, 89, 79, 0.34);
+/* --- One accent per surface (D22) --------------------------------------- *
+ * The chrome takes its colour from the surface you are on. Every product and
+ * lens owns one muted identity hue (`--ws`, declared from `data-tab` and
+ * `data-lens` further down), and the accent aliases that hue. There is no
+ * user-selectable theme: a chrome colour is a location, not a preference.
+ * Data colour — the severity ramp plus the era and product identities — is a
+ * separate token family and is never derived from `--accent` (R2/R9/D10). */
+body {
+  --accent: var(--ws);
+  --accent-ink: var(--ws-ink);
+  --accent-soft: var(--ws-soft);
+  --accent-line: var(--ws-line);
   --focus: var(--accent);
 }
 
@@ -990,6 +971,250 @@ input[type="range"] {
 }
 .about-body p {
   margin: 0 0 8px;
+}
+
+/* ------------------------------------- documentation system map (D22) ---- *
+ * Sources -> pipelines -> era partitions -> store -> readers. Hand-built
+ * from the dashboard palette (no image, no external library, no fixed-height
+ * canvas), so it reflows to a phone without shrinking the type. The category
+ * hues below are the same data colours used by the tabs; chrome colour is a
+ * separate token family (D22) and never appears here. */
+.flow-figure {
+  margin: 6px 0 16px;
+  padding: 12px 14px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+}
+.flow-stage {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+.flow-stage-label {
+  padding-top: 8px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.flow-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+/* Fixed column counts keep the source grid balanced (3 x 2) and the pipeline
+ * row on one line, instead of a lone sixth card stretching full width. */
+.flow-row--three .flow-card {
+  flex: 1 1 calc(33.333% - 6px);
+}
+.flow-row--four .flow-card {
+  flex: 1 1 calc(25% - 6px);
+}
+.flow-card {
+  --flow: var(--ink-soft);
+  flex: 1 1 132px;
+  min-width: 0;
+  padding: 7px 10px 8px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--flow);
+  border-radius: var(--radius-lg);
+}
+.flow-card b {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--ink-strong);
+}
+.flow-card span {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+.flow-card--record {
+  --flow: #4e6b5a;
+}
+.flow-card--atlas {
+  --flow: #6e6238;
+}
+.flow-card--proj {
+  --flow: #8a4430;
+}
+.flow-card--bench {
+  --flow: #2f6a6a;
+}
+.flow-card--tool {
+  --flow: #4f5d3a;
+}
+.flow-arrow {
+  position: relative;
+  display: block;
+  height: 18px;
+  margin: 2px 0 2px 94px;
+  border-left: 1px solid var(--hairline-strong);
+}
+.flow-arrow::after {
+  content: "";
+  position: absolute;
+  left: -4px;
+  bottom: 0;
+  width: 7px;
+  height: 7px;
+  border-right: 1px solid var(--hairline-strong);
+  border-bottom: 1px solid var(--hairline-strong);
+  transform: rotate(45deg);
+}
+.flow-eras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.flow-era {
+  --flow: var(--ink-soft);
+  flex: 1 1 150px;
+  min-width: 0;
+  padding: 8px 10px 9px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-top: 3px solid var(--flow);
+  border-radius: var(--radius-lg);
+}
+.flow-era .era-chip {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--flow);
+}
+.flow-era b {
+  display: block;
+  margin-top: 1px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-strong);
+}
+.flow-era span:last-child {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+.flow-seam {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0 94px;
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--ink-faint);
+}
+.flow-seam::before {
+  content: "";
+  flex: 0 0 22px;
+  border-top: 1px dashed var(--hairline-strong);
+}
+.flow-row--chain {
+  align-items: stretch;
+  flex-wrap: nowrap;
+}
+.flow-row--chain .flow-card {
+  flex: 1 1 0;
+}
+.flow-link {
+  align-self: center;
+  flex: none;
+  font-size: 14px;
+  color: var(--ink-faint);
+}
+.flow-caption {
+  margin: 10px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+.flow-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--hairline);
+  font-size: 10.5px;
+  color: var(--ink-soft);
+}
+.flow-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.flow-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--lg, var(--ink-soft));
+}
+.flow-legend .lg-record {
+  --lg: #4e6b5a;
+}
+.flow-legend .lg-atlas {
+  --lg: #6e6238;
+}
+.flow-legend .lg-proj {
+  --lg: #8a4430;
+}
+.flow-legend .lg-bench {
+  --lg: #2f6a6a;
+}
+.flow-legend-note {
+  flex: 1 1 100%;
+  font-size: 10px;
+  color: var(--ink-faint);
+}
+@media (max-width: 760px) {
+  .flow-figure {
+    padding: 10px 10px 12px;
+  }
+  .flow-stage {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+  .flow-stage-label {
+    padding-top: 0;
+  }
+  .flow-arrow {
+    height: 14px;
+    margin-left: 14px;
+  }
+  .flow-seam {
+    margin-left: 0;
+  }
+  .flow-row--chain {
+    flex-wrap: wrap;
+  }
+  .flow-row--chain .flow-link {
+    display: none;
+  }
+  .flow-row--chain .flow-card {
+    flex: 1 1 100%;
+  }
+  .flow-row--three .flow-card,
+  .flow-row--four .flow-card {
+    flex: 1 1 calc(50% - 4px);
+  }
+  .flow-era {
+    flex: 1 1 100%;
+  }
 }
 
 /* ------------------------------------------------- busy / progress cursor */
@@ -3616,102 +3841,12 @@ body {
    =========================================================================== */
 
 /* ------------------------------------------- workspace accent variables -- *
- * Two families of tokens per workspace:
- *   --ws / --ws-ink / --ws-soft / --ws-line  → on light panels
- *   --ws-bright / --ws-soft-dark / --ws-line-dark → on the navy sidebar
- * --ws-ink is a contrast-darkened variant for text on white (amber needs it);
- * --ws-bright is a contrast-lifted variant for text on navy. The defaults on
- * `body` (no data-tab yet, or docs) are the app's neutral wet-blue. */
-body {
-  --ws: #4f91b8;
-  --ws-ink: #3a7ba3;
-  --ws-soft: rgba(79, 145, 184, 0.12);
-  --ws-line: rgba(79, 145, 184, 0.45);
-  --ws-bright: #86b8d8;
-  --ws-soft-dark: rgba(79, 145, 184, 0.24);
-  --ws-line-dark: rgba(79, 145, 184, 0.5);
-}
-body[data-tab="overview"] {
-  --ws: #168c83;
-  --ws-ink: #0f615b;
-  --ws-soft: rgba(22, 140, 131, 0.12);
-  --ws-line: rgba(22, 140, 131, 0.45);
-  --ws-bright: #4fc3b8;
-  --ws-soft-dark: rgba(22, 140, 131, 0.28);
-  --ws-line-dark: rgba(22, 140, 131, 0.55);
-}
-body[data-tab="historical"] {
-  --ws: #4779b8;
-  --ws-ink: #3a67a0;
-  --ws-soft: rgba(71, 121, 184, 0.12);
-  --ws-line: rgba(71, 121, 184, 0.45);
-  --ws-bright: #82aade;
-  --ws-soft-dark: rgba(71, 121, 184, 0.28);
-  --ws-line-dark: rgba(71, 121, 184, 0.55);
-}
-body[data-tab="events"] {
-  --ws: #c58b42;
-  --ws-ink: #8a5e22;
-  --ws-soft: rgba(197, 139, 66, 0.13);
-  --ws-line: rgba(197, 139, 66, 0.48);
-  --ws-bright: #e0ac6a;
-  --ws-soft-dark: rgba(197, 139, 66, 0.28);
-  --ws-line-dark: rgba(197, 139, 66, 0.58);
-}
-body[data-tab="propagation"] {
-  --ws: #9172b5;
-  --ws-ink: #6f5694;
-  --ws-soft: rgba(145, 114, 181, 0.12);
-  --ws-line: rgba(145, 114, 181, 0.45);
-  --ws-bright: #b79ade;
-  --ws-soft-dark: rgba(145, 114, 181, 0.28);
-  --ws-line-dark: rgba(145, 114, 181, 0.55);
-}
-body[data-tab="data"] {
-  --ws: #6F6350;
-  --ws-ink: #55677c;
-  --ws-soft: rgba(100, 120, 142, 0.12);
-  --ws-line: rgba(100, 120, 142, 0.45);
-  --ws-bright: #6E6250;
-  --ws-soft-dark: rgba(100, 120, 142, 0.3);
-  --ws-line-dark: rgba(143, 163, 186, 0.5);
-}
-body[data-tab="engine"] {
-  --ws: #4f8f66;
-  --ws-ink: #3a6b4c;
-  --ws-soft: rgba(79, 143, 102, 0.12);
-  --ws-line: rgba(79, 143, 102, 0.45);
-  --ws-bright: #7cba93;
-  --ws-soft-dark: rgba(79, 143, 102, 0.28);
-  --ws-line-dark: rgba(124, 186, 147, 0.55);
-}
-body[data-tab="projections"] {
-  --ws: #b25c3d;
-  --ws-ink: #8a452e;
-  --ws-soft: rgba(178, 92, 61, 0.12);
-  --ws-line: rgba(178, 92, 61, 0.45);
-  --ws-bright: #d98d6d;
-  --ws-soft-dark: rgba(178, 92, 61, 0.28);
-  --ws-line-dark: rgba(217, 141, 109, 0.55);
-}
-body[data-tab="summary"] {
-  --ws: #8d3f6d;
-  --ws-ink: #6d2f54;
-  --ws-soft: rgba(141, 63, 109, 0.12);
-  --ws-line: rgba(141, 63, 109, 0.45);
-  --ws-bright: #bd7ba1;
-  --ws-soft-dark: rgba(141, 63, 109, 0.28);
-  --ws-line-dark: rgba(189, 123, 161, 0.55);
-}
-body[data-tab="atlas"] {
-  --ws: #708238;
-  --ws-ink: #55662a;
-  --ws-soft: rgba(112, 130, 56, 0.13);
-  --ws-line: rgba(112, 130, 56, 0.45);
-  --ws-bright: #a3b566;
-  --ws-soft-dark: rgba(112, 130, 56, 0.28);
-  --ws-line-dark: rgba(163, 181, 102, 0.55);
-}
+ * The palette itself lives once, at the end of this file ("surface identity
+ * palette", D22), and is exposed both on the body (active surface) and on
+ * each lens tab (`data-lens`). Keeping a single declaration stops the old
+ * two-source drift where an earlier block silently lost to a later one.
+ * Severity palettes, map classifications and statistical plot colours are
+ * deliberately NOT derived from these accents. */
 
 /* #atlas anchors row (M6.3) */
 .atlas-anchors {
@@ -4671,7 +4806,8 @@ body[data-tab="atlas"] .side-sec[data-side="global"] {
    layer retints chrome only; it never touches the severity ramp, class
    boundaries, event rules or any analytical result. Rules of the system:
      1. 60/30/10 — paper dominates, ink carries structure, one accent speaks.
-     2. One accent per view: body[data-accent] sets a single chrome accent.
+     2. One accent per surface: the chrome takes the active view's identity
+        hue (D22), so colour states where you are, not a preference.
      3. Tone, not shadow: hairline rules and surface steps before drop shadows.
      4. Texture ≤ 5 % — a faint grain that only shows in the paper gutters.
      5. Severity darkens: maps and charts keep their luminance-ordered ramp.
@@ -5256,6 +5392,30 @@ input[type="range"] {
   display: flex;
   align-items: stretch;
 }
+/* Owner request 2026-11-24: the lens row is a second-order control under the
+ * product bar, so it drops one type step and tightens its padding. Phones
+ * keep a >= 40 px target in the mobile block further down. */
+.tab-lenses .tabs button {
+  padding: 6px 11px;
+  font-size: 12px;
+  gap: 6px;
+}
+.tab-lenses .tabs button .tab-ic {
+  width: 13px;
+  height: 13px;
+  /* Each lens keeps its own identity hue even while inactive, so the row
+   * reads as a set of destinations rather than six grey tabs. Data colour is
+   * untouched; this is chrome at 60 % (decorative, aria-hidden). */
+  color: var(--ws);
+  opacity: 0.6;
+}
+.tab-lenses .tabs button:hover .tab-ic {
+  opacity: 0.85;
+}
+.tab-lenses .tabs button[aria-selected="true"] .tab-ic,
+.tab-lenses .tabs button[aria-selected="true"]:hover .tab-ic {
+  opacity: 1;
+}
 .lens-label {
   flex: 0 0 auto;
   display: inline-flex;
@@ -5722,68 +5882,60 @@ input[type="range"] {
   color: var(--ink-faint);
 }
 
-/* ------------------------------------------ 8. appearance (accent) UI --- */
-.appearance {
+/* ---------------------------------------- 8. surface colour note (D22) --- *
+ * Replaces the old Paper-accent picker. It is not a control: it states the
+ * rule that governs chrome colour on this site, and its dot shows the hue of
+ * whichever surface the reader is currently on. */
+.colour-rule {
   margin-top: 8px;
   padding-top: 10px;
   border-top: 1px solid var(--hairline);
 }
-.appearance-label {
-  display: block;
-  margin-bottom: 6px;
+.colour-rule-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.colour-rule-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  flex: none;
+}
+.colour-rule-label {
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--accent-ink);
 }
-.appearance-swatches {
-  display: flex;
-  gap: 7px;
-}
-.appearance-swatch {
-  position: relative;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(46, 40, 32, 0.2);
-  background: var(--sw, var(--accent));
-  cursor: pointer;
-  transition: transform 0.12s ease;
-}
-.appearance-swatch:hover {
-  transform: translateY(-1px);
-}
-.appearance-swatch[aria-pressed="true"] {
-  box-shadow:
-    0 0 0 2px var(--surface-2),
-    0 0 0 3px var(--sw, var(--accent));
-}
-.appearance-swatch[data-theme="reading"] {
-  --sw: #6b2b1f;
-}
-.appearance-swatch[data-theme="field"] {
-  --sw: #55612f;
-}
-.appearance-swatch[data-theme="drafting"] {
-  --sw: #31506b;
-}
-.appearance-swatch[data-theme="hydro"] {
-  --sw: #14594f;
-}
-.appearance-name {
-  margin-top: 5px;
+.colour-rule-body {
+  display: block;
+  margin-top: 4px;
+  max-width: 28ch;
   font-size: 10.5px;
-  color: var(--ink-faint);
+  line-height: 1.4;
+  color: var(--ink-soft);
 }
 
-/* --------------------------------- 9. per-workspace identity, muted ------ *
- * The eight band colours of the showcase, dark enough for 11-13 px text on
- * paper and quiet enough to sit beside a severity map. The plain-body block
- * is the pre-boot / Documentation fallback: without it, the old v1 wet-blue
- * defaults (#3a7ba3) briefly paint the chrome and fail contrast before the
- * router sets body[data-tab]. */
+/* ------------------------- 9. surface identity palette (D22) ------------ *
+ * Colour is a location, not a preference. Every product and lens owns one
+ * muted hue, and the chrome (focus ring, links, active tab, panel rules,
+ * chart hover) follows the surface you are on. Hue families carry meaning:
+ *   sage / teal      the gridded record — where, how often, how long
+ *   blue / indigo    analysis — the long record, one district, agreement
+ *   ochre            episodes — discrete drought events
+ *   plum             process — propagation and lagged links
+ *   rust / wine      simulations — era C (never observed)
+ *   olive / moss     reconstruction and tools
+ *   taupe            reference (documentation)
+ * The warm severity ramp (--sev-*) is DATA: it never appears in this list,
+ * and changing surface never changes a class colour (R2/R9/D10).
+ *
+ * One declaration serves both jobs: `body[data-tab]` paints the active
+ * surface, `[data-lens]` paints each tab's own icon while it is inactive. */
 body {
   --ws: #6e6250;
   --ws-ink: #554b3d;
@@ -5793,7 +5945,7 @@ body {
   --ws-soft-dark: rgba(110, 98, 80, 0.16);
   --ws-line-dark: rgba(110, 98, 80, 0.45);
 }
-body[data-tab="overview"] {
+:is(body[data-tab="overview"], [data-lens="overview"]) {
   --ws: #4e6b5a;
   --ws-ink: #3d5748;
   --ws-soft: rgba(78, 107, 90, 0.1);
@@ -5802,16 +5954,16 @@ body[data-tab="overview"] {
   --ws-soft-dark: rgba(78, 107, 90, 0.16);
   --ws-line-dark: rgba(78, 107, 90, 0.45);
 }
-body[data-tab="historical"] {
-  --ws: #44586e;
-  --ws-ink: #34475a;
-  --ws-soft: rgba(68, 88, 110, 0.1);
-  --ws-line: rgba(68, 88, 110, 0.38);
-  --ws-bright: #7f93a8;
-  --ws-soft-dark: rgba(68, 88, 110, 0.16);
-  --ws-line-dark: rgba(68, 88, 110, 0.45);
+:is(body[data-tab="historical"], [data-lens="historical"]) {
+  --ws: #3f5f86;
+  --ws-ink: #334c6b;
+  --ws-soft: rgba(63, 95, 134, 0.1);
+  --ws-line: rgba(63, 95, 134, 0.38);
+  --ws-bright: #7f9cc0;
+  --ws-soft-dark: rgba(63, 95, 134, 0.18);
+  --ws-line-dark: rgba(63, 95, 134, 0.45);
 }
-body[data-tab="events"] {
+:is(body[data-tab="events"], [data-lens="events"]) {
   --ws: #8a5a2b;
   --ws-ink: #6b4420;
   --ws-soft: rgba(138, 90, 43, 0.1);
@@ -5820,7 +5972,7 @@ body[data-tab="events"] {
   --ws-soft-dark: rgba(138, 90, 43, 0.16);
   --ws-line-dark: rgba(138, 90, 43, 0.45);
 }
-body[data-tab="propagation"] {
+:is(body[data-tab="propagation"], [data-lens="propagation"]) {
   --ws: #6b4e6e;
   --ws-ink: #533c56;
   --ws-soft: rgba(107, 78, 110, 0.1);
@@ -5829,7 +5981,25 @@ body[data-tab="propagation"] {
   --ws-soft-dark: rgba(107, 78, 110, 0.16);
   --ws-line-dark: rgba(107, 78, 110, 0.45);
 }
-body[data-tab="engine"] {
+:is(body[data-tab="crossval"], [data-lens="crossval"]) {
+  --ws: #2f6a6a;
+  --ws-ink: #245454;
+  --ws-soft: rgba(47, 106, 106, 0.1);
+  --ws-line: rgba(47, 106, 106, 0.38);
+  --ws-bright: #6fa3a3;
+  --ws-soft-dark: rgba(47, 106, 106, 0.18);
+  --ws-line-dark: rgba(47, 106, 106, 0.45);
+}
+:is(body[data-tab="district"], [data-lens="district"]) {
+  --ws: #59556e;
+  --ws-ink: #454159;
+  --ws-soft: rgba(89, 85, 110, 0.1);
+  --ws-line: rgba(89, 85, 110, 0.38);
+  --ws-bright: #918dab;
+  --ws-soft-dark: rgba(89, 85, 110, 0.16);
+  --ws-line-dark: rgba(89, 85, 110, 0.45);
+}
+:is(body[data-tab="engine"], [data-lens="engine"]) {
   --ws: #4f5d3a;
   --ws-ink: #3e4a2c;
   --ws-soft: rgba(79, 93, 58, 0.1);
@@ -5838,7 +6008,7 @@ body[data-tab="engine"] {
   --ws-soft-dark: rgba(79, 93, 58, 0.16);
   --ws-line-dark: rgba(79, 93, 58, 0.45);
 }
-body[data-tab="projections"] {
+:is(body[data-tab="projections"], [data-lens="projections"]) {
   --ws: #8a4430;
   --ws-ink: #703424;
   --ws-soft: rgba(138, 68, 48, 0.1);
@@ -5847,7 +6017,7 @@ body[data-tab="projections"] {
   --ws-soft-dark: rgba(138, 68, 48, 0.16);
   --ws-line-dark: rgba(138, 68, 48, 0.45);
 }
-body[data-tab="summary"] {
+:is(body[data-tab="summary"], [data-lens="summary"]) {
   --ws: #74425e;
   --ws-ink: #5a3249;
   --ws-soft: rgba(116, 66, 94, 0.1);
@@ -5856,7 +6026,7 @@ body[data-tab="summary"] {
   --ws-soft-dark: rgba(116, 66, 94, 0.16);
   --ws-line-dark: rgba(116, 66, 94, 0.45);
 }
-body[data-tab="atlas"] {
+:is(body[data-tab="atlas"], [data-lens="atlas"]) {
   --ws: #6e6238;
   --ws-ink: #554b2a;
   --ws-soft: rgba(110, 98, 56, 0.1);
@@ -5865,7 +6035,7 @@ body[data-tab="atlas"] {
   --ws-soft-dark: rgba(110, 98, 56, 0.16);
   --ws-line-dark: rgba(110, 98, 56, 0.45);
 }
-body[data-tab="data"] {
+:is(body[data-tab="data"], [data-lens="data"]) {
   --ws: #6e6250;
   --ws-ink: #554b3d;
   --ws-soft: rgba(110, 98, 80, 0.1);
@@ -6194,27 +6364,6 @@ body {
   .doc-nav-links button {
     min-height: 44px;
   }
-  /* accent swatches: the visible 22 px chip becomes an inset circle inside a
-     44 px transparent button, so the pressed ring still reads as one swatch */
-  .appearance-swatch {
-    width: 44px;
-    height: 44px;
-    background: transparent;
-    border: 0;
-  }
-  .appearance-swatch::before {
-    content: "";
-    position: absolute;
-    inset: 7px;
-    border-radius: 50%;
-    border: 1px solid rgba(46, 40, 32, 0.2);
-    background: var(--sw, var(--accent));
-  }
-  .appearance-swatch[aria-pressed="true"]::before {
-    box-shadow:
-      0 0 0 2px var(--surface-2),
-      0 0 0 3px var(--sw, var(--accent));
-  }
   /* "How events are defined" style buttons sit in the view-intro action row —
      standalone buttons, so the inline exception does not apply; they get the
      full 44 px hit area on phones */
@@ -6304,7 +6453,6 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .ask-card,
-  .appearance-swatch,
   .tabs button {
     transition: none;
   }
@@ -6904,17 +7052,6 @@ a:hover {
 .proj-banner b {
   color: var(--accent-ink);
 }
-.appearance-name {
-  color: var(--accent-ink);
-  font-weight: 600;
-}
-.appearance-hint {
-  margin-top: 2px;
-  max-width: 22ch;
-  font-size: 10.5px;
-  line-height: 1.35;
-  color: var(--ink-faint);
-}
 .rail-sec-ref {
   margin-left: 6px;
   font-family: var(--mono);
@@ -7037,11 +7174,49 @@ a:hover {
     scroll-snap-type: x proximity;
   }
   .tab-lenses .tabs button {
+    min-height: 40px;
+    padding: 8px 11px;
     scroll-snap-align: start;
   }
 }
 
-/* --- 6. Projections: methodology behind a disclosure (audit F5) --------- */
+/* --- 6b. Mobile Overview: the map leads (owner request 2026-11-24) ------- *
+ * On a phone the district map is the answer to "what is happening now", so
+ * it moves directly under the intro. Pure CSS `order`: the desktop reading
+ * order (and the DOM, print order and screen-reader surface) is unchanged. */
+@media (max-width: 760px) {
+  #viewOverview {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #viewOverview[hidden] {
+    display: none;
+  }
+  #viewOverview > #introOverview {
+    order: 0;
+  }
+  #viewOverview > #mapPanel {
+    order: 1;
+  }
+  #viewOverview > #kpiRow {
+    order: 2;
+  }
+  #viewOverview > #evidenceLine {
+    order: 3;
+  }
+  #viewOverview > .ask-band {
+    order: 4;
+  }
+  #viewOverview > .chart-grid {
+    order: 5;
+  }
+  #viewOverview > .ov-grid {
+    order: 6;
+  }
+}
+
+/* --- 7. Projections: methodology behind a disclosure (audit F5) --------- */
 .proj-banner details {
   margin-top: 4px;
 }
@@ -7141,7 +7316,8 @@ a:hover {
    Session 69 — Paper accent, spacing scale and micro-copy floor
    ---------------------------------------------------------------------------
    Chrome (focus, form controls, table heads, map controls, doc letters,
-   chart hover/range frames) derives from `--accent` so every theme is felt.
+   chart hover/range frames) derives from `--accent`, which since D22 aliases
+   the active surface's identity hue, so the accent reaches every surface.
    Data colour — the severity ramp, era identities, product identities — is
    never re-themed (R9 / D10). Spacing: one 18 px page gutter, one 14 px panel
    indent and a 14 px stack, so titles, KPI labels and notes share a line.
@@ -7169,7 +7345,6 @@ a:hover {
  * The five footer buttons stay at their compact size by design: they are a
  * 44 px icon row that must fit five across a 260 px rail. */
 .group-note,
-.appearance-label,
 .ind-group-label,
 .sidebar-badge,
 .vi-tag,

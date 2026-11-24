@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-23l" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-24d" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -319,7 +319,7 @@
         <div class="side-group" aria-label="Study context">
           <div class="side-group-label">
             Study context
-            <span class="group-note">&mdash; applies to every workspace</span>
+            <span class="group-note">&mdash; applies to every Record view</span>
           </div>
 
         <!-- OVERVIEW · Observation date (M7.4). The date drives every
@@ -678,55 +678,17 @@
               <span>Hide</span>
             </button>
           </div>
-          <div class="appearance" id="appearance">
-            <span class="appearance-label" id="appearanceLabel"
-              >Paper accent</span
-            >
-            <div
-              class="appearance-swatches"
-              role="group"
-              aria-labelledby="appearanceLabel"
-            >
-              <button
-                type="button"
-                class="appearance-swatch"
-                data-theme="reading"
-                aria-pressed="true"
-                aria-label="Reading Room accent (oxblood)"
-                title="Reading Room"
-              ></button>
-              <button
-                type="button"
-                class="appearance-swatch"
-                data-theme="field"
-                aria-pressed="false"
-                aria-label="Field Notes accent (olive)"
-                title="Field Notes"
-              ></button>
-              <button
-                type="button"
-                class="appearance-swatch"
-                data-theme="drafting"
-                aria-pressed="false"
-                aria-label="Drafting Table accent (slate blue)"
-                title="Drafting Table"
-              ></button>
-              <button
-                type="button"
-                class="appearance-swatch"
-                data-theme="hydro"
-                aria-pressed="false"
-                aria-label="Hydrograph accent (deep teal)"
-                title="Hydrograph"
-              ></button>
-            </div>
-            <div class="appearance-name" id="appearanceName">
-              Reading Room
-            </div>
-            <div class="appearance-hint">
-              Retints rules, titles and selection chrome &mdash; data colours
-              stay fixed.
-            </div>
+          <!-- D22: colour is a location, not a preference. The chrome takes
+               the active surface's identity hue; there is nothing to choose. -->
+          <div class="colour-rule" id="colourRule">
+            <span class="colour-rule-head">
+              <span class="colour-rule-dot" aria-hidden="true"></span>
+              <span class="colour-rule-label" id="colourRuleLabel">Colour follows the view</span>
+            </span>
+            <span class="colour-rule-body">
+              Each product and lens owns one hue; the rail, focus ring and
+              charts take it. Drought severity keeps its own fixed ramp.
+            </span>
           </div>
           <div class="foot-line" id="footPeriod">—</div>
           <div class="foot-line" id="footRes">—</div>
@@ -760,7 +722,7 @@
               href="#projections"
               data-group="projections"
               data-tip-title="Projections · 2015–2100"
-              data-tip-body="Era C: 24 bias-corrected CMIP6 models under SSP2-4.5 and SSP5-8.5 — ensemble median, spread and model agreement. Simulations, never forecasts."
+              data-tip-body="Era C: 8 bias-corrected CMIP6 models (the committed subset of a 22-model archive) under SSP2-4.5 and SSP5-8.5 - ensemble median, spread and model agreement. Simulations, never forecasts."
             >
               <span class="tg-name">Projections</span
               ><span class="tg-years">2015–2100</span>
@@ -798,6 +760,7 @@
                 type="button"
                 role="tab"
                 id="tabOverview"
+                data-lens="overview"
                 aria-selected="true"
                 aria-controls="viewOverview"
                 data-tip-title="Overview"
@@ -824,6 +787,7 @@
                 type="button"
                 role="tab"
                 id="tabHistorical"
+                data-lens="historical"
                 aria-selected="false"
                 aria-controls="viewHistorical"
                 tabindex="-1"
@@ -850,6 +814,7 @@
                 type="button"
                 role="tab"
                 id="tabEvents"
+                data-lens="events"
                 aria-selected="false"
                 aria-controls="viewEvents"
                 tabindex="-1"
@@ -876,6 +841,7 @@
                 type="button"
                 role="tab"
                 id="tabPropagation"
+                data-lens="propagation"
                 aria-selected="false"
                 aria-controls="viewPropagation"
                 tabindex="-1"
@@ -904,6 +870,7 @@
                 type="button"
                 role="tab"
                 id="tabCrossval"
+                data-lens="crossval"
                 aria-selected="false"
                 aria-controls="viewCrossval"
                 tabindex="-1"
@@ -930,6 +897,7 @@
                 type="button"
                 role="tab"
                 id="tabDistrict"
+                data-lens="district"
                 aria-selected="false"
                 aria-controls="viewDistrict"
                 tabindex="-1"
@@ -965,6 +933,7 @@
                 type="button"
                 role="tab"
                 id="tabProjections"
+                data-lens="projections"
                 aria-selected="false"
                 aria-controls="viewProjections"
                 tabindex="-1"
@@ -992,6 +961,7 @@
                 type="button"
                 role="tab"
                 id="tabSummary"
+                data-lens="summary"
                 aria-selected="false"
                 aria-controls="viewSummary"
                 tabindex="-1"
@@ -1029,6 +999,7 @@
                 type="button"
                 role="tab"
                 id="tabAtlas"
+                data-lens="atlas"
                 aria-selected="false"
                 aria-controls="viewAtlas"
                 tabindex="-1"
@@ -1064,6 +1035,7 @@
                 type="button"
                 role="tab"
                 id="tabEngine"
+                data-lens="engine"
                 aria-selected="false"
                 aria-controls="viewEngine"
                 tabindex="-1"
@@ -1360,7 +1332,7 @@
                   role="application"
                   aria-label="Interactive district drought map of India"
                 ></div>
-                <div class="map-corner-tag" id="mapTag">—</div>
+                <div class="map-corner-tag" id="mapTag" hidden></div>
               </div>
               <aside
                 class="map-rail"
@@ -1549,7 +1521,7 @@
                     role="application"
                     aria-label="Animated district drought map"
                   ></div>
-                  <div class="map-corner-tag" id="evoMapTag">—</div>
+                  <div class="map-corner-tag" id="evoMapTag" hidden></div>
                 </div>
               </div>
               <input
@@ -2712,23 +2684,23 @@
             <p class="table-help" id="projEventsNote"></p>
           </section>
 
-          <section class="panel" id="projRoadmapPanel" aria-label="Pending compute">
+          <section class="panel" id="projRoadmapPanel" aria-label="Maintenance and known limits">
             <div class="panel-head">
               <div class="panel-titles">
-                <h2 class="panel-title">Pending compute &amp; next steps</h2>
-                <span class="panel-meta">Owner compute pending — not yet rendered</span>
+                <h2 class="panel-title">Maintenance &amp; known limits</h2>
+                <span class="panel-meta">What moves next &mdash; and what is already complete</span>
               </div>
             </div>
             <ul class="proj-roadmap">
-              <li><span class="proj-ms">SSP</span> 2015–2100 download <strong>complete</strong> (8 models × 2 scenarios × 3 variables, 4,128 files) — full-record recompute (02→09) in progress; the late-century window (2081–2100) enables itself when the store is republished</li>
-              <li><span class="proj-ms">07→09</span> <code>dir_agreement_drier</code> + <code>dir_agreement_n</code> are coded and self-tested; this statistic enables itself only after the full-record recompute passes 08 and 09 <code>--publish</code> (M5.4 / F10)</li>
-              <li><span class="proj-ms">M6.8</span> era A↔B cross-validation delivers per-district <code>seam_uncertainty</code> for tooltips (X7)</li>
-              <li><span class="proj-ms">O14</span> optional standardisation-baseline sensitivity (fixed 1981–2020 vs rolling) — memo section, not a UI default</li>
-              <li><span class="proj-ms">M7</span> release: era-C store hosting decision (commit vs R2 + Zenodo)</li>
+              <li><span class="proj-ms">MONTHLY</span> the record is extended by the Owner's Earth Engine export; the current lag is reported in <em>N &middot; Data status</em> against the 45-day target</li>
+              <li><span class="proj-ms">HOSTING</span> GitHub Pages serves today; a Cloudflare R2 mirror is the planned path at tehsil scale, with no release date committed</li>
+              <li><span class="proj-ms">MANUSCRIPT</span> the preprint is regenerated after each re-blessed release, so its figures and tables always cite the published snapshot</li>
+              <li><span class="proj-ms">ATLAS</span> six island districts have no Atlas cells (718 of 724 covered); the gap is reported, never filled</li>
+              <li><span class="proj-ms">OPTIONAL</span> standardisation-baseline sensitivity (fixed 1981&ndash;2020 vs rolling) stays a methodology note, not a UI default</li>
             </ul>
             <p class="table-help">
-              Until each item lands, this surface shows only committed catalog
-              facts — no synthetic placeholders (R3).
+              Everything shown on this surface comes from the published
+              catalogue &mdash; no synthetic placeholders (R3).
             </p>
           </section>
         </div>
@@ -2858,7 +2830,7 @@
             <section class="panel" id="sumCaveatPanel" aria-label="Reading guide and caveats">
               <div class="panel-head">
                 <div class="panel-titles">
-                  <h2 class="panel-title">How to read this workspace</h2>
+                  <h2 class="panel-title">How to read this surface</h2>
                   <span class="panel-meta">interpretation guardrails</span>
                 </div>
               </div>
@@ -3019,7 +2991,7 @@
             <section class="panel" id="atlasCaveatPanel" aria-label="Reading guide">
               <div class="panel-head">
                 <div class="panel-titles">
-                  <h2 class="panel-title">How to read this workspace</h2>
+                  <h2 class="panel-title">How to read this surface</h2>
                   <span class="panel-meta">interpretation guardrails</span>
                 </div>
               </div>
@@ -3192,7 +3164,7 @@
             <section class="panel" id="cvCaveatPanel" aria-label="Reading guide and caveats">
               <div class="panel-head">
                 <div class="panel-titles">
-                  <h2 class="panel-title">How to read this workspace</h2>
+                  <h2 class="panel-title">How to read this surface</h2>
                   <span class="panel-meta">interpretation guardrails</span>
                 </div>
               </div>
@@ -3425,7 +3397,7 @@
               <div class="panel-titles">
                 <h2 class="panel-title"><span class="doc-letter">A</span>About the Explorer</h2>
                 <span class="panel-meta"
-                  >Purpose, workspaces, technology and research
+                  >Purpose, products, technology and research
                   positioning</span
                 >
               </div>
@@ -3437,6 +3409,123 @@
                 historical analysis and research communication &mdash; not
                 operational monitoring.
               </p>
+              <h3 id="flowTitle">How the platform fits together</h3>
+              <figure class="flow-figure" aria-labelledby="flowTitle">
+                <div class="flow">
+                  <div class="flow-stage">
+                    <span class="flow-stage-label">Sources</span>
+                    <div class="flow-row flow-row--three">
+                      <div class="flow-card flow-card--record">
+                        <b>CHIRPS v2.0</b>
+                        <span>satellite&ndash;gauge daily rainfall</span>
+                      </div>
+                      <div class="flow-card flow-card--record">
+                        <b>ERA5-Land</b>
+                        <span>reanalysis &middot; PET and soil water</span>
+                      </div>
+                      <div class="flow-card flow-card--record">
+                        <b>MODIS MOD13A3</b>
+                        <span>NDVI &rarr; vegetation condition</span>
+                      </div>
+                      <div class="flow-card flow-card--atlas">
+                        <b>Drought Atlas of India v2</b>
+                        <span>SPEI reconstruction, 1901&ndash;2025</span>
+                      </div>
+                      <div class="flow-card flow-card--proj">
+                        <b>CMIP6 &middot; 8-model subset</b>
+                        <span>PR, TASMAX, TASMIN &middot; two SSPs</span>
+                      </div>
+                      <div class="flow-card flow-card--bench">
+                        <b>IMD gridded rainfall</b>
+                        <span>independent benchmark series</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="flow-arrow" aria-hidden="true"></span>
+                  <div class="flow-stage">
+                    <span class="flow-stage-label">Pipelines</span>
+                    <div class="flow-row flow-row--four">
+                      <div class="flow-card flow-card--record">
+                        <b>data-pipeline/</b>
+                        <span>frozen v1.0 semantics &middot; SPI, SPEI, SMA, VCI</span>
+                      </div>
+                      <div class="flow-card flow-card--atlas">
+                        <b>atlas-pipeline/</b>
+                        <span>ingest and district aggregation</span>
+                      </div>
+                      <div class="flow-card flow-card--proj">
+                        <b>gcm-pipeline/</b>
+                        <span>QDM bias correction against 1981&ndash;2020</span>
+                      </div>
+                      <div class="flow-card flow-card--bench">
+                        <b>validation-studies/</b>
+                        <span>IMD benchmark &middot; era A vs B overlap</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="flow-arrow" aria-hidden="true"></span>
+                  <div class="flow-stage">
+                    <span class="flow-stage-label">Eras</span>
+                    <div class="flow-eras">
+                      <div class="flow-era flow-card--atlas">
+                        <span class="era-chip">Era A</span>
+                        <b>1901&ndash;2025</b>
+                        <span>Atlas reconstruction</span>
+                      </div>
+                      <div class="flow-era flow-card--record">
+                        <span class="era-chip">Era B</span>
+                        <b>1981&ndash;2026</b>
+                        <span>Gridded Multi-Source Product</span>
+                      </div>
+                      <div class="flow-era flow-card--proj">
+                        <span class="era-chip">Era C</span>
+                        <b>2015&ndash;2100</b>
+                        <span>CMIP6 simulations, never forecasts</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="flow-seam">
+                    Separate partitions, separate labels &mdash; never spliced
+                    into one continuous observed series.
+                  </p>
+                  <span class="flow-arrow" aria-hidden="true"></span>
+                  <div class="flow-stage">
+                    <span class="flow-stage-label">Served as</span>
+                    <div class="flow-row flow-row--chain">
+                      <div class="flow-card flow-card--tool">
+                        <b>Parquet + catalog.json</b>
+                        <span>zstd, long format, exact paths</span>
+                      </div>
+                      <span class="flow-link" aria-hidden="true">&rarr;</span>
+                      <div class="flow-card flow-card--tool">
+                        <b>DuckDB-WASM</b>
+                        <span>Web Worker &middot; HTTP Range, no backend</span>
+                      </div>
+                      <span class="flow-link" aria-hidden="true">&rarr;</span>
+                      <div class="flow-card flow-card--tool">
+                        <b>Maps, charts, tables, exports</b>
+                        <span>plus SQL in the Engine Lab</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p class="flow-caption">
+                  Each arrow is one recorded step: a labelled source, a
+                  versioned pipeline, exactly one era partition, then a query
+                  over a published file. Missing months stay gaps and are never
+                  imputed.
+                </p>
+                <div class="flow-legend">
+                  <span><i class="lg-record" aria-hidden="true"></i>Record</span>
+                  <span><i class="lg-atlas" aria-hidden="true"></i>Atlas</span>
+                  <span><i class="lg-proj" aria-hidden="true"></i>Projections</span>
+                  <span><i class="lg-bench" aria-hidden="true"></i>Validation</span>
+                  <span class="flow-legend-note"
+                    >Category colours are data and never change; the chrome
+                    follows the view you are on.</span
+                  >
+                </div>
+              </figure>
               <h3>Developer</h3>
               <p>
                 Ankit Deshmukh, Ph.D. &mdash; Assistant Professor, Department of
@@ -3910,7 +3999,7 @@
                 bootstrap correlation intervals quantify sampling uncertainty
                 only &mdash; they do not address model or structural
                 uncertainty, and association found in the Propagation &amp;
-                Relationships workspace is not causation.
+                Relationships lens is not causation.
               </p>
               <h3>Intended use</h3>
               <p>
@@ -5217,8 +5306,8 @@ LIMIT 15;</pre>
                   <b>2.0.0 — 2026-11-22</b> &mdash; Three labelled eras in one
                   queryable record: the Drought Atlas reconstruction (era A,
                   1901&ndash;2025), the gridded multi-source product (era B,
-                  1981&ndash;2026-09) and 24-model bias-corrected CMIP6
-                  projections (era C, 2015&ndash;2100); a product-first
+                  1981&ndash;2026-09) and an 8-model committed subset of the
+                  22-model bias-corrected CMIP6 archive (era C, 2015&ndash;2100); a product-first
                   navigation with a guided tour and hover explainers; the Engine
                   Lab (SQL over Parquet in the browser);
                   era A &harr; era B cross-validation and seam uncertainty; an
@@ -5400,7 +5489,7 @@ LIMIT 15;</pre>
           return;
         }
 
-        var ASSET_VERSION = "2026-11-23l";
+        var ASSET_VERSION = "2026-11-24d";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
