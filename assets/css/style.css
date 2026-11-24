@@ -3955,10 +3955,13 @@ body {
 }
 
 /* ------------------------------- documentation panel reorder (pure CSS) -- *
- * Panels keep their DOM positions and stable A-J ids; flex `order` renders
- * them in the Documentation & Resources taxonomy sequence:
- * A About · B Data sources · C Methodology · D Validation · E Uncertainty ·
- * F Reproducibility · G Downloads · H Versions · I Guide · J Glossary. */
+ * Panels keep their DOM positions and stable A–P ids; flex `order` renders
+ * them in letter order, matching the contents nav:
+ * A About · B Data · C Methodology · D Validation · E Uncertainty ·
+ * F Reproducibility · G Downloads · H Versions · I Guide · J Glossary ·
+ * K Living methodology · L Governance · M Reality · N Status · P SQL.
+ * Every section needs an explicit order — sections without one default to 0
+ * and jump ahead of A (the bug that made the page open with K). */
 #viewData {
   display: flex;
   flex-direction: column;
@@ -4001,6 +4004,21 @@ body {
 }
 #viewData > #doc-j-glossary {
   order: 11;
+}
+#viewData > #doc-k-methodology {
+  order: 12;
+}
+#viewData > #doc-l-governance {
+  order: 13;
+}
+#viewData > #doc-m-reality {
+  order: 14;
+}
+#viewData > #doc-n-status {
+  order: 15;
+}
+#viewData > #doc-p-sql {
+  order: 16;
 }
 .doc-nav-links button:hover {
   border-color: var(--ws-ink);

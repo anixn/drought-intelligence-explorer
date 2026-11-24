@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-24o" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-24q" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -525,16 +525,17 @@
             <button type="button" data-doc="doc-e-limits">E &middot; Uncertainty &amp; limits</button>
             <button type="button" data-doc="doc-f-repro">F &middot; Reproducibility</button>
             <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citation</button>
-            <button type="button" data-doc="doc-p-sql">P &middot; Querying the data (SQL)</button>
+            <span class="rail-nav-title">Version &amp; handbook</span>
+            <button type="button" data-doc="doc-h-versions">H &middot; Version history</button>
+            <button type="button" data-doc="doc-i-guide">I &middot; User guide</button>
+            <button type="button" data-doc="doc-j-glossary">J &middot; Glossary</button>
             <span class="rail-nav-title">v2.0 evidence</span>
             <button type="button" data-doc="doc-k-methodology">K &middot; Living methodology</button>
             <button type="button" data-doc="doc-l-governance">L &middot; Governance &amp; licences</button>
             <button type="button" data-doc="doc-m-reality">M &middot; Reality checks</button>
             <button type="button" data-doc="doc-n-status">N &middot; Data status</button>
-            <span class="rail-nav-title">Version &amp; handbook</span>
-            <button type="button" data-doc="doc-h-versions">H &middot; Version history</button>
-            <button type="button" data-doc="doc-i-guide">I &middot; User guide</button>
-            <button type="button" data-doc="doc-j-glossary">J &middot; Glossary</button>
+            <span class="rail-nav-title">Querying</span>
+            <button type="button" data-doc="doc-p-sql">P &middot; Querying the data (SQL)</button>
           </nav>
           <a class="rail-link" href="tour.html">Start the guided tour &rarr;</a>
         </section>
@@ -3377,17 +3378,23 @@
               <button type="button" data-doc="doc-e-limits">E &middot; Uncertainty &amp; limitations</button>
               <button type="button" data-doc="doc-f-repro">F &middot; Reproducibility</button>
               <button type="button" data-doc="doc-g-downloads">G &middot; Downloads &amp; citations</button>
-              <button type="button" data-doc="doc-p-sql">P &middot; Querying the data (SQL)</button>
+            </div>
+            <span class="doc-nav-title">Version &amp; handbook</span>
+            <div class="doc-nav-links">
+              <button type="button" data-doc="doc-h-versions">H &middot; Version history</button>
+              <button type="button" data-doc="doc-i-guide">I &middot; User guide</button>
+              <button type="button" data-doc="doc-j-glossary">J &middot; Glossary</button>
+            </div>
+            <span class="doc-nav-title">v2.0 evidence</span>
+            <div class="doc-nav-links">
               <button type="button" data-doc="doc-k-methodology">K &middot; Living methodology (v2)</button>
               <button type="button" data-doc="doc-l-governance">L &middot; Governance &amp; licences</button>
               <button type="button" data-doc="doc-m-reality">M &middot; Reality checks</button>
               <button type="button" data-doc="doc-n-status">N &middot; Data status</button>
-              <button type="button" data-doc="doc-h-versions">H &middot; Version history</button>
             </div>
-            <span class="doc-nav-title">Handbook</span>
+            <span class="doc-nav-title">Querying</span>
             <div class="doc-nav-links">
-              <button type="button" data-doc="doc-i-guide">I &middot; User guide</button>
-              <button type="button" data-doc="doc-j-glossary">J &middot; Glossary</button>
+              <button type="button" data-doc="doc-p-sql">P &middot; Querying the data (SQL)</button>
             </div>
           </nav>
 
@@ -5489,7 +5496,7 @@ LIMIT 15;</pre>
           return;
         }
 
-        var ASSET_VERSION = "2026-11-24o";
+        var ASSET_VERSION = "2026-11-24q";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",
