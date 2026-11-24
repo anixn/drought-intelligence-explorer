@@ -6431,7 +6431,7 @@ body {
      chips stay hidden (each panel states them in place; full status lives in
      Documentation → Data status). --topbar-h follows the grown topbar. */
   :root {
-    --topbar-h: 90px;
+    --topbar-h: 60px;
   }
   .topbar {
     flex-wrap: wrap;
@@ -6450,15 +6450,31 @@ body {
   .topbar .topnav {
     flex: 0 0 auto;
   }
-  .topbar-status {
-    display: flex;
-    order: 99;
-    flex: 1 1 100%;
-    justify-content: flex-start;
+  /* Compact intro: the step badge shares the title line, and the hidden detail
+   * block no longer contributes its long paragraph to the flex basis (which
+   * had forced the title onto a row of its own). On phones the contextual
+   * "About & methods / Reading these statistics" links leave the header so it
+   * stays one line; the same destinations live in the topbar Docs utility and
+   * in each panel's "How this is made" link. */
+  .view-intro {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
   }
-  #chipDataMode,
-  #chipDate,
-  #chipAvail {
+  .view-intro .vi-body {
+    flex: 1 1 0;
+  }
+  .view-intro .vi-title {
+    gap: 6px;
+  }
+  .view-intro .vi-actions {
+    display: none;
+  }
+  /* Phones: the status cluster leaves the chrome. Era, product, data month
+   * and lag stay on the surface itself (view-intro era tags, the receipts
+   * line, panel notes), so era honesty (R2) survives without a second row. */
+  .topbar-status {
     display: none;
   }
 }
