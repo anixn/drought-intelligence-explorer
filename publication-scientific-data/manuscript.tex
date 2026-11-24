@@ -69,7 +69,7 @@ The reporting units are 724 unique district polygons across 36 States and Union 
 
 All regional areas and area-weighted summaries use a Lambert Azimuthal Equal-Area (LAEA) projection centred at 22.5$^\circ$N, 79.5$^\circ$E. The served district fabric totals 3,266,386~km$^2$, approximately 0.64\% below India's published area. The shortfall is primarily a property of the source geometry rather than the web simplification; its decomposition is reported in Technical Validation. Boundaries are not authoritative for legal purposes and follow the depiction of the source dataset. The source repository does not declare an explicit redistribution licence. Boundary files are therefore attributable, separable from the indicator matrices and accompanied by the source disclaimer; users requiring a formally licensed geometry can substitute another fabric with a documented crosswalk.
 
-District values are area aggregates of gridded fields, not point measurements. Native resolution remains approximately 0.05$^\circ$ for CHIRPS and the Atlas, 0.1$^\circ$ for ERA5-Land and 1~km for MODIS. Small districts can depend on few source pixels, and neighbouring district estimates are not statistically independent. Figure 4 shows the reporting fabric and native source grids.
+District values are area aggregates of gridded fields, not point measurements. Native resolution remains approximately 0.05$^\circ$ for CHIRPS and the Atlas, 0.1$^\circ$ for ERA5-Land and 1~km for MODIS. Small districts can depend on few source pixels, and neighbouring district estimates are not statistically independent. The reporting fabric and native source grids are documented in Data Records and illustrated in the interface figures.
 
 \subsection*{Input datasets}
 Table 1 lists the input products, versions, access routes and terms. Era B was produced through Google Earth Engine\citep{Gorelick2017}; an offline download route is retained for reproducibility and fallback. The two routes share downstream code and schema but use different CHIRPS versions and are not mixed within a released series. ERA5-Land is a reanalysis\citep{Hersbach2020}. Its potential evaporation is not FAO-56 reference evapotranspiration, and its soil-water fields are model estimates rather than observed soil moisture.
@@ -266,7 +266,7 @@ Field & Type or values & Meaning \\
 Missing observations are absent rows in Parquet and empty cells in CSV. Zero is a valid measurement and is never used as a missing-value sentinel. Every national aggregate carries the number of valid districts. Metadata record the reference period, source collections, processing versions, quality flags, known limitations, licences and retrieval dates. Companion files not listed as separate Zenodo archive entries remain available in the software repository and public snapshot.
 
 \section*{Data Overview}
-Figure 3 summarises the record windows and era-B indicator availability, and Figure 4 shows the fixed district reporting fabric. The coverage display is descriptive of file contents only; it does not present drought results.
+Figure 3 summarises the record windows and era-B indicator availability. The coverage display is descriptive of file contents only; it does not present drought results.
 
 \begin{figure}[t]
 \centering
@@ -274,30 +274,30 @@ Figure 3 summarises the record windows and era-B indicator availability, and Fig
 \caption{Record windows and indicator availability. (a) Era windows: Atlas reconstruction (1901--2025), gridded multi-source indicators (1981-01--2026-09) and CMIP6 projections (2015--2100). (b) Availability of the ten era-B indicators; the shaded band marks the 1981--2020 standardisation reference, and multi-month windows begin after their accumulation warm-up. VCI begins with the MODIS record in February 2000.}
 \end{figure}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\textwidth]{fig04_study_area.pdf}
-\caption{Study area and spatial support. The 724-district reporting fabric is shown in the Lambert Azimuthal Equal-Area projection with a 500~km scale bar. District and state boundaries follow the community source depiction and are not authoritative for legal use. The side panel lists native source grids and the common district reporting unit. District aggregation does not increase native source resolution.}
-\end{figure}
-
 \section*{Technical Validation}
 
 \subsection*{Pipeline, fit and round-trip checks}
-The era-B pipeline self-test executes 82 deterministic assertions on a synthetic world with an injected drought, vegetation gaps and a missing soil-moisture month. The shipped-data regression harness checks 735 baseline values, including source checksums, catalogue entries, CSV--Parquet round trips, regional anchors, the national aggregate, reality checks and IMD benchmark values. The converter verifies random source cells and checks absence patterns; the national aggregate was independently recomputed row by row. The Atlas ingestion includes source-cell round trips, and the CMIP6 pipeline includes synthetic end-to-end tests for regridding, bias correction, PET, index calculation, aggregation, ensemble statistics and export. Table 7 lists the executable verification entry points.
+The era-B pipeline self-test executes 82 deterministic assertions on a synthetic world with an injected drought, vegetation gaps and a missing soil-moisture month. The shipped-data regression harness checks 735 baseline values, including source checksums, catalogue entries, CSV--Parquet round trips, regional anchors, the national aggregate, reality checks and IMD benchmark values. The converter verifies random source cells and checks absence patterns; the national aggregate was independently recomputed row by row. The Atlas ingestion includes source-cell round trips, and the CMIP6 pipeline includes synthetic end-to-end tests for regridding, bias correction, PET, index calculation, aggregation, ensemble statistics and export. Executable verification entry points are listed in Code Availability and in the package checklist.
 
 \begin{table}[t]
-\caption{Executable verification entry points.}
+\caption{Dashboard windows, direct links and supported analyses.}
 \small
-\begin{tabularx}{\textwidth}{@{}>{\RaggedRight\arraybackslash}p{0.50\textwidth}>{\RaggedRight\arraybackslash}X@{}}
+\begin{tabularx}{\textwidth}{@{}>{\RaggedRight\arraybackslash}p{0.20\textwidth}>{\RaggedRight\arraybackslash}p{0.34\textwidth}>{\RaggedRight\arraybackslash}X@{}}
 \toprule
-Command & Verification \\
+Window or page & What it shows & Supported analyses \\
 \midrule
-\path{python data-pipeline/selftest.py} & 82 deterministic pipeline and contract assertions \\
-\path{python scripts/regression_check.py} & 735 shipped-data baseline values \\
-\path{python scripts/verify_reality_checks.py --check} & Three documented-event checks \\
-\path{python scripts/reproduce_figures.py --check} & Published figure and table artifacts \\
-\path{python gcm-pipeline/selftest_gcm.py} & Synthetic end-to-end CMIP6 processing world \\
-\path{python publication-scientific-data/make_figures.py --check} & Publication-figure input and output checksums \\
+\href{https://drought.ankitdeshmukh.com/\#overview}{Overview} & Current-month choropleth, affected area, severity, district counts, national series and evolution & Area-weighted drought extent, severity ranking, month-to-month change and animation \\
+\href{https://drought.ankitdeshmukh.com/\#historical}{Historical Analysis} & Frequency, duration, severity, recurrence and long-term trends & Seasonal summaries, Mann--Kendall, Sen slope, Hamed--Rao correction and BH-FDR district significance \\
+\href{https://drought.ankitdeshmukh.com/\#events}{Drought Events} & Runs-analysis event catalogue and event maps & Onset, termination, duration, peak, cumulative severity, recovery, censoring and definition sensitivity \\
+\href{https://drought.ankitdeshmukh.com/\#propagation}{Propagation \& Relationships} & Pairwise lag correlation, confidence bands and relationship maps & Lag $-12$ to $+12$ months, block-bootstrap intervals, optimal lag and indicator-pair comparison \\
+\href{https://drought.ankitdeshmukh.com/\#crossval}{Cross-validation} & Era-A--era-B agreement, discrepancy maps and monthly agreement & Correlation, bias, RMSD, drought-state and class agreement, and seam uncertainty \\
+\href{https://drought.ankitdeshmukh.com/\#/district/rajasthan-jodhpur}{District profile} & One-district headline, ten-indicator strip, trend, events and era context & District-month interrogation, trend and event forensics, and labelled cross-era context \\
+\href{https://drought.ankitdeshmukh.com/\#projections}{Future Projections} & Scenario, statistic and time-window controls with ensemble band, map and model context & Median, p25--p75 spread, moderate/severe agreement, model comparison, SPI--SPEI divergence and future events \\
+\href{https://drought.ankitdeshmukh.com/\#summary}{Drought to 2100} & Direction-of-change map, national summary and per-state table & Drought-month share, event duration and severity deltas; share of models drier than their own base \\
+\href{https://drought.ankitdeshmukh.com/\#atlas}{Atlas} & 1901--2025 SPEI scrubber, class shares and historical anchors & Reconstruction climatology, drought-class frequency and historical-event anchoring \\
+\href{https://drought.ankitdeshmukh.com/\#engine}{Engine Lab} & Catalogue, SQL editor, query results, timing and byte counter & Read-only Parquet SQL, custom district/month queries and CSV export \\
+\href{https://drought.ankitdeshmukh.com/\#data}{Documentation} & Methods, governance, licences, reality checks, status, downloads and SQL guide & Provenance inspection, reproduction instructions, data access and query reference \\
+\href{https://drought.ankitdeshmukh.com/tour.html}{Guided tour} & Standalone onboarding and era primer & Navigation, interpretation guardrails and first-use orientation \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -310,7 +310,7 @@ The served national area is 3,266,386~km$^2$, compared with India's published 3,
 Three documented-event checks are re-derived from the shipped matrices. Every Rajasthan district is at or below $-1.00$ SPI-3 in July, August and September 2002, with area-weighted means of $-2.55$, $-2.68$ and $-2.54$. All-India SPI-3 is at or below $-1.00$ in 4 of 547 available months: July 1987 and July--September 2002; these form one qualifying three-month event under the frozen rule. For Marathwada in 2015--2016, mean SPI-3 is $-0.97$ in September 2015, mean VCI is 13.5 in November 2015 and 8.4 in January 2016. The checks demonstrate temporal and geographic consistency; they are not an independent accuracy certification. Applying the current default rules to the full SPI-3 matrix yields 8,044 events, of which 61 are right-censored at the record end.
 
 \subsection*{Independent IMD benchmark}
-The era-B record was compared with an independently processed IMD archive over 1981--2025 (Table 8; Fig. 5). IMD rainfall is available at 0.25$^\circ$ and temperature at 1.0$^\circ$. The benchmark uses the same district fabric, indicator code, 1981--2020 reference period and missing-data policy. SPI is the primary like-for-like comparison because rainfall inputs and estimators are shared. SPEI includes a PET-method difference because the benchmark uses Hargreaves--Samani PET from IMD temperature while era B uses ERA5-Land PET. The computed benchmark retains its full 1981--2025 overlap; it is not relabelled as the 1981--2014 window used for Atlas and climate-model comparisons.
+The era-B record was compared with an independently processed IMD archive over 1981--2025 (Table 8; Fig. 4). IMD rainfall is available at 0.25$^\circ$ and temperature at 1.0$^\circ$. The benchmark uses the same district fabric, indicator code, 1981--2020 reference period and missing-data policy. SPI is the primary like-for-like comparison because rainfall inputs and estimators are shared. SPEI includes a PET-method difference because the benchmark uses Hargreaves--Samani PET from IMD temperature while era B uses ERA5-Land PET. The computed benchmark retains its full 1981--2025 overlap; it is not relabelled as the 1981--2014 window used for Atlas and climate-model comparisons.
 
 Median district correlations range from 0.604 to 0.714, and area-weighted bias ranges from $-0.038$ to $+0.002$ z. Drought-state agreement is 82.2--86.9\%. At $q=0.05$, era B identifies more significant annual SPI-3 trends than IMD (324 versus 155 districts), but slope signs agree for 89.3\% of districts significant in both records. This difference is reported rather than smoothed: smoother gridded inputs and different PET formulations affect detection power. The 1.0$^\circ$ temperature grid also limits the spatial detail of benchmark SPEI.
 
@@ -333,12 +333,12 @@ SPEI-12 & 714 & 377,624 & 0.647 & $-0.038$ & 84.3\% & 32.7\% \\
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{fig05_imd_benchmark.pdf}
+\includegraphics[width=\textwidth]{fig04_imd_benchmark.pdf}
 \caption{Independent IMD benchmark, 1981--2025, with a common 1981--2020 standardisation base. (a) Median district Pearson correlation for 719 SPI and 714 SPEI districts. (b) Area-weighted mean difference, IMD minus era B. (c) Agreement on drought state at the $-1.00$ truncation and on exact nine-class category. (d) Districts with significant annual trends after Benjamini--Hochberg control at $q=0.05$; annotations show slope-sign agreement among districts significant in both records. SPEI includes a PET-method difference between ERA5-Land and Hargreaves--Samani. Values are point estimates from the committed comparison artifact; no confidence intervals are implied.}
 \end{figure}
 
 \subsection*{Era-A and era-B overlap}
-The reconstruction and gridded eras are compared only over their common 1981--2014 window (Table 9; Fig. 6). SPEI-1 and SPEI-12 are the shared timescales. The comparison contains 718 districts; the six island districts absent from the Atlas remain missing. Median district correlation is 0.717 for SPEI-1 and 0.667 for SPEI-12. Area-weighted bias is $+0.044$ and $+0.008$ z, respectively, and drought-state agreement is 83.6\% and 82.9\%. Within-one-class agreement is 78.1\% and 75.8\%. The per-district standard deviation of the era-B minus era-A difference has a median of 0.78 z for SPEI-12. This seam statistic measures historical disagreement and is not a projection error bar.
+The reconstruction and gridded eras are compared only over their common 1981--2014 window (Table 9; Fig. 5). SPEI-1 and SPEI-12 are the shared timescales. The comparison contains 718 districts; the six island districts absent from the Atlas remain missing. Median district correlation is 0.717 for SPEI-1 and 0.667 for SPEI-12. Area-weighted bias is $+0.044$ and $+0.008$ z, respectively, and drought-state agreement is 83.6\% and 82.9\%. Within-one-class agreement is 78.1\% and 75.8\%. The per-district standard deviation of the era-B minus era-A difference has a median of 0.78 z for SPEI-12. This seam statistic measures historical disagreement and is not a projection error bar.
 
 \begin{table}[t]
 \caption{Era-A--era-B overlap comparison, 1981--2014.}
@@ -355,12 +355,12 @@ SPEI-12 & 718 & 285,046 & 0.667 & +0.008 & 82.9\% & 34.5\% \\
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{fig06_atlas_overlap.pdf}
+\includegraphics[width=\textwidth]{fig05_atlas_overlap.pdf}
 \caption{Era-A--era-B overlap agreement, 1981--2014. (a,b) District correlations for SPEI-1 and SPEI-12; grey denotes districts absent from the Atlas grid. (c,d) Distributions of district correlation and district-mean difference, era B minus era A. Boxes show the interquartile range and median, whiskers extend to 1.5 times the interquartile range, and points are values outside the whiskers. The maps use a common 0--1 correlation scale. Area-weighted bias and agreement are reported in Table 9.}
 \end{figure}
 
 \subsection*{CMIP6 release gates}
-The historical-corrected gate evaluates 22 models over 1981--2014; the SSP gate evaluates the committed eight-model subset over the 2015--2020 observed overlap and checks historical--scenario continuity (Table 10; Fig. 7). National distribution-shape ratios for the eight indicators lie between 1.018 and 1.056, inside the declared 0.70--1.40 range. Across 1,360 region--season cells, historical consistency has no breaches, drought-event statistics have 41 breaches (15.1\%, below the 25\% limit) and drought-tail statistics have 28 breaches (2.1\%, below the 25\% limit). SSP distribution-shape breaches are 173 of 1,360 (12.7\%) for SSP2-4.5 and 165 of 1,360 (12.1\%) for SSP5-8.5, both below the 20\% limit. The seam gate reports zero breaches among 24 model--variable cells for each scenario.
+The historical-corrected gate evaluates 22 models over 1981--2014; the SSP gate evaluates the committed eight-model subset over the 2015--2020 observed overlap and checks historical--scenario continuity (Table 10; Fig. 6). National distribution-shape ratios for the eight indicators lie between 1.018 and 1.056, inside the declared 0.70--1.40 range. Across 1,360 region--season cells, historical consistency has no breaches, drought-event statistics have 41 breaches (15.1\%, below the 25\% limit) and drought-tail statistics have 28 breaches (2.1\%, below the 25\% limit). SSP distribution-shape breaches are 173 of 1,360 (12.7\%) for SSP2-4.5 and 165 of 1,360 (12.1\%) for SSP5-8.5, both below the 20\% limit. The seam gate reports zero breaches among 24 model--variable cells for each scenario.
 
 The gate design changed after two documented remediation rounds. Weather reproduction over the six-year SSP overlap is reported but not gated because free-running simulations do not reproduce the timing of individual observed events. The reported-only overlap diagnostics show drought-statistic breaches of 52.2\% and 57.4\% and tail breaches of 30.2\% and 29.6\% for SSP2-4.5 and SSP5-8.5, respectively. The release gate therefore tests distribution shape, drought statistics over the longer historical-corrected window, tail behaviour and seam continuity. This distinction is retained in the committed reports.
 
@@ -384,7 +384,7 @@ SSP5-8.5 seam & Historical tail/SSP head & 0 & 24 & Declared tolerances & Pass \
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{fig07_gcm_validation.pdf}
+\includegraphics[width=\textwidth]{fig06_gcm_validation.pdf}
 \caption{CMIP6 correction-skill and release-gate evidence on a pooled multi-model basis. (a) National ensemble-to-reference standard-deviation ratios for historical-corrected simulations; the shaded region is the declared 0.70--1.40 gate range. (b) Region--season cells outside tolerance, with failure thresholds shown as dashed lines: 20\% for consistency and shape, and 25\% for historical drought statistics and tails. Counts are printed below each category. (c) Historical--scenario seam breaches for 24 model--variable cells in each scenario. Gate values are taken from the committed validation snapshots.}
 \end{figure}
 
@@ -392,12 +392,24 @@ SSP5-8.5 seam & Historical tail/SSP head & 0 & 24 & Declared tolerances & Pass \
 The propagation statistic is reproduced from the national monthly series: SPI-3 and SPEI-3 have Pearson $r=0.8716$ over 547 paired months, with a 95\% moving-block bootstrap interval of $[0.8356,0.8999]$ (1,000 resamples, block length 8, seed 20261103). The figure-reproduction command regenerates the coverage, historical and propagation artifacts and the reality-check table reference. Input and output checksums make record--manuscript drift visible. The publication-figure generator additionally records every plotted value, source checksum and output checksum, and rejects figure text below 10~pt.
 
 \section*{Usage Notes}
-The application is available at \url{https://drought.ankitdeshmukh.com/}. Record, Atlas and Projections are separate products; analytical lenses sit beneath the active product. District profiles, map states and panel controls can be shared through encoded permalinks. Exported CSV and text files include citation, licence, generation date and methodology headers. The Engine Lab accepts validated SQL over the published Parquet store and reports row counts, execution time and bytes read. Figure 8 shows the versioned archive, catalogue, static host, browser engine and verification loop.
+The application is available at \url{https://drought.ankitdeshmukh.com/}. Record, Atlas and Projections are separate products; analytical lenses sit beneath the active product. District profiles, map states and panel controls can be shared through encoded permalinks. Exported CSV and text files include citation, licence, generation date and methodology headers. The Engine Lab accepts validated SQL over the published Parquet store and reports row counts, execution time and bytes read. Table 7 provides direct links and a concise description of the analyses supported by every window. Figure 7 shows the Record lenses, Figure 8 shows the version-2 research products and Figure 9 shows the query, documentation and district-access tools. The screenshots use the recorded July 2002 default observation and the default projection settings.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{fig08_data_service.pdf}
-\caption{Versioned data service and reproducibility loop. The Zenodo archive and immutable static snapshot provide the data files; the catalogue supplies exact paths; DuckDB-WASM executes validated SQL in a browser worker; and the application provides maps, charts, profiles and exports. Executable checks cover pipeline semantics, shipped-data regression, documented-event reality checks, published-claim reproduction and the synthetic CMIP6 processing world.}
+\includegraphics[width=\textwidth]{fig07_record_windows.pdf}
+\caption{Record workspace and analytical lenses. (a) Overview combines the current-month choropleth, affected-area and severity summaries, district counts and animated evolution. (b) Historical Analysis summarises frequency, duration, severity, recurrence, annual trends and FDR-corrected district significance. (c) Drought Events lists runs-analysis events with onset, termination, duration, peak, cumulative severity, recovery and censoring. (d) Propagation \& Relationships displays pairwise lag correlation from $-12$ to $+12$ months, block-bootstrap confidence intervals and optimal-lag summaries. Screenshots were captured from the live site on 25 November 2026.}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig08_v2_products.pdf}
+\caption{Reconstruction, cross-validation and projection products. (a) Atlas provides a 1901--2025 SPEI-1/4/12 scrubber, drought-class shares and historical anchors. (b) Cross-validation compares era A and era B through agreement, bias/RMSD maps, monthly agreement and seam uncertainty. (c) Future Projections combines scenario and time-window controls with ensemble median/spread, agreement maps and model context. (d) Drought to 2100 reports direction-of-change agreement, drought-share/duration/severity deltas and per-state summaries. Screenshots were captured from the live site on 25 November 2026.}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig09_access_documentation.pdf}
+\caption{Query, documentation and district-level access. (a) Engine Lab provides read-only Parquet SQL, catalogue inspection, query timing, bytes read and CSV export. (b) Documentation contains methods, governance, licences, reality checks, status, downloads and the SQL field guide. (c) District profile combines a one-district headline, ten-indicator strip, long-term trend, event catalogue and labelled era context. (d) The standalone guided tour introduces the era model, product map, navigation and interpretation guardrails. Screenshots were captured from the live site on 25 November 2026.}
 \end{figure}
 
 The dataset can also be used without the application. The wide CSV matrices are convenient for spreadsheet and statistical workflows. Long-format Parquet files support columnar analysis in Python, R or DuckDB, and the catalogue supplies exact paths for HTTP Range reads. The core district-month query pattern is:

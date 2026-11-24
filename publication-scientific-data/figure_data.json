@@ -150,30 +150,7 @@
         "sha256": "291565c6f7020d162805af335c28e18812e4b5e9dc2c5df2fa8201ac57988e40"
       }
     },
-    "fig04_study_area": {
-      "data": {
-        "districts": 724,
-        "native_grids": {
-          "Atlas": "0.05°",
-          "CHIRPS": "0.05°",
-          "CMIP6": "0.25°",
-          "ERA5-Land": "0.1°",
-          "MODIS": "1 km"
-        },
-        "states": 36
-      },
-      "pdf": {
-        "bytes": 170991,
-        "path": "figures/fig04_study_area.pdf",
-        "sha256": "690de9c16d187b9ebb82c0f988ad0e4389adde5d6de1bb8c02ee291e3268390c"
-      },
-      "png": {
-        "bytes": 379750,
-        "path": "figures/fig04_study_area.png",
-        "sha256": "b79fbb8aa9224f19ccbd8061bb1ff075d1ed927fe94e6a2689987614d496355e"
-      }
-    },
-    "fig05_imd_benchmark": {
+    "fig04_imd_benchmark": {
       "data": {
         "base": [
           1981,
@@ -280,16 +257,16 @@
       },
       "pdf": {
         "bytes": 26785,
-        "path": "figures/fig05_imd_benchmark.pdf",
-        "sha256": "4bdd02110e7ce25520c38a1d3a8a77184ff21ec4468c7b274592088ac839a684"
+        "path": "figures/fig04_imd_benchmark.pdf",
+        "sha256": "8d66c94f98fb8cfbae8366821c24f311142c4e52cb8006a6fd26d99dc323c50e"
       },
       "png": {
         "bytes": 284274,
-        "path": "figures/fig05_imd_benchmark.png",
+        "path": "figures/fig04_imd_benchmark.png",
         "sha256": "b309bc785035ecb50a271c7103aa6a1ccadd3ba628ce38e9cbcdd99221f8dbb8"
       }
     },
-    "fig06_atlas_overlap": {
+    "fig05_atlas_overlap": {
       "data": {
         "variables": {
           "spei_01": {
@@ -314,16 +291,16 @@
       },
       "pdf": {
         "bytes": 337341,
-        "path": "figures/fig06_atlas_overlap.pdf",
-        "sha256": "10ac3ace1f324bb3d0e60c8ad6a433c84d5c4a3f9b8ae33bc7ba93e30d5e0c8d"
+        "path": "figures/fig05_atlas_overlap.pdf",
+        "sha256": "06f09615cb6da4a4e815331678c365303a5d3507c60d229d8215547234ed60b5"
       },
       "png": {
         "bytes": 508397,
-        "path": "figures/fig06_atlas_overlap.png",
+        "path": "figures/fig05_atlas_overlap.png",
         "sha256": "d14c6511ba6b8321e1a290a591e9913cb25e76bf9a83067691da2fa7810ffd6d"
       }
     },
-    "fig07_gcm_validation": {
+    "fig06_gcm_validation": {
       "data": {
         "historical_gates": {
           "consistency": {
@@ -418,52 +395,148 @@
       },
       "pdf": {
         "bytes": 21407,
-        "path": "figures/fig07_gcm_validation.pdf",
-        "sha256": "642e3c7de1ae8af70699e647b7596c05f396d630341ee53c4c6fb3afd6dfd7a0"
+        "path": "figures/fig06_gcm_validation.pdf",
+        "sha256": "f7fb708ae7d265d1ba6416a8bce97140a9aa46d2353df0e39832d7af31360f45"
       },
       "png": {
         "bytes": 250834,
-        "path": "figures/fig07_gcm_validation.png",
+        "path": "figures/fig06_gcm_validation.png",
         "sha256": "914893e0f22657722491bf76809e6c9d3fa0ca3d687ffe01f98cfbf00ac722d3"
       }
     },
-    "fig08_data_service": {
+    "fig07_record_windows": {
       "data": {
-        "checks": [
-          [
-            "data-pipeline/selftest.py",
-            "82 deterministic assertions"
-          ],
-          [
-            "scripts/regression_check.py",
-            "735 baseline values"
-          ],
-          [
-            "scripts/verify_reality_checks.py --check",
-            "3 documented-event checks"
-          ],
-          [
-            "scripts/reproduce_figures.py --check",
-            "published figure/table artifacts"
-          ],
-          [
-            "gcm-pipeline/selftest_gcm.py",
-            "synthetic end-to-end world"
-          ]
+        "panels": [
+          {
+            "analysis": "Current-month choropleth, affected area, severity, district counts and animated evolution.",
+            "panel": "a",
+            "screenshot": "screenshots/overview.png",
+            "sha256": "cbd021c04ffae7b6c242cbdbcaa170478734a46023b958c49d0330f890784230",
+            "window": "Overview"
+          },
+          {
+            "analysis": "Frequency, duration, severity, recurrence, annual trends and FDR-corrected district significance.",
+            "panel": "b",
+            "screenshot": "screenshots/historical.png",
+            "sha256": "7b3ab023ecc7e9a4b7aa4e481376f61e752451eda8085f2579f9ac1339b13233",
+            "window": "Historical Analysis"
+          },
+          {
+            "analysis": "Runs-analysis catalogue: onset, end, duration, peak, severity, recovery and censoring.",
+            "panel": "c",
+            "screenshot": "screenshots/events.png",
+            "sha256": "6d14fdf6cce0dec834f9738c7c5e7d2a8eb2d0e6770d493fe03925301edf0442",
+            "window": "Drought Events"
+          },
+          {
+            "analysis": "Pairwise lag correlation from −12 to +12 months, bootstrap intervals and optimal-lag maps.",
+            "panel": "d",
+            "screenshot": "screenshots/propagation.png",
+            "sha256": "ea78de13f6a80058869e72440d004e7d5b3977742ff8b2d66f96bddb6936ed9a",
+            "window": "Propagation & Relationships"
+          }
         ],
-        "dataset_doi": "10.5281/zenodo.24445534",
-        "snapshot": "v2026.09",
-        "software_doi": "10.5281/zenodo.24444860"
+        "site": "https://drought.ankitdeshmukh.com/"
       },
       "pdf": {
-        "bytes": 28447,
-        "path": "figures/fig08_data_service.pdf",
-        "sha256": "bd4ba2f39c5f95f7affc2597cb9c4a9a1fbfdf4c9956bdf339a9a401acad6935"
+        "bytes": 200126,
+        "path": "figures/fig07_record_windows.pdf",
+        "sha256": "f98a33d866fbbfd009681a003132b5f88a7d27f07a26e8fe11d00904c2c69863"
       },
       "png": {
-        "bytes": 259440,
-        "path": "figures/fig08_data_service.png",
-        "sha256": "e97bb8ebccf1a9ad5b271e988287c3aca28233600ca4567627a526fa1c7130d5"
+        "bytes": 1308583,
+        "path": "figures/fig07_record_windows.png",
+        "sha256": "b1156f0f6122f780da318a86225c7c1b0d2bed7f738a0823e3d270810e3f9edd"
+      }
+    },
+    "fig08_v2_products": {
+      "data": {
+        "panels": [
+          {
+            "analysis": "1901–2025 SPEI-1/4/12 scrubber, drought-class shares and historical drought anchors.",
+            "panel": "a",
+            "screenshot": "screenshots/atlas.png",
+            "sha256": "c161a398145adc79a003bb893c7f994867865e1239eefe79b51d939b13b75928",
+            "window": "Atlas"
+          },
+          {
+            "analysis": "Era A–B agreement, bias/RMSD maps, monthly agreement and seam uncertainty.",
+            "panel": "b",
+            "screenshot": "screenshots/crossval.png",
+            "sha256": "ffce972bcc675613819bf6d3e2a25bfd90cd72cfc497f45c3d40f9fdc053b65d",
+            "window": "Cross-validation"
+          },
+          {
+            "analysis": "Scenario and time-window controls, ensemble median/spread, agreement maps and model context.",
+            "panel": "c",
+            "screenshot": "screenshots/projections.png",
+            "sha256": "ca6f91689c2f5e2428bf3b55bd9ad7e41f5229cf8aed54dc2d398ecd2c5953a5",
+            "window": "Future Projections"
+          },
+          {
+            "analysis": "Direction-of-change agreement, drought-share/duration/severity deltas and per-state summaries.",
+            "panel": "d",
+            "screenshot": "screenshots/summary.png",
+            "sha256": "d056fc1310dee43e53bb071a20fd3ddce217b892a7917bcdb44283f11fe9f903",
+            "window": "Drought to 2100"
+          }
+        ],
+        "site": "https://drought.ankitdeshmukh.com/"
+      },
+      "pdf": {
+        "bytes": 267597,
+        "path": "figures/fig08_v2_products.pdf",
+        "sha256": "2c39baae8cfb666a54174399ae5406d55571aa5ff723d5aa9f9617724a6c6298"
+      },
+      "png": {
+        "bytes": 2158277,
+        "path": "figures/fig08_v2_products.png",
+        "sha256": "40f23cb03c9bf4c044b3f3a4fcd3948ba6276cd6f7ad9e5c2741509ef0848c04"
+      }
+    },
+    "fig09_access_documentation": {
+      "data": {
+        "panels": [
+          {
+            "analysis": "Read-only Parquet SQL, catalogue inspection, query timing, bytes read and CSV export.",
+            "panel": "a",
+            "screenshot": "screenshots/engine.png",
+            "sha256": "3e0c816a77dfb0d14a15ab8e8953a2afca88026e05e0db4731067fadec1ef8ea",
+            "window": "Engine Lab"
+          },
+          {
+            "analysis": "Methods, governance, licences, reality checks, status, downloads and the SQL field guide.",
+            "panel": "b",
+            "screenshot": "screenshots/documentation.png",
+            "sha256": "1bc262bfb29b5d10af18365fd02736532d2947d4904e881bf86d93514dd2d3f8",
+            "window": "Documentation"
+          },
+          {
+            "analysis": "One-district headline, ten-indicator strip, long-term trend, event catalogue and labelled era context.",
+            "panel": "c",
+            "screenshot": "screenshots/district-profile.png",
+            "sha256": "380a205a61dec1e144cd4e832b035c02b84d04e7ceea8aede3fd1b7490ad8b4e",
+            "window": "District profile"
+          },
+          {
+            "analysis": "Standalone onboarding: era primer, product map, navigation and interpretation guardrails.",
+            "panel": "d",
+            "screenshot": "screenshots/tour.png",
+            "sha256": "4698f8c63737fdfd827d886f4ad554534a8d875fed3ea766fd40b4d9967e438d",
+            "window": "Guided tour"
+          }
+        ],
+        "site": "https://drought.ankitdeshmukh.com/"
+      },
+      "pdf": {
+        "bytes": 235709,
+        "path": "figures/fig09_access_documentation.pdf",
+        "sha256": "1b395071eb5c55c1f5d0017f1bb967cff19ad832334b0d637055da7a4433446f"
+      },
+      "png": {
+        "bytes": 1681351,
+        "path": "figures/fig09_access_documentation.png",
+        "sha256": "8a674986fce6471a8c28bf1a6f8a5e5d5af3abae840f9d51a671ae0ce94db633"
       }
     }
   },
@@ -534,6 +607,66 @@
       "bytes": 27103,
       "path": "assets/js/ducklab.js",
       "sha256": "b645cf5d9fba2dcbd119fe10e71d176697cda47a59e30794700d3baa631b6753"
+    },
+    {
+      "bytes": 196492,
+      "path": "publication-scientific-data/screenshots/overview.png",
+      "sha256": "cbd021c04ffae7b6c242cbdbcaa170478734a46023b958c49d0330f890784230"
+    },
+    {
+      "bytes": 164205,
+      "path": "publication-scientific-data/screenshots/historical.png",
+      "sha256": "7b3ab023ecc7e9a4b7aa4e481376f61e752451eda8085f2579f9ac1339b13233"
+    },
+    {
+      "bytes": 191984,
+      "path": "publication-scientific-data/screenshots/events.png",
+      "sha256": "6d14fdf6cce0dec834f9738c7c5e7d2a8eb2d0e6770d493fe03925301edf0442"
+    },
+    {
+      "bytes": 164181,
+      "path": "publication-scientific-data/screenshots/propagation.png",
+      "sha256": "ea78de13f6a80058869e72440d004e7d5b3977742ff8b2d66f96bddb6936ed9a"
+    },
+    {
+      "bytes": 412101,
+      "path": "publication-scientific-data/screenshots/atlas.png",
+      "sha256": "c161a398145adc79a003bb893c7f994867865e1239eefe79b51d939b13b75928"
+    },
+    {
+      "bytes": 359046,
+      "path": "publication-scientific-data/screenshots/crossval.png",
+      "sha256": "ffce972bcc675613819bf6d3e2a25bfd90cd72cfc497f45c3d40f9fdc053b65d"
+    },
+    {
+      "bytes": 286383,
+      "path": "publication-scientific-data/screenshots/projections.png",
+      "sha256": "ca6f91689c2f5e2428bf3b55bd9ad7e41f5229cf8aed54dc2d398ecd2c5953a5"
+    },
+    {
+      "bytes": 412657,
+      "path": "publication-scientific-data/screenshots/summary.png",
+      "sha256": "d056fc1310dee43e53bb071a20fd3ddce217b892a7917bcdb44283f11fe9f903"
+    },
+    {
+      "bytes": 261991,
+      "path": "publication-scientific-data/screenshots/engine.png",
+      "sha256": "3e0c816a77dfb0d14a15ab8e8953a2afca88026e05e0db4731067fadec1ef8ea"
+    },
+    {
+      "bytes": 166005,
+      "path": "publication-scientific-data/screenshots/documentation.png",
+      "sha256": "1bc262bfb29b5d10af18365fd02736532d2947d4904e881bf86d93514dd2d3f8"
+    },
+    {
+      "bytes": 216198,
+      "path": "publication-scientific-data/screenshots/district-profile.png",
+      "sha256": "380a205a61dec1e144cd4e832b035c02b84d04e7ceea8aede3fd1b7490ad8b4e"
+    },
+    {
+      "bytes": 141925,
+      "path": "publication-scientific-data/screenshots/tour.png",
+      "sha256": "4698f8c63737fdfd827d886f4ad554534a8d875fed3ea766fd40b4d9967e438d"
     }
   ],
   "minimum_font_pt": 10,

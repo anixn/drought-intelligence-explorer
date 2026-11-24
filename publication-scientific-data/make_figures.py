@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import textwrap
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
@@ -338,6 +339,60 @@ def fig03_coverage(meta: dict[str, Any], catalog: dict[str, Any]) -> tuple[Any, 
                     "to": inds[i.replace("_0", "_")]["available_to"]} for i in IND_ORDER]}
 
 
+def screenshot_figure(stem: str, title: str, panels: list[tuple[str, str, str, str]],
+                      footer: str = "https://drought.ankitdeshmukh.com/") -> tuple[Any, dict[str, Any]]:
+    """Compose four live-dashboard captures with readable 10 pt annotations."""
+    fig, axs = plt.subplots(2, 2, figsize=(WIDTH, 7.4))
+    fig.subplots_adjust(left=0.04, right=0.96, top=0.86, bottom=0.07, hspace=0.78, wspace=0.12)
+    records = []
+    for ax, (filename, label, heading, analysis) in zip(axs.flat, panels):
+        path = HERE / "screenshots" / filename
+        if not path.exists():
+            raise FileNotFoundError(path)
+        img = plt.imread(path)
+        ax.imshow(img, interpolation="lanczos", aspect="auto")
+        ax.set_xticks([]); ax.set_yticks([])
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+        ax.add_patch(Rectangle((0, 0), 1, 1, fill=False, edgecolor=GRID, linewidth=0.7, transform=ax.transAxes))
+        panel_label(ax, label)
+        ax.set_title(heading, loc="left", pad=7)
+        ax.text(0.0, -0.03, textwrap.fill(analysis, width=52, break_long_words=False),
+                transform=ax.transAxes, ha="left", va="top", fontsize=10, color=INK, linespacing=1.25)
+        records.append({"panel": label, "window": heading, "analysis": analysis,
+                        "screenshot": f"screenshots/{filename}", "sha256": sha256(path)})
+    fig.suptitle(title, fontsize=13, fontweight="bold", x=0.04, ha="left", y=0.985)
+    fig.text(0.04, 0.945, footer, fontsize=10, color=MUTED, ha="left")
+    return fig, {"panels": records, "site": footer}
+
+
+def fig07_record_windows() -> tuple[Any, dict[str, Any]]:
+    return screenshot_figure("fig07_record_windows", "Record workspace and analytical lenses", [
+        ("overview.png", "a", "Overview", "Current-month choropleth, affected area, severity, district counts and animated evolution."),
+        ("historical.png", "b", "Historical Analysis", "Frequency, duration, severity, recurrence, annual trends and FDR-corrected district significance."),
+        ("events.png", "c", "Drought Events", "Runs-analysis catalogue: onset, end, duration, peak, severity, recovery and censoring."),
+        ("propagation.png", "d", "Propagation & Relationships", "Pairwise lag correlation from −12 to +12 months, bootstrap intervals and optimal-lag maps."),
+    ])
+
+
+def fig08_v2_products() -> tuple[Any, dict[str, Any]]:
+    return screenshot_figure("fig08_v2_products", "Reconstruction, cross-validation and projection products", [
+        ("atlas.png", "a", "Atlas", "1901–2025 SPEI-1/4/12 scrubber, drought-class shares and historical drought anchors."),
+        ("crossval.png", "b", "Cross-validation", "Era A–B agreement, bias/RMSD maps, monthly agreement and seam uncertainty."),
+        ("projections.png", "c", "Future Projections", "Scenario and time-window controls, ensemble median/spread, agreement maps and model context."),
+        ("summary.png", "d", "Drought to 2100", "Direction-of-change agreement, drought-share/duration/severity deltas and per-state summaries."),
+    ])
+
+
+def fig09_access_documentation() -> tuple[Any, dict[str, Any]]:
+    return screenshot_figure("fig09_access_documentation", "Query, documentation and district-level access", [
+        ("engine.png", "a", "Engine Lab", "Read-only Parquet SQL, catalogue inspection, query timing, bytes read and CSV export."),
+        ("documentation.png", "b", "Documentation", "Methods, governance, licences, reality checks, status, downloads and the SQL field guide."),
+        ("district-profile.png", "c", "District profile", "One-district headline, ten-indicator strip, long-term trend, event catalogue and labelled era context."),
+        ("tour.png", "d", "Guided tour", "Standalone onboarding: era primer, product map, navigation and interpretation guardrails."),
+    ])
+
+
 def fig04_study_area(geom: Geometry) -> tuple[Any, dict[str, Any]]:
     fig = plt.figure(figsize=(WIDTH, 5.6), constrained_layout=True)
     gs = fig.add_gridspec(1, 2, width_ratios=[4.6, 2.1])
@@ -527,18 +582,31 @@ def build() -> dict[str, Any]:
         ("fig01_architecture", fig01_architecture, (meta, catalog)),
         ("fig02_projection_pipeline", fig02_projection, (models, subset, catalog)),
         ("fig03_coverage", fig03_coverage, (meta, catalog)),
-        ("fig04_study_area", fig04_study_area, (geom,)),
-        ("fig05_imd_benchmark", fig05_imd, (imd,)),
-        ("fig06_atlas_overlap", fig06_crossval, (cv, geom)),
-        ("fig07_gcm_validation", fig07_gcm, (hist, ssp, subset)),
-        ("fig08_data_service", fig08_service, (meta, pointer, status)),
+        ("fig04_imd_benchmark", fig05_imd, (imd,)),
+        ("fig05_atlas_overlap", fig06_crossval, (cv, geom)),
+        ("fig06_gcm_validation", fig07_gcm, (hist, ssp, subset)),
+        ("fig07_record_windows", fig07_record_windows, ()),
+        ("fig08_v2_products", fig08_v2_products, ()),
+        ("fig09_access_documentation", fig09_access_documentation, ()),
     ]:
         fig, data = func(*args); figures[stem] = {"data": data, **save_figure(fig, stem)}; print("built", stem)
     inputs = ["data/metadata.json", "data/parquet/catalog.json", "data/data-source.json", "data/status.json",
               "data/imd_validation.json", "gcm-pipeline/config/models.yaml", "gcm-pipeline/validation/validation_report.json",
               "gcm-pipeline/validation/ssp/validation_report_ssp.json", "gcm-pipeline/validation/best_subset.yaml",
               "data/parquet/cross_validation/per_district_1981_2014.parquet", "data/boundaries/india_districts.geojson",
-              "data/boundaries/india_states.geojson", "assets/js/ducklab.js"]
+              "data/boundaries/india_states.geojson", "assets/js/ducklab.js",
+              "publication-scientific-data/screenshots/overview.png",
+              "publication-scientific-data/screenshots/historical.png",
+              "publication-scientific-data/screenshots/events.png",
+              "publication-scientific-data/screenshots/propagation.png",
+              "publication-scientific-data/screenshots/atlas.png",
+              "publication-scientific-data/screenshots/crossval.png",
+              "publication-scientific-data/screenshots/projections.png",
+              "publication-scientific-data/screenshots/summary.png",
+              "publication-scientific-data/screenshots/engine.png",
+              "publication-scientific-data/screenshots/documentation.png",
+              "publication-scientific-data/screenshots/district-profile.png",
+              "publication-scientific-data/screenshots/tour.png"]
     payload = {"schema": "die-publication-figures/2.0", "generated": GENERATED, "seed": SEED,
                "synthetic_data": False, "font": "Roboto", "minimum_font_pt": 10, "width_in": WIDTH,
                "figures": figures, "inputs": [source_record(rel) for rel in inputs]}

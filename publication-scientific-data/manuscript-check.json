@@ -172,7 +172,7 @@
     {
       "check": "figure_count",
       "pass": true,
-      "detail": 8
+      "detail": 9
     },
     {
       "check": "table_count",
@@ -187,11 +187,12 @@
           "fig01_architecture.pdf",
           "fig02_projection_pipeline.pdf",
           "fig03_coverage.pdf",
-          "fig04_study_area.pdf",
-          "fig05_imd_benchmark.pdf",
-          "fig06_atlas_overlap.pdf",
-          "fig07_gcm_validation.pdf",
-          "fig08_data_service.pdf"
+          "fig04_imd_benchmark.pdf",
+          "fig05_atlas_overlap.pdf",
+          "fig06_gcm_validation.pdf",
+          "fig07_record_windows.pdf",
+          "fig08_v2_products.pdf",
+          "fig09_access_documentation.pdf"
         ],
         "missing": []
       }
@@ -199,12 +200,12 @@
     {
       "check": "figure_numbers_in_text",
       "pass": true,
-      "detail": 8
+      "detail": 9
     },
     {
       "check": "data_overview_figure_limit",
       "pass": true,
-      "detail": 2
+      "detail": 1
     },
     {
       "check": "no_stale_claims",
@@ -257,7 +258,7 @@
       "pass": true,
       "detail": {
         "synthetic_data": false,
-        "figures": 8
+        "figures": 9
       }
     },
     {
@@ -278,7 +279,7 @@
       "check": "compiled_pdf",
       "pass": true,
       "detail": {
-        "bytes": 878753
+        "bytes": 1382654
       }
     },
     {

@@ -5,9 +5,10 @@ This directory is a separate publication package. It does not replace or modify 
 ## Deliverables
 
 - `manuscript.tex` — standalone Scientific Data Data Descriptor source with embedded numerical references.
-- `manuscript.pdf` — compiled first-round review manuscript (21 pages at the current build).
-- `figures/fig01_*.pdf` through `fig08_*.pdf` — vector publication figures.
-- `figures/fig01_*.png` through `fig08_*.png` — matching 300-dpi review/preview renders.
+- `manuscript.pdf` — compiled first-round review manuscript (23 pages at the current build).
+- `figures/fig01_*.pdf` through `fig09_*.pdf` — vector publication figures.
+- `figures/fig01_*.png` through `fig09_*.png` — matching 300-dpi review/preview renders.
+- `screenshots/` — live-site captures used in the three annotated interface figures.
 - `figure_data.json` — every plotted value, source checksum and output checksum.
 - `FIGURE_SHA256SUMS.txt` — figure-file integrity manifest.
 - `make_figures.py` — deterministic figure builder.
