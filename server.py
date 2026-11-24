@@ -119,8 +119,11 @@ class RangeHandler(SimpleHTTPRequestHandler):
         self.send_header("Accept-Ranges", "bytes")
         # Pitfall P2 (docs/v2/04 §3.3): browsers heuristically cache HTML/JS/JSON,
         # which serves stale code after edits; data files (.parquet) are
-        # content-addressed by the catalog and may cache.
-        if ext in (".html", ".js", ".mjs", ".json", ".css"):
+        # content-addressed by the catalog and may cache. Images are included so
+        # a replaced logo/favicon shows up on the next reload in development
+        # (browsers cache favicons especially aggressively).
+        if ext in (".html", ".js", ".mjs", ".json", ".css",
+                   ".svg", ".png", ".webp", ".jpg", ".jpeg", ".ico"):
             self.send_header("Cache-Control", "no-cache")
         self.send_header("Last-Modified", self.date_time_string(os.path.getmtime(path)))
         for k, v in extra.items():
