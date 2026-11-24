@@ -1,0 +1,295 @@
+{
+  "schema": "die-manuscript-check/1.0",
+  "passed": 32,
+  "total": 32,
+  "checks": [
+    {
+      "check": "title_length",
+      "pass": true,
+      "detail": {
+        "title": "A three-era district drought data resource for India spanning 1901 to 2100",
+        "characters": 74,
+        "limit": 110
+      }
+    },
+    {
+      "check": "title_style",
+      "pass": true,
+      "detail": "A three-era district drought data resource for India spanning 1901 to 2100"
+    },
+    {
+      "check": "abstract_length",
+      "pass": true,
+      "detail": {
+        "words": 164,
+        "limit": 170
+      }
+    },
+    {
+      "check": "abstract_no_urls",
+      "pass": true,
+      "detail": "No URL or DOI in abstract"
+    },
+    {
+      "check": "required_sections",
+      "pass": true,
+      "detail": [
+        "Abstract",
+        "Background & Summary",
+        "Methods",
+        "Data Records",
+        "Data Overview",
+        "Technical Validation",
+        "Usage Notes",
+        "Data Availability",
+        "Code Availability",
+        "Author contributions",
+        "Competing interests",
+        "Funding"
+      ]
+    },
+    {
+      "check": "data_overview_single_paragraph",
+      "pass": true,
+      "detail": 1
+    },
+    {
+      "check": "no_out_of_scope_headings",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "no_internal_refs",
+      "pass": true,
+      "detail": "Free-text figure/table references only"
+    },
+    {
+      "check": "embedded_bibliography",
+      "pass": true,
+      "detail": "Inline thebibliography; no .bib/.bbl dependency"
+    },
+    {
+      "check": "computer_modern",
+      "pass": true,
+      "detail": "Default Computer Modern fonts"
+    },
+    {
+      "check": "bibliography_count",
+      "pass": true,
+      "detail": {
+        "entries": 34,
+        "declared": 34
+      }
+    },
+    {
+      "check": "citations_defined",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "citation_order",
+      "pass": true,
+      "detail": {
+        "first_appearance": [
+          "WilhiteGlantz1985",
+          "MishraSingh2010",
+          "McKee1993",
+          "VicenteSerrano2010",
+          "Kogan1995",
+          "WMOLincoln2009",
+          "Pai2014",
+          "Srivastava2009",
+          "Chuphal2024",
+          "ChuphalData2024",
+          "DeshmukhV1Data2026",
+          "Funk2015",
+          "MunozSabater2021",
+          "Didan2015",
+          "Eyring2016",
+          "ONeill2016",
+          "Cannon2015",
+          "HargreavesSamani1985",
+          "DeshmukhSoftware2026",
+          "DeshmukhData2026",
+          "uditIndiaMaps",
+          "Gorelick2017",
+          "Hersbach2020",
+          "Begueria2014",
+          "Hosking1990",
+          "Gringorten1963",
+          "Stagge2015",
+          "Yevjevich1967",
+          "Mann1945",
+          "Sen1968",
+          "HamedRao1998",
+          "BenjaminiHochberg1995",
+          "Kunsch1989",
+          "Riahi2017"
+        ],
+        "bibliography": [
+          "WilhiteGlantz1985",
+          "MishraSingh2010",
+          "McKee1993",
+          "VicenteSerrano2010",
+          "Kogan1995",
+          "WMOLincoln2009",
+          "Pai2014",
+          "Srivastava2009",
+          "Chuphal2024",
+          "ChuphalData2024",
+          "DeshmukhV1Data2026",
+          "Funk2015",
+          "MunozSabater2021",
+          "Didan2015",
+          "Eyring2016",
+          "ONeill2016",
+          "Cannon2015",
+          "HargreavesSamani1985",
+          "DeshmukhSoftware2026",
+          "DeshmukhData2026",
+          "uditIndiaMaps",
+          "Gorelick2017",
+          "Hersbach2020",
+          "Begueria2014",
+          "Hosking1990",
+          "Gringorten1963",
+          "Stagge2015",
+          "Yevjevich1967",
+          "Mann1945",
+          "Sen1968",
+          "HamedRao1998",
+          "BenjaminiHochberg1995",
+          "Kunsch1989",
+          "Riahi2017"
+        ]
+      }
+    },
+    {
+      "check": "all_references_cited",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "figure_count",
+      "pass": true,
+      "detail": 8
+    },
+    {
+      "check": "table_count",
+      "pass": true,
+      "detail": 10
+    },
+    {
+      "check": "figure_files_exist",
+      "pass": true,
+      "detail": {
+        "files": [
+          "fig01_architecture.pdf",
+          "fig02_projection_pipeline.pdf",
+          "fig03_coverage.pdf",
+          "fig04_study_area.pdf",
+          "fig05_imd_benchmark.pdf",
+          "fig06_atlas_overlap.pdf",
+          "fig07_gcm_validation.pdf",
+          "fig08_data_service.pdf"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "check": "figure_numbers_in_text",
+      "pass": true,
+      "detail": 8
+    },
+    {
+      "check": "data_overview_figure_limit",
+      "pass": true,
+      "detail": 2
+    },
+    {
+      "check": "no_stale_claims",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "current_headline_values",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "check": "no_placeholders",
+      "pass": true,
+      "detail": "No drafting placeholders"
+    },
+    {
+      "check": "valid_value_total",
+      "pass": true,
+      "detail": 3780163
+    },
+    {
+      "check": "record_end",
+      "pass": true,
+      "detail": "2026-09"
+    },
+    {
+      "check": "doi_contract",
+      "pass": true,
+      "detail": {
+        "archived_v1_0_0": "10.5281/zenodo.24113364",
+        "archived_v1_0_0_url": "https://doi.org/10.5281/zenodo.24113364",
+        "v2_0_0": "10.5281/zenodo.24444860",
+        "v2_0_0_note": "version DOI for v2.0.0, minted 2026-11-22 by the GitHub-Zenodo integration; the concept DOI 10.5281/zenodo.24113363 always resolves to the latest version",
+        "concept": "10.5281/zenodo.24113363",
+        "concept_url": "https://doi.org/10.5281/zenodo.24113363",
+        "v2_0_0_url": "https://doi.org/10.5281/zenodo.24444860",
+        "dataset_v2_0_0": "10.5281/zenodo.24445534",
+        "dataset_v2_0_0_url": "https://doi.org/10.5281/zenodo.24445534",
+        "dataset_v2_0_0_note": "dataset DOI for the v2.0.0 snapshot v2026.09 (CC-BY-4.0), is supplement to the software DOI 10.5281/zenodo.24444860"
+      }
+    },
+    {
+      "check": "reality_version",
+      "pass": true,
+      "detail": "2.0.0"
+    },
+    {
+      "check": "figure_data_real",
+      "pass": true,
+      "detail": {
+        "synthetic_data": false,
+        "figures": 8
+      }
+    },
+    {
+      "check": "figure_typography",
+      "pass": true,
+      "detail": {
+        "font": "Roboto",
+        "minimum_font_pt": 10,
+        "width_in": 7.2
+      }
+    },
+    {
+      "check": "roboto_files",
+      "pass": true,
+      "detail": "Static Roboto Regular/Bold and OFL licence present"
+    },
+    {
+      "check": "compiled_pdf",
+      "pass": true,
+      "detail": {
+        "bytes": 878753
+      }
+    },
+    {
+      "check": "no_undefined_citations",
+      "pass": true,
+      "detail": "No undefined citations"
+    },
+    {
+      "check": "no_overfull_boxes",
+      "pass": true,
+      "detail": "No overfull horizontal boxes"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "schema": "die-reality-checks/1.0",
-  "data_version": "1.0.0",
+  "data_version": "2.0.0",
   "methodology_version": "research-gee-1.0.2",
   "generated_by": "scripts/verify_reality_checks.py",
   "checks": [

@@ -326,14 +326,14 @@ def v6_bh_demonstration() -> bool:
     print(f"    annual SPI-3 means ({years[0]}-{years[-1]}, at least 9 valid "
           f"months per year), tie-corrected Mann-Kendall, {len(ids)} districts:")
     print(f"    significant at alpha = 0.05 uncorrected: {sig_uncorrected} "
-          f"({sig_uncorrected / len(ids) * 100:.1f}%)  (paper: 382, 52.8%)")
+          f"({sig_uncorrected / len(ids) * 100:.1f}%)  (v2.0.0: 415, 57.3%)")
     print(f"    significant after Benjamini-Hochberg at q = 0.05: {sig_bh} "
-          f"({sig_bh / len(ids) * 100:.1f}%)  (paper: 324, 44.8%)")
+          f"({sig_bh / len(ids) * 100:.1f}%)  (v2.0.0: 354, 48.9%)")
     print(f"    direction of the uncorrected significant districts "
           f"(first-to-last): {wetting} wetting vs {drying} drying  "
-          "(paper: 370 vs 12)")
-    ok = (sig_uncorrected == 382 and sig_bh == 324
-          and wetting == 370 and drying == 12)
+          "(v2.0.0: 276 vs 139)")
+    ok = (sig_uncorrected == 415 and sig_bh == 354
+          and wetting == 276 and drying == 139)
     print(f"  [{'PASS' if ok else 'FAIL'}] v6: Benjamini-Hochberg trend demonstration")
     return ok
 

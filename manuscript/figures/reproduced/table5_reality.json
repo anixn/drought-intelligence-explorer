@@ -1,7 +1,7 @@
 {
   "figure": "table5_reality",
   "artifact": "data/reality_checks.json",
-  "sha256": "79ef52053b06a7952a982280162bfadba2035957a7d803379c74dcf40d347d89",
+  "sha256": "78e65e832486e00f1456dc54a68674acee864ef966bb9494b1ddc38483ad9738",
   "checks": [
     "rajasthan-2002",
     "all-india-spi3",

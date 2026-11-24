@@ -1,0 +1,544 @@
+{
+  "figures": {
+    "fig01_architecture": {
+      "data": {
+        "A": [
+          1901,
+          2025
+        ],
+        "B": [
+          "1981-01",
+          "2026-09"
+        ],
+        "C": [
+          2015,
+          2100
+        ],
+        "districts": 724
+      },
+      "pdf": {
+        "bytes": 22547,
+        "path": "figures/fig01_architecture.pdf",
+        "sha256": "030a20fe82e7430622a101491a58941b88437edbb2a4c87466c34227f20c7e0a"
+      },
+      "png": {
+        "bytes": 245543,
+        "path": "figures/fig01_architecture.png",
+        "sha256": "fd83f511d77a102700f83e40fba84005bcd3210a857380f88ef9903a1eb29fc6"
+      }
+    },
+    "fig02_projection_pipeline": {
+      "data": {
+        "comparison": [
+          1981,
+          2014
+        ],
+        "indicators": 8,
+        "listed": 24,
+        "partitions": 19904,
+        "processed": 22,
+        "reference": [
+          1981,
+          2020
+        ],
+        "subset": 8
+      },
+      "pdf": {
+        "bytes": 27226,
+        "path": "figures/fig02_projection_pipeline.pdf",
+        "sha256": "f968f473152b772c1970a534f59a8e8d3bfc5a939585068bd715544ff75bfbd9"
+      },
+      "png": {
+        "bytes": 237604,
+        "path": "figures/fig02_projection_pipeline.png",
+        "sha256": "c4ec94280260b352ec468b512de11dd736de36ab7970f6f9bfecfab94f7fd2b7"
+      }
+    },
+    "fig03_coverage": {
+      "data": {
+        "eras": [
+          [
+            "A · Atlas",
+            1901,
+            2025.99,
+            "#6B7D3A"
+          ],
+          [
+            "B · 10",
+            1981.0,
+            2026.75,
+            "#22756B"
+          ],
+          [
+            "C · 8 indicators × 2 SSPs",
+            2015,
+            2100,
+            "#A6452F"
+          ]
+        ],
+        "indicators": [
+          {
+            "from": "1981-01",
+            "id": "spi_01",
+            "label": "SPI-1",
+            "to": "2026-09"
+          },
+          {
+            "from": "1981-03",
+            "id": "spi_03",
+            "label": "SPI-3",
+            "to": "2026-09"
+          },
+          {
+            "from": "1981-06",
+            "id": "spi_06",
+            "label": "SPI-6",
+            "to": "2026-09"
+          },
+          {
+            "from": "1981-12",
+            "id": "spi_12",
+            "label": "SPI-12",
+            "to": "2026-09"
+          },
+          {
+            "from": "1981-01",
+            "id": "spei_01",
+            "label": "SPEI-1",
+            "to": "2026-09"
+          },
+          {
+            "from": "1981-03",
+            "id": "spei_03",
+            "label": "SPEI-3",
+            "to": "2026-09"
+          },
+          {
+            "from": "1981-06",
+            "id": "spei_06",
+            "label": "SPEI-6",
+            "to": "2026-09"
+          },
+          {
+            "from": "1981-12",
+            "id": "spei_12",
+            "label": "SPEI-12",
+            "to": "2026-09"
+          },
+          {
+            "from": "1981-01",
+            "id": "sma",
+            "label": "SMA",
+            "to": "2026-09"
+          },
+          {
+            "from": "2000-02",
+            "id": "vci",
+            "label": "VCI",
+            "to": "2026-09"
+          }
+        ]
+      },
+      "pdf": {
+        "bytes": 16623,
+        "path": "figures/fig03_coverage.pdf",
+        "sha256": "f8806236f67c565cd055da2ac5933d172c328b9461c201fa0318f2ecf175a541"
+      },
+      "png": {
+        "bytes": 125931,
+        "path": "figures/fig03_coverage.png",
+        "sha256": "291565c6f7020d162805af335c28e18812e4b5e9dc2c5df2fa8201ac57988e40"
+      }
+    },
+    "fig04_study_area": {
+      "data": {
+        "districts": 724,
+        "native_grids": {
+          "Atlas": "0.05°",
+          "CHIRPS": "0.05°",
+          "CMIP6": "0.25°",
+          "ERA5-Land": "0.1°",
+          "MODIS": "1 km"
+        },
+        "states": 36
+      },
+      "pdf": {
+        "bytes": 170991,
+        "path": "figures/fig04_study_area.pdf",
+        "sha256": "690de9c16d187b9ebb82c0f988ad0e4389adde5d6de1bb8c02ee291e3268390c"
+      },
+      "png": {
+        "bytes": 379750,
+        "path": "figures/fig04_study_area.png",
+        "sha256": "b79fbb8aa9224f19ccbd8061bb1ff075d1ed927fe94e6a2689987614d496355e"
+      }
+    },
+    "fig05_imd_benchmark": {
+      "data": {
+        "base": [
+          1981,
+          2020
+        ],
+        "indicators": [
+          {
+            "bias": 0.002196161589607767,
+            "class_exact": 0.3649674386734644,
+            "districts": 719,
+            "event": 0.33213775173094345,
+            "label": "SPI-1",
+            "pairs": 388260,
+            "r_median": 0.6746534088524544,
+            "rmsd": 0.8002458363873024,
+            "state": 0.8685346878884616
+          },
+          {
+            "bias": -0.01839578792114764,
+            "class_exact": 0.3371548096251898,
+            "districts": 719,
+            "event": 0.32544415754083467,
+            "label": "SPI-3",
+            "pairs": 386822,
+            "r_median": 0.6592919376207198,
+            "rmsd": 0.8435233626238351,
+            "state": 0.8389908953162027
+          },
+          {
+            "bias": -0.027152785431516186,
+            "class_exact": 0.3295351822239927,
+            "districts": 719,
+            "event": 0.31782118962412986,
+            "label": "SPI-6",
+            "pairs": 384665,
+            "r_median": 0.6430776878868956,
+            "rmsd": 0.8618182478734456,
+            "state": 0.8337451253715827
+          },
+          {
+            "bias": -0.030494917581290998,
+            "class_exact": 0.31715091078956376,
+            "districts": 719,
+            "event": 0.2937791707168426,
+            "label": "SPI-12",
+            "pairs": 380351,
+            "r_median": 0.6038770610917705,
+            "rmsd": 0.8909534480863263,
+            "state": 0.8216616359010354
+          },
+          {
+            "bias": -0.028126841572385396,
+            "class_exact": 0.35588537985031143,
+            "districts": 714,
+            "event": 0.3618124924563882,
+            "label": "SPEI-3",
+            "pairs": 384068,
+            "r_median": 0.7138895285183957,
+            "rmsd": 0.7598311080943322,
+            "state": 0.8487106155454252
+          },
+          {
+            "bias": -0.03848979417476303,
+            "class_exact": 0.3269787121813333,
+            "districts": 714,
+            "event": 0.3467273105141532,
+            "label": "SPEI-12",
+            "pairs": 377624,
+            "r_median": 0.6471914756440572,
+            "rmsd": 0.8065565013001209,
+            "state": 0.8428403167657275
+          }
+        ],
+        "period": [
+          1981,
+          2025
+        ],
+        "trends": [
+          {
+            "both_fdr": 75,
+            "era_b_fdr": 324,
+            "imd_fdr": 155,
+            "label": "SPI-3",
+            "sign_agree": 0.8933333333333333,
+            "testable": 719
+          },
+          {
+            "both_fdr": 115,
+            "era_b_fdr": 397,
+            "imd_fdr": 239,
+            "label": "SPI-12",
+            "sign_agree": 0.8347826086956521,
+            "testable": 719
+          },
+          {
+            "both_fdr": 105,
+            "era_b_fdr": 505,
+            "imd_fdr": 191,
+            "label": "SPEI-12",
+            "sign_agree": 0.8476190476190476,
+            "testable": 714
+          }
+        ]
+      },
+      "pdf": {
+        "bytes": 26785,
+        "path": "figures/fig05_imd_benchmark.pdf",
+        "sha256": "4bdd02110e7ce25520c38a1d3a8a77184ff21ec4468c7b274592088ac839a684"
+      },
+      "png": {
+        "bytes": 284274,
+        "path": "figures/fig05_imd_benchmark.png",
+        "sha256": "b309bc785035ecb50a271c7103aa6a1ccadd3ba628ce38e9cbcdd99221f8dbb8"
+      }
+    },
+    "fig06_atlas_overlap": {
+      "data": {
+        "variables": {
+          "spei_01": {
+            "districts": 718,
+            "mean_bias": 0.043061706772766474,
+            "median_r": 0.7173323911173077,
+            "p10_r": 0.6111436368038919,
+            "p90_r": 0.7920647326957466
+          },
+          "spei_12": {
+            "districts": 718,
+            "mean_bias": 0.038673582692143965,
+            "median_r": 0.6672192308559306,
+            "p10_r": 0.4281265559074879,
+            "p90_r": 0.8189834400308033
+          }
+        },
+        "window": [
+          1981,
+          2014
+        ]
+      },
+      "pdf": {
+        "bytes": 337341,
+        "path": "figures/fig06_atlas_overlap.pdf",
+        "sha256": "10ac3ace1f324bb3d0e60c8ad6a433c84d5c4a3f9b8ae33bc7ba93e30d5e0c8d"
+      },
+      "png": {
+        "bytes": 508397,
+        "path": "figures/fig06_atlas_overlap.png",
+        "sha256": "d14c6511ba6b8321e1a290a591e9913cb25e76bf9a83067691da2fa7810ffd6d"
+      }
+    },
+    "fig07_gcm_validation": {
+      "data": {
+        "historical_gates": {
+          "consistency": {
+            "breaches": 0,
+            "cells": 1360,
+            "fraction": 0.0,
+            "pass": true
+          },
+          "events": {
+            "breaches": 41,
+            "cells": 272,
+            "fraction": 0.150735,
+            "pass": true
+          },
+          "tails": {
+            "breaches": 28,
+            "cells": 1360,
+            "fraction": 0.020588,
+            "pass": true
+          }
+        },
+        "national_sd_ratios": [
+          {
+            "sd_ratio": 1.030372,
+            "variable": "spi_01"
+          },
+          {
+            "sd_ratio": 1.036231,
+            "variable": "spi_03"
+          },
+          {
+            "sd_ratio": 1.047744,
+            "variable": "spi_06"
+          },
+          {
+            "sd_ratio": 1.055674,
+            "variable": "spi_12"
+          },
+          {
+            "sd_ratio": 1.017622,
+            "variable": "spei_01"
+          },
+          {
+            "sd_ratio": 1.02831,
+            "variable": "spei_03"
+          },
+          {
+            "sd_ratio": 1.041408,
+            "variable": "spei_06"
+          },
+          {
+            "sd_ratio": 1.045729,
+            "variable": "spei_12"
+          }
+        ],
+        "seam": {
+          "ssp245": {
+            "breaches": 0,
+            "cells": 24,
+            "pass": true
+          },
+          "ssp585": {
+            "breaches": 0,
+            "cells": 24,
+            "pass": true
+          }
+        },
+        "ssp_shape": {
+          "ssp245": {
+            "pass": true,
+            "region_breach_frac": 0.127206,
+            "region_breaches": 173,
+            "region_cells": 1360
+          },
+          "ssp585": {
+            "pass": true,
+            "region_breach_frac": 0.121324,
+            "region_breaches": 165,
+            "region_cells": 1360
+          }
+        },
+        "subset": [
+          "CanESM5",
+          "MPI-ESM1-2-HR",
+          "BCC-CSM2-MR",
+          "EC-Earth3",
+          "ACCESS-ESM1-5",
+          "MPI-ESM1-2-LR",
+          "IPSL-CM6A-LR",
+          "NorESM2-MM"
+        ]
+      },
+      "pdf": {
+        "bytes": 21407,
+        "path": "figures/fig07_gcm_validation.pdf",
+        "sha256": "642e3c7de1ae8af70699e647b7596c05f396d630341ee53c4c6fb3afd6dfd7a0"
+      },
+      "png": {
+        "bytes": 250834,
+        "path": "figures/fig07_gcm_validation.png",
+        "sha256": "914893e0f22657722491bf76809e6c9d3fa0ca3d687ffe01f98cfbf00ac722d3"
+      }
+    },
+    "fig08_data_service": {
+      "data": {
+        "checks": [
+          [
+            "data-pipeline/selftest.py",
+            "82 deterministic assertions"
+          ],
+          [
+            "scripts/regression_check.py",
+            "735 baseline values"
+          ],
+          [
+            "scripts/verify_reality_checks.py --check",
+            "3 documented-event checks"
+          ],
+          [
+            "scripts/reproduce_figures.py --check",
+            "published figure/table artifacts"
+          ],
+          [
+            "gcm-pipeline/selftest_gcm.py",
+            "synthetic end-to-end world"
+          ]
+        ],
+        "dataset_doi": "10.5281/zenodo.24445534",
+        "snapshot": "v2026.09",
+        "software_doi": "10.5281/zenodo.24444860"
+      },
+      "pdf": {
+        "bytes": 28447,
+        "path": "figures/fig08_data_service.pdf",
+        "sha256": "bd4ba2f39c5f95f7affc2597cb9c4a9a1fbfdf4c9956bdf339a9a401acad6935"
+      },
+      "png": {
+        "bytes": 259440,
+        "path": "figures/fig08_data_service.png",
+        "sha256": "e97bb8ebccf1a9ad5b271e988287c3aca28233600ca4567627a526fa1c7130d5"
+      }
+    }
+  },
+  "font": "Roboto",
+  "generated": "2026-11-24T00:00:00Z",
+  "inputs": [
+    {
+      "bytes": 40891,
+      "path": "data/metadata.json",
+      "sha256": "f45a996bef309e10ea34c981c688227c429b944508c7058b9630cc285879cc10"
+    },
+    {
+      "bytes": 2500525,
+      "path": "data/parquet/catalog.json",
+      "sha256": "ea1c265bc5496dc2b5ba9b2c78b218f2cb20c6b52305fdfefb6105caaf0a4cf7"
+    },
+    {
+      "bytes": 475,
+      "path": "data/data-source.json",
+      "sha256": "338a53cc4e9ac44243a6dfc5d0f68f443c9e34d3d58ae5ec5cfb9c8d806cc707"
+    },
+    {
+      "bytes": 6349,
+      "path": "data/status.json",
+      "sha256": "253fadb8c21ad57c20712c7eb2eb06786bbda371cde24765bef9ade2659b08f8"
+    },
+    {
+      "bytes": 3460,
+      "path": "data/imd_validation.json",
+      "sha256": "c536cdf1a68d686fccf311bc6fa3f6a5d765ce269e5d5b2f89b03054ccd0e0bf"
+    },
+    {
+      "bytes": 12619,
+      "path": "gcm-pipeline/config/models.yaml",
+      "sha256": "3211f9e66ac1834513ecb738e3f3d6ee2eab09983662e779f46c9cd5b578270d"
+    },
+    {
+      "bytes": 1462038,
+      "path": "gcm-pipeline/validation/validation_report.json",
+      "sha256": "896adae93c94738484bcde60e18335d98ed695931a34634662007cef0fe9ae5d"
+    },
+    {
+      "bytes": 3033273,
+      "path": "gcm-pipeline/validation/ssp/validation_report_ssp.json",
+      "sha256": "2f5bbf56ac2dbf6cecc723dac7c6123c45bf7834783bcf150d68b73fade7ba17"
+    },
+    {
+      "bytes": 2712,
+      "path": "gcm-pipeline/validation/best_subset.yaml",
+      "sha256": "133f0840f40abbc88661daecc62979b23f51b30dcc3a33c38c3cd24d76cd2cc0"
+    },
+    {
+      "bytes": 324423,
+      "path": "data/parquet/cross_validation/per_district_1981_2014.parquet",
+      "sha256": "6f4a2ee50f815a8a499cee0bfff3cb51e2da9ce591e9806f6a7bc45df55b16ed"
+    },
+    {
+      "bytes": 483425,
+      "path": "data/boundaries/india_districts.geojson",
+      "sha256": "f735ff271b1cfee3966630d92c006ac5eb5d5d251263efb8127675e75238d5a0"
+    },
+    {
+      "bytes": 73814,
+      "path": "data/boundaries/india_states.geojson",
+      "sha256": "87cfd040a5578f4f2564249612885d51f47b3d848ed05cc4edf25aef895877f5"
+    },
+    {
+      "bytes": 27103,
+      "path": "assets/js/ducklab.js",
+      "sha256": "b645cf5d9fba2dcbd119fe10e71d176697cda47a59e30794700d3baa631b6753"
+    }
+  ],
+  "minimum_font_pt": 10,
+  "schema": "die-publication-figures/2.0",
+  "seed": 20261103,
+  "synthetic_data": false,
+  "width_in": 7.2
+}

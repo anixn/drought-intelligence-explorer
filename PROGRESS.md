@@ -10,14 +10,13 @@
 | STATUS:        RELEASED - v2.0.0 LIVE AND ARCHIVED (session 66):          |
 |        Software 10.5281/zenodo.24444860 (concept 24113363, MIT) +         |
 |        Dataset 10.5281/zenodo.24445534 (CC-BY-4.0, snapshot v2026.09).    |
-|        Site live on data.ankitdeshmukh.com. Remaining: manuscript sync.   |
-| PHASE:         Post-release. Next: manuscript numbers + IMD section;      |
-|                M4 done; M9 exit review optional; M8+ backlog.             |
+|        Site live on data.ankitdeshmukh.com. Manuscript package complete.  |
+| PHASE:         Post-release. Next: Owner scientific/language review and   |
+|                Scientific Data submission; monthly era-B refresh.         |
 | ROADMAP:       M0-M7 complete (v2.0.0 released 2026-11-22).               |
-| LAST SESSION:  2026-11-24 (row 71 - colour rule, mobile map, flowchart)   |
-| BLOCKERS:      none. Owner-side: push the DOI commit, optional bucket     |
-|                housekeeping (lifecycle/budget/cache rules); pre-existing  |
-|                reality-check --check drift needs an Owner re-bless.       |
+| LAST SESSION:  2026-11-24 (row 72 - Scientific Data manuscript + figures) |
+| BLOCKERS:      Owner-side boundary-licence decision and internal review;   |
+|                no technical blockers. Reality-check drift fixed.          |
 | BRANCH:        master (v2.0.0 merged; v2-dev to be fast-forwarded)        |
 ```
 
@@ -28,11 +27,15 @@ Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2
 **v2.0.0 is live and archived (session 66, 2026-11-22)** — software DOI
 `10.5281/zenodo.24444860`, dataset DOI `10.5281/zenodo.24445534`, snapshot
 `v2026.09` on Cloudflare R2, public base `data.ankitdeshmukh.com`. The
-repository carries only code plus the pointer. Session 71 (2026-11-24) added the
-post-release design pass: the surface colour rule (D22, no theme picker), a
-compacted lens row, the mobile map-first Overview, the Documentation system
-flowchart and a stale-copy sweep. Remaining: the **manuscript sync** and the
-monthly era-B refresh, both Owner-gated.
+repository carries only code plus the pointer. Session 71 added the post-release
+design pass. Session 72 (2026-11-24) completed a separate Scientific Data package
+in `publication-scientific-data/`: a 21-page standalone manuscript, 8 final-size
+Roboto figures (vector PDF + 300-dpi PNG), 10 tables, 34 embedded numerical
+references, reproduction scripts, checksums and a submission checklist. The
+package is pinned to v2.0.0 / snapshot v2026.09 and uses the current record,
+IMD benchmark, Atlas overlap and CMIP6 gate results. Remaining Owner actions are
+scientific/language review, the boundary-licence decision, submission-system
+statements and the monthly era-B refresh.
 
 **Background — M7.3 (session 57, 2026-11-22), complete.** Mobile + WCAG 2.1 AA
 pass, permalink hardening, Engine Lab byte-interceptor fix and the design pass
@@ -230,16 +233,16 @@ v1.0.0 site is untouched.
 
 ## 4. In progress
 
-- **v2.0.0 is released, live and archived** (software `10.5281/zenodo.24444860`, dataset `10.5281/zenodo.24445534`). One release-adjacent item remains: the **manuscript sync** (Fig 5/Fig 6 values, n = 547, r = 0.8716, 4/547, and the IMD validation paragraph) before the next EarthArXiv version.
+- **Scientific Data package complete; Owner review in progress.** `publication-scientific-data/manuscript.pdf` is a 21-page first-round-review PDF with 8 Roboto figures and 10 tables. `manuscript.tex` is standalone with embedded references. Remaining: boundary-licence decision, internal scientific/language review, submission-system declarations and cover letter.
 
 ## 5. Pending (next up)
 
 | Order | Task | Milestone | Depends on | Notes |
 |---|---|---|---|---|
-| **1** | **M7 release gate**: era-C hosting decision, v2.0 DOI minting, CITATION.cff references (software/dataset/era-A/era-C), README/manuscript sync, versioned download bundles, final Lighthouse/console sweep | M7 | M3-M6 + M7.3 (all done) | Owner decisions required at the gate (hosting, DOI deposit); M10.9 lamplight optional |
-| **2** | **M7.1 download portal** (versioned bundles + checksums + licence text per artefact) | M7 | M7.3 ✅ | Buildable now; final bundle set waits on the DOI/hosting decision |
-| **3** | **M7.2 CITATION.cff + Zenodo v2.0.0 deposit** | M7 | Owner mints the DOI | Owner-side deposit; OpenCode prepares the file and the mapping table |
-| 4 | M4 IMD validation framework (M4.1 acquisition is Owner-side) | M4 | IMD data | independent queueable task |
+| **1** | **Scientific Data submission**: Owner scientific/language review, boundary-licence decision, submission-system statements, cover letter and reviewer suggestions | M7 / publication | `publication-scientific-data/` complete | Upload `manuscript.pdf` for first review; keep the `.tex` and eight figure PDFs for revision/typesetting |
+| **2** | **M7.1 download portal — DELIVERED** (versioned bundles + checksums + licence text per artefact) | M7 | v2.0.0 | Complete; retained as historical record |
+| **3** | **M7.2 CITATION.cff + Zenodo v2.0.0 deposit — DELIVERED** | M7 | v2.0.0 | Software and dataset DOIs minted and patched |
+| 4 | M4 IMD validation framework — **DELIVERED** | M4 | IMD data | Memo, JSON and dashboard section published |
 | — | **M9 exit-gate ship review** | M9 | — | MVP live; X7 measured |
 | — | **E19 / M9 — `#summary` tab** — **MVP LIVE 2026-11-19** (agreement-first map, change metrics, per-state table, national figures, CSV export); X7 seam caveat now measured (M6.8 ✅); remaining: the M9 exit-gate ship review | M9 | era C 2015–2100 published ✅; E14 ✅; X7 ✅ | Owner arbitration 2026-11-19 supersedes the X1 "after #crossval" build-order note for this surface (register + roadmap noted) |
 | — | M6.8 `seam_uncertainty` — **BUILT 2026-11-21 (session 47)**: `sd_diff` live in `#projections` / `#summary` / `#crossval` | M6 | M6.6 ✅ | X7 ✅ |
@@ -262,6 +265,7 @@ v1.0.0 site is untouched.
 | Locate `work/die-2.0/` prototype (AS2) — reuse or rebuild | M1.6 | ⏳ to check at M1.6 |
 | **OD9 — E14 Tier-1 confirmation: RESOLVED 2026-11-18.** The Owner's session instruction "complete m5.4 to m5.8" is recorded as the explicit confirmation; M5.8 shipped the same session (docs/v2/05-decision-register.md §5 updated). | M5.8 | ✅ Owner-confirmed |
 | **F10 dir_agreement re-run (Owner compute, session 32).** Code + selftests are done; the published store still lacks the direction partitions. Exact commands (repo root, canonical Python): `python gcm-pipeline/07_ensemble_stats.py --mode ssp --experiments ssp245,ssp585` (~12 min) then `python gcm-pipeline/09_export_parquet.py --mode ssp --publish` (requires the PASSING ssp-mode step-08 report — X1). Then `python scripts/regression_check.py` (expect a catalog-fingerprint diff) → review → `--bless`. **Since session 34 (register D6) the base window is 1981–2014** (the GCM-native historical window — the pending re-run picks it up automatically; no config change needed by the Owner). Today the effective window will be **2041–2050** (latest-10 fallback) and becomes 2081–2100 once 2051–2100 lands. | M5.4b / #projections | ✅ **RESOLVED 2026-11-19 (session 36)** — folded into the full-record era-C recompute (register D7): 07 ran on the 2015–2100 record (effective window **2081–2100**, not the fallback), 09 `--publish` shipped `dir_agreement_drier`/`dir_agreement_n` partitions, regression blessed after review, UI battery clean. `#projections` renders the direction statistic live |
+| District boundary redistribution licence | Scientific Data final publication | **OPEN:** source repository declares no explicit licence. The manuscript uses full attribution, a legal-use disclaimer and a separable boundary layer; Owner must resolve with maintainers or approve the fallback. |
 
 **Open technical questions:** none beyond the register's OD1–OD8 (docs/v2/05 §5).
 
@@ -290,6 +294,23 @@ v1.0.0 site is untouched.
 - Recorded for the Owner (not blocking): (1) the Engine Lab catalog table still says eras `observed` for era-B variables — the catalog's `eras` vocabulary predates D8's "Gridded Multi-Source Product" wording; renaming it is a catalog-contract change (M10.5/next catalog regeneration), never a silent edit; (2) lamplight night mode is specified (roadmap M10.9) but deliberately not shipped; state-encoding permalinks shipped this session (M10.4).
 
 ## 7. Files created or modified
+
+**Session 72 (2026-11-24, Scientific Data manuscript package):**
+
+| File | Change |
+|---|---|
+| `publication-scientific-data/manuscript.tex` | New standalone 21-page Scientific Data Data Descriptor; 8 figures, 10 tables, 34 embedded numerical references |
+| `publication-scientific-data/manuscript.pdf` | Compiled first-round-review PDF |
+| `publication-scientific-data/figures/*` | 8 vector PDFs + 8 300-dpi PNGs; Roboto Regular/Bold; 10 pt minimum; final 7.2 in width |
+| `publication-scientific-data/make_figures.py` | Deterministic builder from released metadata, validation products, cross-validation Parquet and boundaries |
+| `publication-scientific-data/figure_data.json`, `FIGURE_SHA256SUMS.txt` | Plotted values, 13 input checksums and 16 output checksums |
+| `publication-scientific-data/check_manuscript.py`, `manuscript-check.json` | Journal structure and consistency gate; 32/32 PASS |
+| `publication-scientific-data/fonts/` | Static Roboto Regular/Bold and OFL licence |
+| `publication-scientific-data/README.md`, `submission-checklist.md`, `.gitignore` | Rebuild instructions, completed checks and remaining Owner actions |
+| `data/reality_checks.json` | Corrected stale `data_version` 1.0.0 → 2.0.0; numeric checks unchanged |
+| `manuscript/figures/reproduced/table5_reality.json` | Regenerated artifact hash after the version-metadata correction |
+| `scripts/regression_baseline.json` | Re-blessed only the reality-check SHA-256 after review; 735 values PASS |
+| `data-pipeline/verify_paper_claims.py` | Updated V6 expected trend counts to the released v2.0.0 record (415 → 354; 276 wetting / 139 drying); 6/6 PASS |
 
 **Session 64 (2026-11-22, v2.0.0 release candidate — identity, citation, bundles):**
 
@@ -846,24 +867,22 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-> **Updated 2026-11-24 (session 71): v2.0.0 released; post-release polish built.**
-> Software `10.5281/zenodo.24444860` (concept `24113363`, MIT) and dataset
-> `10.5281/zenodo.24445534` (CC-BY-4.0, snapshot `v2026.09`) are minted, the
-> site is live on `data.ankitdeshmukh.com`, and the MD5 checksums of the six
-> archived files match the local bundles byte for byte. Session 71 delivered the
-> post-release design pass (D22 colour rule, compact lens row, mobile map-first
-> Overview, Documentation flowchart, stale-copy sweep).
+> **Updated 2026-11-24 (session 72): Scientific Data manuscript package complete.**
+> Software `10.5281/zenodo.24444860` and dataset `10.5281/zenodo.24445534`
+> remain the release identities. The new package is pinned to snapshot `v2026.09`
+> and contains a 21-page manuscript, 8 Roboto figures at a 10 pt floor, 10 tables,
+> 34 embedded references, figure data/checksums and a submission checklist.
 >
-> **OpenCode, next:** the **manuscript sync** — Fig 5 (4/547), Fig 6
-> (r = 0.8716, n = 547, CI [0.8356, 0.8999]), the record-coverage sentences
-> (1981 → 2026-09) and a new IMD validation paragraph quoting the memo. After
-> that: M9 exit-gate review (optional) and the M8+ backlog.
+> **Owner, next:** review `publication-scientific-data/manuscript.pdf`; resolve the
+> boundary-source licence or approve the separable-layer fallback; complete one
+> scientific and one language review; confirm contributions, competing interests
+> and funding in the submission system; prepare the cover letter and reviewer
+> suggestions. The monthly era-B refresh remains Owner-gated.
 >
-> **Owner, next:** the monthly era-B refresh (the record ends 2026-09; the lag is
-> amber in N · Data status) and a re-bless of `verify_reality_checks.py --check`,
-> which currently reports pre-existing drift. Optional bucket housekeeping:
-> lifecycle rule on prefix `v`, $1 budget alert, Cache Rule for
-> `data.ankitdeshmukh.com`.
+> **OpenCode, next:** no new implementation is required for submission. If the
+> Owner requests revisions, edit only `publication-scientific-data/`, rerun
+> `make_figures.py`, `check_manuscript.py` and the repository verification gates,
+> then append the session to this log. M9 exit-gate review and M8+ remain optional.
 
 ### M7.1 — download portal (DELIVERED in v2.0.0; historical design record)
 
@@ -1036,3 +1055,4 @@ X1 refusal. WORLD SELFTEST PASS.
 | 71f | 2026-11-24 | **Documentation section order fixed (Owner: the page opened with K instead of A).** K/L/M/N/P had no `#viewData > #doc-*` flex `order`, so they defaulted to 0 and rendered ahead of A (order 2). All fifteen sections now carry an explicit order A-to-N then P; the on-page contents and the rail Contents were regrouped to the same sequence (Reference A-G, Version & handbook H-J, v2.0 evidence K-N, Querying P). | assets/css/style.css, index.html, tour.html, PROGRESS.md | rendered order A..N,P at desktop and 390 px; on-page and rail nav match the section order; clicking P opens it at 124 px below the chrome with the flash; 0 overflow | Owner: push/deploy |
 | 71g | 2026-11-24 | **Documentation typography, disclosure markers and section insets (Owner: SQL-handbook prose reads monospaced; mobile chevrons drop to their own line; the validation report sits too tight).** (a) `.validation-report` in section D was the mono prose block — now the dashboard sans at 12 px with a 14 px inset; docs `.table-help`, `.panel-note` and `.side-note` are explicitly sans, while `code`, `pre`, `.mono` and SQL blocks stay monospaced by design. (b) Accordion markers: `details.acc-panel > summary` is nowrap with a flexible title block and the `::after` pushed right; closed points right (-45°), open points down. (c) Section D's direct `h3.gov-h` gets the same 14 px content inset as its paragraphs. | assets/css/style.css, index.html, tour.html, PROGRESS.md | 390 px: D report x27 / Inter, chevrons right-aligned on every section (P open down, N closed right), P prose/notes Inter with code blocks mono; desktop report Inter / 14 px inset, summary nowrap; 0 console errors; no overflow | Owner: push/deploy |
 | 71h | 2026-11-24 | **Brand logo and favicon wired to the new files (Owner: updated assets/images but the browser still showed the old mark).** (a) The header logo was hard-coded inline SVG in index.html, so replacing `assets/images/logo.svg` could never show; it is now an `<img>` pointing at the file, sized 34x34. (b) The favicon link carries a version query and `server.py` now sends `Cache-Control: no-cache` for svg/png/webp/jpg/ico as well as code, so replaced images revalidate instead of sticking in the browser's favicon cache. (c) Both new SVGs decode (37x37 intrinsic) and render at 34 px; desktop and mobile headers verified. | index.html, tour.html, assets/css/style.css, server.py, assets/images/{logo,favicon}.svg, PROGRESS.md | favicon/logo GET 200 image/svg+xml with no-cache; Image.decode 37x37; header logo 34 px; links carry `?v=2026-11-24t`; 0 console errors | Owner: restart the dev server, then push/deploy |
+| 72 | 2026-11-24 | **Scientific Data manuscript package completed after Owner feedback (thin content, overlapping figures, Roboto required).** Built a separate `publication-scientific-data/` package: 21-page standalone Data Descriptor with full Methods, data dictionary, pipeline stages, IMD benchmark, Atlas overlap, CMIP6 gates, SQL reuse notes and limitations; 8 figures rebuilt at final 7.2 in width with Roboto and a 10 pt floor; 10 tables; 34 embedded numerical references; title 74 characters; abstract 164 words. Figure content from the attached HBV/CZIPEF specification was not applicable, but its Roboto/vector/300-dpi/minimum-type rules were applied. Corrected reality-check version metadata, regenerated its hash artifact, re-blessed the single regression checksum, and updated the stale V6 trend expectation to 415 uncorrected / 354 FDR. | `publication-scientific-data/*`, `data/reality_checks.json`, `manuscript/figures/reproduced/table5_reality.json`, `scripts/regression_baseline.json`, `data-pipeline/verify_paper_claims.py`, PROGRESS.md | LaTeX 21 pages, no undefined citations/overfull boxes; manuscript checker 32/32; figure check 13 inputs + 16 outputs; pipeline self-test 82; regression 735; reality PASS; reproduce figures 5/5; status PASS; GCM 9/9; paper claims 6/6; Atlas T1–T4; crossval 17/17; converter 4/4 | Owner: scientific/language review, boundary-licence decision, submission-system statements, cover letter/reviewers |
