@@ -6439,6 +6439,17 @@ body {
     padding-top: 7px;
     padding-bottom: 7px;
   }
+  /* Keep the Tour/Docs utilities on the title row. With an auto basis the
+   * brand's max-content width forced them onto a line of their own, leaving a
+   * dead band above the era/data chips. A zero basis lets the brand absorb
+   * the leftover width instead. */
+  .topbar .brand {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .topbar .topnav {
+    flex: 0 0 auto;
+  }
   .topbar-status {
     display: flex;
     order: 99;
