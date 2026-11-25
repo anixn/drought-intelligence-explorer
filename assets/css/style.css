@@ -3311,8 +3311,8 @@ kbd {
 }
 .icon-btn.sidebar-collapse:hover,
 .icon-btn.sidebar-expand:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
 }
 .icon-btn.sidebar-expand {
   display: none;
@@ -3371,9 +3371,9 @@ kbd {
     color 0.15s ease;
 }
 .mini-btn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.12);
-  border-color: var(--rail-line);
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
 }
 .mini-btn:focus-visible {
   outline: 2px solid var(--focus);
