@@ -2452,8 +2452,8 @@ td .sparse-tag {
 .boot-logo {
   flex: 0 0 auto;
   display: block;
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   margin: 0 auto;
   object-fit: contain;
   border-radius: 50%;
