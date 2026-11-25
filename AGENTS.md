@@ -10,7 +10,7 @@
 | Repository | https://github.com/anixn/drought-intelligence-explorer (default branch `master`) |
 | Working branch | `v2-dev` — all v2 work happens here; `master` stays the live v1.0.0 release until a v2 release gate passes |
 | Licence | MIT (code); Zenodo DOI 10.5281/zenodo.24113364 (v1.0.0 dataset + software) |
-| Manuscript | EarthArXiv preprint v1.3 (`manuscript/main.tex`), Scientific Data data-descriptor style |
+| Manuscript | EarthArXiv preprint v1.3 (`manuscript/main.tex`); Scientific Data submission (`manuscript/scientific-data/`) |
 | Methodology baseline | `research-gee-1.0.2` / pipeline_version 1.1.0 — **frozen semantics**, extended not altered |
 
 ---
@@ -111,7 +111,7 @@ drought-intelligence-explorer/
 ├── docs/
 │   ├── user-guide.md, methodology.md, data-sources.md   # v1.0 docs — preserved
 │   └── v2/                      # this documentation suite
-├── manuscript/                  # EarthArXiv preprint v1.3
+├── manuscript/                  # EarthArXiv v1.3, v2 draft, Scientific Data package
 └── server.py                    # Range-capable dev server (from workplan)
 ```
 

@@ -95,8 +95,10 @@ The sidebar is the study context for the Record lenses (observation date, geogra
 │                               (reproduces the quantitative evidence quoted in
 │                               the manuscript), prepare_boundaries.py. Route
 │                               guides in data-pipeline/docs/.
-├── manuscript/                 LaTeX source of the EarthArXiv preprint
-│                               (main.tex + figures/); see manuscript/README.md
+├── manuscript/                 written outputs: EarthArXiv preprint v1.3
+│                               (main.tex), v2 working draft (main_v2.tex)
+│                               and the Scientific Data submission package
+│                               (scientific-data/); see manuscript/README.md
 ├── CITATION.cff                machine-readable citation metadata (cff 1.2.0)
 ├── CNAME                       custom domain for GitHub Pages
 ├── LICENSE                     MIT license (application code)
@@ -257,7 +259,7 @@ Citation templates for the input products (CHIRPS, ERA5-Land, MODIS) are in [`do
 
 ## Manuscript
 
-The [`manuscript/`](manuscript/) folder holds the LaTeX source of the platform's data-descriptor preprint (manuscript version 1.3): `main.tex` with an inline bibliography and the six figures in `manuscript/figures/`. Compile with `tectonic main.tex` or `latexmk -pdf main.tex`; see `manuscript/README.md` for details, including regenerating Figure 2 from `data/metadata.json`. Every quantified methodological claim in the paper is checkable with one command, `python verify_paper_claims.py` in `data-pipeline/`.
+The [`manuscript/`](manuscript/) folder holds the written outputs. `main.tex` is the data-descriptor preprint (manuscript version 1.3) with an inline bibliography and nine figures in `manuscript/figures/`; `main_v2.tex` is the version 2 working draft. The [`manuscript/scientific-data/`](manuscript/scientific-data/) package is the Scientific Data (Nature Portfolio) submission: a standalone 23-page Data Descriptor, nine Roboto figures at final size, ten tables, annotated dashboard screenshots and its own builder and checksum gates. See `manuscript/README.md` for compile and regeneration details. Every quantified methodological claim in the preprint is checkable with one command, `python verify_paper_claims.py` in `data-pipeline/`.
 
 ## Technology, performance and design decisions
 

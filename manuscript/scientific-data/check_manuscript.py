@@ -8,7 +8,16 @@ import re
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parent
+
+
+def _find_root(start: Path) -> Path:
+    for candidate in (start, *start.parents):
+        if (candidate / "data" / "metadata.json").is_file() and (candidate / "scripts").is_dir():
+            return candidate
+    raise RuntimeError("repository root not found (no data/metadata.json above this script)")
+
+
+ROOT = _find_root(HERE)
 TEX = HERE / "manuscript.tex"
 
 

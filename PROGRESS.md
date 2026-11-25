@@ -28,12 +28,14 @@ Milestone board: **M0 ✅ · M1 ✅ (M1.1–M1.11 all ✅ — exit gate passed 2
 `10.5281/zenodo.24444860`, dataset DOI `10.5281/zenodo.24445534`, snapshot
 `v2026.09` on Cloudflare R2, public base `data.ankitdeshmukh.com`. The
 repository carries only code plus the pointer. Session 71 added the post-release
-design pass. Session 72 (2026-11-24) completed a separate Scientific Data package
-in `publication-scientific-data/`: a 23-page standalone manuscript, 9 final-size
+design pass. Session 72 (2026-11-24) completed a Scientific Data package
+in `manuscript/scientific-data/`: a 23-page standalone manuscript, 9 final-size
 Roboto figures (vector PDF + 300-dpi PNG), including three annotated live-site
 screenshot figures, 10 tables, 34 embedded numerical references, direct links to
 every dashboard window, reproduction scripts, checksums and a submission
-checklist. The package is pinned to v2.0.0 / snapshot v2026.09 and uses the
+checklist. Session 74 (2026-11-25) merged the package into `manuscript/`,
+made the builder and checker location-independent, and cleaned the LaTeX
+intermediates. The package is pinned to v2.0.0 / snapshot v2026.09 and uses the
 current record, IMD benchmark, Atlas overlap and CMIP6 gate results. Remaining Owner actions are
 scientific/language review, the boundary-licence decision, submission-system
 statements and the monthly era-B refresh.
@@ -234,13 +236,13 @@ v1.0.0 site is untouched.
 
 ## 4. In progress
 
-- **Scientific Data package complete; Owner review in progress.** `publication-scientific-data/manuscript.pdf` is a 23-page first-round-review PDF with 9 Roboto figures, including annotated screenshots of every major dashboard window, and 10 tables. Table 7 links each window and states its supported analyses. Remaining: boundary-licence decision, internal scientific/language review, submission-system declarations and cover letter.
+- **Scientific Data package complete; Owner review in progress.** `manuscript/scientific-data/manuscript.pdf` is a 23-page first-round-review PDF with 9 Roboto figures, including annotated screenshots of every major dashboard window, and 10 tables. Table 7 links each window and states its supported analyses. Remaining: boundary-licence decision, internal scientific/language review, submission-system declarations and cover letter.
 
 ## 5. Pending (next up)
 
 | Order | Task | Milestone | Depends on | Notes |
 |---|---|---|---|---|
-| **1** | **Scientific Data submission**: Owner scientific/language review, boundary-licence decision, submission-system statements, cover letter and reviewer suggestions | M7 / publication | `publication-scientific-data/` complete | Upload `manuscript.pdf` for first review; keep the `.tex` and eight figure PDFs for revision/typesetting |
+| **1** | **Scientific Data submission**: Owner scientific/language review, boundary-licence decision, submission-system statements, cover letter and reviewer suggestions | M7 / publication | `manuscript/scientific-data/` complete | Upload `manuscript.pdf` for first review; keep the `.tex` and nine figure PDFs for revision/typesetting |
 | **2** | **M7.1 download portal — DELIVERED** (versioned bundles + checksums + licence text per artefact) | M7 | v2.0.0 | Complete; retained as historical record |
 | **3** | **M7.2 CITATION.cff + Zenodo v2.0.0 deposit — DELIVERED** | M7 | v2.0.0 | Software and dataset DOIs minted and patched |
 | 4 | M4 IMD validation framework — **DELIVERED** | M4 | IMD data | Memo, JSON and dashboard section published |
@@ -296,19 +298,19 @@ v1.0.0 site is untouched.
 
 ## 7. Files created or modified
 
-**Session 72 (2026-11-24, Scientific Data manuscript package):**
+**Sessions 72–74 (2026-11-24/25, Scientific Data manuscript package and merge):**
 
 | File | Change |
 |---|---|
-| `publication-scientific-data/manuscript.tex` | New standalone 23-page Scientific Data Data Descriptor; 9 figures, 10 tables, 34 embedded numerical references; Table 7 links every dashboard window and its analyses |
-| `publication-scientific-data/manuscript.pdf` | Compiled first-round-review PDF |
-| `publication-scientific-data/figures/*` | 9 vector PDFs + 9 300-dpi PNGs; Roboto Regular/Bold; 10 pt minimum; final 7.2 in width; Figures 7–9 are annotated live-site screenshots |
-| `publication-scientific-data/screenshots/*` | 12 live-site captures: Overview, Historical, Events, Propagation, Cross-validation, Atlas, Projections, Drought to 2100, Engine Lab, Documentation, District profile and guided tour |
-| `publication-scientific-data/make_figures.py` | Deterministic builder from released metadata, validation products, cross-validation Parquet and boundaries |
-| `publication-scientific-data/figure_data.json`, `FIGURE_SHA256SUMS.txt` | Plotted values, 25 input checksums and 18 output checksums |
-| `publication-scientific-data/check_manuscript.py`, `manuscript-check.json` | Journal structure and consistency gate; 32/32 PASS |
-| `publication-scientific-data/fonts/` | Static Roboto Regular/Bold and OFL licence |
-| `publication-scientific-data/README.md`, `submission-checklist.md`, `.gitignore` | Rebuild instructions, completed checks and remaining Owner actions |
+| `manuscript/scientific-data/manuscript.tex` | New standalone 23-page Scientific Data Data Descriptor; 9 figures, 10 tables, 34 embedded numerical references; Table 7 links every dashboard window and its analyses |
+| `manuscript/scientific-data/manuscript.pdf` | Compiled first-round-review PDF |
+| `manuscript/scientific-data/figures/*` | 9 vector PDFs + 9 300-dpi PNGs; Roboto Regular/Bold; 10 pt minimum; final 7.2 in width; Figures 7–9 are annotated live-site screenshots |
+| `manuscript/scientific-data/screenshots/*` | 12 live-site captures: Overview, Historical, Events, Propagation, Cross-validation, Atlas, Projections, Drought to 2100, Engine Lab, Documentation, District profile and guided tour |
+| `manuscript/scientific-data/make_figures.py` | Deterministic builder from released metadata, validation products, cross-validation Parquet and boundaries |
+| `manuscript/scientific-data/figure_data.json`, `FIGURE_SHA256SUMS.txt` | Plotted values, 25 input checksums and 18 output checksums |
+| `manuscript/scientific-data/check_manuscript.py`, `manuscript-check.json` | Journal structure and consistency gate; 32/32 PASS |
+| `manuscript/scientific-data/fonts/` | Static Roboto Regular/Bold and OFL licence |
+| `manuscript/scientific-data/README.md`, `submission-checklist.md`, `.gitignore` | Rebuild instructions, completed checks and remaining Owner actions |
 | `data/reality_checks.json` | Corrected stale `data_version` 1.0.0 → 2.0.0; numeric checks unchanged |
 | `manuscript/figures/reproduced/table5_reality.json` | Regenerated artifact hash after the version-metadata correction |
 | `scripts/regression_baseline.json` | Re-blessed only the reality-check SHA-256 after review; 735 values PASS |
@@ -869,21 +871,22 @@ All committed decisions and conflict resolutions are recorded in `docs/v2/05-dec
 
 ## 9. Next recommended task
 
-> **Updated 2026-11-24 (session 72): Scientific Data manuscript package complete.**
+> **Updated 2026-11-25 (session 74): Scientific Data package merged into `manuscript/`.**
 > Software `10.5281/zenodo.24444860` and dataset `10.5281/zenodo.24445534`
-> remain the release identities. The new package is pinned to snapshot `v2026.09`
-> and contains a 23-page manuscript, 9 Roboto figures at a 10 pt floor (including
-> three annotated live-site screenshot figures), 10 tables, 34 embedded references,
-> direct window links, figure data/checksums and a submission checklist.
+> remain the release identities. The submission package now lives at
+> `manuscript/scientific-data/` and contains a 23-page manuscript, 9 Roboto
+> figures at a 10 pt floor (including three annotated live-site screenshot
+> figures), 10 tables, 34 embedded references, direct window links, figure
+> data/checksums and a submission checklist.
 >
-> **Owner, next:** review `publication-scientific-data/manuscript.pdf`; resolve the
+> **Owner, next:** review `manuscript/scientific-data/manuscript.pdf`; resolve the
 > boundary-source licence or approve the separable-layer fallback; complete one
 > scientific and one language review; confirm contributions, competing interests
 > and funding in the submission system; prepare the cover letter and reviewer
 > suggestions. The monthly era-B refresh remains Owner-gated.
 >
 > **OpenCode, next:** no new implementation is required for submission. If the
-> Owner requests revisions, edit only `publication-scientific-data/`, rerun
+> Owner requests revisions, edit only `manuscript/scientific-data/`, rerun
 > `make_figures.py`, `check_manuscript.py` and the repository verification gates,
 > then append the session to this log. M9 exit-gate review and M8+ remain optional.
 
@@ -1058,5 +1061,6 @@ X1 refusal. WORLD SELFTEST PASS.
 | 71f | 2026-11-24 | **Documentation section order fixed (Owner: the page opened with K instead of A).** K/L/M/N/P had no `#viewData > #doc-*` flex `order`, so they defaulted to 0 and rendered ahead of A (order 2). All fifteen sections now carry an explicit order A-to-N then P; the on-page contents and the rail Contents were regrouped to the same sequence (Reference A-G, Version & handbook H-J, v2.0 evidence K-N, Querying P). | assets/css/style.css, index.html, tour.html, PROGRESS.md | rendered order A..N,P at desktop and 390 px; on-page and rail nav match the section order; clicking P opens it at 124 px below the chrome with the flash; 0 overflow | Owner: push/deploy |
 | 71g | 2026-11-24 | **Documentation typography, disclosure markers and section insets (Owner: SQL-handbook prose reads monospaced; mobile chevrons drop to their own line; the validation report sits too tight).** (a) `.validation-report` in section D was the mono prose block — now the dashboard sans at 12 px with a 14 px inset; docs `.table-help`, `.panel-note` and `.side-note` are explicitly sans, while `code`, `pre`, `.mono` and SQL blocks stay monospaced by design. (b) Accordion markers: `details.acc-panel > summary` is nowrap with a flexible title block and the `::after` pushed right; closed points right (-45°), open points down. (c) Section D's direct `h3.gov-h` gets the same 14 px content inset as its paragraphs. | assets/css/style.css, index.html, tour.html, PROGRESS.md | 390 px: D report x27 / Inter, chevrons right-aligned on every section (P open down, N closed right), P prose/notes Inter with code blocks mono; desktop report Inter / 14 px inset, summary nowrap; 0 console errors; no overflow | Owner: push/deploy |
 | 71h | 2026-11-24 | **Brand logo and favicon wired to the new files (Owner: updated assets/images but the browser still showed the old mark).** (a) The header logo was hard-coded inline SVG in index.html, so replacing `assets/images/logo.svg` could never show; it is now an `<img>` pointing at the file, sized 34x34. (b) The favicon link carries a version query and `server.py` now sends `Cache-Control: no-cache` for svg/png/webp/jpg/ico as well as code, so replaced images revalidate instead of sticking in the browser's favicon cache. (c) Both new SVGs decode (37x37 intrinsic) and render at 34 px; desktop and mobile headers verified. | index.html, tour.html, assets/css/style.css, server.py, assets/images/{logo,favicon}.svg, PROGRESS.md | favicon/logo GET 200 image/svg+xml with no-cache; Image.decode 37x37; header logo 34 px; links carry `?v=2026-11-24t`; 0 console errors | Owner: restart the dev server, then push/deploy |
-| 72 | 2026-11-24 | **Scientific Data manuscript package completed after Owner feedback (thin content, overlapping figures, Roboto required).** Built a separate `publication-scientific-data/` package: 21-page standalone Data Descriptor with full Methods, data dictionary, pipeline stages, IMD benchmark, Atlas overlap, CMIP6 gates, SQL reuse notes and limitations; 8 figures rebuilt at final 7.2 in width with Roboto and a 10 pt floor; 10 tables; 34 embedded numerical references; title 74 characters; abstract 164 words. Figure content from the attached HBV/CZIPEF specification was not applicable, but its Roboto/vector/300-dpi/minimum-type rules were applied. Corrected reality-check version metadata, regenerated its hash artifact, re-blessed the single regression checksum, and updated the stale V6 trend expectation to 415 uncorrected / 354 FDR. | `publication-scientific-data/*`, `data/reality_checks.json`, `manuscript/figures/reproduced/table5_reality.json`, `scripts/regression_baseline.json`, `data-pipeline/verify_paper_claims.py`, PROGRESS.md | LaTeX 21 pages, no undefined citations/overfull boxes; manuscript checker 32/32; figure check 13 inputs + 16 outputs; pipeline self-test 82; regression 735; reality PASS; reproduce figures 5/5; status PASS; GCM 9/9; paper claims 6/6; Atlas T1–T4; crossval 17/17; converter 4/4 | Owner: scientific/language review, boundary-licence decision, submission-system statements, cover letter/reviewers |
-| 73 | 2026-11-25 | **Interface screenshots, direct links and window-by-window analysis guide added after Owner feedback.** Captured 12 live-site windows/pages at 1000×700 with zero console errors, then built three annotated 7.2 in Roboto figures at a 10 pt floor: Record lenses (Overview/Historical/Events/Propagation), v2 products (Atlas/Cross-validation/Future Projections/Drought to 2100), and access tools (Engine Lab/Documentation/District profile/Guided tour). Replaced the study-area and data-service schematics to keep the set to 9 figures; renumbered validation figures; added Table 7 with direct links and supported analyses for every window. Figure inputs now checksum 25 sources and 18 outputs. | `publication-scientific-data/{manuscript.tex,manuscript.pdf,make_figures.py,figure_data.json,FIGURE_SHA256SUMS.txt,README.md,submission-checklist.md,figures/*,screenshots/*}`, PROGRESS.md | LaTeX 23 pages, no undefined citations/overfull boxes; manuscript checker 32/32; figure check 25 inputs + 18 outputs; live captures 0 console errors | Owner: review screenshot captions and direct links; boundary-licence decision; scientific/language review; submission |
+| 72 | 2026-11-24 | **Scientific Data manuscript package completed after Owner feedback (thin content, overlapping figures, Roboto required).** Built a separate Scientific Data package (now housed in `manuscript/scientific-data/`): 21-page standalone Data Descriptor with full Methods, data dictionary, pipeline stages, IMD benchmark, Atlas overlap, CMIP6 gates, SQL reuse notes and limitations; 8 figures rebuilt at final 7.2 in width with Roboto and a 10 pt floor; 10 tables; 34 embedded numerical references; title 74 characters; abstract 164 words. Figure content from the attached HBV/CZIPEF specification was not applicable, but its Roboto/vector/300-dpi/minimum-type rules were applied. Corrected reality-check version metadata, regenerated its hash artifact, re-blessed the single regression checksum, and updated the stale V6 trend expectation to 415 uncorrected / 354 FDR. | `manuscript/scientific-data/*`, `data/reality_checks.json`, `manuscript/figures/reproduced/table5_reality.json`, `scripts/regression_baseline.json`, `data-pipeline/verify_paper_claims.py`, PROGRESS.md | LaTeX 21 pages, no undefined citations/overfull boxes; manuscript checker 32/32; figure check 13 inputs + 16 outputs; pipeline self-test 82; regression 735; reality PASS; reproduce figures 5/5; status PASS; GCM 9/9; paper claims 6/6; Atlas T1–T4; crossval 17/17; converter 4/4 | Owner: scientific/language review, boundary-licence decision, submission-system statements, cover letter/reviewers |
+| 73 | 2026-11-25 | **Interface screenshots, direct links and window-by-window analysis guide added after Owner feedback.** Captured 12 live-site windows/pages at 1000×700 with zero console errors, then built three annotated 7.2 in Roboto figures at a 10 pt floor: Record lenses (Overview/Historical/Events/Propagation), v2 products (Atlas/Cross-validation/Future Projections/Drought to 2100), and access tools (Engine Lab/Documentation/District profile/Guided tour). Replaced the study-area and data-service schematics to keep the set to 9 figures; renumbered validation figures; added Table 7 with direct links and supported analyses for every window. Figure inputs now checksum 25 sources and 18 outputs. | `manuscript/scientific-data/{manuscript.tex,manuscript.pdf,make_figures.py,figure_data.json,FIGURE_SHA256SUMS.txt,README.md,submission-checklist.md,figures/*,screenshots/*}`, PROGRESS.md | LaTeX 23 pages, no undefined citations/overfull boxes; manuscript checker 32/32; figure check 25 inputs + 18 outputs; live captures 0 console errors | Owner: review screenshot captions and direct links; boundary-licence decision; scientific/language review; submission |
+| 74 | 2026-11-25 | **Scientific Data package merged into `manuscript/` and the folder cleaned (Owner: merge with manuscript folder, add screenshots, fix figures, housekeeping, clean manuscript folder).** (a) `git mv publication-scientific-data manuscript/scientific-data`, so both manuscripts now live under one folder: `main.tex`/`main.pdf` (EarthArXiv v1.3), `main_v2.tex`/`main_v2.pdf` (v2 draft) and `scientific-data/` (journal submission). (b) Made the package location-independent: `make_figures.py` and `check_manuscript.py` now discover the repository root by walking up to `data/metadata.json` instead of assuming `HERE.parent`, and the screenshot checksum paths derive from the package's own relative path; the builder and the 32-check gate therefore work from the new depth and from any checkout. (c) Updated every path reference: Code Availability in `manuscript.tex`, both READMEs, the root README layout and Manuscript section, and the PROGRESS tracker. (d) Housekeeping: removed `__pycache__` and all LaTeX intermediates (`*.aux`, `*.log`, `*.out`, `*.fls`, `*.fdb_latexmk`, `*.bbl`, `*.blg`) from `manuscript/` and the package; only compiled PDFs and sources are kept, and both `.gitignore` files already cover the intermediates. (e) Rebuilt all nine figures so `figure_data.json` records the new screenshot locations, recompiled the manuscript and reran the gates. | `manuscript/README.md`, `manuscript/scientific-data/{README.md,make_figures.py,check_manuscript.py,manuscript.tex,manuscript.pdf,figure_data.json,FIGURE_SHA256SUMS.txt,figures/*,screenshots/*}`, `README.md`, `PROGRESS.md` | Figure check 25 inputs + 18 outputs PASS; manuscript checker 32/32 PASS; LaTeX 23 pages, no undefined citations and no overfull horizontal boxes; build works from the new path | Owner: review the merged layout; boundary-licence decision; scientific/language review; submission |

@@ -6,9 +6,9 @@ All figures are designed at 7.2 inches width with Roboto text no smaller than
 processing is performed: the script reads released metadata, validation
 products, cross-validation Parquet and boundary GeoJSON.
 
-Run:
-    python publication-scientific-data/make_figures.py
-    python publication-scientific-data/make_figures.py --check
+Run from the repository root:
+    python manuscript/scientific-data/make_figures.py
+    python manuscript/scientific-data/make_figures.py --check
 """
 
 from __future__ import annotations
@@ -37,7 +37,18 @@ from pyproj import Transformer
 import yaml
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parent
+
+
+def _find_root(start: Path) -> Path:
+    """Locate the repository root regardless of where this package sits."""
+    for candidate in (start, *start.parents):
+        if (candidate / "data" / "metadata.json").is_file() and (candidate / "data-pipeline").is_dir():
+            return candidate
+    raise RuntimeError("repository root not found (no data/metadata.json above this script)")
+
+
+ROOT = _find_root(HERE)
+PKG_REL = HERE.relative_to(ROOT).as_posix()
 OUT = HERE / "figures"
 GENERATED = "2026-11-24T00:00:00Z"
 SEED = 20261103
@@ -90,7 +101,7 @@ def register_fonts() -> None:
     regular = HERE / "fonts" / "Roboto-Regular.ttf"
     bold = HERE / "fonts" / "Roboto-Bold.ttf"
     if not regular.exists() or not bold.exists():
-        raise FileNotFoundError("Roboto static fonts are required in publication-scientific-data/fonts/")
+        raise FileNotFoundError(f"Roboto static fonts are required in {PKG_REL}/fonts/")
     font_manager.fontManager.addfont(str(regular))
     font_manager.fontManager.addfont(str(bold))
 
@@ -595,18 +606,9 @@ def build() -> dict[str, Any]:
               "gcm-pipeline/validation/ssp/validation_report_ssp.json", "gcm-pipeline/validation/best_subset.yaml",
               "data/parquet/cross_validation/per_district_1981_2014.parquet", "data/boundaries/india_districts.geojson",
               "data/boundaries/india_states.geojson", "assets/js/ducklab.js",
-              "publication-scientific-data/screenshots/overview.png",
-              "publication-scientific-data/screenshots/historical.png",
-              "publication-scientific-data/screenshots/events.png",
-              "publication-scientific-data/screenshots/propagation.png",
-              "publication-scientific-data/screenshots/atlas.png",
-              "publication-scientific-data/screenshots/crossval.png",
-              "publication-scientific-data/screenshots/projections.png",
-              "publication-scientific-data/screenshots/summary.png",
-              "publication-scientific-data/screenshots/engine.png",
-              "publication-scientific-data/screenshots/documentation.png",
-              "publication-scientific-data/screenshots/district-profile.png",
-              "publication-scientific-data/screenshots/tour.png"]
+              *(f"{PKG_REL}/screenshots/{name}.png" for name in (
+                  "overview", "historical", "events", "propagation", "atlas", "crossval",
+                  "projections", "summary", "engine", "documentation", "district-profile", "tour"))]
     payload = {"schema": "die-publication-figures/2.0", "generated": GENERATED, "seed": SEED,
                "synthetic_data": False, "font": "Roboto", "minimum_font_pt": 10, "width_in": WIDTH,
                "figures": figures, "inputs": [source_record(rel) for rel in inputs]}

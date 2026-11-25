@@ -610,62 +610,62 @@
     },
     {
       "bytes": 196492,
-      "path": "publication-scientific-data/screenshots/overview.png",
+      "path": "manuscript/scientific-data/screenshots/overview.png",
       "sha256": "cbd021c04ffae7b6c242cbdbcaa170478734a46023b958c49d0330f890784230"
     },
     {
       "bytes": 164205,
-      "path": "publication-scientific-data/screenshots/historical.png",
+      "path": "manuscript/scientific-data/screenshots/historical.png",
       "sha256": "7b3ab023ecc7e9a4b7aa4e481376f61e752451eda8085f2579f9ac1339b13233"
     },
     {
       "bytes": 191984,
-      "path": "publication-scientific-data/screenshots/events.png",
+      "path": "manuscript/scientific-data/screenshots/events.png",
       "sha256": "6d14fdf6cce0dec834f9738c7c5e7d2a8eb2d0e6770d493fe03925301edf0442"
     },
     {
       "bytes": 164181,
-      "path": "publication-scientific-data/screenshots/propagation.png",
+      "path": "manuscript/scientific-data/screenshots/propagation.png",
       "sha256": "ea78de13f6a80058869e72440d004e7d5b3977742ff8b2d66f96bddb6936ed9a"
     },
     {
       "bytes": 412101,
-      "path": "publication-scientific-data/screenshots/atlas.png",
+      "path": "manuscript/scientific-data/screenshots/atlas.png",
       "sha256": "c161a398145adc79a003bb893c7f994867865e1239eefe79b51d939b13b75928"
     },
     {
       "bytes": 359046,
-      "path": "publication-scientific-data/screenshots/crossval.png",
+      "path": "manuscript/scientific-data/screenshots/crossval.png",
       "sha256": "ffce972bcc675613819bf6d3e2a25bfd90cd72cfc497f45c3d40f9fdc053b65d"
     },
     {
       "bytes": 286383,
-      "path": "publication-scientific-data/screenshots/projections.png",
+      "path": "manuscript/scientific-data/screenshots/projections.png",
       "sha256": "ca6f91689c2f5e2428bf3b55bd9ad7e41f5229cf8aed54dc2d398ecd2c5953a5"
     },
     {
       "bytes": 412657,
-      "path": "publication-scientific-data/screenshots/summary.png",
+      "path": "manuscript/scientific-data/screenshots/summary.png",
       "sha256": "d056fc1310dee43e53bb071a20fd3ddce217b892a7917bcdb44283f11fe9f903"
     },
     {
       "bytes": 261991,
-      "path": "publication-scientific-data/screenshots/engine.png",
+      "path": "manuscript/scientific-data/screenshots/engine.png",
       "sha256": "3e0c816a77dfb0d14a15ab8e8953a2afca88026e05e0db4731067fadec1ef8ea"
     },
     {
       "bytes": 166005,
-      "path": "publication-scientific-data/screenshots/documentation.png",
+      "path": "manuscript/scientific-data/screenshots/documentation.png",
       "sha256": "1bc262bfb29b5d10af18365fd02736532d2947d4904e881bf86d93514dd2d3f8"
     },
     {
       "bytes": 216198,
-      "path": "publication-scientific-data/screenshots/district-profile.png",
+      "path": "manuscript/scientific-data/screenshots/district-profile.png",
       "sha256": "380a205a61dec1e144cd4e832b035c02b84d04e7ceea8aede3fd1b7490ad8b4e"
     },
     {
       "bytes": 141925,
-      "path": "publication-scientific-data/screenshots/tour.png",
+      "path": "manuscript/scientific-data/screenshots/tour.png",
       "sha256": "4698f8c63737fdfd827d886f4ad554534a8d875fed3ea766fd40b4d9967e438d"
     }
   ],
