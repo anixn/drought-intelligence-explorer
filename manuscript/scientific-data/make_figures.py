@@ -146,11 +146,12 @@ def save_figure(fig: Any, stem: str) -> dict[str, Any]:
         old.unlink()
     pdf = OUT / f"{stem}.pdf"
     png = OUT / f"{stem}.png"
+    tight = not getattr(fig, "_die_full_canvas", False)
     metadata = {"Title": stem, "Author": "Ankit Deshmukh",
                 "Subject": "Drought Intelligence Explorer v2.0.0 Scientific Data manuscript",
                 "CreationDate": datetime(2026, 11, 24), "ModDate": datetime(2026, 11, 24)}
-    fig.savefig(pdf, bbox_inches="tight", pad_inches=0.06, metadata=metadata)
-    fig.savefig(png, dpi=300, bbox_inches="tight", pad_inches=0.06,
+    fig.savefig(pdf, bbox_inches="tight" if tight else None, pad_inches=0.06, metadata=metadata)
+    fig.savefig(png, dpi=300, bbox_inches="tight" if tight else None, pad_inches=0.06,
                 metadata={"Software": "DIE publication figure builder", "Creation Time": GENERATED})
     plt.close(fig)
     return {"pdf": {"path": f"figures/{stem}.pdf", "sha256": sha256(pdf), "bytes": pdf.stat().st_size},
@@ -350,58 +351,316 @@ def fig03_coverage(meta: dict[str, Any], catalog: dict[str, Any]) -> tuple[Any, 
                     "to": inds[i.replace("_0", "_")]["available_to"]} for i in IND_ORDER]}
 
 
-def screenshot_figure(stem: str, title: str, panels: list[tuple[str, str, str, str]],
-                      footer: str = "https://drought.ankitdeshmukh.com/") -> tuple[Any, dict[str, Any]]:
-    """Compose four live-dashboard captures with readable 10 pt annotations."""
-    fig, axs = plt.subplots(2, 2, figsize=(WIDTH, 7.4))
-    fig.subplots_adjust(left=0.04, right=0.96, top=0.86, bottom=0.07, hspace=0.78, wspace=0.12)
-    records = []
-    for ax, (filename, label, heading, analysis) in zip(axs.flat, panels):
-        path = HERE / "screenshots" / filename
-        if not path.exists():
-            raise FileNotFoundError(path)
-        img = plt.imread(path)
-        ax.imshow(img, interpolation="lanczos", aspect="auto")
-        ax.set_xticks([]); ax.set_yticks([])
-        for spine in ax.spines.values():
-            spine.set_visible(False)
-        ax.add_patch(Rectangle((0, 0), 1, 1, fill=False, edgecolor=GRID, linewidth=0.7, transform=ax.transAxes))
-        panel_label(ax, label)
-        ax.set_title(heading, loc="left", pad=7)
-        ax.text(0.0, -0.03, textwrap.fill(analysis, width=52, break_long_words=False),
-                transform=ax.transAxes, ha="left", va="top", fontsize=10, color=INK, linespacing=1.25)
-        records.append({"panel": label, "window": heading, "analysis": analysis,
-                        "screenshot": f"screenshots/{filename}", "sha256": sha256(path)})
-    fig.suptitle(title, fontsize=13, fontweight="bold", x=0.04, ha="left", y=0.985)
-    fig.text(0.04, 0.945, footer, fontsize=10, color=MUTED, ha="left")
-    return fig, {"panels": records, "site": footer}
+SHOTS = HERE / "screenshots" / "elements"
 
 
-def fig07_record_windows() -> tuple[Any, dict[str, Any]]:
-    return screenshot_figure("fig07_record_windows", "Record workspace and analytical lenses", [
-        ("overview.png", "a", "Overview", "Current-month choropleth, affected area, severity, district counts and animated evolution."),
-        ("historical.png", "b", "Historical Analysis", "Frequency, duration, severity, recurrence, annual trends and FDR-corrected district significance."),
-        ("events.png", "c", "Drought Events", "Runs-analysis catalogue: onset, end, duration, peak, severity, recovery and censoring."),
-        ("propagation.png", "d", "Propagation & Relationships", "Pairwise lag correlation from −12 to +12 months, bootstrap intervals and optimal-lag maps."),
-    ])
+def _shot_path(cell: dict[str, Any]) -> Path:
+    base = HERE / "screenshots" / cell.get("dir", "elements")
+    return base / cell["image"]
 
 
-def fig08_v2_products() -> tuple[Any, dict[str, Any]]:
-    return screenshot_figure("fig08_v2_products", "Reconstruction, cross-validation and projection products", [
-        ("atlas.png", "a", "Atlas", "1901–2025 SPEI-1/4/12 scrubber, drought-class shares and historical drought anchors."),
-        ("crossval.png", "b", "Cross-validation", "Era A–B agreement, bias/RMSD maps, monthly agreement and seam uncertainty."),
-        ("projections.png", "c", "Future Projections", "Scenario and time-window controls, ensemble median/spread, agreement maps and model context."),
-        ("summary.png", "d", "Drought to 2100", "Direction-of-change agreement, drought-share/duration/severity deltas and per-state summaries."),
-    ])
+def load_shot(name: str, crop: tuple[int, int, int, int] | None = None,
+              subdir: str = "elements") -> tuple[Any, tuple[int, int]]:
+    """Load a live-site capture, optionally cropped in device pixels."""
+    from PIL import Image
+    path = _shot_path({"image": name, "dir": subdir})
+    if not path.exists():
+        raise FileNotFoundError(path)
+    im = Image.open(path).convert("RGB")
+    if crop:
+        im = im.crop(crop)
+    return np.asarray(im), im.size
 
 
-def fig09_access_documentation() -> tuple[Any, dict[str, Any]]:
-    return screenshot_figure("fig09_access_documentation", "Query, documentation and district-level access", [
-        ("engine.png", "a", "Engine Lab", "Read-only Parquet SQL, catalogue inspection, query timing, bytes read and CSV export."),
-        ("documentation.png", "b", "Documentation", "Methods, governance, licences, reality checks, status, downloads and the SQL field guide."),
-        ("district-profile.png", "c", "District profile", "One-district headline, ten-indicator strip, long-term trend, event catalogue and labelled era context."),
-        ("tour.png", "d", "Guided tour", "Standalone onboarding: era primer, product map, navigation and interpretation guardrails."),
-    ])
+def wrap_note(text: str, width_in: float) -> list[str]:
+    """Wrap 10 pt Roboto text to a physical column width."""
+    chars = max(24, int(width_in / 0.0712))
+    return textwrap.wrap(text, chars, break_long_words=False)
+
+
+def badge(ax: Any, fx: float, fy: float, n: int, color: str = VERMILLION) -> None:
+    """Numbered callout marker in image coordinates."""
+    ax.annotate(str(n), xy=(fx, fy), xycoords="axes fraction", ha="center", va="center",
+                fontsize=10, color="white", fontweight="bold", zorder=9,
+                bbox={"boxstyle": "circle,pad=0.26", "facecolor": color, "edgecolor": "white", "linewidth": 1.0})
+
+
+def sheet(stem: str, title: str, rows: list[dict[str, Any]],
+          provenance: str = "") -> tuple[Any, dict[str, Any]]:
+    """Compose a dashboard of live-site captures with 10 pt annotation.
+
+    Rows are declared as ``{"widths": [...], "cells": [...]}``; widths are inches
+    and must fill the 6.52 in text column. Cell heights follow each capture's
+    aspect ratio, so no panel is ever stretched or squeezed. No internal title
+    or footer is drawn: the LaTeX caption carries both.
+    """
+    margin = 0.34
+    content = WIDTH - 2 * margin
+    head_h, note_line, row_gap = 0.30, 0.196, 0.30
+    records: list[dict[str, Any]] = []
+
+    total = 0.10
+    for row in rows:
+        heights = []
+        for cell, width in zip(row["cells"], row["widths"]):
+            img, (iw, ih) = load_shot(cell["image"], cell.get("crop"), cell.get("dir", "elements"))
+            height = width * ih / iw
+            lines = wrap_note(cell["note"], width) if cell.get("note") else []
+            cell.update(_img=img, _w=width, _h=height, _lines=lines,
+                        _rel=f"{PKG_REL}/screenshots/{cell.get('dir', 'elements')}/{cell['image']}")
+            heights.append(head_h + height + (len(lines) * note_line + 0.10 if lines else 0.0))
+            records.append({"heading": cell["heading"], "note": cell.get("note", ""),
+                            "capture": cell["_rel"], "sha256": sha256(_shot_path(cell)),
+                            "callouts": [c[2] for c in cell.get("callouts", [])]})
+        row["_h"] = max(heights)
+        total += row["_h"] + row_gap
+    total = round(total - row_gap + 0.14, 2)
+
+    fig = plt.figure(figsize=(WIDTH, total))
+    fig._die_full_canvas = True  # keep exact 7.2 in width for predictable page scale
+
+    def xf(x_in: float) -> float:
+        return x_in / WIDTH
+
+    def yf(y_in: float) -> float:
+        return 1.0 - y_in / total
+
+    y = 0.10
+    for row in rows:
+        x = margin
+        for cell in row["cells"]:
+            w, h = cell["_w"], cell["_h"]
+            fig.text(xf(x), yf(y), cell["heading"], fontsize=11, fontweight="bold",
+                     ha="left", va="top", color=cell.get("accent", INK))
+            ax = fig.add_axes([xf(x), yf(y + head_h + h), xf(w), h / total])
+            ax.imshow(cell["_img"], interpolation="lanczos", aspect="auto")
+            ax.set_xticks([]); ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_visible(False)
+            ax.add_patch(Rectangle((0, 0), 1, 1, fill=False, edgecolor=GRID, linewidth=0.7,
+                                   transform=ax.transAxes, zorder=5))
+            for fx, fy, n in cell.get("callouts", []):
+                badge(ax, fx, 1.0 - fy, n)
+            if cell["_lines"]:
+                fig.text(xf(x), yf(y + row["_h"] - len(cell["_lines"]) * note_line),
+                         "\n".join(cell["_lines"]), fontsize=10, ha="left", va="top",
+                         color=INK, linespacing=1.40)
+            x += w + 0.22
+        y += row["_h"] + row_gap
+    return fig, {"title": title, "provenance": provenance,
+                 "site": "https://drought.ankitdeshmukh.com/", "captured": "2026-11-25",
+                 "rows": [[{k: v for k, v in c.items() if not k.startswith("_")} for c in r["cells"]] for r in rows],
+                 "captures": records}
+
+
+def fig07_about() -> tuple[Any, dict[str, Any]]:
+    """Dashboard overview of purpose, products, technology and positioning."""
+    sentence = ("Purpose, products, technology and research positioning. An interactive, fully client-side "
+                "geospatial platform for exploring drought indicators across Indian districts, built for "
+                "historical analysis and research communication \u2014 not operational monitoring.")
+    cards = [
+        ("Purpose", BLUE,
+         "One queryable district record for India, 1901\u20132100, that keeps reconstruction, "
+         "observation-based gridded products and model projections separate, labelled and "
+         "reproducible. Built for research, teaching and communication."),
+        ("Products", ERA_B,
+         "Era A Atlas 1901\u20132025 \u00b7 Era B gridded 1981\u20132026 \u00b7 Era C projections "
+         "2015\u20132100 \u00b7 Era A\u2013B cross-validation. Twelve dashboard windows, district "
+         "profiles and CSV, Parquet and SQL access."),
+        ("Technology", PURPLE,
+         "Apache Parquet with DuckDB-WASM in a Web Worker, HTTP Range reads over static files, "
+         "Leaflet maps and Plotly charts. No backend, no accounts and no server-side query log; "
+         "the published snapshot is immutable."),
+        ("Positioning", ERA_C,
+         "Complements operational monitors such as the India Drought Monitor and IMD products with "
+         "archive depth, several indicator families, reproducibility and projections. It is a "
+         "research instrument, not an operational warning service."),
+    ]
+    stats = [("724", "districts"), ("36", "States/UTs"), ("10", "indicators"),
+             ("3", "labelled eras"), ("0", "servers")]
+
+    margin, gap = 0.34, 0.22
+    content = WIDTH - 2 * margin
+    col = (content - gap) / 2
+    body_w = col - 0.34
+    lead_lines = wrap_note(sentence, content)
+    card_bodies = [textwrap.wrap(body, max(24, int(body_w / 0.0712))) for _, _, body in cards]
+    card_h = 0.30 + max(len(b) for b in card_bodies) * 0.196 + 0.16
+    strip_h = 0.74
+
+    total = 0.12 + 0.36 + len(lead_lines) * 0.196 + 0.26 + 2 * card_h + 0.22 + 0.30 + strip_h + 0.42
+    total = round(total, 2)
+    fig = plt.figure(figsize=(WIDTH, total))
+    ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, WIDTH); ax.set_ylim(0, total); ax.axis("off")
+
+    def ty(y_in: float) -> float:
+        return total - y_in
+
+    ax.text(margin, ty(0.12), "About the Explorer", fontsize=13, fontweight="bold", va="top")
+    y = 0.12 + 0.36
+    ax.text(margin, ty(y), "\n".join(lead_lines), fontsize=10, va="top", color=MUTED, linespacing=1.40)
+    y += len(lead_lines) * 0.196 + 0.26
+
+    for i, ((heading, color, _), body_lines) in enumerate(zip(cards, card_bodies)):
+        x = margin + (i % 2) * (col + gap)
+        cy = y + (i // 2) * (card_h + 0.22)
+        ax.add_patch(FancyBboxPatch((x, ty(cy + card_h)), col, card_h,
+                                    boxstyle="round,pad=0.004,rounding_size=0.10",
+                                    facecolor="white", edgecolor=color, linewidth=0.9))
+        ax.add_patch(Rectangle((x, ty(cy + 0.05)), col, 0.05, facecolor=color, edgecolor="none"))
+        ax.text(x + 0.17, ty(cy + 0.14), heading, fontsize=11, fontweight="bold", color=color, va="top")
+        ax.text(x + 0.17, ty(cy + 0.44), "\n".join(body_lines), fontsize=10, va="top", color=INK,
+                linespacing=1.40)
+    y += 2 * card_h + 0.22 + 0.30
+
+    box_w = (content - 4 * 0.11) / 5
+    for i, (value, label) in enumerate(stats):
+        x = margin + i * (box_w + 0.11)
+        ax.add_patch(FancyBboxPatch((x, ty(y + strip_h)), box_w, strip_h,
+                                    boxstyle="round,pad=0.004,rounding_size=0.08",
+                                    facecolor=PAPER, edgecolor=GRID, linewidth=0.6))
+        ax.text(x + box_w / 2, ty(y + 0.26), value, fontsize=14, fontweight="bold", ha="center",
+                va="center", color=INK)
+        ax.text(x + box_w / 2, ty(y + 0.52), label, fontsize=10, ha="center", va="center", color=MUTED)
+    ax.text(WIDTH / 2, ty(total - 0.10), "https://drought.ankitdeshmukh.com/", fontsize=10,
+            ha="center", va="bottom", color=MUTED)
+    return fig, {"sentence": sentence,
+                 "cards": [{"heading": h, "body": b} for h, _, b in cards],
+                 "stats": dict(stats)}
+
+
+def fig08_record_analyses() -> tuple[Any, dict[str, Any]]:
+    rows = [
+        {"widths": [6.52], "cells": [{
+            "heading": "Overview \u00b7 current-month drought state",
+            "accent": ERA_B,
+            "image": "overview__mapPanel.png",
+            "crop": (0, 190, 1756, 1210),
+            "callouts": [(0.30, 0.06, 1), (0.665, 0.30, 2), (0.30, 0.50, 3), (0.72, 0.775, 4)],
+            "note": "1 Record month and product label (July 2002) \u00b7 2 McKee nine-class legend \u00b7 3 area-weighted "
+                    "choropleth of the 0.05\u00b0 CHIRPS grid \u00b7 4 district inspector; missing cells stay grey.",
+        }]},
+        {"widths": [3.15, 3.15], "cells": [
+            {"heading": "Historical \u00b7 annual trend",
+             "accent": ERA_B,
+             "image": "historical__trendPanel.png",
+             "crop": (0, 0, 900, 800),
+             "callouts": [(0.46, 0.52, 1), (0.86, 0.30, 2)],
+             "note": "1 Sen slope with 90% rank band \u00b7 2 Mann\u2013Kendall, Hamed\u2013Rao corrected."},
+            {"heading": "Events \u00b7 runs-analysis timeline",
+             "accent": ERA_B,
+             "image": "events__evtTimelinePanel.png",
+             "crop": (0, 0, 1006, 782),
+             "callouts": [(0.50, 0.45, 1)],
+             "note": "Monthly event onsets (1); duration, severity, recovery and censoring all explicit."},
+        ]},
+    ]
+    return sheet("fig08_record_analyses",
+                 "Record analyses: current state, long-term trend and event catalogue",
+                 rows,
+                 "All captures from the live site with the recorded July 2002 default state.")
+
+
+def fig09_events_propagation() -> tuple[Any, dict[str, Any]]:
+    rows = [
+        {"widths": [6.52], "cells": [{
+            "heading": "Drought Events \u00b7 runs-analysis catalogue (2002 start year)",
+            "accent": ERA_B,
+            "image": "events__evtTable.png",
+            "crop": (0, 0, 1745, 812),
+            "callouts": [(0.315, 0.035, 1), (0.745, 0.035, 2)],
+            "note": "1 Onset, termination, duration, peak, severity and recovery for the 285 events starting in "
+                    "2002 \u00b7 2 frozen truncation rules: \u22121.00 z, \u221215% SMA, 30% VCI, three-month minimum.",
+        }]},
+        {"widths": [3.15, 3.15], "cells": [
+            {"heading": "Propagation \u00b7 lag response",
+             "accent": ERA_B,
+             "image": "propagation__propLagChart.png",
+             "crop": (0, 0, 1004, 665),
+             "callouts": [(0.52, 0.30, 1), (0.52, 0.62, 2)],
+             "note": "1 Correlation \u221212 to +12 months \u00b7 2 moving-block bootstrap 95% interval "
+                     "(seed 20261103)."},
+            {"heading": "Propagation \u00b7 optimal-lag summary",
+             "accent": ERA_B,
+             "image": "propagation__propStats.png",
+             "crop": (0, 0, 670, 575),
+             "callouts": [(0.30, 0.22, 1)],
+             "note": "1 Optimal lag, correlation and interval; association is not causation."},
+        ]},
+    ]
+    return sheet("fig09_events_propagation",
+                 "Event forensics and indicator relationships",
+                 rows,
+                 "Event and propagation windows share the frozen v1.0.0 definitions.")
+
+
+def fig10_atlas_projections() -> tuple[Any, dict[str, Any]]:
+    rows = [
+        {"widths": [3.15, 3.15], "cells": [
+            {"heading": "Atlas \u00b7 era A reconstruction map",
+             "accent": ERA_A,
+             "image": "atlas__atlasMapPanel.png",
+             "crop": (0, 0, 864, 940),
+             "callouts": [(0.55, 0.075, 1), (0.50, 0.42, 2), (0.66, 0.80, 3)],
+             "note": "1 Timescale and month (SPEI-1, Aug 1901) \u00b7 2 tehsil-native reconstruction on the "
+                     "district fabric \u00b7 3 islands stay grey (no Atlas grid cells)."},
+            {"heading": "Projections \u00b7 era C ensemble band",
+             "accent": ERA_C,
+             "image": "projections__projBandPanel.png",
+             "crop": (0, 0, 864, 900),
+             "callouts": [(0.30, 0.42, 1), (0.62, 0.28, 2)],
+             "note": "1 Ensemble median with the 25\u201375% model range \u00b7 2 declared ensemble size and "
+                     "district count. Projections are never forecasts."},
+        ]},
+        {"widths": [3.15, 3.15], "cells": [
+            {"heading": "Projections \u00b7 model agreement map",
+             "accent": ERA_C,
+             "image": "projections__projMapPanel.png",
+             "crop": (0, 240, 864, 1060),
+             "callouts": [(0.50, 0.42, 1), (0.50, 0.83, 2)],
+             "note": "1 Ensemble models below the moderate threshold \u00b7 2 year/month selection (2040, July). "
+                     "Agreement is a model fraction."},
+            {"heading": "Atlas \u00b7 drought-class shares",
+             "accent": ERA_A,
+             "image": "atlas__atlasSharePanel.png",
+             "crop": (0, 0, 864, 790),
+             "callouts": [(0.30, 0.30, 1)],
+             "note": "1 Area-weighted class shares on the 3,266,386 km\u00b2 LAEA registry, not district counts."},
+        ]},
+    ]
+    return sheet("fig10_atlas_projections",
+                 "Reconstruction and projection products",
+                 rows,
+                 "Era A and era C are separate labelled products; overlap cross-validation is Fig. 5.")
+
+
+def fig11_access_reuse() -> tuple[Any, dict[str, Any]]:
+    rows = [
+        {"widths": [6.52], "cells": [{
+            "heading": "District profile \u00b7 headline and ten-indicator strip",
+            "accent": ERA_B,
+            "dir": "",
+            "image": "district-profile.png",
+            "crop": (36, 512, 1792, 1560),
+            "callouts": [(0.16, 0.06, 1), (0.24, 0.50, 2)],
+            "note": "1 District identity and era context; the headline gives the state at the selected month "
+                    "(Jodhpur, July 2002: extreme drought, \u22122.75 z) \u00b7 2 all ten indicators, each with "
+                    "its own class.",
+        }]},
+        {"widths": [6.52], "cells": [{
+            "heading": "Engine Lab \u00b7 read-only SQL over the published store",
+            "accent": PURPLE,
+            "image": "engine__elQueryPanel.png",
+            "crop": (0, 0, 1756, 780),
+            "callouts": [(0.50, 0.42, 1), (0.82, 0.935, 2)],
+            "note": "1 Validated SQL against catalogue paths \u00b7 2 rows, execution time and bytes read per run "
+                    "(547 rows, 635 ms, 593.6 KB); repeats cost 0 bytes from the in-memory cache.",
+        }]},
+    ]
+    return sheet("fig11_access_reuse",
+                 "District access and reproducible query",
+                 rows,
+                 "Every analytical view is a permalink; every number is re-derivable from the archived Parquet.")
 
 
 def fig04_study_area(geom: Geometry) -> tuple[Any, dict[str, Any]]:
@@ -596,19 +855,21 @@ def build() -> dict[str, Any]:
         ("fig04_imd_benchmark", fig05_imd, (imd,)),
         ("fig05_atlas_overlap", fig06_crossval, (cv, geom)),
         ("fig06_gcm_validation", fig07_gcm, (hist, ssp, subset)),
-        ("fig07_record_windows", fig07_record_windows, ()),
-        ("fig08_v2_products", fig08_v2_products, ()),
-        ("fig09_access_documentation", fig09_access_documentation, ()),
+        ("fig07_about", fig07_about, ()),
+        ("fig08_record_analyses", fig08_record_analyses, ()),
+        ("fig09_events_propagation", fig09_events_propagation, ()),
+        ("fig10_atlas_projections", fig10_atlas_projections, ()),
+        ("fig11_access_reuse", fig11_access_reuse, ()),
     ]:
         fig, data = func(*args); figures[stem] = {"data": data, **save_figure(fig, stem)}; print("built", stem)
     inputs = ["data/metadata.json", "data/parquet/catalog.json", "data/data-source.json", "data/status.json",
               "data/imd_validation.json", "gcm-pipeline/config/models.yaml", "gcm-pipeline/validation/validation_report.json",
               "gcm-pipeline/validation/ssp/validation_report_ssp.json", "gcm-pipeline/validation/best_subset.yaml",
               "data/parquet/cross_validation/per_district_1981_2014.parquet", "data/boundaries/india_districts.geojson",
-              "data/boundaries/india_states.geojson", "assets/js/ducklab.js",
-              *(f"{PKG_REL}/screenshots/{name}.png" for name in (
-                  "overview", "historical", "events", "propagation", "atlas", "crossval",
-                  "projections", "summary", "engine", "documentation", "district-profile", "tour"))]
+              "data/boundaries/india_states.geojson", "assets/js/ducklab.js"]
+    captures = sorted({rec["capture"] for fig in figures.values()
+                       for rec in fig["data"].get("captures", [])})
+    inputs += captures
     payload = {"schema": "die-publication-figures/2.0", "generated": GENERATED, "seed": SEED,
                "synthetic_data": False, "font": "Roboto", "minimum_font_pt": 10, "width_in": WIDTH,
                "figures": figures, "inputs": [source_record(rel) for rel in inputs]}

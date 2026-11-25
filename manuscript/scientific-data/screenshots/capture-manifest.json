@@ -1,0 +1,366 @@
+{
+  "source": "https://drought.ankitdeshmukh.com",
+  "captured_at": "2026-11-25T03:57:18Z",
+  "viewport": {
+    "width": 1200,
+    "height": 900
+  },
+  "device_scale_factor": 2,
+  "note": "Main workspace element captures; global header and left sidebar excluded.",
+  "windows": {
+    "overview": {
+      "route": "/#overview",
+      "selector": "#rankPanel",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 2756.7
+      },
+      "elements": {
+        "#kpiRow": {
+          "x": 304,
+          "y": 11.9,
+          "width": 878,
+          "height": 200.1
+        },
+        "#mapPanel": {
+          "x": 304,
+          "y": 276.0,
+          "width": 878,
+          "height": 625.4
+        },
+        "#legendBox": {
+          "x": 902,
+          "y": 380.4,
+          "width": 279,
+          "height": 353.7
+        },
+        "#rankPanel": {
+          "x": 304,
+          "y": 1332.9,
+          "width": 433,
+          "height": 399.5
+        }
+      },
+      "console_errors": []
+    },
+    "historical": {
+      "route": "/#historical",
+      "selector": "#trendStats",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 3063.9
+      },
+      "elements": {
+        "#histSummaryPanel": {
+          "x": 304,
+          "y": 118,
+          "width": 878,
+          "height": 206.2
+        },
+        "#trendPanel": {
+          "x": 304,
+          "y": 1322.8,
+          "width": 878,
+          "height": 550.1
+        },
+        "#trendStats": {
+          "x": 749,
+          "y": 246.2,
+          "width": 418,
+          "height": 359.9
+        }
+      },
+      "console_errors": []
+    },
+    "events": {
+      "route": "/#events",
+      "selector": "#evtDistPanel",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 1919.8
+      },
+      "elements": {
+        "#evtTable": {
+          "x": 305,
+          "y": 296.6,
+          "width": 922.1,
+          "height": 816.1
+        },
+        "#evtTimelinePanel": {
+          "x": 304,
+          "y": 843.4,
+          "width": 502.3,
+          "height": 431.5
+        },
+        "#evtDistPanel": {
+          "x": 818.3,
+          "y": 469.4,
+          "width": 363.7,
+          "height": 431.5
+        }
+      },
+      "console_errors": []
+    },
+    "propagation": {
+      "route": "/#propagation",
+      "selector": "#propStats",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 3412.6
+      },
+      "elements": {
+        "#propMainPanel": {
+          "x": 304,
+          "y": 190.3,
+          "width": 878,
+          "height": 870.9
+        },
+        "#propLagChart": {
+          "x": 319,
+          "y": 101.7,
+          "width": 501.6,
+          "height": 320
+        },
+        "#propStats": {
+          "x": 832.6,
+          "y": 101.7,
+          "width": 334.4,
+          "height": 365.8
+        }
+      },
+      "console_errors": []
+    },
+    "atlas": {
+      "route": "/#atlas",
+      "selector": "#atlasSharePanel",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 1591.4
+      },
+      "elements": {
+        "#atlasControlPanel": {
+          "x": 304,
+          "y": 224.9,
+          "width": 432,
+          "height": 359.7
+        },
+        "#atlasMapPanel": {
+          "x": 750,
+          "y": 224.9,
+          "width": 432,
+          "height": 699.5
+        },
+        "#atlasSharePanel": {
+          "x": 304,
+          "y": 915.3,
+          "width": 432,
+          "height": 393.7
+        }
+      },
+      "console_errors": []
+    },
+    "crossval": {
+      "route": "/#crossval",
+      "selector": "#cvMonthlyPanel",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 3096.9
+      },
+      "elements": {
+        "#cvKpiPanel": {
+          "x": 750,
+          "y": 233.5,
+          "width": 432,
+          "height": 511.7
+        },
+        "#cvMapPanel": {
+          "x": 304,
+          "y": 759.2,
+          "width": 432,
+          "height": 749.2
+        },
+        "#cvMonthlyPanel": {
+          "x": 750,
+          "y": 152.2,
+          "width": 432,
+          "height": 409.7
+        }
+      },
+      "console_errors": []
+    },
+    "projections": {
+      "route": "/#projections",
+      "selector": "#projMapPanel",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 5237.7
+      },
+      "elements": {
+        "#projControlPanel": {
+          "x": 750,
+          "y": 237.5,
+          "width": 432,
+          "height": 495.8
+        },
+        "#projBandPanel": {
+          "x": 304,
+          "y": 911.7,
+          "width": 432,
+          "height": 448.6
+        },
+        "#projMapPanel": {
+          "x": 750,
+          "y": 225.7,
+          "width": 432,
+          "height": 776.9
+        }
+      },
+      "console_errors": []
+    },
+    "summary": {
+      "route": "/#summary",
+      "selector": "#sumStatePanel",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 2818.1
+      },
+      "elements": {
+        "#sumMapPanel": {
+          "x": 750,
+          "y": 272.2,
+          "width": 432,
+          "height": 730.0
+        },
+        "#sumStatePanel": {
+          "x": 304,
+          "y": 915.2,
+          "width": 432,
+          "height": 1542.5
+        }
+      },
+      "console_errors": []
+    },
+    "engine": {
+      "route": "/#engine",
+      "selector": "#elStatusPanel",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 1744.7
+      },
+      "elements": {
+        "#elQueryPanel": {
+          "x": 304,
+          "y": 689.5,
+          "width": 878,
+          "height": 809.8
+        },
+        "#elResultWrap": {
+          "x": 305,
+          "y": 420.3,
+          "width": 876,
+          "height": 480
+        },
+        "#elStatusPanel": {
+          "x": 304,
+          "y": -508,
+          "width": 432,
+          "height": 384.5
+        }
+      },
+      "console_errors": []
+    },
+    "documentation": {
+      "route": "/#data",
+      "selector": "#doc-n-status",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 3513.9
+      },
+      "elements": {
+        "#doc-a-about": {
+          "x": 304,
+          "y": 289.3,
+          "width": 878,
+          "height": 61.0
+        },
+        "#doc-n-status": {
+          "x": 304,
+          "y": 3146.4,
+          "width": 878,
+          "height": 61.0
+        }
+      },
+      "console_errors": []
+    },
+    "district-profile": {
+      "route": "/#/district/rajasthan-jodhpur",
+      "selector": "#dpStripPanel",
+      "box": {
+        "x": 286,
+        "y": 64,
+        "width": 914,
+        "height": 2136.3
+      },
+      "elements": {
+        "#dpHeadlinePanel": {
+          "x": 304,
+          "y": 256.1,
+          "width": 878,
+          "height": 217.3
+        },
+        "#dpStripPanel": {
+          "x": 304,
+          "y": 487.4,
+          "width": 878,
+          "height": 317.7
+        }
+      },
+      "console_errors": []
+    },
+    "tour": {
+      "route": "/tour.html",
+      "selector": ".tour-facts",
+      "box": {
+        "x": 130,
+        "y": 60,
+        "width": 940,
+        "height": 4134.1
+      },
+      "elements": {
+        ".tour-hero": {
+          "x": 150,
+          "y": 34,
+          "width": 900,
+          "height": 266.7
+        },
+        ".tour-facts": {
+          "x": 150,
+          "y": 252.2,
+          "width": 900,
+          "height": 25.5
+        }
+      },
+      "console_errors": []
+    }
+  }
+}

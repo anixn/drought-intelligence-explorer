@@ -2449,6 +2449,15 @@ td .sparse-tag {
   max-width: 380px;
   padding: 20px;
 }
+.boot-logo {
+  flex: 0 0 auto;
+  display: block;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto;
+  object-fit: contain;
+  border-radius: 50%;
+}
 .boot-title {
   font-size: 15px;
   font-weight: 700;

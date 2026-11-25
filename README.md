@@ -259,7 +259,7 @@ Citation templates for the input products (CHIRPS, ERA5-Land, MODIS) are in [`do
 
 ## Manuscript
 
-The [`manuscript/`](manuscript/) folder holds the written outputs. `main.tex` is the data-descriptor preprint (manuscript version 1.3) with an inline bibliography and nine figures in `manuscript/figures/`; `main_v2.tex` is the version 2 working draft. The [`manuscript/scientific-data/`](manuscript/scientific-data/) package is the Scientific Data (Nature Portfolio) submission: a standalone 23-page Data Descriptor, nine Roboto figures at final size, ten tables, annotated dashboard screenshots and its own builder and checksum gates. See `manuscript/README.md` for compile and regeneration details. Every quantified methodological claim in the preprint is checkable with one command, `python verify_paper_claims.py` in `data-pipeline/`.
+The [`manuscript/`](manuscript/) folder holds the written outputs. `main.tex` is the data-descriptor preprint (manuscript version 1.3) with an inline bibliography and nine figures in `manuscript/figures/`; `main_v2.tex` is the version 2 working draft. The [`manuscript/scientific-data/`](manuscript/scientific-data/) package is the Scientific Data (Nature Portfolio) submission: a standalone 25-page Data Descriptor, eleven Roboto figures at final size (including the "About the Explorer" dashboard and four annotated workspace screenshot figures), ten tables and its own capture/builder/checksum gates. See `manuscript/README.md` for compile and regeneration details. Every quantified methodological claim in the preprint is checkable with one command, `python verify_paper_claims.py` in `data-pipeline/`.
 
 ## Technology, performance and design decisions
 

@@ -404,139 +404,557 @@
         "sha256": "914893e0f22657722491bf76809e6c9d3fa0ca3d687ffe01f98cfbf00ac722d3"
       }
     },
-    "fig07_record_windows": {
+    "fig07_about": {
       "data": {
-        "panels": [
+        "cards": [
           {
-            "analysis": "Current-month choropleth, affected area, severity, district counts and animated evolution.",
-            "panel": "a",
-            "screenshot": "screenshots/overview.png",
-            "sha256": "cbd021c04ffae7b6c242cbdbcaa170478734a46023b958c49d0330f890784230",
-            "window": "Overview"
+            "body": "One queryable district record for India, 1901–2100, that keeps reconstruction, observation-based gridded products and model projections separate, labelled and reproducible. Built for research, teaching and communication.",
+            "heading": "Purpose"
           },
           {
-            "analysis": "Frequency, duration, severity, recurrence, annual trends and FDR-corrected district significance.",
-            "panel": "b",
-            "screenshot": "screenshots/historical.png",
-            "sha256": "7b3ab023ecc7e9a4b7aa4e481376f61e752451eda8085f2579f9ac1339b13233",
-            "window": "Historical Analysis"
+            "body": "Era A Atlas 1901–2025 · Era B gridded 1981–2026 · Era C projections 2015–2100 · Era A–B cross-validation. Twelve dashboard windows, district profiles and CSV, Parquet and SQL access.",
+            "heading": "Products"
           },
           {
-            "analysis": "Runs-analysis catalogue: onset, end, duration, peak, severity, recovery and censoring.",
-            "panel": "c",
-            "screenshot": "screenshots/events.png",
-            "sha256": "6d14fdf6cce0dec834f9738c7c5e7d2a8eb2d0e6770d493fe03925301edf0442",
-            "window": "Drought Events"
+            "body": "Apache Parquet with DuckDB-WASM in a Web Worker, HTTP Range reads over static files, Leaflet maps and Plotly charts. No backend, no accounts and no server-side query log; the published snapshot is immutable.",
+            "heading": "Technology"
           },
           {
-            "analysis": "Pairwise lag correlation from −12 to +12 months, bootstrap intervals and optimal-lag maps.",
-            "panel": "d",
-            "screenshot": "screenshots/propagation.png",
-            "sha256": "ea78de13f6a80058869e72440d004e7d5b3977742ff8b2d66f96bddb6936ed9a",
-            "window": "Propagation & Relationships"
+            "body": "Complements operational monitors such as the India Drought Monitor and IMD products with archive depth, several indicator families, reproducibility and projections. It is a research instrument, not an operational warning service.",
+            "heading": "Positioning"
           }
         ],
-        "site": "https://drought.ankitdeshmukh.com/"
+        "sentence": "Purpose, products, technology and research positioning. An interactive, fully client-side geospatial platform for exploring drought indicators across Indian districts, built for historical analysis and research communication — not operational monitoring.",
+        "stats": {
+          "0": "servers",
+          "10": "indicators",
+          "3": "labelled eras",
+          "36": "States/UTs",
+          "724": "districts"
+        }
       },
       "pdf": {
-        "bytes": 200126,
-        "path": "figures/fig07_record_windows.pdf",
-        "sha256": "f98a33d866fbbfd009681a003132b5f88a7d27f07a26e8fe11d00904c2c69863"
+        "bytes": 25772,
+        "path": "figures/fig07_about.pdf",
+        "sha256": "db133442b880a1e1bc16976152fd8bb9f740d5d6db1e540b6e0e6959fc9a64c4"
       },
       "png": {
-        "bytes": 1308583,
-        "path": "figures/fig07_record_windows.png",
-        "sha256": "b1156f0f6122f780da318a86225c7c1b0d2bed7f738a0823e3d270810e3f9edd"
+        "bytes": 409669,
+        "path": "figures/fig07_about.png",
+        "sha256": "07c4515d7165ef44d54f9d67fe6b09c62ebdb4daf0e788bb9f0f145ad25d84cc"
       }
     },
-    "fig08_v2_products": {
+    "fig08_record_analyses": {
       "data": {
-        "panels": [
+        "captured": "2026-11-25",
+        "captures": [
           {
-            "analysis": "1901–2025 SPEI-1/4/12 scrubber, drought-class shares and historical drought anchors.",
-            "panel": "a",
-            "screenshot": "screenshots/atlas.png",
-            "sha256": "c161a398145adc79a003bb893c7f994867865e1239eefe79b51d939b13b75928",
-            "window": "Atlas"
+            "callouts": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/overview__mapPanel.png",
+            "heading": "Overview · current-month drought state",
+            "note": "1 Record month and product label (July 2002) · 2 McKee nine-class legend · 3 area-weighted choropleth of the 0.05° CHIRPS grid · 4 district inspector; missing cells stay grey.",
+            "sha256": "21adaf2c6df70c9574af869ad1dbe76ff7143ab9ee6b4c406dcabb655aa45474"
           },
           {
-            "analysis": "Era A–B agreement, bias/RMSD maps, monthly agreement and seam uncertainty.",
-            "panel": "b",
-            "screenshot": "screenshots/crossval.png",
-            "sha256": "ffce972bcc675613819bf6d3e2a25bfd90cd72cfc497f45c3d40f9fdc053b65d",
-            "window": "Cross-validation"
+            "callouts": [
+              1,
+              2
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/historical__trendPanel.png",
+            "heading": "Historical · annual trend",
+            "note": "1 Sen slope with 90% rank band · 2 Mann–Kendall, Hamed–Rao corrected.",
+            "sha256": "8472bfd0b3dfcb122e75c35c2ff77e6c75f7b84e7e5b145b3415ca7655906fca"
           },
           {
-            "analysis": "Scenario and time-window controls, ensemble median/spread, agreement maps and model context.",
-            "panel": "c",
-            "screenshot": "screenshots/projections.png",
-            "sha256": "ca6f91689c2f5e2428bf3b55bd9ad7e41f5229cf8aed54dc2d398ecd2c5953a5",
-            "window": "Future Projections"
-          },
-          {
-            "analysis": "Direction-of-change agreement, drought-share/duration/severity deltas and per-state summaries.",
-            "panel": "d",
-            "screenshot": "screenshots/summary.png",
-            "sha256": "d056fc1310dee43e53bb071a20fd3ddce217b892a7917bcdb44283f11fe9f903",
-            "window": "Drought to 2100"
+            "callouts": [
+              1
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/events__evtTimelinePanel.png",
+            "heading": "Events · runs-analysis timeline",
+            "note": "Monthly event onsets (1); duration, severity, recovery and censoring all explicit.",
+            "sha256": "c9faa2b11fe53b5424ca6bd0caa711aabb670db1ae47b69195711c1f1e33342a"
           }
         ],
-        "site": "https://drought.ankitdeshmukh.com/"
+        "provenance": "All captures from the live site with the recorded July 2002 default state.",
+        "rows": [
+          [
+            {
+              "accent": "#22756B",
+              "callouts": [
+                [
+                  0.3,
+                  0.06,
+                  1
+                ],
+                [
+                  0.665,
+                  0.3,
+                  2
+                ],
+                [
+                  0.3,
+                  0.5,
+                  3
+                ],
+                [
+                  0.72,
+                  0.775,
+                  4
+                ]
+              ],
+              "crop": [
+                0,
+                190,
+                1756,
+                1210
+              ],
+              "heading": "Overview · current-month drought state",
+              "image": "overview__mapPanel.png",
+              "note": "1 Record month and product label (July 2002) · 2 McKee nine-class legend · 3 area-weighted choropleth of the 0.05° CHIRPS grid · 4 district inspector; missing cells stay grey."
+            }
+          ],
+          [
+            {
+              "accent": "#22756B",
+              "callouts": [
+                [
+                  0.46,
+                  0.52,
+                  1
+                ],
+                [
+                  0.86,
+                  0.3,
+                  2
+                ]
+              ],
+              "crop": [
+                0,
+                0,
+                900,
+                800
+              ],
+              "heading": "Historical · annual trend",
+              "image": "historical__trendPanel.png",
+              "note": "1 Sen slope with 90% rank band · 2 Mann–Kendall, Hamed–Rao corrected."
+            },
+            {
+              "accent": "#22756B",
+              "callouts": [
+                [
+                  0.5,
+                  0.45,
+                  1
+                ]
+              ],
+              "crop": [
+                0,
+                0,
+                1006,
+                782
+              ],
+              "heading": "Events · runs-analysis timeline",
+              "image": "events__evtTimelinePanel.png",
+              "note": "Monthly event onsets (1); duration, severity, recovery and censoring all explicit."
+            }
+          ]
+        ],
+        "site": "https://drought.ankitdeshmukh.com/",
+        "title": "Record analyses: current state, long-term trend and event catalogue"
       },
       "pdf": {
-        "bytes": 267597,
-        "path": "figures/fig08_v2_products.pdf",
-        "sha256": "2c39baae8cfb666a54174399ae5406d55571aa5ff723d5aa9f9617724a6c6298"
+        "bytes": 249976,
+        "path": "figures/fig08_record_analyses.pdf",
+        "sha256": "f234d08639dc3944330146cf79f1e8883d016d81b219364581b1b29b44a7b7ba"
       },
       "png": {
-        "bytes": 2158277,
-        "path": "figures/fig08_v2_products.png",
-        "sha256": "40f23cb03c9bf4c044b3f3a4fcd3948ba6276cd6f7ad9e5c2741509ef0848c04"
+        "bytes": 1372094,
+        "path": "figures/fig08_record_analyses.png",
+        "sha256": "2e10c52065ce15b364e6c9211281ffab16fe0002d74c44c21784b02099a369b5"
       }
     },
-    "fig09_access_documentation": {
+    "fig09_events_propagation": {
       "data": {
-        "panels": [
+        "captured": "2026-11-25",
+        "captures": [
           {
-            "analysis": "Read-only Parquet SQL, catalogue inspection, query timing, bytes read and CSV export.",
-            "panel": "a",
-            "screenshot": "screenshots/engine.png",
-            "sha256": "3e0c816a77dfb0d14a15ab8e8953a2afca88026e05e0db4731067fadec1ef8ea",
-            "window": "Engine Lab"
+            "callouts": [
+              1,
+              2
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/events__evtTable.png",
+            "heading": "Drought Events · runs-analysis catalogue (2002 start year)",
+            "note": "1 Onset, termination, duration, peak, severity and recovery for the 285 events starting in 2002 · 2 frozen truncation rules: −1.00 z, −15% SMA, 30% VCI, three-month minimum.",
+            "sha256": "9f114be5001b1610969732bc35834077a2d6699efb101fdf618416d30c44957c"
           },
           {
-            "analysis": "Methods, governance, licences, reality checks, status, downloads and the SQL field guide.",
-            "panel": "b",
-            "screenshot": "screenshots/documentation.png",
-            "sha256": "1bc262bfb29b5d10af18365fd02736532d2947d4904e881bf86d93514dd2d3f8",
-            "window": "Documentation"
+            "callouts": [
+              1,
+              2
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/propagation__propLagChart.png",
+            "heading": "Propagation · lag response",
+            "note": "1 Correlation −12 to +12 months · 2 moving-block bootstrap 95% interval (seed 20261103).",
+            "sha256": "449fb6e54e29307881b09a1c4a93756f6f7962bfd22e121d43551c7f31508150"
           },
           {
-            "analysis": "One-district headline, ten-indicator strip, long-term trend, event catalogue and labelled era context.",
-            "panel": "c",
-            "screenshot": "screenshots/district-profile.png",
-            "sha256": "380a205a61dec1e144cd4e832b035c02b84d04e7ceea8aede3fd1b7490ad8b4e",
-            "window": "District profile"
-          },
-          {
-            "analysis": "Standalone onboarding: era primer, product map, navigation and interpretation guardrails.",
-            "panel": "d",
-            "screenshot": "screenshots/tour.png",
-            "sha256": "4698f8c63737fdfd827d886f4ad554534a8d875fed3ea766fd40b4d9967e438d",
-            "window": "Guided tour"
+            "callouts": [
+              1
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/propagation__propStats.png",
+            "heading": "Propagation · optimal-lag summary",
+            "note": "1 Optimal lag, correlation and interval; association is not causation.",
+            "sha256": "26c15b8528e429e60adf9ac1229caaa0140c73d0050a5c7031ede639f4d8a28c"
           }
         ],
-        "site": "https://drought.ankitdeshmukh.com/"
+        "provenance": "Event and propagation windows share the frozen v1.0.0 definitions.",
+        "rows": [
+          [
+            {
+              "accent": "#22756B",
+              "callouts": [
+                [
+                  0.315,
+                  0.035,
+                  1
+                ],
+                [
+                  0.745,
+                  0.035,
+                  2
+                ]
+              ],
+              "crop": [
+                0,
+                0,
+                1745,
+                812
+              ],
+              "heading": "Drought Events · runs-analysis catalogue (2002 start year)",
+              "image": "events__evtTable.png",
+              "note": "1 Onset, termination, duration, peak, severity and recovery for the 285 events starting in 2002 · 2 frozen truncation rules: −1.00 z, −15% SMA, 30% VCI, three-month minimum."
+            }
+          ],
+          [
+            {
+              "accent": "#22756B",
+              "callouts": [
+                [
+                  0.52,
+                  0.3,
+                  1
+                ],
+                [
+                  0.52,
+                  0.62,
+                  2
+                ]
+              ],
+              "crop": [
+                0,
+                0,
+                1004,
+                665
+              ],
+              "heading": "Propagation · lag response",
+              "image": "propagation__propLagChart.png",
+              "note": "1 Correlation −12 to +12 months · 2 moving-block bootstrap 95% interval (seed 20261103)."
+            },
+            {
+              "accent": "#22756B",
+              "callouts": [
+                [
+                  0.3,
+                  0.22,
+                  1
+                ]
+              ],
+              "crop": [
+                0,
+                0,
+                670,
+                575
+              ],
+              "heading": "Propagation · optimal-lag summary",
+              "image": "propagation__propStats.png",
+              "note": "1 Optimal lag, correlation and interval; association is not causation."
+            }
+          ]
+        ],
+        "site": "https://drought.ankitdeshmukh.com/",
+        "title": "Event forensics and indicator relationships"
       },
       "pdf": {
-        "bytes": 235709,
-        "path": "figures/fig09_access_documentation.pdf",
-        "sha256": "1b395071eb5c55c1f5d0017f1bb967cff19ad832334b0d637055da7a4433446f"
+        "bytes": 156795,
+        "path": "figures/fig09_events_propagation.pdf",
+        "sha256": "9f6879b055732594a3fe105aa6102dfc71cc06a8ad1a7b8c4e537372f595f306"
       },
       "png": {
-        "bytes": 1681351,
-        "path": "figures/fig09_access_documentation.png",
-        "sha256": "8a674986fce6471a8c28bf1a6f8a5e5d5af3abae840f9d51a671ae0ce94db633"
+        "bytes": 824177,
+        "path": "figures/fig09_events_propagation.png",
+        "sha256": "15566de4f0b89deaf607c2ac2cc92acd5586af67d0977dc94efed18fb7fcb0f4"
+      }
+    },
+    "fig10_atlas_projections": {
+      "data": {
+        "captured": "2026-11-25",
+        "captures": [
+          {
+            "callouts": [
+              1,
+              2,
+              3
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/atlas__atlasMapPanel.png",
+            "heading": "Atlas · era A reconstruction map",
+            "note": "1 Timescale and month (SPEI-1, Aug 1901) · 2 tehsil-native reconstruction on the district fabric · 3 islands stay grey (no Atlas grid cells).",
+            "sha256": "bdea8f61aa6c4450ca65b941cdb0351a8af6573d56aa83f76a4ae0c67b77863c"
+          },
+          {
+            "callouts": [
+              1,
+              2
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/projections__projBandPanel.png",
+            "heading": "Projections · era C ensemble band",
+            "note": "1 Ensemble median with the 25–75% model range · 2 declared ensemble size and district count. Projections are never forecasts.",
+            "sha256": "358f631435d59be33021361265ae11fa6307d3dfbbeb45377afa1e5db184b3c1"
+          },
+          {
+            "callouts": [
+              1,
+              2
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/projections__projMapPanel.png",
+            "heading": "Projections · model agreement map",
+            "note": "1 Ensemble models below the moderate threshold · 2 year/month selection (2040, July). Agreement is a model fraction.",
+            "sha256": "ad6f9d0701e755703f3c778844964bcade740d2fb6283c7eeb4044b07dd6be9b"
+          },
+          {
+            "callouts": [
+              1
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/atlas__atlasSharePanel.png",
+            "heading": "Atlas · drought-class shares",
+            "note": "1 Area-weighted class shares on the 3,266,386 km² LAEA registry, not district counts.",
+            "sha256": "752d45d3801fe2cd46ef46d06b967d428e924ee6486a32221523df5fc933ec2d"
+          }
+        ],
+        "provenance": "Era A and era C are separate labelled products; overlap cross-validation is Fig. 5.",
+        "rows": [
+          [
+            {
+              "accent": "#6B7D3A",
+              "callouts": [
+                [
+                  0.55,
+                  0.075,
+                  1
+                ],
+                [
+                  0.5,
+                  0.42,
+                  2
+                ],
+                [
+                  0.66,
+                  0.8,
+                  3
+                ]
+              ],
+              "crop": [
+                0,
+                0,
+                864,
+                940
+              ],
+              "heading": "Atlas · era A reconstruction map",
+              "image": "atlas__atlasMapPanel.png",
+              "note": "1 Timescale and month (SPEI-1, Aug 1901) · 2 tehsil-native reconstruction on the district fabric · 3 islands stay grey (no Atlas grid cells)."
+            },
+            {
+              "accent": "#A6452F",
+              "callouts": [
+                [
+                  0.3,
+                  0.42,
+                  1
+                ],
+                [
+                  0.62,
+                  0.28,
+                  2
+                ]
+              ],
+              "crop": [
+                0,
+                0,
+                864,
+                900
+              ],
+              "heading": "Projections · era C ensemble band",
+              "image": "projections__projBandPanel.png",
+              "note": "1 Ensemble median with the 25–75% model range · 2 declared ensemble size and district count. Projections are never forecasts."
+            }
+          ],
+          [
+            {
+              "accent": "#A6452F",
+              "callouts": [
+                [
+                  0.5,
+                  0.42,
+                  1
+                ],
+                [
+                  0.5,
+                  0.83,
+                  2
+                ]
+              ],
+              "crop": [
+                0,
+                240,
+                864,
+                1060
+              ],
+              "heading": "Projections · model agreement map",
+              "image": "projections__projMapPanel.png",
+              "note": "1 Ensemble models below the moderate threshold · 2 year/month selection (2040, July). Agreement is a model fraction."
+            },
+            {
+              "accent": "#6B7D3A",
+              "callouts": [
+                [
+                  0.3,
+                  0.3,
+                  1
+                ]
+              ],
+              "crop": [
+                0,
+                0,
+                864,
+                790
+              ],
+              "heading": "Atlas · drought-class shares",
+              "image": "atlas__atlasSharePanel.png",
+              "note": "1 Area-weighted class shares on the 3,266,386 km² LAEA registry, not district counts."
+            }
+          ]
+        ],
+        "site": "https://drought.ankitdeshmukh.com/",
+        "title": "Reconstruction and projection products"
+      },
+      "pdf": {
+        "bytes": 306954,
+        "path": "figures/fig10_atlas_projections.pdf",
+        "sha256": "9e31372a43e0e512e7e6096d9a1630e1627c11e3746c132178c3dec47df7e110"
+      },
+      "png": {
+        "bytes": 1923529,
+        "path": "figures/fig10_atlas_projections.png",
+        "sha256": "304b06b3e845af1ccfca8b45ca778e7b6d70bbbe32cd7899ab539a912036033d"
+      }
+    },
+    "fig11_access_reuse": {
+      "data": {
+        "captured": "2026-11-25",
+        "captures": [
+          {
+            "callouts": [
+              1,
+              2
+            ],
+            "capture": "manuscript/scientific-data/screenshots//district-profile.png",
+            "heading": "District profile · headline and ten-indicator strip",
+            "note": "1 District identity and era context; the headline gives the state at the selected month (Jodhpur, July 2002: extreme drought, −2.75 z) · 2 all ten indicators, each with its own class.",
+            "sha256": "2ec1ee92325320eda717b2f4c3ee08367e1596b678cb5b293c7f339cb0ffdfbb"
+          },
+          {
+            "callouts": [
+              1,
+              2
+            ],
+            "capture": "manuscript/scientific-data/screenshots/elements/engine__elQueryPanel.png",
+            "heading": "Engine Lab · read-only SQL over the published store",
+            "note": "1 Validated SQL against catalogue paths · 2 rows, execution time and bytes read per run (547 rows, 635 ms, 593.6 KB); repeats cost 0 bytes from the in-memory cache.",
+            "sha256": "35837724fa1278faff7f11983df9c6014069c8b85bd9d905a0d63d7067df69c7"
+          }
+        ],
+        "provenance": "Every analytical view is a permalink; every number is re-derivable from the archived Parquet.",
+        "rows": [
+          [
+            {
+              "accent": "#22756B",
+              "callouts": [
+                [
+                  0.16,
+                  0.06,
+                  1
+                ],
+                [
+                  0.24,
+                  0.5,
+                  2
+                ]
+              ],
+              "crop": [
+                36,
+                512,
+                1792,
+                1560
+              ],
+              "dir": "",
+              "heading": "District profile · headline and ten-indicator strip",
+              "image": "district-profile.png",
+              "note": "1 District identity and era context; the headline gives the state at the selected month (Jodhpur, July 2002: extreme drought, −2.75 z) · 2 all ten indicators, each with its own class."
+            }
+          ],
+          [
+            {
+              "accent": "#CC79A7",
+              "callouts": [
+                [
+                  0.5,
+                  0.42,
+                  1
+                ],
+                [
+                  0.82,
+                  0.935,
+                  2
+                ]
+              ],
+              "crop": [
+                0,
+                0,
+                1756,
+                780
+              ],
+              "heading": "Engine Lab · read-only SQL over the published store",
+              "image": "engine__elQueryPanel.png",
+              "note": "1 Validated SQL against catalogue paths · 2 rows, execution time and bytes read per run (547 rows, 635 ms, 593.6 KB); repeats cost 0 bytes from the in-memory cache."
+            }
+          ]
+        ],
+        "site": "https://drought.ankitdeshmukh.com/",
+        "title": "District access and reproducible query"
+      },
+      "pdf": {
+        "bytes": 298989,
+        "path": "figures/fig11_access_reuse.pdf",
+        "sha256": "9d139b4ef0608834c054bcf99333b8b67dd646b6e94e3e2696547275adae640e"
+      },
+      "png": {
+        "bytes": 1579428,
+        "path": "figures/fig11_access_reuse.png",
+        "sha256": "6fb1a18fad3822381b9fa5b47c61e4bec9fb2750242277446d055869728201ac"
       }
     }
   },
@@ -609,64 +1027,64 @@
       "sha256": "b645cf5d9fba2dcbd119fe10e71d176697cda47a59e30794700d3baa631b6753"
     },
     {
-      "bytes": 196492,
-      "path": "manuscript/scientific-data/screenshots/overview.png",
-      "sha256": "cbd021c04ffae7b6c242cbdbcaa170478734a46023b958c49d0330f890784230"
+      "bytes": 1414407,
+      "path": "manuscript/scientific-data/screenshots//district-profile.png",
+      "sha256": "2ec1ee92325320eda717b2f4c3ee08367e1596b678cb5b293c7f339cb0ffdfbb"
     },
     {
-      "bytes": 164205,
-      "path": "manuscript/scientific-data/screenshots/historical.png",
-      "sha256": "7b3ab023ecc7e9a4b7aa4e481376f61e752451eda8085f2579f9ac1339b13233"
+      "bytes": 315548,
+      "path": "manuscript/scientific-data/screenshots/elements/atlas__atlasMapPanel.png",
+      "sha256": "bdea8f61aa6c4450ca65b941cdb0351a8af6573d56aa83f76a4ae0c67b77863c"
     },
     {
-      "bytes": 191984,
-      "path": "manuscript/scientific-data/screenshots/events.png",
-      "sha256": "6d14fdf6cce0dec834f9738c7c5e7d2a8eb2d0e6770d493fe03925301edf0442"
+      "bytes": 81544,
+      "path": "manuscript/scientific-data/screenshots/elements/atlas__atlasSharePanel.png",
+      "sha256": "752d45d3801fe2cd46ef46d06b967d428e924ee6486a32221523df5fc933ec2d"
     },
     {
-      "bytes": 164181,
-      "path": "manuscript/scientific-data/screenshots/propagation.png",
-      "sha256": "ea78de13f6a80058869e72440d004e7d5b3977742ff8b2d66f96bddb6936ed9a"
+      "bytes": 149671,
+      "path": "manuscript/scientific-data/screenshots/elements/engine__elQueryPanel.png",
+      "sha256": "35837724fa1278faff7f11983df9c6014069c8b85bd9d905a0d63d7067df69c7"
     },
     {
-      "bytes": 412101,
-      "path": "manuscript/scientific-data/screenshots/atlas.png",
-      "sha256": "c161a398145adc79a003bb893c7f994867865e1239eefe79b51d939b13b75928"
+      "bytes": 233281,
+      "path": "manuscript/scientific-data/screenshots/elements/events__evtTable.png",
+      "sha256": "9f114be5001b1610969732bc35834077a2d6699efb101fdf618416d30c44957c"
     },
     {
-      "bytes": 359046,
-      "path": "manuscript/scientific-data/screenshots/crossval.png",
-      "sha256": "ffce972bcc675613819bf6d3e2a25bfd90cd72cfc497f45c3d40f9fdc053b65d"
+      "bytes": 63242,
+      "path": "manuscript/scientific-data/screenshots/elements/events__evtTimelinePanel.png",
+      "sha256": "c9faa2b11fe53b5424ca6bd0caa711aabb670db1ae47b69195711c1f1e33342a"
     },
     {
-      "bytes": 286383,
-      "path": "manuscript/scientific-data/screenshots/projections.png",
-      "sha256": "ca6f91689c2f5e2428bf3b55bd9ad7e41f5229cf8aed54dc2d398ecd2c5953a5"
+      "bytes": 206314,
+      "path": "manuscript/scientific-data/screenshots/elements/historical__trendPanel.png",
+      "sha256": "8472bfd0b3dfcb122e75c35c2ff77e6c75f7b84e7e5b145b3415ca7655906fca"
     },
     {
-      "bytes": 412657,
-      "path": "manuscript/scientific-data/screenshots/summary.png",
-      "sha256": "d056fc1310dee43e53bb071a20fd3ddce217b892a7917bcdb44283f11fe9f903"
+      "bytes": 387942,
+      "path": "manuscript/scientific-data/screenshots/elements/overview__mapPanel.png",
+      "sha256": "21adaf2c6df70c9574af869ad1dbe76ff7143ab9ee6b4c406dcabb655aa45474"
     },
     {
-      "bytes": 261991,
-      "path": "manuscript/scientific-data/screenshots/engine.png",
-      "sha256": "3e0c816a77dfb0d14a15ab8e8953a2afca88026e05e0db4731067fadec1ef8ea"
+      "bytes": 122475,
+      "path": "manuscript/scientific-data/screenshots/elements/projections__projBandPanel.png",
+      "sha256": "358f631435d59be33021361265ae11fa6307d3dfbbeb45377afa1e5db184b3c1"
     },
     {
-      "bytes": 166005,
-      "path": "manuscript/scientific-data/screenshots/documentation.png",
-      "sha256": "1bc262bfb29b5d10af18365fd02736532d2947d4904e881bf86d93514dd2d3f8"
+      "bytes": 327319,
+      "path": "manuscript/scientific-data/screenshots/elements/projections__projMapPanel.png",
+      "sha256": "ad6f9d0701e755703f3c778844964bcade740d2fb6283c7eeb4044b07dd6be9b"
     },
     {
-      "bytes": 216198,
-      "path": "manuscript/scientific-data/screenshots/district-profile.png",
-      "sha256": "380a205a61dec1e144cd4e832b035c02b84d04e7ceea8aede3fd1b7490ad8b4e"
+      "bytes": 40879,
+      "path": "manuscript/scientific-data/screenshots/elements/propagation__propLagChart.png",
+      "sha256": "449fb6e54e29307881b09a1c4a93756f6f7962bfd22e121d43551c7f31508150"
     },
     {
-      "bytes": 141925,
-      "path": "manuscript/scientific-data/screenshots/tour.png",
-      "sha256": "4698f8c63737fdfd827d886f4ad554534a8d875fed3ea766fd40b4d9967e438d"
+      "bytes": 80318,
+      "path": "manuscript/scientific-data/screenshots/elements/propagation__propStats.png",
+      "sha256": "26c15b8528e429e60adf9ac1229caaa0140c73d0050a5c7031ede639f4d8a28c"
     }
   ],
   "minimum_font_pt": 10,

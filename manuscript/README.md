@@ -12,13 +12,15 @@ manuscripts and one shared figure/verification area:
 
 ## Scientific Data submission
 
-`scientific-data/` is the journal submission package: a 23-page Data Descriptor,
-nine final-size Roboto figures (vector PDF plus 300-dpi PNG), ten tables and
-three annotated live-site screenshot figures. It has its own builder, structure
+`scientific-data/` is the journal submission package: a 25-page Data Descriptor,
+eleven final-size Roboto figures (vector PDF plus 300-dpi PNG), ten tables and
+four annotated live-site dashboard figures introduced by an "About the Explorer"
+overview. It has its own builder, structure
 checker, checksums, fonts and submission checklist. See
 [`scientific-data/README.md`](scientific-data/README.md).
 
 ```bash
+python manuscript/scientific-data/capture_screenshots.py   # needs Playwright + Chromium
 python manuscript/scientific-data/make_figures.py
 python manuscript/scientific-data/make_figures.py --check
 python manuscript/scientific-data/check_manuscript.py

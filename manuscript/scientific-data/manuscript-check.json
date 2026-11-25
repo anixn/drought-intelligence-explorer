@@ -172,7 +172,7 @@
     {
       "check": "figure_count",
       "pass": true,
-      "detail": 9
+      "detail": 11
     },
     {
       "check": "table_count",
@@ -190,9 +190,11 @@
           "fig04_imd_benchmark.pdf",
           "fig05_atlas_overlap.pdf",
           "fig06_gcm_validation.pdf",
-          "fig07_record_windows.pdf",
-          "fig08_v2_products.pdf",
-          "fig09_access_documentation.pdf"
+          "fig07_about.pdf",
+          "fig08_record_analyses.pdf",
+          "fig09_events_propagation.pdf",
+          "fig10_atlas_projections.pdf",
+          "fig11_access_reuse.pdf"
         ],
         "missing": []
       }
@@ -200,7 +202,7 @@
     {
       "check": "figure_numbers_in_text",
       "pass": true,
-      "detail": 9
+      "detail": 11
     },
     {
       "check": "data_overview_figure_limit",
@@ -258,7 +260,7 @@
       "pass": true,
       "detail": {
         "synthetic_data": false,
-        "figures": 9
+        "figures": 11
       }
     },
     {
@@ -279,7 +281,7 @@
       "check": "compiled_pdf",
       "pass": true,
       "detail": {
-        "bytes": 1382582
+        "bytes": 1715198
       }
     },
     {

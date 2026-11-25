@@ -7,10 +7,13 @@ modify them.
 ## Deliverables
 
 - `manuscript.tex` — standalone Data Descriptor source with embedded numerical references.
-- `manuscript.pdf` — compiled first-round review manuscript (23 pages at the current build).
-- `figures/fig01_*.pdf` through `fig09_*.pdf` — vector publication figures.
-- `figures/fig01_*.png` through `fig09_*.png` — matching 300-dpi review/preview renders.
-- `screenshots/` — live-site captures used in the three annotated interface figures.
+- `manuscript.pdf` — compiled first-round review manuscript (25 pages at the current build).
+- `figures/fig01_*.pdf` through `fig11_*.pdf` — vector publication figures.
+- `figures/fig01_*.png` through `fig11_*.png` — matching 300-dpi review/preview renders.
+- `screenshots/` — live-site captures used in the annotated interface figures
+  (Fig. 7 About the Explorer, Fig. 8–10 workspace dashboards, Fig. 11 access and
+  reuse), produced by `capture_screenshots.py`; `capture-manifest.json` records
+  routes, viewports, element selectors and console state for every capture.
 - `figure_data.json` — every plotted value, source checksum and output checksum.
 - `FIGURE_SHA256SUMS.txt` — figure-file integrity manifest.
 - `make_figures.py` — deterministic figure builder.
@@ -40,15 +43,19 @@ From the repository root, using a Python environment with `numpy`, `pandas`,
 `pyarrow`, `pyproj`, `PyYAML` and `matplotlib`:
 
 ```bash
+python manuscript/scientific-data/capture_screenshots.py   # needs Playwright + Chromium
 python manuscript/scientific-data/make_figures.py
 python manuscript/scientific-data/make_figures.py --check
 python manuscript/scientific-data/check_manuscript.py
 latexmk -pdf manuscript/scientific-data/manuscript.tex
 ```
 
-The figure builder reads only released artifacts and fails if any figure text is
-below 10 pt. `--check` verifies all input and output SHA-256 values without
-rebuilding.
+The capture script drives the published site (not a local working tree) at a
+1200 px viewport with a 2x device scale, performs the scripted interactions
+(events filtered to 2002, district strip fully loaded, Engine Lab query executed)
+and records a manifest of every window. The figure builder reads only released
+artifacts and fails if any figure text is below 10 pt. `--check` verifies all
+input and output SHA-256 values without rebuilding.
 
 ## Version pin
 

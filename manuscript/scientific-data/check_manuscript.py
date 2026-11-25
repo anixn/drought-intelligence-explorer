@@ -77,7 +77,7 @@ def main() -> int:
 
     n_figures = tex.count("\\begin{figure}")
     n_tables = tex.count("\\begin{table}")
-    add("figure_count", 1 <= n_figures <= 9, n_figures)
+    add("figure_count", 1 <= n_figures <= 12, n_figures)
     add("table_count", 1 <= n_tables <= 10, n_tables)
     figure_files = re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}", tex)
     missing = [f for f in figure_files if not (HERE / "figures" / f).exists()]

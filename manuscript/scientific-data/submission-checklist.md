@@ -17,12 +17,12 @@
 - [x] Required Scientific Data headings are present and ordered.
 - [x] Data Overview is one paragraph with two figures.
 - [x] No Results, Discussion, Conclusions, worked-example or Reuse Potential headings.
-- [x] 9 figures and 10 tables; all figures are separate PDF and 300-dpi PNG files. Figures 7–9 are annotated live-site screenshots covering every major window, with direct links and supported analyses in Table 7.
+- [x] 11 figures and 10 tables; all figures are separate PDF and 300-dpi PNG files. Figure 7 is the "About the Explorer" dashboard; Figures 8-11 are annotated live-site screenshots of the core workspaces and access tools, with direct links and supported analyses in Table 7.
 - [x] Roboto Regular/Bold used in every figure; 10 pt minimum enforced by the builder.
 - [x] 34 embedded numerical references, all cited, ordered by first appearance.
 - [x] No internal `\ref`/`\label` links and no external `.bib`/`.bbl` dependency.
-- [x] Manuscript compiles with no undefined citations and no overfull horizontal boxes.
-- [x] Publication figure checksums: 25 inputs and 18 figure files pass.
+- [x] Manuscript compiles with no undefined citations, no overfull horizontal boxes and no oversized floats.
+- [x] Publication figure checksums: 25 inputs and 22 figure files pass.
 - [x] Manuscript structure checker: 32/32 pass.
 - [x] Pipeline self-test: 82 assertions pass.
 - [x] Shipped-data regression: 735 values pass.
@@ -41,7 +41,7 @@
 - [ ] Complete one internal scientific review and one language/copy-edit review.
 - [ ] Confirm the author-contribution, competing-interests and no-external-funding declarations in the submission system.
 - [ ] Prepare the covering letter and reviewer suggestions in the submission system.
-- [ ] Upload `manuscript.pdf` for first review. For revision/final typesetting, upload `manuscript.tex` as the Article file and the nine figure PDFs separately.
+- [ ] Upload `manuscript.pdf` for first review. For revision/final typesetting, upload `manuscript.tex` as the Article file and the eleven figure PDFs separately.
 - [ ] Refresh the EarthArXiv preprint only after the Scientific Data version is frozen.
 
 ## Notes for the editor/reviewer
