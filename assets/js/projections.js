@@ -50,7 +50,7 @@
     late: { from: 2081, to: 2100 },    // enabled from the catalog once covered
   };
 
-  // statistic -> era C partition groups in the published store
+  // statistic -> Era C partition groups in the published store
   // (scenario=<s>/stat=<st>/variable=<v>/year=<yyyy>/part-0.parquet)
   const STAT_PARTITIONS = {
     median: ["median"],
@@ -85,7 +85,7 @@
   let divSeq = 0;           // stale-render guard for the divergence map
   let rankingData = null;   // parsed data/ranking.json (M5.5)
   let baselineEvents = null; // parsed data/events/baseline_1981_2014.json (M5.8, window per register D6)
-  let seamSd = null;         // X7: Map district_id -> SD(era B - era A) SPEI-12 (M6.8)
+  let seamSd = null;         // X7: Map district_id -> SD(Era B - Era A) SPEI-12 (M6.8)
 
   const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -125,7 +125,7 @@
     return (catalog.variables || []).find((v) => v.id === id) || null;
   }
 
-  // Published era-C record window, read from the COMMITTED catalog (never
+  // Published Era-C record window, read from the COMMITTED catalog (never
   // hard-coded): 2015-2050 while the SSP inputs stopped at 2050, 2015-2100
   // once the full record is published. Every clamp, custom-range bound and
   // the late-century window option derive from this.
@@ -214,8 +214,8 @@
       "25–75 % model range, and model disagreement is a <b>finding</b>, " +
       "not noise to hide (agreement layers default first, X2).";
     const eraLine =
-      "<b>Era labels:</b> era C (simulations, " + esc(ec.label) +
-      ") is never spliced with era B (1981–2025, Gridded Multi-Source Product) — the two eras are " +
+      "<b>Era labels:</b> Era C (simulations, " + esc(ec.label) +
+      ") is never spliced with Era B (1981–2025, Gridded Multi-Source Product) — the two eras are " +
       "presented side by side only, with the seam visible.";
     // UX pass (audit F5): the first screenful of Projections used to be four
     // dense methodology paragraphs. Keep one sentence and put the rest behind
@@ -260,12 +260,12 @@
       : "—";
     const pet = (DIE.meta && DIE.meta.era_c && DIE.meta.era_c.pet) || null;
     $("projStatusPet").textContent = pet
-      ? pet.method + " — per-era PET seam (era B ERA5-Land frozen; era C applied identically to reference and model temperature)"
+      ? pet.method + " — per-era PET seam (Era B ERA5-Land frozen; Era C applied identically to reference and model temperature)"
       : "—";
   }
 
   /* ---- variable selector -------------------------------------------------- */
-  /* Only variables that actually have published era C files are offered. */
+  /* Only variables that actually have published Era C files are offered. */
 
   function renderVariableOptions() {
     const sel = $("projVariable");
@@ -300,7 +300,7 @@
     const v = projVariable(state.variable);
     if (!v) {
       tbody.innerHTML = "";
-      note.textContent = "Selected variable has no published era C files.";
+      note.textContent = "Selected variable has no published Era C files.";
       return;
     }
     const scenFiles = (v.files.projections || {})[state.scenario] || {};
@@ -370,10 +370,10 @@
           : "No published partitions cover this window — the corresponding view must stay disabled with an explanation (section 7).");
   }
 
-  /* ---- era C views (M5.3) ------------------------------------------------ */
+  /* ---- Era C views (M5.3) ------------------------------------------------ */
   /* Band chart: ensemble median + 25–75 % band (model spread), scope set by
    * the geography selector. Choropleth: one (year, month) frame per stat.
-   * Both consume the REAL era-C store via the engine service — no fixtures
+   * Both consume the REAL Era-C store via the engine service — no fixtures
    * (R3), no forecasts (R2), sample sizes reported (R10). */
 
   // metadata indicator object for a store id (store "spi_03" ↔ meta "spi_3")
@@ -531,7 +531,7 @@
 
   function chartYearRange() {
     const [from, to] = windowRange();
-    // published era-C years; clamping keeps custom windows from opening
+    // published Era-C years; clamping keeps custom windows from opening
     // partitions that were never written (the check table reports the gap)
     const rec = projRecordRange();
     const a = Math.max(from, rec.from), b = Math.min(to, rec.to);
@@ -557,10 +557,10 @@
     const [from, to] = chartYearRange();
     const district = state.geography === "district" ? state.district : null;
 
-    const base = "era C · " + SCENARIO_LABEL[state.scenario] + " · " + ind.label +
+    const base = "Era C · " + SCENARIO_LABEL[state.scenario] + " · " + ind.label +
       " · " + from + "–" + to;
     meta.textContent = base;
-    note.textContent = "querying the era-C store…";
+    note.textContent = "querying the Era-C store…";
 
     try {
       let medianRows, p25Rows, p75Rows, scopeLabel, nNote;
@@ -889,12 +889,12 @@
 
   /* X7 seam uncertainty (M6.8). Quoted only for SPEI-12: that is the series
    * the X7 memo names and the one the cross-validation builder measures. It is
-   * the measured SD of the era A - era B difference over 1981-2014 — a
+   * the measured SD of the Era A - Era B difference over 1981-2014 — a
    * historical disagreement, never a projection confidence interval. */
   function seamTooltipLine(id) {
     if (lastMapVar !== "spei_12" || !seamSd || !seamSd.has(id)) return "";
     return "<br>seam SD ±" + seamSd.get(id).toFixed(2) +
-      " z (era A − era B, 1981–2014; not a confidence interval)";
+      " z (Era A − Era B, 1981–2014; not a confidence interval)";
   }
 
   async function ensureSeam() {
@@ -947,10 +947,10 @@
       }
       populateMapPeriods();
       await ensureSeam();
-      meta.textContent = "era C · " + SCENARIO_LABEL[state.scenario] + " · " +
+      meta.textContent = "Era C · " + SCENARIO_LABEL[state.scenario] + " · " +
         (STAT_LABEL[statKey] || statKey) + " · " + state.mapYear + "-" +
         MONTH_NAMES[state.mapMonth - 1];
-      note.textContent = "querying the era-C store…";
+      note.textContent = "querying the Era-C store…";
 
       const rows = await DIE.Engine.ensemble({
         scenario: state.scenario,
@@ -1032,13 +1032,13 @@
           (statKey === "agreement_severe" ? "−1.5 (severe)" : "−1.0 (moderate)") +
           " in this month — a count, not a probability. ";
       } else {
-        noteText += "Median across the honest 8-model subset; era C " +
+        noteText += "Median across the honest 8-model subset; Era C " +
           "projection, not a forecast. ";
       }
       const seam = seamStats();
       if (seam) {
         noteText += "Historical seam uncertainty (X7): per-district SD of era " +
-          "A − era B SPEI-12 over 1981–2014, median ±" +
+          "A − Era B SPEI-12 over 1981–2014, median ±" +
           seam.median.toFixed(2) + " z across " + seam.n + " districts; shown " +
           "in tooltips when SPEI-12 is selected. It measures disagreement " +
           "between the two historical records — not a projection confidence " +
@@ -1238,9 +1238,9 @@
         bindDivTooltips();
       }
       populateDivPeriods();
-      meta.textContent = "era C · " + SCENARIO_LABEL[state.scenario] +
+      meta.textContent = "Era C · " + SCENARIO_LABEL[state.scenario] +
         " · " + state.divYear + "-" + MONTH_NAMES[state.divMonth - 1];
-      note.textContent = "querying the era-C store…";
+      note.textContent = "querying the Era-C store…";
 
       const opts = (variable) => ({
         scenario: state.scenario, variable, stat: "median",
@@ -1300,8 +1300,8 @@
 
   /* -- future drought events (M5.8 / E14) ------------------------------------- */
   /* Frozen v1.0 runs analysis (DIE.Analytics.findEvents: runs ≤ threshold,
-   * min 3 months, severity Σ(τ−x), NaN breaks runs) on era-C ensemble-median
-   * series, compared against the era-B 1981–2014 baseline built by
+   * min 3 months, severity Σ(τ−x), NaN breaks runs) on Era-C ensemble-median
+   * series, compared against the Era-B 1981–2014 baseline built by
    * scripts/build_events_baseline.py (window = register D6, the GCM-native
    * historical window). Agreement reported alongside (X2);
    * windows are median-based and labelled as such. */
@@ -1310,7 +1310,7 @@
 
   function findEventMetrics(values, years) {
     // values: ordered monthly array (null -> NaN); runs on continuous series
-    // threshold: the frozen McKee moderate bound (−1.0 z for SPI/SPEI — era C
+    // threshold: the frozen McKee moderate bound (−1.0 z for SPI/SPEI — Era C
     // publishes these two families only)
     const events = DIE.Analytics.findEvents(
       values, values.map((_, i) => String(i)),
@@ -1345,7 +1345,7 @@
       !DIE.Analytics.findEvents) return;
     const [from, to] = chartYearRange();
     const years = to - from + 1;
-    meta.textContent = "era C · " + SCENARIO_LABEL[state.scenario] + " · " +
+    meta.textContent = "Era C · " + SCENARIO_LABEL[state.scenario] + " · " +
       ind.label + " · " + from + "–" + to + " · median-based, agreement alongside";
     note.textContent = "computing events (frozen runs analysis)…";
     try {
@@ -1453,13 +1453,13 @@
         "). <strong>National median:</strong> frequency ratio " +
         fmt(medFreq, 2) + " ×, duration change " + fmt(medDur, 1) +
         " months, severity ratio " + fmt(medSev, 2) +
-        " × vs the era-B 1981–2014 baseline (same frozen machinery, " +
+        " × vs the Era-B 1981–2014 baseline (same frozen machinery, " +
         "threshold −1.0, min 3 months, no imputation; " + censored +
-        " era-C events touch window edges — flagged censored, not dropped). " +
+        " Era-C events touch window edges — flagged censored, not dropped). " +
         "Computed on the <strong>ensemble median</strong> — not a single " +
         "realisation; the agreement column (mean models ≤ −1.0 across the " +
         "window) is the honest spread companion (X2). " +
-        "A ratio is a comparison to the era-B baseline, <strong>not a " +
+        "A ratio is a comparison to the Era-B baseline, <strong>not a " +
         "forecast</strong>. Baseline: " + esc(base.source) + ".";
     } catch (err) {
       console.warn("[projections] events failed:", err);

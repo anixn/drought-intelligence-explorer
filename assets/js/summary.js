@@ -3,18 +3,18 @@
  * 2026-11-18: "how drought changes from now to 2100").
  *
  * The headline surface: per district, drought FREQUENCY / DURATION /
- * SEVERITY in the validated era-C ensemble over a future window (near /
+ * SEVERITY in the validated Era-C ensemble over a future window (near /
  * mid / late) compared against the ERA-B GRIDDED MULTI-SOURCE PRODUCT
- * 1981–2014 baseline (register D6 — era B is NOT labelled "observed",
+ * 1981–2014 baseline (register D6 — Era B is NOT labelled "observed",
  * decision D8: CHIRPS/ERA5-Land/MODIS are observation-based gridded
  * sources, never merged) built by scripts/build_events_baseline.py from
- * the committed era-B store.
+ * the committed Era-B store.
  *
  * Every number is computed from published, validated products only (R3):
- *   - era C: the committed Parquet store via the DuckDB engine
+ *   - Era C: the committed Parquet store via the DuckDB engine
  *     (ensemble median series; scenario + window + indicator selectable);
  *   - baseline: data/events/baseline_1981_2014.json (frozen v1.0 runs
- *     analysis over era B, 34 years);
+ *     analysis over Era B, 34 years);
  *   - agreement: the published dir_agreement_drier / dir_agreement_n
  *     window-constant partitions (effective window 2081–2100, base
  *     1981–2014 — recorded verbatim in metadata.json → era_c.dir_agreement).
@@ -29,9 +29,9 @@
  *    dry, so the median is never read alone.
  *  - Sample sizes reported everywhere (R10); missing districts rendered
  *    grey, never imputed (R10). The 6 island districts absent from the
- *    IMD-anchored era-C reference stay absent (documented ocean mask).
+ *    IMD-anchored Era-C reference stay absent (documented ocean mask).
  *  - Historical seam uncertainty (X7, M6.8) is measured once from the era
- *    A - era B overlap and quoted in the caveat with its n; it is a record
+ *    A - Era B overlap and quoted in the caveat with its n; it is a record
  *    disagreement, not a projection confidence interval.
  * ------------------------------------------------------------------------- */
 (function () {
@@ -61,7 +61,7 @@
     late: "Late century (2081–2100)",
   };
   const SCENARIO_LABEL = { ssp245: "SSP2-4.5", ssp585: "SSP5-8.5" };
-  // truncation thresholds — frozen v1.0 events machinery (era C publishes
+  // truncation thresholds — frozen v1.0 events machinery (Era C publishes
   // the SPI/SPEI families only; the baseline JSON matches them)
   const THRESHOLD = -1.0;
   const MIN_DURATION = 3;
@@ -74,7 +74,7 @@
   let rowsCache = null;        // current computed per-district rows
   let seq = 0;                 // stale-render guard
 
-  /* ---- shared palette (mirrors projections.js so both era-C surfaces
+  /* ---- shared palette (mirrors projections.js so both Era-C surfaces
    * read identically) ---------------------------------------------------- */
   const DIR_COLORS = ["#F7F3EC", "#E3D2BA", "#C9A97F", "#A57344", "#6E4523"];
   const DIR_BINS = [
@@ -150,7 +150,7 @@
   }
 
   /* ---- X7 seam note (M6.8) ----------------------------------------------
-   * The per-district SD of era A - era B SPEI-12 over the D6 window, computed
+   * The per-district SD of Era A - Era B SPEI-12 over the D6 window, computed
    * once by the cross-validation builder. The caveat quotes the median across
    * districts; it is a measured record disagreement, never a confidence
    * interval. If the product is absent, the copy says so (R3). */
@@ -221,9 +221,9 @@
     const da = DIE.meta && DIE.meta.era_c && DIE.meta.era_c.dir_agreement;
     el.innerHTML =
       "<b>Drought change, honestly framed.</b> Future values are " +
-      "<b>simulations, not forecasts</b> (era C: QDM-bias-corrected CMIP6, " +
+      "<b>simulations, not forecasts</b> (Era C: QDM-bias-corrected CMIP6, " +
       "8-model committed subset" + (ec && ec.label ? " — " + esc(ec.label) : "") +
-      "). The comparison baseline is the <b>era-B Gridded Multi-Source " +
+      "). The comparison baseline is the <b>Era-B Gridded Multi-Source " +
       "Product 1981–2014 record</b> (34 years; register D6). The two eras are " +
       "<b>never spliced</b> — " +
       "each side is computed separately and only their difference is shown. " +
@@ -234,7 +234,7 @@
   }
 
   /* ---- core computation -------------------------------------------------- */
-  /* Per district: frozen v1.0 runs analysis on the era-C ensemble-median
+  /* Per district: frozen v1.0 runs analysis on the Era-C ensemble-median
    * series (window), the same metrics recomputed from the baseline JSON
    * (1981–2014), and their difference. Missing months break runs (R10). */
 
@@ -287,7 +287,7 @@
     const nYears = w.to - w.from + 1;
     const note = $("sumNationalNote");
     $("sumMapMeta").textContent = "computing…";
-    note.textContent = "querying the era-C store…";
+    note.textContent = "querying the Era-C store…";
     try {
       const [medianRows, dirRows, dirNRows, baseline] = await Promise.all([
         DIE.Engine.ensemble({
@@ -439,8 +439,8 @@
         }).length;
         renderLegend($("sumLegend"), CHANGE_LEGEND[state.metric], CHANGE_COLORS);
         noteText =
-          "MEDIAN-BASED change (era-C ensemble median over " + nYears +
-          " years vs the era-B 1981–2014 baseline, 34 years): " + n +
+          "MEDIAN-BASED change (Era-C ensemble median over " + nYears +
+          " years vs the Era-B 1981–2014 baseline, 34 years): " + n +
           " districts with comparable data · " + drier +
           " much drier, " + wetter + " much wetter (outer bins). " +
           "Read with care: the ensemble median CONCENTRATES (a documented " +
@@ -487,7 +487,7 @@
       dirArea.reduce((s, r) => s + r.area, 0);
     note.innerHTML =
       "<b>National (area-weighted, LAEA):</b> share of months in moderate-or-" +
-      "worse drought — era-B 1981–2014 baseline <b>" + shareB.toFixed(1) +
+      "worse drought — Era-B 1981–2014 baseline <b>" + shareB.toFixed(1) +
       "%</b> → " + WINDOW_LABEL[state.window].toLowerCase() + " ensemble median <b>" +
       shareC.toFixed(1) + "%</b> (change " + (shareC - shareB >= 0 ? "+" : "") +
       (shareC - shareB).toFixed(1) + " pp). Area-weighted share of the " +
@@ -545,13 +545,13 @@
     const areaSum = rows.reduce((s, r) => s + (Number.isFinite(r.area) ? r.area : 0), 0);
     noteEl.textContent =
       "Area-weighted with the shared LAEA district areas; drought-month share " +
-      "is months ≤ −1.0 z over valid months (era C: " + WINDOW_LABEL[state.window] +
-      "median series; baseline: era B 1981–2014). Rows with no area fall " +
+      "is months ≤ −1.0 z over valid months (Era C: " + WINDOW_LABEL[state.window] +
+      "median series; baseline: Era B 1981–2014). Rows with no area fall " +
       "back to unweighted means of the same districts. Agreement column = " +
       "area-weighted share × 8 (models drier than their 1981–2014 base, " +
       "window " + dirEffectiveWindow() + "). National comparable area " +
       areaSum.toFixed(0) + " km² across " + rows.length + " districts (of 724; " +
-      "island districts absent from the era-C reference stay absent, R10).";
+      "island districts absent from the Era-C reference stay absent, R10).";
   }
 
   /* ---- CSV export (X6 reproducibility headers) ---------------------------- */
@@ -570,10 +570,10 @@
     L.push("# panel: #summary — drought change vs observed baseline");
     L.push("# scenario: " + state.scenario + " (" + SCENARIO_LABEL[state.scenario] + ")");
     L.push("# indicator: " + state.variable + (ind ? " (" + ind.label + ")" : ""));
-    L.push("# future window: " + w.from + "-" + w.to + " (era C ensemble median series)");
-    L.push("# baseline: era B Gridded Multi-Source Product 1981-2014 (data/events/baseline_1981_2014.json, register D6)");
+    L.push("# future window: " + w.from + "–" + w.to + " (Era C ensemble median series)");
+    L.push("# baseline: Era B Gridded Multi-Source Product 1981–2014 (data/events/baseline_1981_2014.json, register D6)");
     L.push("# event machinery: frozen runs analysis, threshold -1.0 z, min duration 3 months, censoring flagged");
-    L.push("# dir_agreement: fraction of the 8-model subset drier than their own 1981-2014 base; effective window " + dirEffectiveWindow());
+    L.push("# dir_agreement: fraction of the 8-model subset drier than their own 1981–2014 base; effective window " + dirEffectiveWindow());
     L.push("# areas: LAEA km2 (shared registry); missing values are empty cells, never imputed (R10)");
     L.push("district_id,district_name,state,area_km2," +
       "baseline_drought_share,future_drought_share,change_pp," +

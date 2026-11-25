@@ -34,7 +34,7 @@
       content="Ankit Deshmukh, Ph.D. — Pandit Deendayal Energy University"
     />
     <meta name="theme-color" content="#F6F1E6" />
-    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg?v=2026-11-26a" />
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg?v=2026-11-26b" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -49,7 +49,7 @@
         this.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       "
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-26a" />
+    <link rel="stylesheet" href="assets/css/style.css?v=2026-11-26b" />
   </head>
   <body>
     <a class="skip-link" href="#workspace">Skip to main content</a>
@@ -79,7 +79,7 @@
       <div class="brand">
         <img
           class="brand-logo"
-          src="assets/images/logo.svg?v=2026-11-26a"
+          src="assets/images/logo.svg?v=2026-11-26b"
           width="38"
           height="38"
           alt=""
@@ -289,6 +289,61 @@
           </span>
         </div>
 
+        <!-- Collapsed rail: the four actions people reach for most stay one
+             click away (Docs, Reset, Copy link, Export). They mirror the
+             footer buttons; data-mini-action routes to the canonical control
+             so no handler is duplicated. -->
+        <div class="sidebar-mini" role="group" aria-label="Quick actions">
+          <button
+            type="button"
+            class="mini-btn"
+            data-mini-action="docs"
+            title="Documentation &amp; Resources"
+            aria-label="Documentation &amp; Resources"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="mini-btn"
+            data-mini-action="reset"
+            title="Reset all filters to their defaults"
+            aria-label="Reset all filters to their defaults"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="mini-btn"
+            data-share
+            title="Copy a link to the current analysis view"
+            aria-label="Copy a link to the current analysis view"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="mini-btn"
+            data-mini-action="export"
+            title="Export the current analysis"
+            aria-label="Export the current analysis"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <path d="M7 10l5 5 5-5M12 15V3" />
+            </svg>
+          </button>
+        </div>
+
         <div class="sidebar-body" id="sidebarBody">
         <!-- Persistent study context: shared by all products. The
              grouping wrapper is purely visual; section visibility and the
@@ -425,9 +480,9 @@
         <!-- ================= PRODUCT CONSOLES (M7.4) =================
              The rail is never empty and never shows controls that do not
              apply (Owner request, 2026-11-22). Eras/products that carry their
-             own controls get a console here; the era-B study-context group
+             own controls get a console here; the Era-B study-context group
              above is hidden on those tabs by CSS, and Documentation gets a
-             contents index instead of the era-B filters. Readouts mirror the
+             contents index instead of the Era-B filters. Readouts mirror the
              panel controls (one source of truth: the panel select); the
              chips and anchor buttons drive them through their existing
              change events, so no analytic code is duplicated. -->
@@ -483,7 +538,7 @@
           </div>
           <p class="side-note">
             Era A reconstruction, 1901&ndash;2025. One year is fetched per
-            frame; the record is never spliced with era B.
+            frame; the record is never spliced with Era B.
           </p>
         </section>
 
@@ -515,6 +570,13 @@
             <button type="button" data-doc="doc-p-sql">P &middot; Querying the data (SQL)</button>
           </nav>
           <a class="rail-link" href="tour.html">Start the guided tour &rarr;</a>
+          <a
+            class="rail-link"
+            href="manuscript/main_v2.pdf"
+            target="_blank"
+            rel="noopener"
+            >Read the manuscript &rarr;</a
+          >
         </section>
 
         <section
@@ -632,7 +694,7 @@
                   d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
                 />
               </svg>
-              <span>Copy link</span>
+              <span>Copy</span>
             </button>
             <button
               type="button"
@@ -679,7 +741,7 @@
       <!-- ======================= WORKSPACE ======================= -->
       <main class="workspace" id="workspace">
         <!-- Product-first navigation (M10.3c): one top-level destination per
-             era/product, with its analytical lenses beneath. The four era-B
+             era/product, with its analytical lenses beneath. The four Era-B
              lenses are four questions about ONE gridded record — never four
              datasets — so they no longer compete as peer top-level tabs. -->
         <div class="tab-nav">
@@ -853,7 +915,7 @@
                 aria-controls="viewCrossval"
                 tabindex="-1"
                 data-tip-title="Cross-validation"
-                data-tip-body="Era A against era B over 1981–2014: agreement, bias, within-one-class share and the X7 seam uncertainty, district by district."
+                data-tip-body="Era A against Era B over 1981–2014: agreement, bias, within-one-class share and the X7 seam uncertainty, district by district."
               >
                 <svg
                   class="tab-ic"
@@ -982,7 +1044,7 @@
                 aria-controls="viewAtlas"
                 tabindex="-1"
                 data-tip-title="Atlas 1901–2025"
-                data-tip-body="Scrub the era-A reconstruction year by year and read drought-class shares for any month — 1918, 1965, 1972, 1987 and 2002 are one click away."
+                data-tip-body="Scrub the Era-A reconstruction year by year and read drought-class shares for any month — 1918, 1965, 1972, 1987 and 2002 are one click away."
               >
                 <svg
                   class="tab-ic"
@@ -1097,6 +1159,13 @@
               <button type="button" class="vi-link" data-doc="doc-a-about">
                 About &amp; methods
               </button>
+              <a
+                class="vi-link"
+                href="manuscript/main_v2.pdf"
+                target="_blank"
+                rel="noopener"
+                >Read the paper &nearr;</a
+              >
             </div>
           </div>
 
@@ -2429,7 +2498,7 @@
               <div class="panel-head">
                 <div class="panel-titles">
                   <h2 class="panel-title">Selection</h2>
-                  <span class="panel-meta">validated era C products only</span>
+                  <span class="panel-meta">validated Era C products only</span>
                 </div>
               </div>
               <div class="proj-controls">
@@ -2547,7 +2616,7 @@
               <div class="panel-head">
                 <div class="panel-titles">
                   <h2 class="panel-title">Ensemble band</h2>
-                  <span class="panel-meta" id="projBandMeta">era C · median + 25–75 %</span>
+                  <span class="panel-meta" id="projBandMeta">Era C · median + 25–75 %</span>
                 </div>
                 <div class="panel-actions">
                   <select id="projState" class="panel-ctl" aria-label="State" hidden></select>
@@ -2630,7 +2699,7 @@
               <div class="panel-titles">
                 <h2 class="panel-title">Future drought events</h2>
                 <span class="panel-meta" id="projEventsMeta"
-                  >frozen runs analysis on era-C medians vs the era-B 1981&#8211;2014 baseline</span
+                  >frozen runs analysis on Era-C medians vs the Era-B 1981&#8211;2014 baseline</span
                 >
               </div>
               <div class="panel-actions">
@@ -2649,8 +2718,8 @@
                     <th scope="col" class="num">Base ev/yr</th>
                     <th scope="col" class="num">Era-C ev/yr</th>
                     <th scope="col" class="num">Freq ratio</th>
-                    <th scope="col" class="num">Mean dur (base &#8594; era C)</th>
-                    <th scope="col" class="num">Max dur era C</th>
+                    <th scope="col" class="num">Mean dur (base &#8594; Era C)</th>
+                    <th scope="col" class="num">Max dur Era C</th>
                     <th scope="col" class="num">Sev ratio</th>
                     <th scope="col" class="num">Mean agr. (of 8)</th>
                     <th scope="col" class="num">Valid months</th>
@@ -2691,7 +2760,7 @@
               <div class="vi-title">
                 Drought to 2100 <span class="vi-tag">v2.0</span>
                 <span class="vi-hint"
-                  >How drought changes from the era-B 1981&ndash;2014
+                  >How drought changes from the Era-B 1981&ndash;2014
                   baseline to the model windows &mdash; simulations, never
                   forecasts.</span
                 >
@@ -2706,7 +2775,7 @@
               <div class="panel-head">
                 <div class="panel-titles">
                   <h2 class="panel-title">Selection</h2>
-                  <span class="panel-meta">validated era C products · era-B 1981–2014 baseline (D6)</span>
+                  <span class="panel-meta">validated Era C products · Era-B 1981–2014 baseline (D6)</span>
                 </div>
               </div>
               <div class="proj-controls">
@@ -2814,12 +2883,12 @@
               </div>
               <ul class="table-help" id="sumCaveats" style="margin: 10px 16px; padding-left: 18px">
                 <li>
-                  <b>Projections are simulations, not forecasts</b> (era C,
+                  <b>Projections are simulations, not forecasts</b> (Era C,
                   QDM-bias-corrected CMIP6, 8-model committed subset): no model
                   reproduces the actual weather of any future year.
                 </li>
                 <li>
-                  <b>The comparison baseline is the era-B Gridded Multi-Source
+                  <b>The comparison baseline is the Era-B Gridded Multi-Source
                   Product 1981–2014 record</b> (34 years) — window per register
                   D6; the future windows
                   are 15–20 years, and every statistic reports its sample size.
@@ -2841,7 +2910,7 @@
                 <li>
                   <b>Historical seam uncertainty (X7):</b> the two historical
                   records disagree by a median <span id="sumSeamVal">&hellip;</span> z
-                  per district (1 SD of era A &minus; era B SPEI-12 over
+                  per district (1 SD of Era A &minus; Era B SPEI-12 over
                   1981&ndash;2014, <span id="sumSeamN">&hellip;</span> districts).
                   This is a measured disagreement between the records, not a
                   projection confidence interval; per-district values are in
@@ -2849,29 +2918,29 @@
                   table.
                 </li>
                 <li>
-                  <b>PET seam:</b> era C SPEI uses Hargreaves PET on corrected
-                  temperature; era B uses ERA5-Land reanalysis PET (documented
+                  <b>PET seam:</b> Era C SPEI uses Hargreaves PET on corrected
+                  temperature; Era B uses ERA5-Land reanalysis PET (documented
                   seam, never bridged). Its sensitivity is a registered
                   follow-up (O14/E16).
                 </li>
               </ul>
               <p class="ev-verify" style="margin: 4px 16px 12px">
                 How these numbers are made:
-                <a href="#data/k-methodology/method-era-c">era-C chain</a> ·
+                <a href="#data/k-methodology/method-era-c">Era-C chain</a> ·
                 <a href="#data/k-methodology/method-events">event rule</a> ·
-                <a href="#data/k-methodology/method-crossval">era A↔B seam</a>
+                <a href="#data/k-methodology/method-crossval">Era A↔B seam</a>
               </p>
             </section>
           </div>
         </div>
 
-        <!-- ============ VIEW 9: ATLAS CONTEXT 1901–2025 (era A, M6.3) ============ -->
+        <!-- ============ VIEW 9: ATLAS CONTEXT 1901–2025 (Era A, M6.3) ============ -->
         <div id="viewAtlas" role="tabpanel" aria-labelledby="tabAtlas" hidden>
           <div class="view-intro is-compact" id="introAtlas" aria-label="Workspace introduction">
             <span class="vi-step">8</span>
             <div class="vi-body">
               <div class="vi-title">
-                Atlas 1901&ndash;2025 <span class="vi-tag">era A</span>
+                Atlas 1901&ndash;2025 <span class="vi-tag">Era A</span>
                 <span class="vi-hint"
                   >The Drought Atlas reconstruction &mdash; 125 years of SPEI,
                   era-labelled, never spliced with the observed record.</span
@@ -2933,7 +3002,7 @@
                 </div>
               </div>
               <p class="table-help" id="atlasScrubNote">
-                Loading the era-A store…
+                Loading the Era-A store…
               </p>
             </section>
 
@@ -2980,8 +3049,8 @@
                   licence are rendered in the banner from the data contract.
                 </li>
                 <li>
-                  <b>Never spliced</b> with the era-B Gridded Multi-Source
-                  Product or era-C projections: the 1981–2025 overlap is
+                  <b>Never spliced</b> with the Era-B Gridded Multi-Source
+                  Product or Era-C projections: the 1981–2025 overlap is
                   cross-validation material (the <code>#crossval</code>
                   panel), never one continuous line.
                 </li>
@@ -3003,7 +3072,7 @@
                   (not missing data, and never filled).
                 </li>
                 <li>
-                  <a href="#data/k-methodology/method-crossval">How the era A↔B comparison is made →</a>
+                  <a href="#data/k-methodology/method-crossval">How the Era A↔B comparison is made →</a>
                 </li>
               </ul>
             </section>
@@ -3011,14 +3080,14 @@
         </div>
 
         <!-- ============ VIEW 9: ERA A vs ERA B CROSS-VALIDATION ============
-             A lens on the Record product (D11): the same 1981-2014 window
+             A lens on the Record product (D11): the same 1981&ndash;2014 window
              read from two independent records and compared, never spliced. -->
         <div id="viewCrossval" role="tabpanel" aria-labelledby="tabCrossval" hidden>
           <div class="view-intro is-compact" id="introCrossval" aria-label="Workspace introduction">
             <span class="vi-step">9</span>
             <div class="vi-body">
               <div class="vi-title">
-                Cross-validation <span class="vi-tag">era A &harr; B</span>
+                Cross-validation <span class="vi-tag">Era A &harr; B</span>
                 <span class="vi-hint"
                   >Two independent records over the same 1981&ndash;2014
                   window, compared &mdash; never merged into one series.</span
@@ -3048,7 +3117,7 @@
                 <div class="proj-field">
                   <label class="proj-label" for="cvMetric">Map statistic</label>
                   <select id="cvMetric" class="panel-ctl" aria-label="Map statistic">
-                    <option value="bias" selected>Bias &mdash; era B minus era A (default)</option>
+                    <option value="bias" selected>Bias &mdash; Era B minus Era A (default)</option>
                     <option value="state_agree">Drought-state agreement</option>
                     <option value="r">Correlation r</option>
                     <option value="class_near">Severity class (within one)</option>
@@ -3095,7 +3164,7 @@
                   <span class="panel-meta" id="cvMapMeta">&mdash;</span>
                 </div>
               </div>
-              <div id="cvMap" class="proj-map" style="height: 440px" role="img" aria-label="Choropleth map of era A versus era B agreement by district"></div>
+              <div id="cvMap" class="proj-map" style="height: 440px" role="img" aria-label="Choropleth map of Era A versus Era B agreement by district"></div>
               <div id="cvLegend" class="proj-legend" aria-hidden="true"></div>
               <p class="table-help" id="cvMapNote">loading&hellip;</p>
             </section>
@@ -3185,7 +3254,7 @@
             <span class="vi-step">10</span>
             <div class="vi-body">
               <div class="vi-title">
-                District profile <span class="vi-tag">era B</span>
+                District profile <span class="vi-tag">Era B</span>
                 <span class="vi-hint"
                   >One district: the headline answer, all ten indicators for
                   the selected month, its long-term trend, drought events and
@@ -3443,7 +3512,7 @@
                       </div>
                       <div class="flow-card flow-card--bench">
                         <b>validation-studies/</b>
-                        <span>IMD benchmark &middot; era A vs B overlap</span>
+                        <span>IMD benchmark &middot; Era A vs B overlap</span>
                       </div>
                     </div>
                   </div>
@@ -3522,6 +3591,28 @@
                   >ankitdeshmukh.com</a
                 >.
               </p>
+              <h3>Read the work in detail</h3>
+              <p>
+                The open-access manuscripts document the data sources,
+                standardisation, event definition, validation and era
+                handling behind every number on this site.
+              </p>
+              <div class="doc-cta-row">
+                <a
+                  class="btn btn-ghost"
+                  href="manuscript/main_v2.pdf"
+                  target="_blank"
+                  rel="noopener"
+                  >Read the v2.0 manuscript (PDF)</a
+                >
+                <a
+                  class="btn btn-ghost"
+                  href="manuscript/scientific-data/manuscript.pdf"
+                  target="_blank"
+                  rel="noopener"
+                  >Scientific Data descriptor (PDF)</a
+                >
+              </div>
               <h3>Products and lenses</h3>
               <ol>
                 <li>
@@ -3531,12 +3622,12 @@
                   District profile.
                 </li>
                 <li>
-                  <em>Projections</em> (2015&ndash;2100) &mdash; era-C CMIP6
+                  <em>Projections</em> (2015&ndash;2100) &mdash; Era-C CMIP6
                   simulations under SSP2-4.5 and SSP5-8.5: Future Projections
                   and Drought to 2100. Never a forecast.
                 </li>
                 <li>
-                  <em>Atlas</em> (1901&ndash;2025) &mdash; the era-A SPEI
+                  <em>Atlas</em> (1901&ndash;2025) &mdash; the Era-A SPEI
                   reconstruction, mapped by district and kept separate from the
                   Record.
                 </li>
@@ -3729,7 +3820,7 @@
                       they compare with the modern record?
                     </td>
                     <td>
-                      Year scrubber, district choropleth, long-run events, era-A
+                      Year scrubber, district choropleth, long-run events, Era-A
                       context, CSV.
                     </td>
                   </tr>
@@ -3914,7 +4005,7 @@
               record against a source that shares none of its inputs: IMD
               station-interpolated gridded observations, processed with the same
               indicator code, the same 1981–2020 base and the same calibration
-              gates as era B. SPI is like-for-like (rainfall only); SPEI also
+              gates as Era B. SPI is like-for-like (rainfall only); SPEI also
               changes the PET method and is labelled accordingly.
             </p>
             <div id="imdValidation" aria-live="polite">
@@ -4631,6 +4722,31 @@
               file carries and the settings to record &mdash; is described in
               section&nbsp;F (Reproducibility).
             </p>
+            <div class="dl-manuscript">
+              <h3 class="dl-cite-h">Read the manuscript</h3>
+              <p class="small">
+                The archival scientific description of the platform, its
+                three eras and its method gates is published as an open-access
+                manuscript. Both editions are linked here; cite the archived
+                version below.
+              </p>
+              <div class="doc-cta-row">
+                <a
+                  class="btn btn-ghost"
+                  href="manuscript/main_v2.pdf"
+                  target="_blank"
+                  rel="noopener"
+                  >v2.0 manuscript (PDF)</a
+                >
+                <a
+                  class="btn btn-ghost"
+                  href="manuscript/scientific-data/manuscript.pdf"
+                  target="_blank"
+                  rel="noopener"
+                  >Scientific Data descriptor (PDF)</a
+                >
+              </div>
+            </div>
             <div class="dl-citation">
               <h3 class="dl-cite-h">Version and citation</h3>
               <p class="mono small" id="methCitation">&mdash;</p>
@@ -4728,13 +4844,13 @@
               <article class="ev-method" id="method-era-c">
                 <h3>Era C projection chain <button type="button" class="ev-anchor" data-anchor="method-era-c">Copy anchor</button></h3>
                 <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
-                <p>CMIP6 historical and SSP simulations are interpolated to 0.25°, bias-corrected with monthly quantile mapping (QDM; Cannon et al. 2015) against IMD 0.25° reference data over 1981–2020, and bounded to [−5, +5] with clip counts reported. PET uses Hargreaves–Samani identically on reference and model temperature (the era seam with era B ERA5-Land PET is documented, never bridged). SPI/SPEI are computed on the grid, aggregated to districts, and summarised as ensemble median, p25/p75, threshold-agreement counts and direction-of-change counts over the honest 8-model subset. Projections are simulations, never forecasts.</p>
+                <p>CMIP6 historical and SSP simulations are interpolated to 0.25°, bias-corrected with monthly quantile mapping (QDM; Cannon et al. 2015) against IMD 0.25° reference data over 1981–2020, and bounded to [−5, +5] with clip counts reported. PET uses Hargreaves–Samani identically on reference and model temperature (the era seam with Era B ERA5-Land PET is documented, never bridged). SPI/SPEI are computed on the grid, aggregated to districts, and summarised as ensemble median, p25/p75, threshold-agreement counts and direction-of-change counts over the honest 8-model subset. Projections are simulations, never forecasts.</p>
               </article>
 
               <article class="ev-method" id="method-crossval">
-                <h3>Era A ↔ era B cross-validation <button type="button" class="ev-anchor" data-anchor="method-crossval">Copy anchor</button></h3>
+                <h3>Era A ↔ Era B cross-validation <button type="button" class="ev-anchor" data-anchor="method-crossval">Copy anchor</button></h3>
                 <p class="ev-meta">methodology <span data-method-version>—</span> · page revised 2026-11-21</p>
-                <p>The Atlas reconstruction (era A) and the Gridded Multi-Source Product (era B) are compared over their <strong>1981–2014</strong> overlap (register D6) for the two shared timescales, SPEI-1 and SPEI-12. Metrics are Pearson r, bias (B − A), RMSD, drought-state agreement, both-drought co-occurrence and McKee-class agreement. The per-district SD of the difference is the X7 seam uncertainty: a measured historical disagreement, never a projection confidence interval. The two records are never averaged or spliced.</p>
+                <p>The Atlas reconstruction (Era A) and the Gridded Multi-Source Product (Era B) are compared over their <strong>1981–2014</strong> overlap (register D6) for the two shared timescales, SPEI-1 and SPEI-12. Metrics are Pearson r, bias (B − A), RMSD, drought-state agreement, both-drought co-occurrence and McKee-class agreement. The per-district SD of the difference is the X7 seam uncertainty: a measured historical disagreement, never a projection confidence interval. The two records are never averaged or spliced.</p>
               </article>
 
               <article class="ev-method" id="method-missing">
@@ -4972,7 +5088,7 @@
                 </table>
               </div>
               <p class="table-help">
-                Partition keys are directories, not columns. Era A and era C
+                Partition keys are directories, not columns. Era A and Era C
                 stores are provisioned at publish time (they are not in the git
                 checkout), so their queries 404 until then — the catalog still
                 lists every exact path.
@@ -4989,7 +5105,7 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td>district_month<br /><span class="table-help">observed · atlas · projections · members</span></td>
+                      <td><code>district_month</code><br /><span class="cell-sub">observed · atlas · projections · members</span></td>
                       <td>
                         <code>district_id</code> (string slug) ·
                         <code>year</code> (int16) · <code>month</code> (int8,
@@ -5039,8 +5155,8 @@
                 <li>
                   <b>Districts</b> — <code>state-district</code>, lower-case and
                   hyphenated: <code>gujarat-ahmedabad</code>,
-                  <code>andaman-and-nicobar-islands-nicobars</code>. 724 in era B,
-                  718 in era A (six islands have no Atlas cells), 720 in era C.
+                  <code>andaman-and-nicobar-islands-nicobars</code>. 724 in Era B,
+                  718 in Era A (six islands have no Atlas cells), 720 in Era C.
                 </li>
                 <li>
                   <b>Era B variables</b> — <code>spi_01/03/06/12</code>,
@@ -5223,7 +5339,7 @@ LIMIT 15;</pre>
                   <tbody>
                     <tr>
                       <td>404 on an <code>atlas/</code> or <code>projections/</code> path</td>
-                      <td>era A/C store not provisioned in this checkout</td>
+                      <td>Era A/C store not provisioned in this checkout</td>
                       <td>published at release; see N</td>
                     </tr>
                     <tr>
@@ -5288,13 +5404,13 @@ LIMIT 15;</pre>
               <ul>
                 <li>
                   <b>2.0.0 — 2026-11-22</b> &mdash; Three labelled eras in one
-                  queryable record: the Drought Atlas reconstruction (era A,
-                  1901&ndash;2025), the gridded multi-source product (era B,
+                  queryable record: the Drought Atlas reconstruction (Era A,
+                  1901&ndash;2025), the gridded multi-source product (Era B,
                   1981&ndash;2026-09) and an 8-model committed subset of the
-                  22-model bias-corrected CMIP6 archive (era C, 2015&ndash;2100); a product-first
+                  22-model bias-corrected CMIP6 archive (Era C, 2015&ndash;2100); a product-first
                   navigation with a guided tour and hover explainers; the Engine
                   Lab (SQL over Parquet in the browser);
-                  era A &harr; era B cross-validation and seam uncertainty; an
+                  Era A &harr; Era B cross-validation and seam uncertainty; an
                   independent IMD benchmark (719 districts, median r 0.60&ndash;0.71,
                   state agreement 82&ndash;87&nbsp;%); Documentation A&ndash;P
                   including the SQL field reference; bulk data moved to an
@@ -5362,6 +5478,9 @@ LIMIT 15;</pre>
                     rel="noopener"
                     >Research Tools</a
                   >
+                  <a href="manuscript/main_v2.pdf" target="_blank" rel="noopener"
+                    >Manuscript (PDF)</a
+                  >
                   <a
                     href="https://ankitdeshmukh.com/post/"
                     target="_blank"
@@ -5411,7 +5530,7 @@ LIMIT 15;</pre>
       <div class="boot-card">
         <img
           class="boot-logo"
-          src="assets/images/logo.svg?v=2026-11-26a"
+          src="assets/images/logo.svg?v=2026-11-26b"
           width="60"
           height="60"
           alt=""
@@ -5464,7 +5583,7 @@ LIMIT 15;</pre>
           return;
         }
 
-        var ASSET_VERSION = "2026-11-26a";
+        var ASSET_VERSION = "2026-11-26b";
         var LIBS = {
           L: {
             local: "assets/js/vendor/leaflet.js",

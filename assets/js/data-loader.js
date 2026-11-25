@@ -226,7 +226,7 @@
   /* ------------------------------------------------------------ loaders -- */
   /* ---- bulk-data pointer (R2 snapshots, M7.1) ---------------------------
    * data/data-source.json is committed with the code and names the immutable
-   * snapshot that serves the bulk artifacts (the Parquet store and the era-B
+   * snapshot that serves the bulk artifacts (the Parquet store and the Era-B
    * wide CSVs). Absent, or with base:null, everything stays same-origin —
    * which is what a bare clone and local development use. Only bulk data
    * moves: metadata.json, status.json, reality_checks.json and the boundary

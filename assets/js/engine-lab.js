@@ -101,13 +101,20 @@
 
   function renderCatalog(cat) {
     const tb = $("elCatalogTable").querySelector("tbody");
-    tb.innerHTML = (cat.variables || []).map((v) =>
-      "<tr><td><b>" + esc(displayLabel(v.label)) + "</b> <span class=\"mono\">" +
-      esc(v.id) + "</span></td>" +
-      "<td>" + esc((v.eras || []).join(", ")) + "</td>" +
-      "<td class=\"num\">" + esc(observedYears(v, cat)) + "</td>" +
-      "<td class=\"num\">" + filesOf(v) + "</td></tr>"
-    ).join("");
+    const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    tb.innerHTML = (cat.variables || []).map((v) => {
+      // The catalog id is useful for SQL, but it must not read as a second
+      // name ("VCI vci"). Show it only when it differs from the display label,
+      // and set it on its own meta line.
+      const label = displayLabel(v.label);
+      const idLine = norm(v.id) === norm(label)
+        ? ""
+        : "<span class=\"mono el-var-id\">" + esc(v.id) + "</span>";
+      return "<tr><td><b>" + esc(label) + "</b>" + idLine + "</td>" +
+        "<td>" + esc((v.eras || []).join(", ")) + "</td>" +
+        "<td class=\"num\">" + esc(observedYears(v, cat)) + "</td>" +
+        "<td class=\"num\">" + filesOf(v) + "</td></tr>";
+    }).join("");
     $("elCatalogMeta").textContent =
       "data/parquet/catalog.json · " + (cat.variables || []).length +
       " variables · " + fileCount(cat) + " Parquet files";

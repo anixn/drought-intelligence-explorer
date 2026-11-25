@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------
- * DIE v2.0 — Atlas 1901–2025 (#atlas, task M6.3 / era A).
+ * DIE v2.0 — Atlas 1901–2025 (#atlas, task M6.3 / Era A).
  *
- * The era-A scrubber surface: the Drought Atlas of India reconstruction
+ * The Era-A scrubber surface: the Drought Atlas of India reconstruction
  * (SPEI at 1/4/12-month scales, 0.05° grid area-weighted onto the 724-district
  * fabric, register OD4) rendered one year at a time. Per-year partition
  * fetch only (M6.3 rule): one query per frame against the committed store
@@ -10,7 +10,7 @@
  * Honesty rules honoured here:
  *  - Era A is a RECONSTRUCTION — the banner renders attribution from the
  *    data contract (metadata.json → era_a.source), never hand-typed.
- *  - NEVER spliced with era B / era C (R2): this surface shows era A alone.
+ *  - NEVER spliced with Era B / Era C (R2): this surface shows Era A alone.
  *  - The six island districts have no Atlas grid cells (documented ocean
  *    mask): grey, never imputed (R10).
  *  - No synthetic placeholders (R3): a missing partition is a loud note.
@@ -61,10 +61,10 @@
     return catalog && catalog.eras && catalog.eras.atlas;
   }
   function classifyFn() {
-    // era A z-scores share the McKee 9-class table with the era-B SPEI family.
+    // Era A z-scores share the McKee 9-class table with the Era-B SPEI family.
     // The Atlas variable ids are catalog ids (spei_01/spei_04/spei_12), while
     // DIE.indicatorById is keyed by metadata ids (spei_1/spei_12). SPEI-4 has
-    // no era-B twin at all; its class table is identical to the SPEI family's.
+    // no Era-B twin at all; its class table is identical to the SPEI family's.
     const m = /^([a-z]+)_0?(\d+)$/.exec(state.variable);
     const metaId = m ? m[1] + "_" + Number(m[2]) : state.variable;
     return DIE.indicatorById &&
@@ -118,8 +118,8 @@
       (ec && ec.label ? "Published as <b>" + esc(ec.label) + "</b>. " : "") +
       "SPEI at 1-, 4- and 12-month scales on the 724-district fabric, " +
       "area-weighted from the 0.05° grid (route OD4). Source: " + cite +
-      " (DOI " + doi + ", " + lic + "). <b>Never spliced</b> with the era-B " +
-      "Gridded Multi-Source Product or era-C projections — the 1981–2025 " +
+      " (DOI " + doi + ", " + lic + "). <b>Never spliced</b> with the Era-B " +
+      "Gridded Multi-Source Product or Era-C projections — the 1981–2025 " +
       "overlap is cross-validation material, not a continuous record (R2).";
   }
 
@@ -154,7 +154,7 @@
     const note = $("atlasScrubNote"), meta = $("atlasMapMeta");
     const mapNote = $("atlasMapNote");
     if (!DIE.Engine || !DIE.registry || !DIE.boundaries) return;
-    meta.textContent = "querying the era-A store…";
+    meta.textContent = "querying the Era-A store…";
     try {
       const byD = await yearMap();
       if (mySeq !== seq) return;
@@ -178,13 +178,13 @@
         });
       if (mySeq !== seq) return;
 
-      meta.textContent = "era A · " + (VAR_LABEL[state.variable] || state.variable) +
+      meta.textContent = "Era A · " + (VAR_LABEL[state.variable] || state.variable) +
         " · " + MONTHS[state.month - 1] + " " + state.year;
       const n = vals.size;
       mapNote.textContent =
         n + " districts with values at " + MONTHS[state.month - 1] + " " +
         state.year + " (the six island districts have no Atlas grid cells — " +
-        "grey, never imputed). McKee classes on the era-A z-scores; click any " +
+        "grey, never imputed). McKee classes on the Era-A z-scores; click any " +
         "district to zoom it into the frame. A reconstruction, not an " +
         "observation: pre-1951 station density is lower (quantified in " +
         "#crossval).";
@@ -192,7 +192,7 @@
         // Honest empty-frame guidance: the Atlas defines these accumulations
         // only after their warm-up within the calendar year, so some month
         // selections legitimately have no values.
-        let why = "No era-A values exist for this frame.";
+        let why = "No Era-A values exist for this frame.";
         if (state.variable === "spei_12") {
           why = "SPEI-12 is a 12-month accumulation and the Atlas series is " +
             "defined only in December — choose December to see this map.";
@@ -229,12 +229,12 @@
         (VAR_LABEL[state.variable] || state.variable) + " · " +
         MONTHS[state.month - 1] + " " + state.year;
       $("atlasShareNote").textContent =
-        "Shares of the LAEA national area (3,266,386 km² registry; era-A " +
+        "Shares of the LAEA national area (3,266,386 km² registry; Era-A " +
         "comparable " + area.toFixed(0) + " km²) in each McKee drought class " +
         "for the displayed month: moderate ≤ −1.0, severe ≤ −1.5, " +
         "extreme ≤ −2.0 (cumulative); wetter-than-normal = z > +0.5. " +
         "n = districts with data this month.";
-      note.textContent = "era A live · one year per frame, cached per " +
+      note.textContent = "Era A live · one year per frame, cached per " +
         "(timescale, year)";
       renderLegend(ind);
     } catch (err) {
@@ -251,7 +251,7 @@
   function renderLegend(ind) {
     const el = $("atlasLegend");
     if (!ind || !ind.classes) {
-      el.innerHTML = '<span class="legend-head">McKee z-classes (era-A ' +
+      el.innerHTML = '<span class="legend-head">McKee z-classes (Era-A ' +
         "classification table unavailable in this session)</span>";
       return;
     }

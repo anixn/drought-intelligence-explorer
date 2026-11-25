@@ -397,16 +397,23 @@
       try { btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); }
       catch (e) { /* older browsers: leave the tab bar as-is */ }
     }
-    // The footer export button names the active workspace's primary export.
+    // The footer export button triggers the active workspace's primary
+    // export. Keep the visible label short and stable ("Export") so the
+    // five-across rail stays even at the 10.5 px floor; the workspace name
+    // moves into the tooltip and accessible name.
+    const titles = {
+      overview: 'Map PNG', historical: 'Ranking CSV',
+      events: 'Events CSV', propagation: 'Downloads', engine: 'Results CSV',
+      projections: 'Downloads', summary: 'Summary CSV',
+      crossval: 'Comparison CSV', district: 'District CSV', data: 'Downloads'
+    };
+    const exportName = titles[tabId] || 'Export';
     const lbl = $('footExportLabel');
-    if (lbl) {
-      const titles = {
-        overview: 'Map PNG', historical: 'Ranking CSV',
-        events: 'Events CSV', propagation: 'Downloads', engine: 'Results CSV',
-        projections: 'Downloads', summary: 'Summary CSV',
-        crossval: 'Comparison CSV', district: 'District CSV', data: 'Downloads'
-      };
-      lbl.textContent = titles[tabId] || 'Export';
+    if (lbl) lbl.textContent = 'Export';
+    const exp = $('footExportBtn');
+    if (exp) {
+      exp.title = 'Export — ' + exportName;
+      exp.setAttribute('aria-label', 'Export ' + exportName);
     }
     renderEraPill(tabId);
   }
@@ -423,7 +430,7 @@
    * Era A (reconstruction), B (gridded product) and C (projections) are never
    * silently spliced; the pill is the always-visible receipt for that rule. */
   const ERA_BY_TAB = { atlas: 'a', projections: 'c', summary: 'c' };
-  /* The era-B span is extended by the monthly refresh, so every year range is
+  /* The Era-B span is extended by the monthly refresh, so every year range is
    * read from the contract (metadata.period) instead of being hard-coded: a
    * stale "1981–2025" in the nav or the pill would be an era-honesty defect
    * (R2) the moment the record moves on. */
@@ -458,19 +465,19 @@
       short: 'Era <b>C</b> &middot; Projections',
       long:
         'Era C — Bias-corrected CMIP6 projections under SSP2-4.5 and ' +
-        'SSP5-8.5. Simulations, never forecasts; never spliced with era B.'
+        'SSP5-8.5. Simulations, never forecasts; never spliced with Era B.'
     },
     'c-minus-b': {
       short: 'Era <b>C</b> &minus; B &middot; Delta to 2100',
       long:
-        'A per-era delta: era-C projections compared against the era-B ' +
+        'A per-era delta: Era-C projections compared against the Era-B ' +
         '1981–2014 baseline. Two eras are computed separately and shown ' +
         'side by side — never as one continuous series.'
     },
     'a-vs-b': {
       short: 'Era <b>A</b> &harr; B &middot; Compared',
       long:
-        'Era A (Drought Atlas reconstruction, station-based SPEI) and era B ' +
+        'Era A (Drought Atlas reconstruction, station-based SPEI) and Era B ' +
         '(Gridded Multi-Source Product, CHIRPS precipitation with ERA5-Land ' +
         'PET) compared over their 1981–2014 overlap. Two independent records ' +
         'read side by side — never merged, never spliced into one series.'
@@ -712,6 +719,22 @@
     $('footCollapseBtn').addEventListener('click', () => {
       if (DIE.Telemetry) DIE.Telemetry.track('panel_toggle', { control: 'sidebar_footer', collapsed: true });
       setFiltersCollapsed(true, true);
+    });
+    // Collapsed-rail quick actions mirror the footer controls. Route each one
+    // to its canonical button so the existing handlers, telemetry and
+    // permalink wiring stay the single source of truth. (data-share buttons
+    // are wired directly by permalink.js.)
+    document.querySelectorAll('[data-mini-action]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const map = {
+          docs: 'footDocsBtn',
+          reset: 'resetBtn',
+          export: 'footExportBtn',
+          expand: 'sidebarExpand'
+        };
+        const target = $(map[btn.dataset.miniAction]);
+        if (target) target.click();
+      });
     });
 
     // lens tabs (the Documentation group has no lens button - it opens from
@@ -1176,7 +1199,7 @@
   }
 
   /* ================================================ RAIL CONSOLES (M7.4) ==
-   * Read-outs that mirror the era-C and era-A panel controls, plus quick
+   * Read-outs that mirror the Era-C and Era-A panel controls, plus quick
    * presets that drive those same controls through their own change events.
    * The panel select stays the single source of truth, so no analytic code is
    * duplicated and a permalink restores both the panel and the rail. */
@@ -1277,7 +1300,7 @@
       });
     });
 
-    // The era-C/era-A modules fill some option lists during their first
+    // The Era-C/Era-A modules fill some option lists during their first
     // render (projection indicators, atlas months). Mirror them whenever the
     // list changes so the rail can never show a stale "—".
     if (window.MutationObserver) {
@@ -1354,12 +1377,12 @@
     el.innerHTML =
       '<div class="table-scroll"><table class="comp-table"><thead><tr>' +
       '<th>Indicator</th><th class="num">Districts</th><th class="num">Pairs</th>' +
-      '<th class="num">Median r</th><th class="num">Bias (IMD − era B)</th>' +
+      '<th class="num">Median r</th><th class="num">Bias (IMD − Era B)</th>' +
       '<th class="num">RMSD</th><th class="num">State</th><th class="num">Class</th>' +
       '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
       '<p class="table-help">Window ' + d.period[0] + '–' + d.period[1] +
       ', base ' + d.base[0] + '–' + d.base[1] +
-      '. Bias is mean(IMD − era B): a negative value means the independent IMD ' +
+      '. Bias is mean(IMD − Era B): a negative value means the independent IMD ' +
       'reference is drier. “State” is agreement on which side of −1.00 a month ' +
       'falls; “class” is exact McKee-class agreement (the near-normal bin ' +
       'dominates it, as expected).</p>' +
@@ -1367,7 +1390,7 @@
         ? '<h3 class="gov-h">Trend detection — Mann–Kendall + Sen, BH-FDR q = 0.05</h3>' +
           '<div class="table-scroll"><table class="comp-table"><thead><tr>' +
           '<th>Indicator</th><th class="num">IMD significant</th>' +
-          '<th class="num">era B significant</th><th class="num">Both</th>' +
+          '<th class="num">Era B significant</th><th class="num">Both</th>' +
           '<th class="num">Sign agreement</th></tr></thead><tbody>' + trends +
           '</tbody></table></div>' +
           '<p class="table-help">Detection power differs (the records differ in ' +
@@ -1742,7 +1765,7 @@
     box.innerHTML =
       '<span class="ev-k">Receipts</span>' +
       chip('Era B', 'Gridded Multi-Source Product') +
-      chip('Product', productLabel(ind)) +
+      chip('Source', productLabel(ind)) +
       chip('Window', windowText) +
       chip('Baseline', baselineLabel(ind)) +
       chip('n', nText) +

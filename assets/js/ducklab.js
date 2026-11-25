@@ -311,7 +311,7 @@
   function intYear(y) {
     const n = Number(y);
     if (!Number.isInteger(n) || n < 1900 || n > 2100) {
-      throw newEngineError('bad-year', 'year must be an integer 1900-2100: ' + y);
+      throw newEngineError('bad-year', 'year must be an integer 1900–2100: ' + y);
     }
     return n;
   }
@@ -345,7 +345,7 @@
   }
 
   // Arrow table → plain objects (the UI layer consumes rows, not Arrow).
-  // int64 columns (era-C year/month are int64) arrive as BigInt; the UI does
+  // int64 columns (Era-C year/month are int64) arrive as BigInt; the UI does
   // plain arithmetic on them, so widen to Number centrally (>2^53 not used).
   function toRows(table) {    if (!table) return [];
     const widen = (v) => (typeof v === "bigint" ? Number(v) : v);
@@ -391,14 +391,14 @@
   }
 
   /* Era A (atlas reconstruction): one year of one scale, all districts.
-   * Layout mirrors era B exactly (data/parquet/atlas/variable=<id>/
+   * Layout mirrors Era B exactly (data/parquet/atlas/variable=<id>/
    * year=<yyyy>/part-0.parquet), so one partition per fetch (M6.3). */
   async function atlasYear(opts) {
     const cat = state.catalog || (await ensureCatalog());
     const eraA = cat.eras && cat.eras.atlas;
     if (!eraA || !eraA.available) {
       throw newEngineError('era-a-unavailable',
-        'era A has no published store yet (promotion pending; R3).');
+        'Era A has no published store yet (promotion pending; R3).');
     }
     const v = catalogVariable(opts.variable);
     const files = (v.files && v.files.atlas) || [];
@@ -428,7 +428,7 @@
       ' ORDER BY month, district_id'));
   }
 
-  /* Era A vs era B cross-validation (task M6.6). The product is a built
+  /* Era A vs Era B cross-validation (task M6.6). The product is a built
    * artifact (validation-studies/crossval/01_build_overlap.py), not an
    * on-the-fly join: the UI reads the precomputed per-district metrics (the
    * map/table source) and the area-weighted monthly agreement series. The
@@ -482,7 +482,7 @@
   }
 
   /* X7 seam uncertainty (task M6.8): the per-district population SD of the
-   * era B - era A difference, computed ONCE by the cross-validation builder
+   * Era B - Era A difference, computed ONCE by the cross-validation builder
    * over the D6 window (1981-2014). SPEI-12 is the series named by the X7
    * memo; it is the value every projection tooltip quotes. Cached: the map
    * tooltip re-evaluates on every hover and must not issue a query each time. */
@@ -507,7 +507,7 @@
     return seamPromise;
   }
 
-  /* One district, one month, every era-B indicator — the district-profile
+  /* One district, one month, every Era-B indicator — the district-profile
    * strip (M10.6). Reads the committed observed Parquet files directly so a
    * direct permalink does not have to download ten wide CSVs first. */
   async function observedAt(opts) {
@@ -561,7 +561,7 @@
     const eraC = cat.eras && cat.eras.projections;
     if (!eraC || !eraC.available) {
       throw newEngineError('era-c-unavailable',
-        'era C has no validated products yet (Owner compute pending); ' +
+        'Era C has no validated products yet (Owner compute pending); ' +
         'surfaces must show fixtures only with FIXTURE banners (R3).');
     }
     const scenario = opts.scenario === 'ssp585' ? 'ssp585' : 'ssp245';

@@ -2,7 +2,7 @@
  * DIE v2.0 — District profile (#/district/<id>, task M10.6).
  *
  * One district, read as a page: the headline answer for the selected month,
- * all ten era-B indicators in one query, the long-term trend, the frozen
+ * all ten Era-B indicators in one query, the long-term trend, the frozen
  * drought-event catalogue, and the era context (B record, A overlap/seam,
  * C projection link). Era labels sit on every block; missing values are shown
  * as no-data and never imputed (R10).
@@ -136,7 +136,7 @@
     $("dpStripMeta").textContent = "Era B · " + dateLabel(ym) +
       (viaEngine ? " · one Parquet query for ten indicators" : " · parsed indicators only");
     note.textContent = viaEngine
-      ? "Values are the same standardised indices as the maps (era B, reference " +
+      ? "Values are the same standardised indices as the maps (Era B, reference " +
         DIE.meta.reference_period + "). Click any indicator to make it the active " +
         "indicator across the dashboard. Missing values are absent, never imputed (R10)."
       : "The DuckDB engine is unavailable in this session, so only indicators already " +
@@ -188,7 +188,7 @@
 
     $("dpTitle").textContent = d.name;
     $("dpSub").textContent = d.state + " · " + ind.label + " · " +
-      dateLabel(ym) + " · era B";
+      dateLabel(ym) + " · Era B";
     $("dpReceipts").textContent =
       "Era B · Gridded Multi-Source Product · record " +
       (ds.availableFrom || DIE.meta.period.start) + "–" +
@@ -356,11 +356,11 @@
         '<a href="' + linkCrossval + '">Open the cross-validation panel →</a></div>' +
       '<div class="dp-era-card" data-era="c"><h3>Era C · CMIP6 projections</h3>' +
         "<p>2015–2100, 8-model committed subset, SSP2-4.5 / SSP5-8.5. Simulations, " +
-        "never forecasts; never spliced with era B.</p>" +
+        "never forecasts; never spliced with Era B.</p>" +
         '<a href="' + linkProjections + '">Open this district in Projections →</a></div>';
 
     $("dpEraNote").textContent =
-      "Eras are labelled and never spliced (R2). Era A and era B are compared only " +
+      "Eras are labelled and never spliced (R2). Era A and Era B are compared only " +
       "over their 1981–2014 overlap (register D6); the seam SD is a measured " +
       "historical disagreement, not a projection confidence interval (X7).";
 
@@ -375,7 +375,7 @@
         " z, seam SD <b>±" + num(row.sd_diff, 2) + " z</b> (SPEI-12).";
     } else {
       aEl.innerHTML = "No Atlas grid cells for this district (documented ocean mask) — " +
-        "era A context is absent, never imputed (R10).";
+        "Era A context is absent, never imputed (R10).";
     }
   }
 
@@ -415,9 +415,9 @@
 
     $("dpBanner").innerHTML =
       "<b>One district, labelled eras.</b> The headline and indicator strip read the " +
-      "era-B Gridded Multi-Source Product (1981–2025) at the selected month; trend and " +
+      "Era-B Gridded Multi-Source Product (1981–2025) at the selected month; trend and " +
       "events use the shared analysis period (" + period.from + "–" + period.to + ", " +
-      (SEASON_LABEL[period.season] || period.season) + "). Era A (Atlas) and era C " +
+      (SEASON_LABEL[period.season] || period.season) + "). Era A (Atlas) and Era C " +
       "(projections) are shown as context only and are never spliced into this record (R2).";
 
     renderHeadline(d, ds, stats);

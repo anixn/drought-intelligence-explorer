@@ -3,7 +3,7 @@
  *
  * The credibility surface: two independent drought records over the same
  * 1981–2014 window, compared — never averaged into one series, never spliced
- * (R2). Era A is the Drought Atlas reconstruction (station-based SPEI); era B
+ * (R2). Era A is the Drought Atlas reconstruction (station-based SPEI); Era B
  * is the Gridded Multi-Source Product (CHIRPS precipitation / ERA5-Land PET).
  * Differences are expected and ARE the content (docs/v2/03 section 6).
  *
@@ -15,7 +15,7 @@
  *
  * Metrics, all with their sample size:
  *   r                  Pearson correlation of the two district series
- *   bias               mean(era B - era A) in z units
+ *   bias               mean(Era B - Era A) in z units
  *   rmsd               root-mean-square difference
  *   state_agree        share of months where both agree on drought (<= -1.0)
  *   both_drought       share of months where both flag drought (co-occurrence)
@@ -37,8 +37,8 @@
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  /* Diverging ramp for bias: negative = era B drier than era A (drought
-   * colours), positive = era B wetter (blue). Sequential warm ramp for the
+  /* Diverging ramp for bias: negative = Era B drier than Era A (drought
+   * colours), positive = Era B wetter (blue). Sequential warm ramp for the
    * agreement metrics (darker = closer agreement). Chrome tokens only; the
    * published class palette is untouched (R1). */
   const DIV_COLORS = ["#7A3E14", "#C9955C", "#E9EDF2", "#9DB8D4", "#2F5F9E"];
@@ -46,13 +46,13 @@
 
   const METRICS = {
     bias: {
-      short: "Bias (era B − era A)",
+      short: "Bias (Era B − Era A)",
       bins: [-0.5, -0.2, 0.2, 0.5],
       colors: DIV_COLORS,
-      labels: ["≤ −0.5 z (era B much drier)", "−0.5 to −0.2 z",
+      labels: ["≤ −0.5 z (Era B much drier)", "−0.5 to −0.2 z",
         "−0.2 to +0.2 z (little bias)", "+0.2 to +0.5 z",
-        "> +0.5 z (era B much wetter)"],
-      head: "Mean difference era B − era A per district, 1981–2014 (z units)",
+        "> +0.5 z (Era B much wetter)"],
+      head: "Mean difference Era B − Era A per district, 1981–2014 (z units)",
       value: (r) => r.bias,
       worst: (r) => Math.abs(r.bias),
       note: "The divergence map: where the CHIRPS/ERA5-Land record sits above " +
@@ -166,7 +166,7 @@
     const w = cv && cv.window ? cv.window : [1981, 2014];
     el.innerHTML =
       "<b>Two independent records, compared — not merged.</b> Era A is the " +
-      "Drought Atlas reconstruction (station-based SPEI); era B is the " +
+      "Drought Atlas reconstruction (station-based SPEI); Era B is the " +
       "Gridded Multi-Source Product (CHIRPS precipitation with ERA5-Land " +
       "PET). Both are standardised separately and keyed to different fitting " +
       "baselines, so a difference here is <b>expected and is the content</b>. " +
@@ -315,7 +315,7 @@
       (state.metric === "bias" ? "|bias|" : m.short);
     $("cvTableNote").textContent =
       "Worst-first ordering, not a ranking of district performance. Seam SD is " +
-      "the per-district population SD of the era B − era A difference over " +
+      "the per-district population SD of the Era B − Era A difference over " +
       "1981–2014 — the X7 seam uncertainty quoted in projection tooltips for " +
       "SPEI-12. It measures historical disagreement between the two records, " +
       "not a confidence interval. Exact class agreement is shown for " +
@@ -345,7 +345,7 @@
       "two records disagree most are the months to read alongside the district " +
       "table; the series is evidence, not a correction.";
     el.setAttribute("aria-label",
-      "Line chart of monthly drought-state agreement between era A and era B, " +
+      "Line chart of monthly drought-state agreement between Era A and Era B, " +
       "1981 to 2014. Mean " + avg.toFixed(1) + " percent, range " +
       lo.toFixed(1) + " to " + hi.toFixed(1) + " percent.");
     if (typeof Plotly === "undefined") {
@@ -417,14 +417,14 @@
     if (DIE.App && DIE.App.citationLines) {
       DIE.App.citationLines().forEach((l) => L.push(l));
     }
-    L.push("# panel: #crossval — era A vs era B agreement");
+    L.push("# panel: #crossval — Era A vs Era B agreement");
     L.push("# indicator: " + state.variable + " (" +
       VAR_LABEL[state.variable] + ")");
-    L.push("# window: 1981-2014 (register D6 comparison window)");
-    L.push("# era A: Drought Atlas of India reconstruction (station-based SPEI)");
-    L.push("# era B: Gridded Multi-Source Product (CHIRPS precipitation, ERA5-Land PET)");
+    L.push("# window: 1981–2014 (register D6 comparison window)");
+    L.push("# Era A: Drought Atlas of India reconstruction (station-based SPEI)");
+    L.push("# Era B: Gridded Multi-Source Product (CHIRPS precipitation, ERA5-Land PET)");
     L.push("# drought threshold: -1.0 z (moderate-class upper bound); class table from data/metadata.json");
-    L.push("# seam SD (sd_diff): per-district population SD of era B - era A over 1981-2014; the X7 seam uncertainty, not a confidence interval");
+    L.push("# seam SD (sd_diff): per-district population SD of Era B - Era A over 1981–2014; the X7 seam uncertainty, not a confidence interval");
     L.push("# built by validation-studies/crossval/01_build_overlap.py; per-district file");
     L.push("# areas: LAEA km2 (shared registry); missing pairs are absent, never imputed (R10)");
     L.push("# map statistic at export time: " + m.short);
