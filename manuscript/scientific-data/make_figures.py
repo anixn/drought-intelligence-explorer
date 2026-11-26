@@ -57,8 +57,7 @@ WIDTH = 7.2
 # Stems produced by matplotlib here. Figures 1 and 2 are Mermaid schematics
 # rendered with Pele by render_schematics.py and are merged into the manifest.
 MATPLOTLIB_STEMS = ["fig03_coverage", "fig04_imd_benchmark", "fig05_atlas_overlap",
-                    "fig06_gcm_validation", "fig07_about", "fig08_record_analyses",
-                    "fig09_events_propagation", "fig10_atlas_projections", "fig11_access_reuse"]
+                    "fig06_gcm_validation", "fig10_atlas_projections", "fig11_access_reuse"]
 
 ERA_A = "#6B7D3A"
 ERA_B = "#22756B"
@@ -459,147 +458,6 @@ def sheet(stem: str, title: str, rows: list[dict[str, Any]],
                  "captures": records}
 
 
-def fig07_about() -> tuple[Any, dict[str, Any]]:
-    """Dashboard overview of purpose, products, technology and positioning."""
-    sentence = ("Purpose, products, technology and research positioning. An interactive, fully client-side "
-                "geospatial platform for exploring drought indicators across Indian districts, built for "
-                "historical analysis and research communication \u2014 not operational monitoring.")
-    cards = [
-        ("Purpose", BLUE,
-         "One queryable district record for India, 1901\u20132100, that keeps reconstruction, "
-         "observation-based gridded products and model projections separate, labelled and "
-         "reproducible. Built for research, teaching and communication."),
-        ("Products", ERA_B,
-         "Era A Atlas 1901\u20132025, Era B gridded 1981\u20132026, Era C projections "
-         "2015\u20132100, and era A\u2013B cross-validation. Twelve dashboard windows, district "
-         "profiles and CSV, Parquet and SQL access."),
-        ("Technology", PURPLE,
-         "Apache Parquet with DuckDB-WASM in a Web Worker, HTTP Range reads over static files, "
-         "Leaflet maps and Plotly charts. No backend, no accounts and no server-side query log; "
-         "the published snapshot is immutable."),
-        ("Positioning", ERA_C,
-         "Complements operational monitors such as the India Drought Monitor and IMD products with "
-         "archive depth, several indicator families, reproducibility and projections. It is a "
-         "research instrument, not an operational warning service."),
-    ]
-    stats = [("724", "districts"), ("36", "States/UTs"), ("10", "indicators"),
-             ("3", "labelled eras"), ("0", "servers")]
-
-    margin, gap = 0.34, 0.22
-    content = WIDTH - 2 * margin
-    col = (content - gap) / 2
-    body_w = col - 0.34
-    lead_lines = wrap_note(sentence, content)
-    card_bodies = [textwrap.wrap(body, max(24, int(body_w / 0.0712))) for _, _, body in cards]
-    card_h = 0.30 + max(len(b) for b in card_bodies) * 0.196 + 0.26
-    strip_h = 0.74
-
-    total = 0.12 + 0.36 + len(lead_lines) * 0.196 + 0.26 + 2 * card_h + 0.22 + 0.30 + strip_h + 0.42
-    total = round(total, 2)
-    fig = plt.figure(figsize=(WIDTH, total))
-    ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, WIDTH); ax.set_ylim(0, total); ax.axis("off")
-
-    def ty(y_in: float) -> float:
-        return total - y_in
-
-    ax.text(margin, ty(0.12), "About the Explorer", fontsize=13, fontweight="bold", va="top")
-    y = 0.12 + 0.36
-    ax.text(margin, ty(y), "\n".join(lead_lines), fontsize=10, va="top", color=MUTED, linespacing=1.40)
-    y += len(lead_lines) * 0.196 + 0.26
-
-    for i, ((heading, color, _), body_lines) in enumerate(zip(cards, card_bodies)):
-        x = margin + (i % 2) * (col + gap)
-        cy = y + (i // 2) * (card_h + 0.22)
-        ax.add_patch(FancyBboxPatch((x, ty(cy + card_h)), col, card_h,
-                                    boxstyle="round,pad=0.004,rounding_size=0.10",
-                                    facecolor="white", edgecolor=color, linewidth=0.9))
-        ax.add_patch(Rectangle((x, ty(cy + 0.05)), col, 0.05, facecolor=color, edgecolor="none"))
-        ax.text(x + 0.17, ty(cy + 0.14), heading, fontsize=11, fontweight="bold", color=color, va="top")
-        ax.text(x + 0.17, ty(cy + 0.44), "\n".join(body_lines), fontsize=10, va="top", color=INK,
-                linespacing=1.40)
-    y += 2 * card_h + 0.22 + 0.30
-
-    box_w = (content - 4 * 0.11) / 5
-    for i, (value, label) in enumerate(stats):
-        x = margin + i * (box_w + 0.11)
-        ax.add_patch(FancyBboxPatch((x, ty(y + strip_h)), box_w, strip_h,
-                                    boxstyle="round,pad=0.004,rounding_size=0.08",
-                                    facecolor=PAPER, edgecolor=GRID, linewidth=0.6))
-        ax.text(x + box_w / 2, ty(y + 0.26), value, fontsize=14, fontweight="bold", ha="center",
-                va="center", color=INK)
-        ax.text(x + box_w / 2, ty(y + 0.52), label, fontsize=10, ha="center", va="center", color=MUTED)
-    ax.text(WIDTH / 2, ty(total - 0.10), "https://drought.ankitdeshmukh.com/", fontsize=10,
-            ha="center", va="bottom", color=MUTED)
-    return fig, {"sentence": sentence,
-                 "cards": [{"heading": h, "body": b} for h, _, b in cards],
-                 "stats": dict(stats)}
-
-
-def fig08_record_analyses() -> tuple[Any, dict[str, Any]]:
-    rows = [
-        {"widths": [6.52], "cells": [{
-            "heading": "Overview \u00b7 current-month drought state",
-            "accent": ERA_B,
-            "image": "overview__mapPanel.png",
-            "crop": (0, 190, 1756, 1210),
-            "callouts": [(0.30, 0.06, 1), (0.665, 0.30, 2), (0.30, 0.50, 3), (0.72, 0.775, 4)],
-            "note": "1 Record month and product label (July 2002) \u00b7 2 McKee nine-class legend \u00b7 3 area-weighted "
-                    "choropleth of the 0.05\u00b0 CHIRPS grid \u00b7 4 district inspector; missing cells stay grey.",
-        }]},
-        {"widths": [3.15, 3.15], "cells": [
-            {"heading": "Historical \u00b7 annual trend",
-             "accent": ERA_B,
-             "image": "historical__trendPanel.png",
-             "crop": (0, 0, 900, 800),
-             "callouts": [(0.46, 0.52, 1), (0.86, 0.30, 2)],
-             "note": "1 Sen slope with 90% rank band \u00b7 2 Mann\u2013Kendall, Hamed\u2013Rao corrected."},
-            {"heading": "Events \u00b7 runs-analysis timeline",
-             "accent": ERA_B,
-             "image": "events__evtTimelinePanel.png",
-             "crop": (0, 0, 1006, 782),
-             "callouts": [(0.50, 0.45, 1)],
-             "note": "Monthly event onsets (1); duration, severity, recovery and censoring all explicit."},
-        ]},
-    ]
-    return sheet("fig08_record_analyses",
-                 "Record analyses: current state, long-term trend and event catalogue",
-                 rows,
-                 "All captures from the live site with the recorded July 2002 default state.")
-
-
-def fig09_events_propagation() -> tuple[Any, dict[str, Any]]:
-    rows = [
-        {"widths": [6.52], "cells": [{
-            "heading": "Drought Events \u00b7 runs-analysis catalogue (2002 start year)",
-            "accent": ERA_B,
-            "image": "events__evtTable.png",
-            "crop": (0, 0, 1745, 812),
-            "callouts": [(0.315, 0.035, 1), (0.745, 0.035, 2)],
-            "note": "1 Onset, termination, duration, peak, severity and recovery for the 285 events starting in "
-                    "2002 \u00b7 2 frozen truncation rules: \u22121.00 z, \u221215% SMA, 30% VCI, three-month minimum.",
-        }]},
-        {"widths": [3.15, 3.15], "cells": [
-            {"heading": "Propagation \u00b7 lag response",
-             "accent": ERA_B,
-             "image": "propagation__propLagChart.png",
-             "crop": (0, 0, 1004, 665),
-             "callouts": [(0.52, 0.30, 1), (0.52, 0.62, 2)],
-             "note": "1 Correlation \u221212 to +12 months \u00b7 2 moving-block bootstrap 95% interval "
-                     "(seed 20261103)."},
-            {"heading": "Propagation \u00b7 optimal-lag summary",
-             "accent": ERA_B,
-             "image": "propagation__propStats.png",
-             "crop": (0, 0, 670, 575),
-             "callouts": [(0.30, 0.22, 1)],
-             "note": "1 Optimal lag, correlation and interval; association is not causation."},
-        ]},
-    ]
-    return sheet("fig09_events_propagation",
-                 "Event forensics and indicator relationships",
-                 rows,
-                 "Event and propagation windows share the frozen v1.0.0 definitions.")
-
-
 def fig10_atlas_projections() -> tuple[Any, dict[str, Any]]:
     rows = [
         {"widths": [3.15, 3.15], "cells": [
@@ -861,10 +719,7 @@ def build() -> dict[str, Any]:
         ("fig04_imd_benchmark", fig05_imd, (imd,)),
         ("fig05_atlas_overlap", fig06_crossval, (cv, geom)),
         ("fig06_gcm_validation", fig07_gcm, (hist, ssp, subset)),
-        ("fig07_about", fig07_about, ()),
-        ("fig08_record_analyses", fig08_record_analyses, ()),
-        ("fig09_events_propagation", fig09_events_propagation, ()),
-        ("fig10_atlas_projections", fig10_atlas_projections, ()),
+                                ("fig10_atlas_projections", fig10_atlas_projections, ()),
         ("fig11_access_reuse", fig11_access_reuse, ()),
     ]:
         fig, data = func(*args); figures[stem] = {"data": data, **save_figure(fig, stem)}; print("built", stem)

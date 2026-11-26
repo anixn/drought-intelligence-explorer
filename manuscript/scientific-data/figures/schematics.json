@@ -12,7 +12,7 @@
       "pdf": {
         "bytes": 22509,
         "path": "figures/fig01_architecture.pdf",
-        "sha256": "eb89a7112146dcb82b898034ebba5699a0dce67d29c3496f0de26a884b076ae8"
+        "sha256": "aa73c19a2219ce942a4deef292a50ee34cfcda9510549fd1f1079422ffbc232b"
       },
       "png": {
         "bytes": 143199,
@@ -34,7 +34,7 @@
       "pdf": {
         "bytes": 25057,
         "path": "figures/fig02_projection_pipeline.pdf",
-        "sha256": "d76cde472ab24e8f1e7a664bf9b40652bffd6223108024ad02ce9b49ff400c07"
+        "sha256": "e3f9fca54421a80bd3ec258e4a6a78f04d4b6fc1d0271bc08b2ac9b19ea1d78a"
       },
       "png": {
         "bytes": 145031,
@@ -45,7 +45,7 @@
       "source": "figures/source/fig02_projection_pipeline.mmd"
     }
   },
-  "generated": "2026-11-26T03:09:38Z",
+  "generated": "2026-11-26T03:24:25Z",
   "published_width_in": 7.17,
   "renderer": {
     "font": "Roboto",

@@ -395,7 +395,7 @@ The propagation statistic is reproduced from the national monthly series: SPI-3 
 
 % =====================================================================
 \section*{Usage notes}
-The application is available at \url{https://drought.ankitdeshmukh.com/}. Record, Atlas and Projections are separate products; analytical lenses sit beneath the active product. District profiles, map states and panel controls can be shared through encoded permalinks. Exported CSV and text files include citation, licence, generation date and methodology headers. The Engine Lab accepts validated SQL over the published Parquet store and reports row counts, execution time and bytes read. Table~\ref{tab:windows} provides direct links and a concise description of the analyses supported by every window.
+The application is available at \url{https://drought.ankitdeshmukh.com/}. Record, Atlas and Projections are separate products; analytical lenses sit beneath the active product. District profiles, map states and panel controls can be shared through encoded permalinks. Exported CSV and text files include citation, licence, generation date and methodology headers. The Engine Lab accepts validated SQL over the published Parquet store and reports row counts, execution time and bytes read. Table~\ref{tab:windows} provides direct links and a concise description of the analyses supported by every window. Figure~\ref{fig:atlas} shows the Atlas and projection products and Figure~\ref{fig:access} shows a district profile and a query in the Engine Lab; both use the recorded July 2002 default observation and the default projection settings.
 
 \begin{table}[t]
 \caption{Dashboard windows, direct links and supported analyses.}
@@ -433,35 +433,14 @@ Propagation \& Relationships computes Pearson correlation between any indicator 
 \subsection*{Worked example 4: cross-era and projection interrogation}
 The Cross-validation workspace maps era-A--era-B correlation, bias and class agreement for 1981--2014 and shows the seam distribution. Future Projections separates scenario, statistic and window controls, displays the ensemble band with its model count, and reports direction agreement as a fraction of an explicit denominator. Drought to 2100 summarises direction of change by district and state. No view places era A, era B and era C on one continuous axis, and no export does either.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\textwidth]{fig07_about.pdf}
-\caption{About the Explorer. Purpose, products, technology and research positioning of the published interface: an interactive, fully client-side geospatial platform for exploring drought indicators across Indian districts, built for historical analysis and research communication---not operational monitoring. The cards summarise the purpose, the three labelled era products with the cross-validation layer, the client-side technology stack, and the positioning relative to operational monitors; the strip reports the district fabric, indicator families and server footprint.}
-\label{fig:about}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\textwidth]{fig08_record_analyses.pdf}
-\caption{Record analyses: current state, long-term trend and event catalogue. (Top) Overview workspace at the recorded July 2002 default state: (1) record month and product label, (2) McKee nine-class severity legend, (3) area-weighted district choropleth of the 0.05$^\circ$ CHIRPS grid, and (4) the district inspector; missing cells stay grey and are never imputed. (Bottom left) Historical Analysis annual trend with the Sen slope and Mann--Kendall statistics under the Hamed--Rao correction. (Bottom right) Drought Events monthly onsets from the runs-analysis catalogue. Screenshots were captured from the live site on 25 November 2026.}
-\label{fig:record}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\textwidth]{fig09_events_propagation.pdf}
-\caption{Event forensics and indicator relationships. (Top) Drought Events catalogue filtered to the 285 events starting in 2002, with onset, termination, duration, peak intensity, cumulative severity and recovery; truncation is the upper bound of the moderate class ($-1.00$~z, $-15$\% SMA, 30\% VCI) with a three-month minimum duration, and censored events are flagged. (Bottom) Propagation \& Relationships: Pearson correlation from $-12$ to $+12$ months with the moving-block bootstrap 95\% interval (1,000 resamples, seed 20261103) and the optimal-lag summary for the selected pair; the panel states in place that association is not causation.}
-\label{fig:events}
-\end{figure}
-
-\begin{figure}[t]
+\begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{fig10_atlas_projections.pdf}
 \caption{Reconstruction and projection products. (Top left) Atlas era-A reconstruction map (SPEI-1, August 1901) served on the district fabric, with 718 districts carrying a value at that month and island units grey. (Top right) Era-C ensemble band for SSP2-4.5 SPI-3, 2026--2040, showing the median, the 25--75\% model range and the declared ensemble size. (Bottom left) District-level model agreement map for the moderate threshold at July 2040. (Bottom right) Area-weighted drought-class shares on the 3,266,386~km$^2$ LAEA registry. Era A and era C are separate labelled products and are never spliced into the era-B record. Screenshots were captured from the live site on 25 November 2026.}
 \label{fig:atlas}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{fig11_access_reuse.pdf}
 \caption{District access and reproducible query. (Top) District-profile headline for Jodhpur at July 2002 (extreme drought, $-2.75$~z SPI-3), with era, record coverage and analysis window, above the ten-indicator strip for the same district and month, each indicator with its own class. (Bottom) Engine Lab running a validated pattern query over the published Parquet store; every run reports row count, execution time and bytes read, and repeated queries cost 0 bytes from the in-memory cache.}
