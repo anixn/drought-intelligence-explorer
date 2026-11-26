@@ -2,56 +2,38 @@
   "figures": {
     "fig01_architecture": {
       "data": {
-        "A": [
-          1901,
-          2025
-        ],
-        "B": [
-          "1981-01",
-          "2026-09"
-        ],
-        "C": [
-          2015,
-          2100
-        ],
-        "districts": 724
+        "caption": "Record architecture: three labelled eras behind one district-month contract",
+        "effective_label_pt": 8.83,
+        "renderer": "Pele 1.13.0 (Mermaid) in headless Chromium",
+        "source": "figures/source/fig01_architecture.mmd"
       },
       "pdf": {
-        "bytes": 22547,
+        "bytes": 22509,
         "path": "figures/fig01_architecture.pdf",
-        "sha256": "030a20fe82e7430622a101491a58941b88437edbb2a4c87466c34227f20c7e0a"
+        "sha256": "031af27efb2384e133311b919834fa69a078e579188c41fe14133cf8c5b881b2"
       },
       "png": {
-        "bytes": 245543,
+        "bytes": 143199,
         "path": "figures/fig01_architecture.png",
-        "sha256": "fd83f511d77a102700f83e40fba84005bcd3210a857380f88ef9903a1eb29fc6"
+        "sha256": "17abb8aadfe6e5abf7770ec952dfee39e85cb542234247a6a0666678e9b38bf6"
       }
     },
     "fig02_projection_pipeline": {
       "data": {
-        "comparison": [
-          1981,
-          2014
-        ],
-        "indicators": 8,
-        "listed": 24,
-        "partitions": 19904,
-        "processed": 22,
-        "reference": [
-          1981,
-          2020
-        ],
-        "subset": 8
+        "caption": "Era-C processing, evaluation and release chain",
+        "effective_label_pt": 9.1,
+        "renderer": "Pele 1.13.0 (Mermaid) in headless Chromium",
+        "source": "figures/source/fig02_projection_pipeline.mmd"
       },
       "pdf": {
-        "bytes": 27226,
+        "bytes": 25057,
         "path": "figures/fig02_projection_pipeline.pdf",
-        "sha256": "f968f473152b772c1970a534f59a8e8d3bfc5a939585068bd715544ff75bfbd9"
+        "sha256": "e35aea90277ce9f30dec62ce3fd526b3864a1cf51bc27f2cc22d7b4e2672001d"
       },
       "png": {
-        "bytes": 237604,
+        "bytes": 145031,
         "path": "figures/fig02_projection_pipeline.png",
-        "sha256": "c4ec94280260b352ec468b512de11dd736de36ab7970f6f9bfecfab94f7fd2b7"
+        "sha256": "211c078805c8cf5105d9a841c7279ffae468159644dcb73577dbf2076a1966f1"
       }
     },
     "fig03_coverage": {
@@ -256,14 +238,14 @@
         ]
       },
       "pdf": {
-        "bytes": 26785,
+        "bytes": 26750,
         "path": "figures/fig04_imd_benchmark.pdf",
-        "sha256": "8d66c94f98fb8cfbae8366821c24f311142c4e52cb8006a6fd26d99dc323c50e"
+        "sha256": "7dddbd78870719112063a0ea41b3da5f97270db848107816aaba5c52c367400f"
       },
       "png": {
-        "bytes": 284274,
+        "bytes": 262490,
         "path": "figures/fig04_imd_benchmark.png",
-        "sha256": "b309bc785035ecb50a271c7103aa6a1ccadd3ba628ce38e9cbcdd99221f8dbb8"
+        "sha256": "fd10fbf09e15193efcbffa3f4fe9241fbec2ad52861c6569801bf0e70db0c635"
       }
     },
     "fig05_atlas_overlap": {
@@ -394,14 +376,14 @@
         ]
       },
       "pdf": {
-        "bytes": 21407,
+        "bytes": 21411,
         "path": "figures/fig06_gcm_validation.pdf",
-        "sha256": "f7fb708ae7d265d1ba6416a8bce97140a9aa46d2353df0e39832d7af31360f45"
+        "sha256": "d355cd695ff6318d773b28bd7871b17c2eb1d99ba76f663ddc345c5ca3ed6e46"
       },
       "png": {
-        "bytes": 250834,
+        "bytes": 251060,
         "path": "figures/fig06_gcm_validation.png",
-        "sha256": "914893e0f22657722491bf76809e6c9d3fa0ca3d687ffe01f98cfbf00ac722d3"
+        "sha256": "e207bfeb5a4607592b124125a261badf7c47c95bdee6995fead94b9207f385ce"
       }
     },
     "fig07_about": {
@@ -412,7 +394,7 @@
             "heading": "Purpose"
           },
           {
-            "body": "Era A Atlas 1901–2025 · Era B gridded 1981–2026 · Era C projections 2015–2100 · Era A–B cross-validation. Twelve dashboard windows, district profiles and CSV, Parquet and SQL access.",
+            "body": "Era A Atlas 1901–2025, Era B gridded 1981–2026, Era C projections 2015–2100, and era A–B cross-validation. Twelve dashboard windows, district profiles and CSV, Parquet and SQL access.",
             "heading": "Products"
           },
           {
@@ -434,14 +416,14 @@
         }
       },
       "pdf": {
-        "bytes": 25772,
+        "bytes": 25665,
         "path": "figures/fig07_about.pdf",
-        "sha256": "db133442b880a1e1bc16976152fd8bb9f740d5d6db1e540b6e0e6959fc9a64c4"
+        "sha256": "3d58022551d559bc5f898256c45d46f848435a1520c6bc6db4818e670ede5bcd"
       },
       "png": {
-        "bytes": 409669,
+        "bytes": 412076,
         "path": "figures/fig07_about.png",
-        "sha256": "07c4515d7165ef44d54f9d67fe6b09c62ebdb4daf0e788bb9f0f145ad25d84cc"
+        "sha256": "368d53a65cde30d086d5a55122d923c315317243be7fe4db8a3710e672648796"
       }
     },
     "fig08_record_analyses": {
@@ -1022,9 +1004,19 @@
       "sha256": "87cfd040a5578f4f2564249612885d51f47b3d848ed05cc4edf25aef895877f5"
     },
     {
-      "bytes": 27103,
+      "bytes": 27744,
       "path": "assets/js/ducklab.js",
-      "sha256": "b645cf5d9fba2dcbd119fe10e71d176697cda47a59e30794700d3baa631b6753"
+      "sha256": "bf59310eaaf6def91307792acefcb16d80f2b795ec36dbb73f330ea299073d8a"
+    },
+    {
+      "bytes": 1107,
+      "path": "manuscript/scientific-data/figures/source/fig01_architecture.mmd",
+      "sha256": "b4f8834bf867b874fde7021432118ec347b5a5b2a13de74943af25bdf29ad26e"
+    },
+    {
+      "bytes": 1100,
+      "path": "manuscript/scientific-data/figures/source/fig02_projection_pipeline.mmd",
+      "sha256": "cedb106c4f8cfb071bbb71662dba2f4887c8ddae344148ce137ff8a79ddc6750"
     },
     {
       "bytes": 1414407,
@@ -1087,8 +1079,11 @@
       "sha256": "26c15b8528e429e60adf9ac1229caaa0140c73d0050a5c7031ede639f4d8a28c"
     }
   ],
-  "minimum_font_pt": 10,
-  "schema": "die-publication-figures/2.0",
+  "minimum_font_pt": {
+    "plotted": 10,
+    "schematic": 8.5
+  },
+  "schema": "die-publication-figures/2.1",
   "seed": 20261103,
   "synthetic_data": false,
   "width_in": 7.2

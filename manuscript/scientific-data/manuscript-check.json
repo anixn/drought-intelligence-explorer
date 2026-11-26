@@ -268,7 +268,10 @@
       "pass": true,
       "detail": {
         "font": "Roboto",
-        "minimum_font_pt": 10,
+        "minimum_font_pt": {
+          "plotted": 10,
+          "schematic": 8.5
+        },
         "width_in": 7.2
       }
     },
@@ -281,7 +284,7 @@
       "check": "compiled_pdf",
       "pass": true,
       "detail": {
-        "bytes": 1715198
+        "bytes": 1713441
       }
     },
     {

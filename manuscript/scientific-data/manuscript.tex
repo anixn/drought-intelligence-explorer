@@ -24,9 +24,21 @@
 \setlength{\parskip}{4pt}
 \setlength{\parindent}{0pt}
 \setlength{\emergencystretch}{3em}
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpbot}{0pt plus 1fil}
+\makeatother
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.60}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.75}
 \renewcommand{\arraystretch}{1.18}
 \setcitestyle{numbers,sort&compress,super}
-\captionsetup{font=small,labelfont=bf,labelsep=period,skip=6pt}
+\DeclareCaptionLabelSeparator{pipe}{ $|$ }
+\captionsetup{font=small,labelfont=bf,labelsep=pipe,skip=6pt}
 \renewcommand{\figurename}{Fig.}
 
 \begin{document}
@@ -389,7 +401,7 @@ SSP5-8.5 seam & Historical tail/SSP head & 0 & 24 & Declared tolerances & Pass \
 \end{figure}
 
 \subsection*{Published-claim verification}
-The propagation statistic is reproduced from the national monthly series: SPI-3 and SPEI-3 have Pearson $r=0.8716$ over 547 paired months, with a 95\% moving-block bootstrap interval of $[0.8356,0.8999]$ (1,000 resamples, block length 8, seed 20261103). The figure-reproduction command regenerates the coverage, historical and propagation artifacts and the reality-check table reference. Input and output checksums make record--manuscript drift visible. The publication-figure generator additionally records every plotted value, source checksum and output checksum, and rejects figure text below 10~pt.
+The propagation statistic is reproduced from the national monthly series: SPI-3 and SPEI-3 have Pearson $r=0.8716$ over 547 paired months, with a 95\% moving-block bootstrap interval of $[0.8356,0.8999]$ (1,000 resamples, block length 8, seed 20261103). The figure-reproduction command regenerates the coverage, historical and propagation artifacts and the reality-check table reference. Input and output checksums make record--manuscript drift visible. The publication-figure generator additionally records every plotted value, source checksum and output checksum, and rejects plotted text below 10~pt. The two method-flow schematics are authored as Mermaid text and rendered with Pele, so node sizes follow their labels; they print at 8.8 and 9.1~pt at the published width.
 
 \section*{Usage Notes}
 The application is available at \url{https://drought.ankitdeshmukh.com/}. Record, Atlas and Projections are separate products; analytical lenses sit beneath the active product. District profiles, map states and panel controls can be shared through encoded permalinks. Exported CSV and text files include citation, licence, generation date and methodology headers. The Engine Lab accepts validated SQL over the published Parquet store and reports row counts, execution time and bytes read. Table 7 provides direct links and a concise description of the analyses supported by every window. Figure 7 summarises the purpose, products, technology and research positioning of the platform: an interactive, fully client-side geospatial platform for exploring drought indicators across Indian districts, built for historical analysis and research communication---not operational monitoring. Figure 8 shows the Record analyses, Figure 9 shows event forensics and indicator relationships, Figure 10 shows the Atlas and projection products, and Figure 11 shows district access and the query interface. The screenshots use the recorded July 2002 default observation and the default projection settings.
@@ -464,11 +476,11 @@ The version 2.0.0 dataset is available at \url{https://doi.org/10.5281/zenodo.24
 \section*{Code Availability}
 The processing pipelines, browser application, configuration files, tests and publication-figure generator are available at \url{https://github.com/anixn/drought-intelligence-explorer} and archived as version 2.0.0 under the MIT licence at \url{https://doi.org/10.5281/zenodo.24444860}\citep{DeshmukhSoftware2026}.
 
-The main entry points are \path{data-pipeline/run.py}, \path{data-pipeline/selftest.py}, \path{data-pipeline/verify_paper_claims.py}, \path{atlas-pipeline/}, \path{gcm-pipeline/} and \path{validation-studies/}. Publication and verification scripts include \path{scripts/convert_to_parquet.py}, \path{scripts/regression_check.py}, \path{scripts/verify_reality_checks.py}, \path{scripts/reproduce_figures.py}, \path{manuscript/scientific-data/make_figures.py} and \path{manuscript/scientific-data/check_manuscript.py}. Scientific and engineering parameters are held in versioned YAML or JSON configuration files. No proprietary service is required to inspect the deposited data or run the offline tests; re-extraction from Google Earth Engine or re-download of CMIP6 requires the corresponding public service credentials and data access.
+The main entry points are \path{data-pipeline/run.py}, \path{data-pipeline/selftest.py}, \path{data-pipeline/verify_paper_claims.py}, \path{atlas-pipeline/}, \path{gcm-pipeline/} and \path{validation-studies/}. Publication and verification scripts include \path{scripts/convert_to_parquet.py}, \path{scripts/regression_check.py}, \path{scripts/verify_reality_checks.py}, \path{scripts/reproduce_figures.py}, \path{manuscript/scientific-data/make_figures.py}, \path{manuscript/scientific-data/render_schematics.py} and \path{manuscript/scientific-data/check_manuscript.py}. Scientific and engineering parameters are held in versioned YAML or JSON configuration files. No proprietary service is required to inspect the deposited data or run the offline tests; re-extraction from Google Earth Engine or re-download of CMIP6 requires the corresponding public service credentials and data access.
 
 \begin{thebibliography}{34}
 \small
-\bibitem{WilhiteGlantz1985} Wilhite, D. A. \& Glantz, M. H. Understanding the drought phenomenon: the role of definitions. \textit{Water Int.} \textbf{10}, 205--220 (1985). \url{https://doi.org/10.1080/02508068508686318}
+\bibitem{WilhiteGlantz1985} Wilhite, D. A. \& Glantz, M. H. Understanding the drought phenomenon: the role of definitions. \textit{Water Int.} \textbf{10}, 111--120 (1985). \url{https://doi.org/10.1080/02508068508686328}
 \bibitem{MishraSingh2010} Mishra, A. K. \& Singh, V. P. A review of drought concepts. \textit{J. Hydrol.} \textbf{391}, 202--216 (2010). \url{https://doi.org/10.1016/j.jhydrol.2010.07.012}
 \bibitem{McKee1993} McKee, T. B., Doesken, N. J. \& Kleist, J. The relationship of drought frequency and duration to time scales. In \textit{Proc. 8th Conference on Applied Climatology} 179--184 (American Meteorological Society, 1993).
 \bibitem{VicenteSerrano2010} Vicente-Serrano, S. M., Beguer\'{\i}a, S. \& L\'{o}pez-Moreno, J. I. A multiscalar drought index sensitive to global warming: the Standardized Precipitation Evapotranspiration Index. \textit{J. Clim.} \textbf{23}, 1696--1718 (2010). \url{https://doi.org/10.1175/2009JCLI2909.1}
@@ -491,7 +503,7 @@ The main entry points are \path{data-pipeline/run.py}, \path{data-pipeline/selft
 \bibitem{uditIndiaMaps} udit-001. \textit{india-maps-data} [GitHub repository]. \url{https://github.com/udit-001/india-maps-data} (accessed 24 November 2026).
 \bibitem{Gorelick2017} Gorelick, N. et al. Google Earth Engine: planetary-scale geospatial analysis for everyone. \textit{Remote Sens. Environ.} \textbf{202}, 18--27 (2017). \url{https://doi.org/10.1016/j.rse.2017.06.031}
 \bibitem{Hersbach2020} Hersbach, H. et al. The ERA5 global reanalysis. \textit{Q. J. R. Meteorol. Soc.} \textbf{146}, 1999--2049 (2020). \url{https://doi.org/10.1002/qj.3803}
-\bibitem{Begueria2014} Beguer\'{\i}a, S., Vicente-Serrano, S. M., Reig, F. \& Latorre, B. Standardized Precipitation Evapotranspiration Index (SPEI) revisited: parameter fitting, probabilistic inference and information-based model selection. \textit{Environ. Model. Softw.} \textbf{69}, 105--119 (2014). \url{https://doi.org/10.1016/j.envsoft.2014.06.014}
+\bibitem{Begueria2014} Beguer\'{\i}a, S., Vicente-Serrano, S. M., Reig, F. \& Latorre, B. Standardized precipitation evapotranspiration index (SPEI) revisited: parameter fitting, evapotranspiration models, tools, datasets and drought monitoring. \textit{Int. J. Climatol.} \textbf{34}, 3001--3023 (2014). \url{https://doi.org/10.1002/joc.3887}
 \bibitem{Hosking1990} Hosking, J. R. M. L-moments: analysis and estimation of distributions using linear combinations of order statistics. \textit{J. R. Stat. Soc. B} \textbf{52}, 105--124 (1990).
 \bibitem{Gringorten1963} Gringorten, I. I. A plotting rule for extreme probability paper. \textit{J. Geophys. Res.} \textbf{68}, 813--814 (1963). \url{https://doi.org/10.1029/JZ068i003p00813}
 \bibitem{Stagge2015} Stagge, J. H., Tallaksen, L. M., Gudmundsson, L., Van Loon, A. F. \& Stahl, K. Candidate distributions for climatological drought indices (SPI and SPEI). \textit{Int. J. Climatol.} \textbf{35}, 4027--4040 (2015). \url{https://doi.org/10.1002/joc.4229}
@@ -501,7 +513,7 @@ The main entry points are \path{data-pipeline/run.py}, \path{data-pipeline/selft
 \bibitem{HamedRao1998} Hamed, K. H. \& Rao, A. R. A modified Mann--Kendall trend test for autocorrelated data. \textit{J. Hydrol.} \textbf{204}, 182--196 (1998). \url{https://doi.org/10.1016/S0022-1694(97)00325-6}
 \bibitem{BenjaminiHochberg1995} Benjamini, Y. \& Hochberg, Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing. \textit{J. R. Stat. Soc. B} \textbf{57}, 289--300 (1995). \url{https://doi.org/10.1111/j.2517-6161.1995.tb02031.x}
 \bibitem{Kunsch1989} K\"{u}nsch, H. R. The jackknife and the bootstrap for general stationary observations. \textit{Ann. Stat.} \textbf{17}, 1217--1241 (1989). \url{https://doi.org/10.1214/aos/1176347265}
-\bibitem{Riahi2017} Riahi, K. et al. The Shared Socioeconomic Pathways and their energy, land, and climate change implications for the 21st century. \textit{Glob. Environ. Change} \textbf{42}, 153--168 (2017). \url{https://doi.org/10.1016/j.gloenvcha.2016.10.002}
+\bibitem{Riahi2017} Riahi, K. et al. The Shared Socioeconomic Pathways and their energy, land use, and greenhouse gas emissions implications: an overview. \textit{Glob. Environ. Change} \textbf{42}, 153--168 (2017). \url{https://doi.org/10.1016/j.gloenvcha.2016.05.009}
 \end{thebibliography}
 
 \section*{Author contributions}

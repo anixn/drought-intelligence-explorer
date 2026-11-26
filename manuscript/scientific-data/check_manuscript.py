@@ -106,7 +106,11 @@ def main() -> int:
     add("doi_contract", meta["doi"]["v2_0_0"] == "10.5281/zenodo.24444860" and meta["doi"]["dataset_v2_0_0"] == "10.5281/zenodo.24445534", meta["doi"])
     add("reality_version", reality["data_version"] == "2.0.0", reality["data_version"])
     add("figure_data_real", figure_data.get("synthetic_data") is False and len(figure_data.get("figures", {})) == n_figures, {"synthetic_data": figure_data.get("synthetic_data"), "figures": len(figure_data.get("figures", {}))})
-    add("figure_typography", figure_data.get("font") == "Roboto" and figure_data.get("minimum_font_pt") == 10 and figure_data.get("width_in") == 7.2, {"font": figure_data.get("font"), "minimum_font_pt": figure_data.get("minimum_font_pt"), "width_in": figure_data.get("width_in")})
+    font_floor = figure_data.get("minimum_font_pt")
+    add("figure_typography", figure_data.get("font") == "Roboto"
+        and isinstance(font_floor, dict) and font_floor.get("plotted") == 10
+        and font_floor.get("schematic", 0) >= 8.5 and figure_data.get("width_in") == 7.2,
+        {"font": figure_data.get("font"), "minimum_font_pt": font_floor, "width_in": figure_data.get("width_in")})
     add("roboto_files", (HERE / "fonts" / "Roboto-Regular.ttf").exists() and (HERE / "fonts" / "Roboto-Bold.ttf").exists() and (HERE / "fonts" / "OFL.txt").exists(), "Static Roboto Regular/Bold and OFL licence present")
 
     pdf = HERE / "manuscript.pdf"

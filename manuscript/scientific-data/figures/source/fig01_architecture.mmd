@@ -1,0 +1,17 @@
+%% Drought Intelligence Explorer v2.0.0 — Figure 1 record architecture.
+%% Rendered by manuscript/scientific-data/render_schematics.py (Pele / Mermaid).
+%% Edges are deliberately unlabelled: the caption carries the provenance wording.
+flowchart LR
+  S["<b>Public inputs</b><br/>CHIRPS · ERA5-Land<br/>MODIS · Atlas v2<br/>CMIP6 models"]:::source
+  S --> A
+  S --> B
+  S --> C
+  A["<b>Era A · Atlas</b><br/>SPEI-1, -4, -12<br/>1901–2025"]:::eraA --> D
+  B["<b>Era B · Gridded</b><br/>10 indicators<br/>1981–2026"]:::eraB --> D
+  C["<b>Era C · Projections</b><br/>8 indicators · 2 SSPs<br/>2015–2100"]:::eraC --> D
+  D["<b>Published store</b><br/>district · month · value<br/>era · scenario · statistic"]:::store --> E["<b>Access</b><br/>catalog · DuckDB-WASM<br/>maps · SQL · exports"]:::store
+  classDef source fill:#f7f7f5,stroke:#9a9a9a,color:#1b1b1b
+  classDef eraA fill:#f1f4e8,stroke:#6d7f3c,color:#33401a
+  classDef eraB fill:#e9f3f2,stroke:#2f7d78,color:#123c39
+  classDef eraC fill:#fbeeea,stroke:#a8503a,color:#4d2015
+  classDef store fill:#eef2f8,stroke:#456a9c,color:#1b2c42

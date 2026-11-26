@@ -54,6 +54,12 @@ GENERATED = "2026-11-24T00:00:00Z"
 SEED = 20261103
 WIDTH = 7.2
 
+# Stems produced by matplotlib here. Figures 1 and 2 are Mermaid schematics
+# rendered with Pele by render_schematics.py and are merged into the manifest.
+MATPLOTLIB_STEMS = ["fig03_coverage", "fig04_imd_benchmark", "fig05_atlas_overlap",
+                    "fig06_gcm_validation", "fig07_about", "fig08_record_analyses",
+                    "fig09_events_propagation", "fig10_atlas_projections", "fig11_access_reuse"]
+
 ERA_A = "#6B7D3A"
 ERA_B = "#22756B"
 ERA_C = "#A6452F"
@@ -464,8 +470,8 @@ def fig07_about() -> tuple[Any, dict[str, Any]]:
          "observation-based gridded products and model projections separate, labelled and "
          "reproducible. Built for research, teaching and communication."),
         ("Products", ERA_B,
-         "Era A Atlas 1901\u20132025 \u00b7 Era B gridded 1981\u20132026 \u00b7 Era C projections "
-         "2015\u20132100 \u00b7 Era A\u2013B cross-validation. Twelve dashboard windows, district "
+         "Era A Atlas 1901\u20132025, Era B gridded 1981\u20132026, Era C projections "
+         "2015\u20132100, and era A\u2013B cross-validation. Twelve dashboard windows, district "
          "profiles and CSV, Parquet and SQL access."),
         ("Technology", PURPLE,
          "Apache Parquet with DuckDB-WASM in a Web Worker, HTTP Range reads over static files, "
@@ -485,7 +491,7 @@ def fig07_about() -> tuple[Any, dict[str, Any]]:
     body_w = col - 0.34
     lead_lines = wrap_note(sentence, content)
     card_bodies = [textwrap.wrap(body, max(24, int(body_w / 0.0712))) for _, _, body in cards]
-    card_h = 0.30 + max(len(b) for b in card_bodies) * 0.196 + 0.16
+    card_h = 0.30 + max(len(b) for b in card_bodies) * 0.196 + 0.26
     strip_h = 0.74
 
     total = 0.12 + 0.36 + len(lead_lines) * 0.196 + 0.26 + 2 * card_h + 0.22 + 0.30 + strip_h + 0.42
@@ -686,7 +692,7 @@ def fig05_imd(imd: dict[str, Any]) -> tuple[Any, dict[str, Any]]:
     fig, axs = plt.subplots(2, 2, figsize=(WIDTH, 6.2), constrained_layout=True)
     ax = axs[0, 0]; vals = [r["r_median"] for r in rows]
     ax.barh(y, vals, color=[BLUE if l.startswith("SPI") else ERA_B for l in labels], height=0.62)
-    ax.set_yticks(y, labels); ax.invert_yaxis(); ax.set_xlim(0, 1); ax.set_xlabel("Median district Pearson r")
+    ax.set_yticks(y, labels); ax.invert_yaxis(); ax.set_xlim(0, 0.85); ax.set_xlabel("Median district Pearson r")
     ax.set_title("Correlation", loc="left")
     for yy, v in zip(y, vals): ax.text(v+0.015, yy, f"{v:.3f}", va="center", fontsize=10)
     clean_axes(ax, "x"); panel_label(ax, "a")
@@ -700,8 +706,10 @@ def fig05_imd(imd: dict[str, Any]) -> tuple[Any, dict[str, Any]]:
     ax = axs[1, 0]; x = np.arange(len(rows)); w = 0.36
     state = [100*r["state"] for r in rows]; exact = [100*r["class_exact"] for r in rows]
     ax.bar(x-w/2, state, w, label="Drought state", color=GREEN); ax.bar(x+w/2, exact, w, label="Exact class", color=GOLD)
-    ax.set_xticks(x, labels, rotation=30, ha="right"); ax.set_ylim(0, 100); ax.set_ylabel("Agreement (%)")
-    ax.set_title("Categorical agreement", loc="left"); ax.legend(loc="upper right")
+    ax.set_xticks(x, labels, rotation=30, ha="right"); ax.set_ylim(0, 120); ax.set_yticks([0, 20, 40, 60, 80, 100])
+    ax.set_ylabel("Agreement (%)")
+    ax.set_title("Categorical agreement", loc="left")
+    ax.legend(loc="upper center", ncol=2, frameon=False, bbox_to_anchor=(0.5, 1.02))
     clean_axes(ax, "y"); panel_label(ax, "c")
     ax = axs[1, 1]; tr = imd["trends"]; x = np.arange(len(tr)); w = 0.36
     imd_n = [r["imd_fdr"] for r in tr]; era_n = [r["era_b_fdr"] for r in tr]
@@ -753,7 +761,7 @@ def gate_fraction(report: dict[str, Any], key: str) -> dict[str, Any]:
 
 def fig07_gcm(hist: dict[str, Any], ssp: dict[str, Any], subset: dict[str, Any]) -> tuple[Any, dict[str, Any]]:
     fig = plt.figure(figsize=(WIDTH, 5.8), constrained_layout=True)
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.25, 1.0])
+    gs = fig.add_gridspec(2, 2, height_ratios=[1.35, 0.82])
     ax1 = fig.add_subplot(gs[0, 0]); ax2 = fig.add_subplot(gs[0, 1]); ax3 = fig.add_subplot(gs[1, :])
     cells = hist["gates"]["consistency"]["cells"]; national = []
     for key, val in cells.items():
@@ -763,7 +771,7 @@ def fig07_gcm(hist: dict[str, Any], ssp: dict[str, Any], subset: dict[str, Any])
     vals = [v for _, v in national]; y = np.arange(len(vals))
     ax1.axvspan(.7, 1.4, color=GREEN, alpha=.10); ax1.axvline(1, color=MUTED, lw=.8, ls="--")
     ax1.scatter(vals, y, s=32, color=ERA_C, zorder=3)
-    for yy, v in zip(y, vals): ax1.text(v+.012, yy, f"{v:.3f}", va="center", fontsize=10)
+    for yy, v in zip(y, vals): ax1.text(v+.022, yy, f"{v:.3f}", va="center", fontsize=10)
     ax1.set_yticks(y, [IND_LABEL.get(k, k) for k, _ in national]); ax1.invert_yaxis(); ax1.set_xlim(.65, 1.46)
     ax1.set_xlabel("Ensemble/reference SD ratio"); ax1.set_title("Historical national shape", loc="left")
     clean_axes(ax1, "x"); panel_label(ax1, "a")
@@ -784,10 +792,10 @@ def fig07_gcm(hist: dict[str, Any], ssp: dict[str, Any], subset: dict[str, Any])
     ax3.axis("off"); ax3.set_title("Historical–scenario seam continuity", loc="left"); panel_label(ax3, "c")
     for i, (key, label) in enumerate((("ssp245", "SSP2-4.5"), ("ssp585", "SSP5-8.5"))):
         x0 = .27 + i*.46; s = seam[key]
-        ax3.add_patch(FancyBboxPatch((x0-.09, .40), .18, .24, boxstyle="round,pad=.01,rounding_size=.03",
+        ax3.add_patch(FancyBboxPatch((x0-.09, .47), .18, .26, boxstyle="round,pad=.01,rounding_size=.03",
                                      facecolor=GREEN, edgecolor="none"))
-        ax3.text(x0, .52, "PASS", ha="center", va="center", fontsize=11, color="white", fontweight="bold")
-        ax3.text(x0, .20, f"{label}\n0/{s['cells']} breaches", ha="center", va="center", fontsize=11)
+        ax3.text(x0, .60, "PASS", ha="center", va="center", fontsize=11, color="white", fontweight="bold")
+        ax3.text(x0, .22, f"{label}\n0/{s['cells']} breaches", ha="center", va="center", fontsize=11)
     fig.suptitle("CMIP6 correction-skill and release-gate evidence", fontsize=13, fontweight="bold")
     return fig, {"national_sd_ratios": [{"variable": k, "sd_ratio": v} for k, v in national],
                  "historical_gates": {"consistency": hc, "events": he, "tails": ht},
@@ -834,8 +842,8 @@ def fig08_service(meta: dict[str, Any], pointer: dict[str, Any], status: dict[st
 def build() -> dict[str, Any]:
     style()
     OUT.mkdir(parents=True, exist_ok=True)
-    for pattern in ("fig*.pdf", "fig*.png"):
-        for old in OUT.glob(pattern):
+    for stem in MATPLOTLIB_STEMS:
+        for old in OUT.glob(f"{stem}.*"):
             old.unlink()
     meta = load_json("data/metadata.json"); catalog = load_json("data/parquet/catalog.json")
     pointer = load_json("data/data-source.json"); status = load_json("data/status.json")
@@ -849,8 +857,6 @@ def build() -> dict[str, Any]:
     assert cv.groupby("variable").size().to_dict() == {"spei_01": 718, "spei_12": 718}
     figures = {}
     for stem, func, args in [
-        ("fig01_architecture", fig01_architecture, (meta, catalog)),
-        ("fig02_projection_pipeline", fig02_projection, (models, subset, catalog)),
         ("fig03_coverage", fig03_coverage, (meta, catalog)),
         ("fig04_imd_benchmark", fig05_imd, (imd,)),
         ("fig05_atlas_overlap", fig06_crossval, (cv, geom)),
@@ -862,16 +868,30 @@ def build() -> dict[str, Any]:
         ("fig11_access_reuse", fig11_access_reuse, ()),
     ]:
         fig, data = func(*args); figures[stem] = {"data": data, **save_figure(fig, stem)}; print("built", stem)
+
+    # Figures 1 and 2 are Mermaid method-flow schematics rendered by Pele, so
+    # that node sizes follow their labels instead of hand-placed boxes.
+    from render_schematics import render_all
+    if render_all(check=False) != 0:
+        raise SystemExit("schematic rendering failed")
+    for stem, rec in json.loads((OUT / "schematics.json").read_text(encoding="utf-8"))["figures"].items():
+        figures[stem] = {"data": {"renderer": rec["renderer"], "caption": rec["caption"],
+                                  "effective_label_pt": rec["effective_label_pt"],
+                                  "source": rec["source"]},
+                         "pdf": rec["pdf"], "png": rec["png"]}
+
     inputs = ["data/metadata.json", "data/parquet/catalog.json", "data/data-source.json", "data/status.json",
               "data/imd_validation.json", "gcm-pipeline/config/models.yaml", "gcm-pipeline/validation/validation_report.json",
               "gcm-pipeline/validation/ssp/validation_report_ssp.json", "gcm-pipeline/validation/best_subset.yaml",
               "data/parquet/cross_validation/per_district_1981_2014.parquet", "data/boundaries/india_districts.geojson",
               "data/boundaries/india_states.geojson", "assets/js/ducklab.js"]
+    inputs += [f"manuscript/scientific-data/figures/source/{p.name}" for p in sorted((OUT / "source").glob("*.mmd"))]
     captures = sorted({rec["capture"] for fig in figures.values()
                        for rec in fig["data"].get("captures", [])})
     inputs += captures
-    payload = {"schema": "die-publication-figures/2.0", "generated": GENERATED, "seed": SEED,
-               "synthetic_data": False, "font": "Roboto", "minimum_font_pt": 10, "width_in": WIDTH,
+    payload = {"schema": "die-publication-figures/2.1", "generated": GENERATED, "seed": SEED,
+               "synthetic_data": False, "font": "Roboto", "minimum_font_pt": {"plotted": 10, "schematic": 8.5},
+               "width_in": WIDTH,
                "figures": figures, "inputs": [source_record(rel) for rel in inputs]}
     (HERE / "figure_data.json").write_text(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False)+"\n", encoding="utf-8", newline="\n")
     sums = [f"{sha256(OUT/f'{stem}.{ext}')}  figures/{stem}.{ext}" for stem in figures for ext in ("pdf", "png")]

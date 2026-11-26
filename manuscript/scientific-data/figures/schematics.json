@@ -1,0 +1,59 @@
+{
+  "figures": {
+    "fig01_architecture": {
+      "aspect": 2.619,
+      "caption": "Record architecture: three labelled eras behind one district-month contract",
+      "effective_label_pt": 8.83,
+      "include_width_in": 7.17,
+      "natural_px": [
+        935.0,
+        357.0
+      ],
+      "pdf": {
+        "bytes": 22509,
+        "path": "figures/fig01_architecture.pdf",
+        "sha256": "031af27efb2384e133311b919834fa69a078e579188c41fe14133cf8c5b881b2"
+      },
+      "png": {
+        "bytes": 143199,
+        "path": "figures/fig01_architecture.png",
+        "sha256": "17abb8aadfe6e5abf7770ec952dfee39e85cb542234247a6a0666678e9b38bf6"
+      },
+      "renderer": "Pele 1.13.0 (Mermaid) in headless Chromium",
+      "source": "figures/source/fig01_architecture.mmd"
+    },
+    "fig02_projection_pipeline": {
+      "aspect": 2.5363,
+      "caption": "Era-C processing, evaluation and release chain",
+      "effective_label_pt": 9.1,
+      "include_width_in": 7.17,
+      "natural_px": [
+        908.0,
+        358.0
+      ],
+      "pdf": {
+        "bytes": 25057,
+        "path": "figures/fig02_projection_pipeline.pdf",
+        "sha256": "e35aea90277ce9f30dec62ce3fd526b3864a1cf51bc27f2cc22d7b4e2672001d"
+      },
+      "png": {
+        "bytes": 145031,
+        "path": "figures/fig02_projection_pipeline.png",
+        "sha256": "211c078805c8cf5105d9a841c7279ffae468159644dcb73577dbf2076a1966f1"
+      },
+      "renderer": "Pele 1.13.0 (Mermaid) in headless Chromium",
+      "source": "figures/source/fig02_projection_pipeline.mmd"
+    }
+  },
+  "generated": "2026-11-26T02:46:33Z",
+  "published_width_in": 7.17,
+  "renderer": {
+    "font": "Roboto",
+    "font_size_px": 16,
+    "licence": "MIT",
+    "name": "Pele",
+    "url": "https://pele.run",
+    "version": "1.13.0"
+  },
+  "schema": "die-publication-schematics/1.0"
+}
