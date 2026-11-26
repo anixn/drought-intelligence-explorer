@@ -622,8 +622,8 @@ def fig10_atlas_projections() -> tuple[Any, dict[str, Any]]:
             {"heading": "Projections \u00b7 model agreement map",
              "accent": ERA_C,
              "image": "projections__projMapPanel.png",
-             "crop": (0, 240, 864, 1060),
-             "callouts": [(0.50, 0.42, 1), (0.50, 0.83, 2)],
+             "crop": (0, 0, 864, 992),
+             "callouts": [(0.42, 0.62, 1), (0.72, 0.16, 2)],
              "note": "1 Ensemble models below the moderate threshold \u00b7 2 year/month selection (2040, July). "
                      "Agreement is a model fraction."},
             {"heading": "Atlas \u00b7 drought-class shares",
@@ -647,8 +647,8 @@ def fig11_access_reuse() -> tuple[Any, dict[str, Any]]:
             "accent": ERA_B,
             "dir": "",
             "image": "district-profile.png",
-            "crop": (36, 512, 1792, 1560),
-            "callouts": [(0.16, 0.06, 1), (0.24, 0.50, 2)],
+            "crop": (36, 512, 1812, 1600),
+            "callouts": [(0.93, 0.055, 1), (0.93, 0.49, 2)],
             "note": "1 District identity and era context; the headline gives the state at the selected month "
                     "(Jodhpur, July 2002: extreme drought, \u22122.75 z) \u00b7 2 all ten indicators, each with "
                     "its own class.",
@@ -657,10 +657,10 @@ def fig11_access_reuse() -> tuple[Any, dict[str, Any]]:
             "heading": "Engine Lab \u00b7 read-only SQL over the published store",
             "accent": PURPLE,
             "image": "engine__elQueryPanel.png",
-            "crop": (0, 0, 1756, 780),
-            "callouts": [(0.50, 0.42, 1), (0.82, 0.935, 2)],
-            "note": "1 Validated SQL against catalogue paths \u00b7 2 rows, execution time and bytes read per run "
-                    "(547 rows, 635 ms, 593.6 KB); repeats cost 0 bytes from the in-memory cache.",
+            "crop": (0, 0, 1756, 1010),
+            "callouts": [(0.50, 0.325, 1)],
+            "note": "1 Validated SQL against catalogue paths; each run reports 547 rows, 553 ms and 593.6 KB "
+                    "of network traffic, and repeats cost 0 bytes from the in-memory cache.",
         }]},
     ]
     return sheet("fig11_access_reuse",

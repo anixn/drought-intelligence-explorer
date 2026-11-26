@@ -10,7 +10,7 @@
       "pdf": {
         "bytes": 22509,
         "path": "figures/fig01_architecture.pdf",
-        "sha256": "031af27efb2384e133311b919834fa69a078e579188c41fe14133cf8c5b881b2"
+        "sha256": "eb89a7112146dcb82b898034ebba5699a0dce67d29c3496f0de26a884b076ae8"
       },
       "png": {
         "bytes": 143199,
@@ -28,7 +28,7 @@
       "pdf": {
         "bytes": 25057,
         "path": "figures/fig02_projection_pipeline.pdf",
-        "sha256": "e35aea90277ce9f30dec62ce3fd526b3864a1cf51bc27f2cc22d7b4e2672001d"
+        "sha256": "d76cde472ab24e8f1e7a664bf9b40652bffd6223108024ad02ce9b49ff400c07"
       },
       "png": {
         "bytes": 145031,
@@ -789,21 +789,21 @@
               "accent": "#A6452F",
               "callouts": [
                 [
-                  0.5,
                   0.42,
+                  0.62,
                   1
                 ],
                 [
-                  0.5,
-                  0.83,
+                  0.72,
+                  0.16,
                   2
                 ]
               ],
               "crop": [
                 0,
-                240,
+                0,
                 864,
-                1060
+                992
               ],
               "heading": "Projections · model agreement map",
               "image": "projections__projMapPanel.png",
@@ -834,14 +834,14 @@
         "title": "Reconstruction and projection products"
       },
       "pdf": {
-        "bytes": 306954,
+        "bytes": 312003,
         "path": "figures/fig10_atlas_projections.pdf",
-        "sha256": "9e31372a43e0e512e7e6096d9a1630e1627c11e3746c132178c3dec47df7e110"
+        "sha256": "c7b873d807a2e480ec8778b54bf5a91fed799a24389bb243eda1de3f60b528a0"
       },
       "png": {
-        "bytes": 1923529,
+        "bytes": 1948865,
         "path": "figures/fig10_atlas_projections.png",
-        "sha256": "304b06b3e845af1ccfca8b45ca778e7b6d70bbbe32cd7899ab539a912036033d"
+        "sha256": "df96e051fc97080bc1dcad716c7e562e6c6f0e7cbe7a9729fbdd20c5205ca5f2"
       }
     },
     "fig11_access_reuse": {
@@ -860,12 +860,11 @@
           },
           {
             "callouts": [
-              1,
-              2
+              1
             ],
             "capture": "manuscript/scientific-data/screenshots/elements/engine__elQueryPanel.png",
             "heading": "Engine Lab · read-only SQL over the published store",
-            "note": "1 Validated SQL against catalogue paths · 2 rows, execution time and bytes read per run (547 rows, 635 ms, 593.6 KB); repeats cost 0 bytes from the in-memory cache.",
+            "note": "1 Validated SQL against catalogue paths; each run reports 547 rows, 553 ms and 593.6 KB of network traffic, and repeats cost 0 bytes from the in-memory cache.",
             "sha256": "35837724fa1278faff7f11983df9c6014069c8b85bd9d905a0d63d7067df69c7"
           }
         ],
@@ -876,21 +875,21 @@
               "accent": "#22756B",
               "callouts": [
                 [
-                  0.16,
-                  0.06,
+                  0.93,
+                  0.055,
                   1
                 ],
                 [
-                  0.24,
-                  0.5,
+                  0.93,
+                  0.49,
                   2
                 ]
               ],
               "crop": [
                 36,
                 512,
-                1792,
-                1560
+                1812,
+                1600
               ],
               "dir": "",
               "heading": "District profile · headline and ten-indicator strip",
@@ -904,24 +903,19 @@
               "callouts": [
                 [
                   0.5,
-                  0.42,
+                  0.325,
                   1
-                ],
-                [
-                  0.82,
-                  0.935,
-                  2
                 ]
               ],
               "crop": [
                 0,
                 0,
                 1756,
-                780
+                1010
               ],
               "heading": "Engine Lab · read-only SQL over the published store",
               "image": "engine__elQueryPanel.png",
-              "note": "1 Validated SQL against catalogue paths · 2 rows, execution time and bytes read per run (547 rows, 635 ms, 593.6 KB); repeats cost 0 bytes from the in-memory cache."
+              "note": "1 Validated SQL against catalogue paths; each run reports 547 rows, 553 ms and 593.6 KB of network traffic, and repeats cost 0 bytes from the in-memory cache."
             }
           ]
         ],
@@ -929,14 +923,14 @@
         "title": "District access and reproducible query"
       },
       "pdf": {
-        "bytes": 298989,
+        "bytes": 320659,
         "path": "figures/fig11_access_reuse.pdf",
-        "sha256": "9d139b4ef0608834c054bcf99333b8b67dd646b6e94e3e2696547275adae640e"
+        "sha256": "1c91a7860a4782e08953e7edbe7c9d53d74fc2073552eec6863915007fcc012b"
       },
       "png": {
-        "bytes": 1579428,
+        "bytes": 1721513,
         "path": "figures/fig11_access_reuse.png",
-        "sha256": "6fb1a18fad3822381b9fa5b47c61e4bec9fb2750242277446d055869728201ac"
+        "sha256": "ca5ca6f43993aac55c6e726cd0159265b831e2532b07f2cb39cf3bff71a489e0"
       }
     }
   },

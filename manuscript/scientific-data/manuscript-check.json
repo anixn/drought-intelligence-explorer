@@ -1,7 +1,7 @@
 {
   "schema": "die-manuscript-check/1.0",
-  "passed": 32,
-  "total": 32,
+  "passed": 35,
+  "total": 35,
   "checks": [
     {
       "check": "title_length",
@@ -67,6 +67,15 @@
       "check": "embedded_bibliography",
       "pass": true,
       "detail": "Inline thebibliography; no .bib/.bbl dependency"
+    },
+    {
+      "check": "code_availability_before_refs",
+      "pass": true,
+      "detail": [
+        "Usage Notes",
+        "Data Availability",
+        "Code Availability"
+      ]
     },
     {
       "check": "computer_modern",
@@ -172,7 +181,7 @@
     {
       "check": "figure_count",
       "pass": true,
-      "detail": 11
+      "detail": 8
     },
     {
       "check": "table_count",
@@ -190,9 +199,6 @@
           "fig04_imd_benchmark.pdf",
           "fig05_atlas_overlap.pdf",
           "fig06_gcm_validation.pdf",
-          "fig07_about.pdf",
-          "fig08_record_analyses.pdf",
-          "fig09_events_propagation.pdf",
           "fig10_atlas_projections.pdf",
           "fig11_access_reuse.pdf"
         ],
@@ -202,7 +208,20 @@
     {
       "check": "figure_numbers_in_text",
       "pass": true,
-      "detail": 11
+      "detail": 8
+    },
+    {
+      "check": "figure_legend_length",
+      "pass": true,
+      "detail": {
+        "limit": 350,
+        "over": {}
+      }
+    },
+    {
+      "check": "no_removed_figures_cited",
+      "pass": true,
+      "detail": "No reference to a dropped figure number"
     },
     {
       "check": "data_overview_figure_limit",
@@ -256,11 +275,20 @@
       "detail": "2.0.0"
     },
     {
-      "check": "figure_data_real",
+      "check": "figure_data_covers_included",
       "pass": true,
       "detail": {
-        "synthetic_data": false,
-        "figures": 11
+        "included": [
+          "fig01_architecture",
+          "fig02_projection_pipeline",
+          "fig03_coverage",
+          "fig04_imd_benchmark",
+          "fig05_atlas_overlap",
+          "fig06_gcm_validation",
+          "fig10_atlas_projections",
+          "fig11_access_reuse"
+        ],
+        "missing_from_manifest": []
       }
     },
     {
@@ -284,7 +312,7 @@
       "check": "compiled_pdf",
       "pass": true,
       "detail": {
-        "bytes": 1713441
+        "bytes": 1312816
       }
     },
     {

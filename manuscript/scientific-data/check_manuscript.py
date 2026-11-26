@@ -57,6 +57,11 @@ def main() -> int:
 
     add("no_internal_refs", not re.search(r"\\(?:ref|label|cref|Cref)\b", tex), "Free-text figure/table references only")
     add("embedded_bibliography", "\\begin{thebibliography}" in tex and "\\bibliography{" not in tex and "\\addbibresource" not in tex, "Inline thebibliography; no .bib/.bbl dependency")
+    bib_pos = tex.find("\\begin{thebibliography}")
+    headings_before_bib = re.findall(r"\\section\*\{([^}]+)\}", tex[:bib_pos] if bib_pos > 0 else "")
+    add("code_availability_before_refs",
+        bool(headings_before_bib) and headings_before_bib[-1] == "Code Availability",
+        headings_before_bib[-3:])
     add("computer_modern", "newtx" not in tex and "lmodern" not in tex and "fontspec" not in tex, "Default Computer Modern fonts")
 
     bib_block = re.search(r"\\begin\{thebibliography\}\{(\d+)\}(.*?)\\end\{thebibliography\}", tex, re.S)
@@ -77,12 +82,16 @@ def main() -> int:
 
     n_figures = tex.count("\\begin{figure}")
     n_tables = tex.count("\\begin{table}")
-    add("figure_count", 1 <= n_figures <= 12, n_figures)
+    add("figure_count", 1 <= n_figures <= 8, n_figures)
     add("table_count", 1 <= n_tables <= 10, n_tables)
     figure_files = re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}", tex)
     missing = [f for f in figure_files if not (HERE / "figures" / f).exists()]
     add("figure_files_exist", not missing and len(figure_files) == n_figures, {"files": figure_files, "missing": missing})
     add("figure_numbers_in_text", all((f"Fig. {i}" in tex or f"Figure {i}" in tex) for i in range(1, n_figures + 1)), n_figures)
+    captions = re.findall(r"\\begin\{figure\}.*?\\caption\{(.*?)\}\s*\\end\{figure\}", tex, re.S)
+    long_captions = {i: len(words(c)) for i, c in enumerate(captions, 1) if len(words(c)) > 350}
+    add("figure_legend_length", len(captions) == n_figures and not long_captions, {"limit": 350, "over": long_captions})
+    add("no_removed_figures_cited", not re.search(r"(?:Fig\.|Figure)\s+(?:9|10|11)\b", tex), "No reference to a dropped figure number")
     overview = re.search(r"\\section\*\{Data Overview\}(.*?)\\section\*\{Technical Validation\}", tex, re.S)
     overview_figures = overview.group(1).count("\\begin{figure}") if overview else 0
     add("data_overview_figure_limit", 0 <= overview_figures <= 2, overview_figures)
@@ -105,7 +114,11 @@ def main() -> int:
     add("record_end", meta["period"]["end"] == "2026-09" and status["data"]["data_month"] == "2026-09", meta["period"]["end"])
     add("doi_contract", meta["doi"]["v2_0_0"] == "10.5281/zenodo.24444860" and meta["doi"]["dataset_v2_0_0"] == "10.5281/zenodo.24445534", meta["doi"])
     add("reality_version", reality["data_version"] == "2.0.0", reality["data_version"])
-    add("figure_data_real", figure_data.get("synthetic_data") is False and len(figure_data.get("figures", {})) == n_figures, {"synthetic_data": figure_data.get("synthetic_data"), "figures": len(figure_data.get("figures", {}))})
+    included = {Path(f).stem for f in figure_files}
+    fig_keys = set(figure_data.get("figures", {}))
+    add("figure_data_covers_included",
+        figure_data.get("synthetic_data") is False and included <= fig_keys,
+        {"included": sorted(included), "missing_from_manifest": sorted(included - fig_keys)})
     font_floor = figure_data.get("minimum_font_pt")
     add("figure_typography", figure_data.get("font") == "Roboto"
         and isinstance(font_floor, dict) and font_floor.get("plotted") == 10
